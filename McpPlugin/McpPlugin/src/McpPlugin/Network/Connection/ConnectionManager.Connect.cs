@@ -248,11 +248,18 @@ namespace com.IvanMurzak.McpPlugin
         {
             var existing = _webSocket.CurrentValue;
             // ClientWebSocket is strictly one-shot: ConnectAsync may be called ONLY on an
-            // instance whose State is None (never started). Any other state — Open, Connecting,
-            // Closed, Aborted, CloseSent, CloseReceived — means the instance has already been
-            // started and CANNOT be reused (it throws "The WebSocket has already been started").
-            // Always discard + replace it with a fresh instance.
-            if (existing != null && existing.State == WebSocketState.None)
+            // instance whose State is None (never started). A socket in a DEAD state
+            // (Closed/Aborted/CloseSent/CloseReceived) has already been started and CANNOT be
+            // reused — it must be discarded and replaced with a fresh instance.
+            // A socket that is None (fresh), Connecting, or Open is either usable now or
+            // in active use — it MUST be preserved. Disposing a Connecting/Open socket here
+            // races concurrent Connect() callers (cold-boot fires startup + keepServerRunning
+            // + handshake-driven EnsureConnection simultaneously) and causes a
+            // connect→dispose→reconnect churn where the handshake send never reaches the wire.
+            if (existing != null && existing.State
+                    is WebSocketState.None
+                    or WebSocketState.Connecting
+                    or WebSocketState.Open)
                 return true;
 
             // Dispose previous observable/logger subscriptions
