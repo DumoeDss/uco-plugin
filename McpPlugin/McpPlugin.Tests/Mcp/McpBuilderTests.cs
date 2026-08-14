@@ -156,6 +156,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         private class MockRunTool : IRunTool
         {
             public string Name => "MockTool";
+            public System.Reflection.MethodInfo? Method => null; // IRunTool.Method (mock)
             public string Title => "Mock Tool Title";
             public string Description => "Mock Tool";
             public string? SkillDescription => null;

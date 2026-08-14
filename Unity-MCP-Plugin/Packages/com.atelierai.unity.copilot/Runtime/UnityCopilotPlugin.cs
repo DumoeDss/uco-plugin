@@ -14,6 +14,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
+using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
@@ -57,13 +58,13 @@ namespace com.AtelierAI.Unity.Copilot
 
         // --- Connection state ---
 
-        protected readonly ReactiveProperty<ConnectionState> _connectionState
-            = new(ConnectionState.Disconnected);
+        protected readonly ReactiveProperty<WsState> _connectionState
+            = new(WsState.Disconnected);
 
-        public ReadOnlyReactiveProperty<ConnectionState> ConnectionState => _connectionState;
+        public ReadOnlyReactiveProperty<WsState> ConnectionState => _connectionState;
 
         public ReadOnlyReactiveProperty<bool> IsConnected => _connectionState
-            .Select(x => x == ConnectionState.Connected)
+            .Select(x => x == WsState.Connected)
             .ToReadOnlyReactiveProperty(false);
 
         // --- Constructor / Dispose ---
@@ -202,7 +203,7 @@ namespace com.AtelierAI.Unity.Copilot
             var mcpPlugin = McpPluginInstance
                 ?? throw new InvalidOperationException($"{nameof(McpPluginInstance)} is null");
 
-            while (mcpPlugin.ConnectionState.CurrentValue != ConnectionState.Connected)
+            while (mcpPlugin.ConnectionState.CurrentValue != WsState.Connected)
             {
                 await Task.Delay(100, cancellationToken);
                 if (cancellationToken.IsCancellationRequested)

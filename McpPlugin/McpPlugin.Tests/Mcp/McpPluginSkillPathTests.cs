@@ -236,6 +236,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         private sealed class MockRunTool : IRunTool
         {
             public MockRunTool(string name) => Name = name;
+            public System.Reflection.MethodInfo? Method => null; // IRunTool.Method (mock)
 
             public string Name { get; }
             public string? Title => null;

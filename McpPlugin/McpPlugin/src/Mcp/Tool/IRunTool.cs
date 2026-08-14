@@ -9,6 +9,7 @@
 */
 
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -22,6 +23,11 @@ namespace com.IvanMurzak.McpPlugin
         string Name { get; }
         string? Title { get; }
         string? Description { get; }
+
+        /// <summary>
+        /// Gets the underlying <see cref="MethodInfo"/> for this tool, or null when not backed by a reflected method.
+        /// </summary>
+        MethodInfo? Method { get; }
 
         /// <summary>
         /// Optional concise description used for the SKILL.md YAML <c>description:</c> field.

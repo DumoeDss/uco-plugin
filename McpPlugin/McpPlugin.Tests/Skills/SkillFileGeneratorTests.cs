@@ -1050,6 +1050,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Skills
         private class MockRunTool : IRunTool
         {
             public string Name { get; init; } = "mock-tool";
+            public System.Reflection.MethodInfo? Method => null; // IRunTool.Method (mock)
             public string? Title { get; init; } = "Mock Tool";
             public string? Description { get; init; } = "A mock tool for testing.";
             public string? SkillDescription { get; init; }

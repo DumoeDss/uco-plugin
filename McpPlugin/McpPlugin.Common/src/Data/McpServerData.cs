@@ -20,6 +20,10 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         [JsonPropertyName("serverApiVersion")]
         public string? ServerApiVersion { get; set; }
 
+        [JsonPropertyName("serverTransport")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public Consts.MCP.Server.TransportMethod ServerTransport { get; set; }
+
         [JsonPropertyName("isAiAgentConnected")]
         public bool IsAiAgentConnected { get; set; }
     }

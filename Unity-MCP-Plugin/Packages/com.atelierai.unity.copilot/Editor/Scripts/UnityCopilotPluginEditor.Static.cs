@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
+using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
 using com.IvanMurzak.McpPlugin.Common;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.AtelierAI.Unity.Copilot.Utils;
@@ -230,7 +231,7 @@ namespace com.AtelierAI.Unity.Copilot
 
 
         // 'new' is intentional: static dispatch on the subtype, instance logic lives in the base.
-        public static new ReadOnlyReactiveProperty<ConnectionState> ConnectionState
+        public static new ReadOnlyReactiveProperty<WsState> ConnectionState
             => ((UnityCopilotPlugin)Instance).ConnectionState;
         public static new ReadOnlyReactiveProperty<bool> IsConnected
             => ((UnityCopilotPlugin)Instance).IsConnected;

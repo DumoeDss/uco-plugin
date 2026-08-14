@@ -247,7 +247,12 @@ namespace com.IvanMurzak.McpPlugin
         private async Task<bool> CreateWebSocketIfNeeded(CancellationToken cancellationToken)
         {
             var existing = _webSocket.CurrentValue;
-            if (existing != null && existing.State != WebSocketState.Closed && existing.State != WebSocketState.Aborted)
+            // ClientWebSocket is strictly one-shot: ConnectAsync may be called ONLY on an
+            // instance whose State is None (never started). Any other state — Open, Connecting,
+            // Closed, Aborted, CloseSent, CloseReceived — means the instance has already been
+            // started and CANNOT be reused (it throws "The WebSocket has already been started").
+            // Always discard + replace it with a fresh instance.
+            if (existing != null && existing.State == WebSocketState.None)
                 return true;
 
             // Dispose previous observable/logger subscriptions
@@ -360,6 +365,15 @@ namespace com.IvanMurzak.McpPlugin
 
             while (!cancellationToken.IsCancellationRequested && _continueToReconnect.CurrentValue)
             {
+                // ClientWebSocket is one-shot: once ConnectAsync has been invoked on an instance
+                // (even if it failed), that instance can never be reused. Each retry iteration
+                // must therefore start from a FRESH socket — CreateWebSocketIfNeeded disposes
+                // the previous (now started) instance and creates a new one. Without this, the
+                // 2nd+ attempt reuses the faulted socket and throws "The WebSocket has already
+                // been started" in a tight retry loop.
+                if (!await CreateWebSocketIfNeeded(cancellationToken))
+                    return false;
+
                 if (await AttemptConnection(cancellationToken))
                 {
                     // Connection established — verify the server doesn't immediately close it.

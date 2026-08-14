@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text.Json;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Utils;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {

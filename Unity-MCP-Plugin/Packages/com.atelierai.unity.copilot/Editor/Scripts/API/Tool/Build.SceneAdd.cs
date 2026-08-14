@@ -87,7 +87,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 else
                 {
                     entry = new EditorBuildSettingsScene(scenePath, enabled);
-                    if (!string.IsNullOrEmpty(guid) && UnityEngine.GUID.TryParse(guid, out var parsedGuid))
+                    if (!string.IsNullOrEmpty(guid) && GUID.TryParse(guid, out var parsedGuid))
                         entry.guid = parsedGuid;
                 }
 

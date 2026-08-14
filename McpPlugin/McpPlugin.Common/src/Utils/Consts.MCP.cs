@@ -52,6 +52,7 @@ namespace com.IvanMurzak.McpPlugin.Common
                 {
                     public const string Port = "port";
                     public const string PluginTimeout = "plugin-timeout";
+                    public const string ClientTransportMethod = "client-transport";
                     public const string Token = "token";
                     public const string Authorization = "authorization";
                     public const string IdleTimeoutSeconds = "idle-timeout-seconds";
@@ -61,6 +62,7 @@ namespace com.IvanMurzak.McpPlugin.Common
                 {
                     public const string Port = "MCP_PLUGIN_PORT";
                     public const string PluginTimeout = "MCP_PLUGIN_CLIENT_TIMEOUT";
+                    public const string ClientTransportMethod = "MCP_PLUGIN_CLIENT_TRANSPORT";
                     public const string Token = "MCP_PLUGIN_TOKEN";
                     public const string Authorization = "MCP_AUTHORIZATION";
                     public const string IdleTimeoutSeconds = "MCP_PLUGIN_IDLE_TIMEOUT_SECONDS";
@@ -114,11 +116,19 @@ namespace com.IvanMurzak.McpPlugin.Common
                         ["args"] = new JsonArray
                         {
                             $"{Args.Port}={port}",
-                            $"{Args.PluginTimeout}={timeoutMs}"
+                            $"{Args.PluginTimeout}={timeoutMs}",
+                            $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
                         }
                     };
 
                     return root;
+                }
+
+                public enum TransportMethod
+                {
+                    unknown,
+                    stdio,
+                    streamableHttp
                 }
 
                 public enum AuthOption
