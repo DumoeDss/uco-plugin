@@ -10,18 +10,28 @@
 
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.McpPlugin
 {
     // ── Envelope types (match child 1 design.md D2 exactly) ──────────────
+    // NOTE: the envelope keys are lower-case on the wire ("id", "method",
+    // "params", "result", "error"). They are declared with explicit
+    // [JsonPropertyName] so they serialize correctly REGARDLESS of the
+    // ambient JsonSerializerOptions naming policy (the Reflector's options
+    // use PropertyNamingPolicy = null, which would otherwise emit PascalCase
+    // keys the Node server cannot parse).
 
     /// <summary>
     /// RPC request: <c>{"id":"...", "method":"...", "params":{...}}</c>.
     /// </summary>
     public class WsRequest
     {
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
+        [JsonPropertyName("method")]
         public string Method { get; set; } = string.Empty;
+        [JsonPropertyName("params")]
         public JsonElement? Params { get; set; }
     }
 
@@ -31,8 +41,11 @@ namespace com.IvanMurzak.McpPlugin
     /// </summary>
     public class WsResponse
     {
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
+        [JsonPropertyName("result")]
         public JsonElement? Result { get; set; }
+        [JsonPropertyName("error")]
         public WsError? Error { get; set; }
     }
 
@@ -42,7 +55,9 @@ namespace com.IvanMurzak.McpPlugin
     /// </summary>
     public class WsNotification
     {
+        [JsonPropertyName("method")]
         public string Method { get; set; } = string.Empty;
+        [JsonPropertyName("params")]
         public JsonElement? Params { get; set; }
     }
 
@@ -51,8 +66,11 @@ namespace com.IvanMurzak.McpPlugin
     /// </summary>
     public class WsError
     {
+        [JsonPropertyName("code")]
         public int Code { get; set; }
+        [JsonPropertyName("message")]
         public string Message { get; set; } = string.Empty;
+        [JsonPropertyName("data")]
         public JsonElement? Data { get; set; }
     }
 

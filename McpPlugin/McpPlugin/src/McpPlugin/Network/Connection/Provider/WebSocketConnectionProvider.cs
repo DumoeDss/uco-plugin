@@ -53,6 +53,14 @@ namespace com.IvanMurzak.McpPlugin
             _jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
             JsonConfiguration.ConfigureJsonSerializer(_reflector, _jsonSerializerOptions);
+
+            // CRITICAL: force camelCase AFTER copying the Reflector settings (which use
+            // PropertyNamingPolicy = null → PascalCase keys). The Node server's wire
+            // contract is camelCase for both envelope keys and payload fields — PascalCase
+            // keys make every message unparseable server-side (observed live: the version
+            // handshake request was rejected and the plugin timed out waiting for a reply).
+            // Models carrying explicit [JsonPropertyName] are unaffected by the policy.
+            _jsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         }
 
         public Task<(ClientWebSocket WebSocket, Uri Uri)> CreateConnectionAsync(string endpoint)
