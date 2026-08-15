@@ -231,7 +231,14 @@ namespace com.IvanMurzak.McpPlugin
 
             await Connect(cancellationToken);
 
-            if (_connectionState.Value is not WsState.Connected)
+            // A transport-level live socket is sufficient to attempt an RPC.
+            // CRITICAL: the application-level version handshake itself travels through
+            // InvokeAsync → EnsureConnection, but the Connected state is only set AFTER
+            // the handshake succeeds (SetConnected). Gating on Connected here deadlocks
+            // the handshake: it could never be sent, InvokeAsync returned null, and the
+            // plugin logged "Version handshake failed: No response from server" forever.
+            if (_connectionState.Value is not WsState.Connected
+                && _webSocket.CurrentValue?.State is not WebSocketState.Open)
             {
                 _logger.LogWarning("{class}[{guid}] {method} Failed to establish connection to remote endpoint: {endpoint}",
                     nameof(ConnectionManager), _guid, nameof(EnsureConnection), Endpoint);
