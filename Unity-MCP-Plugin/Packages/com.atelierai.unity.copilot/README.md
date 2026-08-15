@@ -3,7 +3,6 @@
 
 [![MCP](https://badge.mcpx.dev 'MCP Server')](https://modelcontextprotocol.io/introduction)
 [![OpenUPM](https://img.shields.io/npm/v/com.atelierai.unity.copilot?label=OpenUPM&registry_uri=https://package.openupm.com&labelColor=333A41 'OpenUPM package')](https://openupm.com/packages/com.atelierai.unity.copilot/)
-[![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editor supported')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtime supported')](https://unity.com/releases/editor/archive)
 [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
@@ -49,7 +48,7 @@ Unlike other tools, this plugin works **inside your compiled game**, allowing fo
 - ✔️ **Runtime (in-game)** - Use LLMs directly inside your compiled game for dynamic NPC behavior or debugging
 - ✔️ **Debug support** - Let AI debug and fix the problems in a project
 - ✔️ **Natural conversation** - Chat with AI like you would with a human
-- ✔️ **Flexible deployment** - Works locally (stdio) and remotely (http) via configuration
+- ✔️ **Flexible deployment** - Works locally and remotely over HTTP; the Node.js MCP server is auto-launched by the plugin
 - ✔️ **Extensible** - [Create custom Tools in your project code](#add-custom-tool)
 
 [![DOWNLOAD INSTALLER](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/button/button_download.svg?raw=true)](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
@@ -208,13 +207,10 @@ Install extensions when need more tools or [create your own tools](#add-custom-t
   - [Sample: AI powered Chess game bot](#sample-ai-powered-chess-game-bot)
   - [Why runtime usage is needed?](#why-runtime-usage-is-needed)
 - [Unity `MCP Server` setup](#unity-mcp-server-setup)
-  - [Variables](#variables)
+  - [Requirements](#requirements)
+  - [How the server is launched](#how-the-server-is-launched)
   - [Plugin Variables](#plugin-variables)
-  - [Docker 📦](#docker-)
-    - [`streamableHttp` Transport](#streamablehttp-transport)
-    - [`stdio` Transport](#stdio-transport)
-    - [Custom `port`](#custom-port)
-  - [Binary executable](#binary-executable)
+  - [Running the server manually](#running-the-server-manually)
 - [How Unity MCP Architecture Works](#how-unity-mcp-architecture-works)
   - [What is `MCP`](#what-is-mcp)
   - [What is `AI agent`](#what-is-ai-agent)
@@ -232,8 +228,6 @@ Install extensions when need more tools or [create your own tools](#add-custom-t
 | Document | Description |
 | -------- | ----------- |
 | [Default MCP Tools](docs/default-mcp-tools.md) | Full reference of all built-in tools with descriptions |
-| [MCP Server Setup](docs/mcp-server.md) | Server configuration, environment variables, remote hosting |
-| [Docker Deployment](docs/DOCKER_DEPLOYMENT.md) | Step-by-step Docker deployment guide |
 | [Development Guide](docs/dev/Development.md) | Architecture, code style, CI/CD — for contributors |
 | [Wiki](https://github.com/IvanMurzak/Unity-MCP/wiki) | Getting started, tutorials, API reference, FAQ |
 | [CLI Tool](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) | Install plugins, configure, and connect via command line |
@@ -326,26 +320,25 @@ If automatic configuration doesn't work for you for any reason, use the JSON fro
 
 #### Command line configuration
 
+The server speaks HTTP (REST + WebSocket), so AI agents connect to a URL — there is no per-platform command or binary to reference. Take the URL (and the authorization token, if required) from the `AI Game Developer` window in Unity.
+
 <details>
-  <summary><b>Create <code>command</code></b></summary>
+  <summary><b>Raw MCP client config</b></summary>
 
-**1. Choose your `<command>` for your environment**
+```json
+{
+  "mcpServers": {
+    "ai-game-developer": {
+      "url": "http://localhost:<port>",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      }
+    }
+  }
+}
+```
 
-| Platform            | `<command>`                                                                                                 |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Windows x64         | `"<unityProjectPath>/Library/mcp-server/win-x64/unity-mcp-server.exe" port=<port> client-transport=stdio`   |
-| Windows x86         | `"<unityProjectPath>/Library/mcp-server/win-x86/unity-mcp-server.exe" port=<port> client-transport=stdio`   |
-| Windows arm64       | `"<unityProjectPath>/Library/mcp-server/win-arm64/unity-mcp-server.exe" port=<port> client-transport=stdio` |
-| MacOS Apple-Silicon | `"<unityProjectPath>/Library/mcp-server/osx-arm64/unity-mcp-server" port=<port> client-transport=stdio`     |
-| MacOS Apple-Intel   | `"<unityProjectPath>/Library/mcp-server/osx-x64/unity-mcp-server" port=<port> client-transport=stdio`       |
-| Linux x64           | `"<unityProjectPath>/Library/mcp-server/linux-x64/unity-mcp-server" port=<port> client-transport=stdio`     |
-| Linux arm64         | `"<unityProjectPath>/Library/mcp-server/linux-arm64/unity-mcp-server" port=<port> client-transport=stdio`   |
-
-**2. Replace `<unityProjectPath>` with the full path to Unity project**
-
-**3. Replace `<port>` with your port from AI Game Developer configuration**
-
-**4. Add MCP server using command line**
+> Replace `<port>` with the port shown in the AI Game Developer window (a deterministic per-project port in the 20000-29999 range). The `headers` block is only needed when authorization is set to `required`.
 
 </details>
 
@@ -353,20 +346,20 @@ If automatic configuration doesn't work for you for any reason, use the JSON fro
   <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
 
   ```bash
-  gemini mcp add ai-game-developer <command>
+  gemini mcp add ai-game-developer http://localhost:<port>
   ```
 
-  > Replace `<command>` from the table above
+  > Replace `<port>` with your port from the AI Game Developer window
 </details>
 
 <details>
   <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
 
   ```bash
-  claude mcp add ai-game-developer <command>
+  claude mcp add --transport http ai-game-developer http://localhost:<port>
   ```
 
-  > Replace `<command>` from the table above
+  > Replace `<port>` with your port from the AI Game Developer window. If authorization is required, pass `--header "Authorization: Bearer <token>"`.
 </details>
 
 <details>
@@ -381,9 +374,9 @@ If automatic configuration doesn't work for you for any reason, use the JSON fro
   ```
 
   Server name: `ai-game-developer`
-  Server type: `local`
-  Command: `<command>`
-  > Replace `<command>` from the table above
+  Server type: `HTTP` (URL)
+  URL: `http://localhost:<port>`
+  > Replace `<port>` with your port from the AI Game Developer window
 </details>
 
 ![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
@@ -559,21 +552,29 @@ There are many use cases, lets imagine you are working on a Chess game with bot.
 
 # Unity `MCP Server` setup
 
-**[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** Server supports many different launch options and Docker deployment. Both transport protocols are supported: `streamableHttp` and `stdio`. If you need to customize or deploy Unity MCP Server to a cloud, this section is for you. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
+The **[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** Server is a Node.js application (the [`cocli`](https://www.npmjs.com/package/cocli) npm package). There is a single transport: HTTP — REST for tool calls plus a WebSocket hub for push messages. The plugin launches and manages the server process automatically, so in the common case you don't need to set anything up by hand.
 
-## Variables
+## Requirements
 
-Doesn't matter what launch option you choose, all of them support custom configuration using both Environment Variables and Command Line Arguments. It would work with default values, if you just need to launch it, don't waste your time for the variables. Just make sure Unity Plugin also has default values, especially the `--port`, they should be equal.
+- **Node.js** installed and `node` available (on `PATH` or in the default install location). The plugin launches the server with the `node` runtime — no server binary is downloaded or staged into `Library/`.
 
-| Environment Variable         | Command Line Args    | Description                                                                  |
-| ---------------------------- | -------------------- | ---------------------------------------------------------------------------- |
-| `MCP_PLUGIN_PORT`            | `--port`             | **Client** -> **Server** <- **Plugin** connection port (default: 8080)       |
-| `MCP_PLUGIN_CLIENT_TIMEOUT`   | `--plugin-timeout`   | **Plugin** -> **Server** connection timeout (ms) (default: 10000)            |
-| `MCP_PLUGIN_CLIENT_TRANSPORT` | `--client-transport` | **Client** -> **Server** transport type: `stdio` or `streamableHttp` (default: `streamableHttp`) |
+## How the server is launched
 
-> Command line args support also the option with a single `-` prefix (`-port`) and an option without prefix at all (`port`).
+When Unity opens (and `Keep Server Running` is enabled), the plugin resolves the server entry script (`bin/server.mjs`) in this order:
 
-> **Choosing a transport:** Use `stdio` when the MCP client launches the server binary directly (local use — this is the most common setup). Use `streamableHttp` when running the server as a standalone process or in Docker/cloud, and connecting over HTTP.
+1. **`nodeServerPath`** from the plugin config — an absolute path, or a path relative to the Unity project root. When set, it must exist or the launch is refused (an error is logged).
+2. **cocli installed in the Unity project** — `<project>/node_modules/cocli/bin/server.mjs`.
+3. **cocli installed globally via npm** — e.g. `%AppData%\npm\node_modules\cocli` on Windows, `/usr/local/lib/node_modules/cocli` on Unix.
+
+If nothing is found, the plugin logs an error and skips the launch, but it can still connect to an already-running server.
+
+> **External server respected:** if something is already listening on the project's port, the plugin does not launch a second instance — it just connects to the running server. This is how you run the server yourself (CI, remote host, etc.).
+
+Additional behavior:
+
+- **Deterministic per-project port** — derived from a hash of the project path (range 20000-29999), so each Unity project gets its own stable port. Override it by editing the Server URL in the `AI Game Developer` window.
+- **Token authorization (optional)** — set Authorization to `required` and generate a token in the `AI Game Developer` window. AI agents then send it as a Bearer token.
+- **Lifecycle** — the server is stopped when the Unity Editor quits; after a domain reload the plugin re-attaches to the still-running process instead of launching a new one. Server stdout/stderr is surfaced in the Editor console.
 
 ## Plugin Variables
 
@@ -599,120 +600,20 @@ Unity.exe -batchmode -nographics \
   -UNITY_MCP_TOKEN=my-secret-token
 ```
 
-## Docker 📦
+## Running the server manually
 
-[![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
-
-Make sure Docker is installed. And please make sure Docker Desktop is launched if you are at Windows operation system.
-
-[Read advanced Docker configuration instructions](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/DOCKER_DEPLOYMENT.md).
-
-### `streamableHttp` Transport
+You normally don't need this — but for CI or a remote/shared server you can start the server yourself. The plugin will detect the listening port and connect to it:
 
 ```bash
-docker run -p 8080:8080 ivanmurzakdev/unity-mcp-server
+node <path-to>/cocli/bin/server.mjs --port 25000 --plugin-timeout-ms 10000 --authorization required --token my-secret-token
 ```
 
-<details>
-  <summary><code>MCP Client</code> config:</summary>
-
-```json
-{
-  "mcpServers": {
-    "ai-game-developer": {
-      "url": "http://localhost:8080"
-    }
-  }
-}
-```
-
-> Replace `url` with your real endpoint if it is hosted in cloud.
-
-</details>
-
-### `stdio` Transport
-
-For using this variant, `MCP Client` should launch the `MCP Server` in the docker. It is achievable through the modified `MCP Client` configuration.
-
-```bash
-docker run -t -e MCP_PLUGIN_CLIENT_TRANSPORT=stdio -p 8080:8080 ivanmurzakdev/unity-mcp-server
-```
-
-<details>
-  <summary><code>MCP Client</code> config:</summary>
-
-```json
-{
-  "mcpServers": {
-    "ai-game-developer": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-t",
-        "-e",
-        "MCP_PLUGIN_CLIENT_TRANSPORT=stdio",
-        "-p",
-        "8080:8080",
-        "ivanmurzakdev/unity-mcp-server"
-      ]
-    }
-  }
-}
-```
-
-</details>
-
-### Custom `port`
-
-```bash
-docker run -e MCP_PLUGIN_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
-```
-
-<details>
-  <summary><code>MCP Client</code> config:</summary>
-
-```json
-{
-  "mcpServers": {
-    "ai-game-developer": {
-      "url": "http://localhost:123"
-    }
-  }
-}
-```
-
-> Replace `url` with your real endpoint if it is hosted in cloud
-</details>
-
-## Binary executable
-
-You may launch Unity `MCP Server` directly from a binary file. You would need to have a binary compiled specifically for your CPU architecture. Check [GitHub Release Page](https://github.com/IvanMurzak/Unity-MCP/releases), it contains pre-compiled binaries for all CPU architectures.
-
-```bash
-./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport stdio
-```
-
-<details>
-  <summary><code>MCP Client</code> config:</summary>
-
-> Replace `<project>` with your Unity project path.
-
-```json
-{
-  "mcpServers": {
-    "ai-game-developer": {
-      "command": "<project>/Library/mcp-server/win-x64/unity-mcp-server.exe",
-      "args": [
-        "--port=8080",
-        "--plugin-timeout=10000",
-        "--client-transport=stdio"
-      ]
-    }
-  }
-}
-```
-
-</details>
+| Argument               | Description                                              |
+| ---------------------- | -------------------------------------------------------- |
+| `--port`               | Port to listen on. Must match the Server URL in the plugin |
+| `--plugin-timeout-ms`  | Tool execution timeout in milliseconds (default: 10000)  |
+| `--authorization`      | `none` or `required` — whether a token is checked        |
+| `--token`              | The authorization token (only used when authorization is `required`) |
 
 ![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 

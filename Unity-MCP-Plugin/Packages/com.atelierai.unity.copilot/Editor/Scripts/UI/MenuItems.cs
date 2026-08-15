@@ -14,7 +14,6 @@ using com.AtelierAI.Unity.Copilot.Editor.Branding;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
@@ -52,19 +51,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         [MenuItem("Tools/AI Game Developer/Server/Launch MCP Inspector", priority = 1004)]
         public static void LaunchMcpInspector()
         {
-            if (UnityCopilotPluginEditor.TransportMethod != TransportMethod.streamableHttp)
-            {
-                NotificationPopupWindow.Show(
-                    windowTitle: "Error",
-                    title: "HTTP Transport required",
-                    message: "The MCP Inspector can only be launched when the transport method is set to HTTP. Please change the transport method in the plugin settings and try again.",
-                    width: 350,
-                    minWidth: 350,
-                    height: 200,
-                    minHeight: 200);
-                return;
-            }
-
             // Run command in a terminal window: npx @modelcontextprotocol/inspector http://localhost:8080 --transport http
             var npxArgs = $"-y @modelcontextprotocol/inspector {UnityCopilotPluginEditor.Host} --transport http";
             Debug.Log($"Launching MCP Inspector with command: npx {npxArgs}");

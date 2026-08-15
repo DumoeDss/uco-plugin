@@ -20,7 +20,6 @@ using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
-using TransportMethod = com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server.TransportMethod;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
@@ -222,7 +221,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         private void ApplyServerSettingAndRestart(Action applySetting)
         {
-            var wasRunning = CopilotServerManager.IsRunning && UnityCopilotPluginEditor.TransportMethod != TransportMethod.stdio;
+            var wasRunning = CopilotServerManager.IsRunning;
             applySetting();
             UnityCopilotPluginEditor.Instance.Save();
             RestartServerIfWasRunning(wasRunning);
@@ -245,17 +244,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             _ => "Start"
         };
 
-        internal static string GetServerLabelText(CopilotServerStatus status, TransportMethod? serverTransport) => status switch
+        // The Node.js server exposes a single HTTP transport (REST + WebSocket), so the
+        // status label no longer carries a transport-mode suffix.
+        internal static string GetServerLabelText(CopilotServerStatus status) => status switch
         {
-            CopilotServerStatus.Running => "Server: Running (http)",
-            CopilotServerStatus.Starting => "Server: Starting... (http)",
-            CopilotServerStatus.Stopping => "Server: Stopping... (http)",
-            CopilotServerStatus.External => "Server: External" + serverTransport switch
-            {
-                TransportMethod.stdio => " (stdio)",
-                TransportMethod.streamableHttp => " (http)",
-                _ => string.Empty
-            },
+            CopilotServerStatus.Running => "Server: Running",
+            CopilotServerStatus.Starting => "Server: Starting...",
+            CopilotServerStatus.Stopping => "Server: Stopping...",
+            CopilotServerStatus.External => "Server: External",
             _ => "Server"
         };
 
@@ -313,7 +309,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             btnStartStop.EnableInClassList("btn-primary", isStart);
             btnStartStop.EnableInClassList("btn-secondary", !isStart);
             btnStartStop.SetEnabled(IsServerButtonEnabled(status));
-            statusLabel.text = GetServerLabelText(status, data?.ServerTransport);
+            statusLabel.text = GetServerLabelText(status);
             SetStatusIndicator(statusCircle, GetServerStatusClass(status));
             return version;
         }

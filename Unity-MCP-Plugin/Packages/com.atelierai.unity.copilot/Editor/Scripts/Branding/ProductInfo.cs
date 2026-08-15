@@ -47,9 +47,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
         public const string ServerLabelPrefix = "Server";
 
         // Notification titles surfaced via EditorUtility.DisplayDialog.
-        public const string NotifyBinariesDeletedTitle  = ProductName + " Server Binaries Deleted";
-        public const string NotifyBinariesNotFoundTitle = ProductName + " Server Binaries Not Found";
-        public const string NotifyInspectorUnavailable  = ProductName + " Inspector Unavailable";
+        // (The old server-binary / inspector notification titles were removed together
+        // with the .NET binary-download flow; the Node.js server launch surfaces its
+        // status directly in the Editor console.)
 
         // Project Settings provider — path users see under Edit > Project Settings.
         public const string SettingsPath     = "Project/" + ParentBrand;

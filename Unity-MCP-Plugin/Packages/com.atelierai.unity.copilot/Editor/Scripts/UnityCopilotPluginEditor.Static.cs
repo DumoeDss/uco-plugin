@@ -128,6 +128,9 @@ namespace com.AtelierAI.Unity.Copilot
                 NotifyChanged(Instance.unityConnectionConfig);
             }
         }
+        // Legacy config field, kept so persisted JSON configs keep loading symmetrically.
+        // The Node.js server exposes a single HTTP transport; nothing branches on this
+        // value anymore — the default (streamableHttp) is the only effective mode.
         public static TransportMethod TransportMethod
         {
             get => Instance.unityConnectionConfig.TransportMethod;

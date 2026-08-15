@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
     /// <summary>
     /// Batch dispatcher that lets an LLM execute multiple tools in a single
-    /// SignalR round-trip. Reduces LLM-to-Unity latency by amortizing transport
+    /// server round-trip. Reduces LLM-to-Unity latency by amortizing transport
     /// overhead across many tool calls.
     /// </summary>
     [McpPluginToolType]

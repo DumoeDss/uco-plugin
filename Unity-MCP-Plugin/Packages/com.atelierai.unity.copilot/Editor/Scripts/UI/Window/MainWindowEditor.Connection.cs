@@ -190,7 +190,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
             var control = new SegmentedControl("Custom", "Cloud");
             control.SetTooltips(
-                "Connect to your own server. The plugin starts a local server automatically and manages its lifecycle. Use this when you want full control over the server configuration, port, transport, and authorization settings.",
+                "Connect to your own server. The plugin starts a local server automatically and manages its lifecycle. Use this when you want full control over the server configuration, port, and authorization settings.",
                 "Connect to a remote server hosted in the cloud (e.g. ai-game.dev). No local server is started — the plugin connects directly to a built-in cloud endpoint (Cloud URL is predefined and not configurable). Requires authorization via device code flow.");
             container.Add(control);
 
@@ -228,8 +228,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 {
                     UnityCopilotPluginEditor.ConnectionMode = ConnectionMode.Cloud;
 
-                    // Cloud requires streamableHttp + authorization
-                    UnityCopilotPluginEditor.TransportMethod = TransportMethod.streamableHttp;
+                    // Cloud requires authorization
                     UnityCopilotPluginEditor.AuthOption = AuthOption.required;
 
                     UnityCopilotPluginEditor.Instance.Save();

@@ -13,7 +13,6 @@ using com.AtelierAI.Unity.Copilot.Editor.Services;
 using com.AtelierAI.Unity.Copilot.Editor.UI;
 using com.IvanMurzak.McpPlugin;
 using NUnit.Framework;
-using TransportMethod = com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server.TransportMethod;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
@@ -127,43 +126,31 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         [Test]
         public void GetServerLabelText_Running()
         {
-            Assert.AreEqual("Server: Running (http)", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Running, null));
+            Assert.AreEqual("Server: Running", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Running));
         }
 
         [Test]
         public void GetServerLabelText_Starting()
         {
-            Assert.AreEqual("Server: Starting... (http)", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Starting, null));
+            Assert.AreEqual("Server: Starting...", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Starting));
         }
 
         [Test]
         public void GetServerLabelText_Stopping()
         {
-            Assert.AreEqual("Server: Stopping... (http)", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Stopping, null));
+            Assert.AreEqual("Server: Stopping...", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Stopping));
         }
 
         [Test]
         public void GetServerLabelText_Stopped()
         {
-            Assert.AreEqual("Server", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Stopped, null));
+            Assert.AreEqual("Server", MainWindowEditor.GetServerLabelText(CopilotServerStatus.Stopped));
         }
 
         [Test]
-        public void GetServerLabelText_External_NullTransport()
+        public void GetServerLabelText_External()
         {
-            Assert.AreEqual("Server: External", MainWindowEditor.GetServerLabelText(CopilotServerStatus.External, null));
-        }
-
-        [Test]
-        public void GetServerLabelText_External_Stdio()
-        {
-            Assert.AreEqual("Server: External (stdio)", MainWindowEditor.GetServerLabelText(CopilotServerStatus.External, TransportMethod.stdio));
-        }
-
-        [Test]
-        public void GetServerLabelText_External_Http()
-        {
-            Assert.AreEqual("Server: External (http)", MainWindowEditor.GetServerLabelText(CopilotServerStatus.External, TransportMethod.streamableHttp));
+            Assert.AreEqual("Server: External", MainWindowEditor.GetServerLabelText(CopilotServerStatus.External));
         }
 
         #endregion
@@ -307,17 +294,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void IsHostFieldReadOnly(bool keepConnected, ConnectionState state, bool expected)
         {
             Assert.AreEqual(expected, MainWindowEditor.IsHostFieldReadOnly(keepConnected, state));
-        }
-
-        #endregion
-
-        #region IsMcpServerControlEnabled
-
-        [TestCase(TransportMethod.stdio, false)]
-        [TestCase(TransportMethod.streamableHttp, true)]
-        public void IsMcpServerControlEnabled(TransportMethod transport, bool expected)
-        {
-            Assert.AreEqual(expected, MainWindowEditor.IsMcpServerControlEnabled(transport));
         }
 
         #endregion

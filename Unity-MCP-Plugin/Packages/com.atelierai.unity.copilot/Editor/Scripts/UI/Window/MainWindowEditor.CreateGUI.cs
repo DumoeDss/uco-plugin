@@ -60,13 +60,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         // These blocks are embedded verbatim inside the per-element tooltips below so
         // that each tooltip is self-contained yet the authoritative text lives in one place.
 
-        private const string Tooltip_TransportMethods =
-            "• stdio  —  The AI agent launches the server as its own child process and " +
-            "exchanges messages over stdin/stdout. Only one agent at a time; not recommended " +
-            "unless the AI client has no HTTP support.\n\n" +
-            "• http  —  The AI agent connects over HTTP to a running server. Supports " +
-            "multiple simultaneous agents and remote deployments. Recommended.";
-
         private const string Tooltip_AuthorizationTokenConcept =
             "The authorization token is a shared secret key. When required, every AI agent " +
             "must include this token in its server configuration. The server rejects any " +
@@ -74,38 +67,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             "Treat this token like a password — do not share it publicly or commit it to version control.";
 
         // ── Per-element tooltips ─────────────────────────────────────────────────────
-
-        private const string Tooltip_LabelTransport =
-            "Transport method defines the communication channel between the AI agent and the " +
-            "server. It determines how the agent discovers, launches, and sends messages " +
-            "to the server.\n\n" +
-            "Available methods:\n" +
-            Tooltip_TransportMethods;
-
-        private const string Tooltip_ToggleStdio =
-            "Use STDIO transport.\n\n" +
-            "The AI agent launches the server as its own subprocess and exchanges messages " +
-            "via standard input/output (stdin/stdout) streams.\n\n" +
-            "Limitations:\n" +
-            "  • Only one AI agent instance can connect at a time.\n" +
-            "  • The local server Start / Stop controls are disabled — the AI agent manages " +
-            "the server lifecycle itself.\n" +
-            "  • Some features requiring a persistent long-running server may not function.\n\n" +
-            "Prefer HTTP unless your AI client has no HTTP support.\n\n" +
-            "Transport method overview:\n" +
-            Tooltip_TransportMethods;
-
-        private const string Tooltip_ToggleHttp =
-            "Use HTTP transport (recommended).\n\n" +
-            "The AI agent connects over HTTP to the server already running on this machine " +
-            "(or a remote host if configured).\n\n" +
-            "Advantages:\n" +
-            "  • Multiple AI agents can connect to the same server simultaneously.\n" +
-            "  • Supports remote deployments — the server can run on a different machine.\n" +
-            "  • Full lifecycle control via the Start / Stop button.\n\n" +
-            "Ensure the local server is running before the AI agent attempts to connect.\n\n" +
-            "Transport method overview:\n" +
-            Tooltip_TransportMethods;
 
         private const string Tooltip_LabelAuthorizationToken =
             "Controls whether the server requires a secret token to accept connections " +
@@ -183,7 +144,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             "It is completely normal for the AI agent to appear disconnected:\n" +
             "  • With 'Cloud' connection mode the AI agent connects on-demand and may disconnect " +
             "between interactions.\n" +
-            "  • With 'HTTP' transport the AI agent connects only when it needs to invoke a tool " +
+            "  • With a local server the AI agent connects only when it needs to invoke a tool " +
             "or read a resource, then may drop the session.\n\n" +
             "The AI agent will always reconnect automatically whenever it needs to perform an " +
             "action in Unity — no manual intervention is required.\n\n" +
@@ -335,9 +296,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                     inputTimeoutMs.SetValueWithoutNotify(newValue);
 
                 UnityCopilotPluginEditor.TimeoutMs = newValue;
-
-                var rawJsonField = root.Q<TextField>("rawJsonConfigurationStdio");
-                rawJsonField.value = CopilotServerManager.RawJsonConfigurationStdio(UnityCopilotPluginEditor.Port, "mcpServers", UnityCopilotPluginEditor.TimeoutMs).ToString();
 
                 SaveChanges($"[AI Game Developer] Timeout Changed: {newValue} ms");
                 UnityBuildAndConnect();

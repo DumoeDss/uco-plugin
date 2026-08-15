@@ -14,21 +14,16 @@ using System.Linq;
 using System.Threading;
 using com.IvanMurzak.McpPlugin.Common.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.AtelierAI.Unity.Copilot.Editor.UI.Controls;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using TransportMethod = com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server.TransportMethod;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     public partial class MainWindowEditor
     {
-        internal static bool IsMcpServerControlEnabled(TransportMethod transport) =>
-            transport != TransportMethod.stdio;
-
         private void SetupAiAgentSection(VisualElement root)
         {
             UnityCopilotPluginEditor.PluginProperty
@@ -81,51 +76,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 .Subscribe(_ => FetchAiAgentData())
                 .AddTo(_disposables);
 
-            var containerMcpServer = root.Q<VisualElement>("mcpServerStatusControl") ?? throw new InvalidOperationException("mcpServerStatusControl element not found.");
             var btnStartStopMcpServer = root.Q<Button>("btnStartStopServer") ?? throw new InvalidOperationException("MCP Server start/stop button not found.");
-
-            var segmentTransport = root.Q<VisualElement>("segmentTransport") ?? throw new InvalidOperationException("segmentTransport element not found.");
-            var transportControl = new SegmentedControl("stdio", "http");
-            transportControl.SetTooltips(Tooltip_ToggleStdio, Tooltip_ToggleHttp);
-            segmentTransport.Add(transportControl);
-
-            var labelTransport = root.Q<Label>("labelTransport");
-            if (labelTransport != null) labelTransport.tooltip = Tooltip_LabelTransport;
-
-            // Initialize: index 0 = stdio, index 1 = http
-            transportControl.SetValueWithoutNotify(UnityCopilotPluginEditor.TransportMethod == TransportMethod.stdio ? 0 : 1);
-
-            void UpdateMcpServerState()
-            {
-                containerMcpServer.SetEnabled(IsMcpServerControlEnabled(UnityCopilotPluginEditor.TransportMethod));
-                btnStartStopMcpServer.tooltip = IsMcpServerControlEnabled(UnityCopilotPluginEditor.TransportMethod)
-                    ? "Start or stop the local MCP server."
-                    : "Local MCP server is disabled in STDIO mode. AI agent will launch its own MCP server instance.";
-            }
-            UpdateMcpServerState();
-
-            transportControl.RegisterCallback<ChangeEvent<int>>(evt =>
-            {
-                if (evt.newValue == 0)
-                {
-                    UnityCopilotPluginEditor.TransportMethod = TransportMethod.stdio;
-                    UnityCopilotPluginEditor.Instance.Save();
-
-                    // Stop MCP server if running to switch to stdio mode
-                    if (CopilotServerManager.IsRunning)
-                    {
-                        UnityCopilotPluginEditor.KeepServerRunning = false;
-                        UnityCopilotPluginEditor.Instance.Save();
-                        CopilotServerManager.StopServer();
-                    }
-                }
-                else
-                {
-                    UnityCopilotPluginEditor.TransportMethod = TransportMethod.streamableHttp;
-                    UnityCopilotPluginEditor.Instance.Save();
-                }
-                UpdateMcpServerState();
-            });
+            btnStartStopMcpServer.tooltip = "Start or stop the local MCP server.";
         }
 
         private void FetchAiAgentData(int retryCount = 3, int retryDelayMs = 3000)

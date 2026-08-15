@@ -1,6 +1,6 @@
 # AI Agent Configurators
 
-Auto-configuration system generating MCP config files for AI clients. Each configurator has platform-specific and transport variants.
+Auto-configuration system generating MCP config files for AI clients. Each configurator has platform-specific variants — all of them emit the same single HTTP (REST + WebSocket) server URL.
 
 **Key patterns**:
 - Fluent builder: `.SetProperty(key, value, requiredForConfiguration, comparison).SetPropertyToRemove(key)`
