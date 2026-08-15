@@ -117,6 +117,17 @@ namespace com.AtelierAI.Unity.Copilot
             public AuthOption AuthOption { get; set; } = AuthOption.none;
             public ConnectionMode ConnectionMode { get; set; } = ConnectionMode.Cloud;
 
+            /// <summary>
+            /// Optional path to the Node.js MCP server entry script (cocli's bin/server.mjs).
+            /// Absolute path, or relative to the Unity project root. When null/empty the
+            /// plugin auto-discovers the server (the Unity project's node_modules, then the
+            /// npm global installation). When set, the path must exist or the plugin refuses
+            /// to launch the server (it will still connect to an already-running one).
+            /// Serialized as "nodeServerPath" in JSON.
+            /// </summary>
+            [JsonPropertyName("nodeServerPath")]
+            public string? NodeServerPath { get; set; }
+
             // ── Safe-defaults (fail-closed) network gates ─────────────────────────────────
             //
             // These three flags collectively implement a fail-closed posture for newly-created
@@ -181,6 +192,7 @@ namespace com.AtelierAI.Unity.Copilot
                 TransportMethod = TransportMethod.streamableHttp;
                 AuthOption = AuthOption.none;
                 ConnectionMode = ConnectionMode.Cloud;
+                NodeServerPath = null;
                 CloudToken = null;
                 LogLevel = LogLevel.Warning;
                 TimeoutMs = Consts.Hub.DefaultTimeoutMs;

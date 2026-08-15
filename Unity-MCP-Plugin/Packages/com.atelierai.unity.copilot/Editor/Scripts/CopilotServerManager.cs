@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -13,22 +13,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
-using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.AtelierAI.Unity.Copilot.Editor.UI;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
 using UnityEditor;
-using UnityEngine;
-using McpConsts = com.IvanMurzak.McpPlugin.Common.Consts;
 
 namespace com.AtelierAI.Unity.Copilot.Editor
 {
@@ -46,14 +40,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor
     }
 
     /// <summary>
-    /// Manages the server binary and process lifecycle independently from UI.
+    /// Manages the Node.js MCP server (cocli) process lifecycle independently from UI.
+    /// The server entry script is discovered from the plugin config (nodeServerPath),
+    /// the Unity project's node_modules, or the npm global installation — the plugin no
+    /// longer stages or downloads a server binary into Library/.
     /// Provides cross-platform support for Windows, macOS, and Linux.
     /// </summary>
     [InitializeOnLoad]
     public static class CopilotServerManager
     {
         const string ProcessIdKey = "CopilotServerManager_ProcessId";
-        const string McpServerProcessName = "unity-mcp-server";
+
+        // The Node.js MCP server runs as a "node" process.
+        const string NodeProcessName = "node";
 
         static readonly ILogger _logger = UnityLoggerFactory.LoggerFactory.CreateLogger(typeof(CopilotServerManager));
         static readonly ReactiveProperty<CopilotServerStatus> _serverStatus = new(CopilotServerStatus.Stopped);
@@ -74,311 +73,142 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             // Check if server process is still running (e.g., after domain reload)
             EditorApplication.update += CheckExistingProcess;
 
-            DownloadServerBinaryIfNeeded()
-                .ContinueWith(task =>
-                {
-                    if (task.IsFaulted || !task.Result)
-                        return; // Failed to download binaries, skip auto-start
-
-                    if (!task.Result)
-                        return; // No binaries available (either in CI or failed to download), skip auto-start
-
-                    if (EnvironmentUtils.IsCi())
-                        return; // Skip auto-start in CI environment
-
-                    EditorApplication.update += StartServerIfNeeded;
-                });
-        }
-
-        #region Binary Metadata
-
-        public const string ExecutableName = "unity-mcp-server";
-
-        public static string McpServerName
-            => string.IsNullOrEmpty(Application.productName)
-                ? "Unity Unknown"
-                : $"Unity {Application.productName}";
-
-        public static string OperationSystem =>
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" :
-            RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" :
-            RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
-            "unknown";
-
-        public static string CpuArch => RuntimeInformation.ProcessArchitecture switch
-        {
-            Architecture.X86 => "x86",
-            Architecture.X64 => "x64",
-            Architecture.Arm => "arm",
-            Architecture.Arm64 => "arm64",
-            _ => "unknown"
-        };
-
-        public static string PlatformName => $"{OperationSystem}-{CpuArch}";
-
-        // Server executable file name
-        // Sample (mac linux): unity-mcp-server
-        // Sample   (windows): unity-mcp-server.exe
-        public static string ExecutableFullName
-            => ExecutableName.ToLowerInvariant() + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? ".exe"
-                : string.Empty);
-
-        // Full path to the server executable
-        // Sample (mac linux): ../Library/mcp-server
-        // Sample   (windows): ../Library/mcp-server
-        public static string ExecutableFolderRootPath
-            => Path.GetFullPath(
-                Path.Combine(
-                    Application.dataPath,
-                    "../Library",
-                    "mcp-server"
-                )
-            );
-
-        // Full path to the server executable
-        // Sample (mac linux): ../Library/mcp-server/osx-x64
-        // Sample   (windows): ../Library/mcp-server/win-x64
-        public static string ExecutableFolderPath
-            => Path.GetFullPath(
-                Path.Combine(
-                    ExecutableFolderRootPath,
-                    PlatformName
-                )
-            );
-
-        // Full path to the server executable
-        // Sample (mac linux): ../Library/mcp-server/osx-x64/unity-mcp-server
-        // Sample   (windows): ../Library/mcp-server/win-x64/unity-mcp-server.exe
-        public static string ExecutableFullPath
-            => Path.GetFullPath(
-                Path.Combine(
-                    ExecutableFolderPath,
-                    ExecutableFullName
-                )
-            );
-
-        public static string VersionFullPath
-            => Path.GetFullPath(
-                Path.Combine(
-                    ExecutableFolderPath,
-                    "version"
-                )
-            );
-
-        public static string ExecutableZipUrl
-            => $"https://github.com/IvanMurzak/Unity-MCP/releases/download/{UnityCopilotPlugin.Version}/{ExecutableName.ToLowerInvariant()}-{PlatformName}.zip";
-
-        #endregion // Binary Metadata
-
-        #region Binary Lifecycle
-
-        public static bool IsBinaryExists()
-        {
-            if (string.IsNullOrEmpty(ExecutableFullPath))
-                return false;
-
-            return File.Exists(ExecutableFullPath);
-        }
-
-        public static string? GetBinaryVersion()
-        {
-            if (!File.Exists(VersionFullPath))
-                return null;
-
-            return File.ReadAllText(VersionFullPath);
-        }
-
-        public static bool IsVersionMatches()
-        {
-            var binaryVersion = GetBinaryVersion();
-            if (binaryVersion == null)
-                return false;
-
-            return binaryVersion == UnityCopilotPlugin.Version;
-        }
-
-        public static bool DeleteBinaryFolderIfExists()
-        {
-            if (Directory.Exists(ExecutableFolderRootPath))
-            {
-                // Intentional infinite loop:
-                // - Deletion can fail while the server binaries are in use (e.g., server still running).
-                // - On the first failure, we automatically attempt to stop the server process via CopilotServerManager.
-                // - The retry/exit behavior is fully controlled by the user via the dialog below.
-                // - We do not impose a fixed maximum retry count so the user can take as long as needed
-                //   to shut down their AI agent and release file locks before trying again.
-                // - The loop terminates when the user selects "Skip", at which point the exception is rethrown.
-                var silentRetries = 0;
-                while (true)
-                {
-                    try
-                    {
-                        Directory.Delete(ExecutableFolderRootPath, recursive: true);
-                        UnityEngine.Debug.Log($"Deleted existing server folder: <color=orange>{ExecutableFolderRootPath}</color>");
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        // First failure: try to stop the running server process that may be locking files
-                        if (silentRetries == 0)
-                        {
-                            silentRetries++;
-                            UnityEngine.Debug.Log($"Failed to delete server folder. Attempting to stop the server process...");
-                            try
-                            {
-                                if (!StopServer(force: true))
-                                {
-                                    UnityEngine.Debug.LogWarning($"No running server process found to stop.");
-                                }
-                                else
-                                {
-                                    UnityEngine.Debug.Log($"Stop signal sent to server process. Retrying deletion...");
-                                    Thread.Sleep(2000); // Wait a moment for the process to exit and release file locks
-                                }
-                            }
-                            catch (Exception stopEx)
-                            {
-                                UnityEngine.Debug.LogWarning($"Failed to stop server: {stopEx.Message}");
-                            }
-                            continue; // Retry deletion after stopping the server
-                        }
-
-                        // Second failure: retry once more silently (OS may need time to release file locks)
-                        if (silentRetries <= 1)
-                        {
-                            silentRetries++;
-                            continue;
-                        }
-
-                        var retry = EditorUtility.DisplayDialog(
-                            title: "Failed to Delete Server Binaries",
-                            message: $"The current unity-mcp-server binaries can't be deleted. " +
-                                $"This is very likely because the server is currently running.\n\n" +
-                                $"Please close any connected AI agent to make sure the server is not running, then click \"Retry\".\n\n" +
-                                $"Path: {ExecutableFolderRootPath}\n\n" +
-                                $"Error: {ex.Message}",
-                            ok: "Retry",
-                            cancel: "Skip"
-                        );
-
-                        if (!retry)
-                        {
-                            throw;
-                        }
-                        // If retry is true, loop continues and tries again
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static Task<bool> DownloadServerBinaryIfNeeded()
-        {
             if (EnvironmentUtils.IsCi())
-            {
-                // Ignore in CI environment
-                UnityEngine.Debug.Log($"Ignore server downloading in CI environment");
-                return Task.FromResult(false);
-            }
+                return; // Skip auto-start in CI environment
 
-            if (IsBinaryExists() && IsVersionMatches())
-                return Task.FromResult(true);
-
-            return DownloadAndUnpackBinary();
+            EditorApplication.update += StartServerIfNeeded;
         }
 
-        public static async Task<bool> DownloadAndUnpackBinary()
+        #region Node Server Discovery
+
+        /// <summary>
+        /// Name of the npm package that ships the Node.js MCP server.
+        /// </summary>
+        public const string NodeServerPackageName = "cocli";
+
+        /// <summary>
+        /// Path of the server entry script inside the <see cref="NodeServerPackageName"/> package.
+        /// </summary>
+        public const string NodeServerEntryRelativePath = "bin/server.mjs";
+
+        /// <summary>
+        /// Resolves the Node.js MCP server entry script (cocli's bin/server.mjs) to launch.
+        /// Lookup order:
+        ///  1. Explicit <c>nodeServerPath</c> from the plugin config (absolute, or relative
+        ///     to the Unity project root) — when set, it must exist or launching is refused.
+        ///  2. cocli installed in the Unity project's node_modules.
+        ///  3. cocli installed globally via npm.
+        /// Returns null when nothing is found — the caller must not launch in that case,
+        /// but the plugin can still connect to an already-running server.
+        /// </summary>
+        public static string? ResolveNodeServerEntry()
         {
-            UnityEngine.Debug.Log($"Downloading server binary from: <color=yellow>{ExecutableZipUrl}</color>");
-
-            try
+            // 1) Explicit path from the config
+            var configured = UnityCopilotPluginEditor.NodeServerPath;
+            if (!string.IsNullOrWhiteSpace(configured))
             {
-                var previousKeepServerRunning = UnityCopilotPluginEditor.KeepServerRunning;
+                var path = Path.GetFullPath(Path.IsPathRooted(configured)
+                    ? configured
+                    : Path.Combine(UnityCopilotPluginEditor.ProjectRootPath, configured));
 
-                // Clear existed server folder
-                DeleteBinaryFolderIfExists();
+                if (File.Exists(path))
+                    return path;
 
-                // Create folder if needed
-                if (!Directory.Exists(ExecutableFolderPath))
-                    Directory.CreateDirectory(ExecutableFolderPath);
-
-                var archiveFilePath = Path.GetFullPath($"{Application.temporaryCachePath}/{ExecutableName.ToLowerInvariant()}-{PlatformName}-{UnityCopilotPlugin.Version}.zip");
-                UnityEngine.Debug.Log($"Temporary archive file path: <color=yellow>{archiveFilePath}</color>");
-
-                // Download the zip file from the GitHub release notes
-                using (var client = new WebClient())
-                {
-                    await client.DownloadFileTaskAsync(ExecutableZipUrl, archiveFilePath);
-                }
-
-                // Unpack zip archive
-                UnityEngine.Debug.Log($"Unpacking server binary to: <color=yellow>{ExecutableFolderPath}</color>");
-                ZipFile.ExtractToDirectory(archiveFilePath, ExecutableFolderRootPath, overwriteFiles: true);
-
-                if (!File.Exists(ExecutableFullPath))
-                {
-                    UnityEngine.Debug.LogError($"Failed to unpack server binary to: {ExecutableFolderRootPath}");
-                    UnityEngine.Debug.LogError($"Binary file not found at: {ExecutableFullPath}");
-                    return false;
-                }
-
-                UnityEngine.Debug.Log($"Downloaded and unpacked server binary to: <color=green>{ExecutableFullPath}</color>");
-
-                // Set executable permission on macOS and Linux
-                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    UnityEngine.Debug.Log($"Setting executable permission for: <color=green>{ExecutableFullPath}</color>");
-                    UnixUtils.Set0755(ExecutableFullPath);
-                }
-
-                File.WriteAllText(VersionFullPath, UnityCopilotPlugin.Version);
-
-                UnityEngine.Debug.Log($"server version file created at: <color=green><b>COMPLETED</b></color>");
-
-                var binaryExists = IsBinaryExists();
-                var versionMatches = IsVersionMatches();
-                var success = binaryExists && versionMatches;
-
-                if (success && previousKeepServerRunning)
-                {
-                    if (IsAutoStartAllowedForMode(UnityCopilotPluginEditor.ConnectionMode))
-                    {
-                        if (!StartServer())
-                            UnityEngine.Debug.LogError($"Failed to start server after updating binary. Please try starting the server manually.");
-                    }
-                    else
-                    {
-                        _logger.LogDebug("DownloadAndUnpackBinary: Cloud mode active, skipping local server auto-start after binary update");
-                    }
-                }
-
-                NotificationPopupWindow.Show(
-                    windowTitle: success
-                        ? "Updated"
-                        : "Update Failed",
-                    height: 235,
-                    minHeight: 235,
-                    title: success
-                        ? "Server Binary Updated"
-                        : "Server Binary Update Failed",
-                    message: success
-                        ? "The server binary was successfully downloaded and updated. \n\n" +
-                            $"Version: {GetBinaryVersion()}\n\n" +
-                            "You may need to restart your AI agent to reconnect to the updated server."
-                        : "Failed to download and update the server binary. Please check the logs for details.");
-
-                return success;
+                _logger.LogError(
+                    "nodeServerPath is set in the plugin config but does not exist: {path}. " +
+                    "Fix the path or clear it to let the plugin auto-discover the server.",
+                    path);
+                return null;
             }
-            catch (Exception ex)
+
+            // 2) cocli installed in the Unity project
+            var projectLocal = Path.GetFullPath(Path.Combine(
+                UnityCopilotPluginEditor.ProjectRootPath,
+                "node_modules",
+                NodeServerPackageName,
+                NodeServerEntryRelativePath));
+            if (File.Exists(projectLocal))
+                return projectLocal;
+
+            // 3) cocli installed globally via npm
+            foreach (var globalRoot in GetNpmGlobalRoots())
             {
-                UnityEngine.Debug.LogException(ex);
-                UnityEngine.Debug.LogError($"Failed to download and unpack server binary: {ex.Message}");
-                return false;
+                try
+                {
+                    var globalPath = Path.Combine(globalRoot, NodeServerPackageName, NodeServerEntryRelativePath);
+                    if (File.Exists(globalPath))
+                        return Path.GetFullPath(globalPath);
+                }
+                catch
+                {
+                    // Inaccessible candidate — skip it.
+                }
             }
+
+            return null;
         }
 
-        #endregion // Binary Lifecycle
+        /// <summary>
+        /// Standard npm global installation roots (the <c>npm root -g</c> equivalents).
+        /// </summary>
+        static IEnumerable<string> GetNpmGlobalRoots()
+        {
+            // Windows: %AppData%\npm\node_modules
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (!string.IsNullOrEmpty(appData))
+                yield return Path.Combine(appData, "npm", "node_modules");
+
+            // Unix: default prefixes for system-wide npm installs
+            yield return "/usr/local/lib/node_modules";
+            yield return "/usr/lib/node_modules";
+        }
+
+        /// <summary>
+        /// Resolves the Node.js runtime executable. Probes PATH explicitly because
+        /// Process.Start with UseShellExecute=false does not reliably search PATH for
+        /// the application name on every runtime Unity ships with. Falls back to the
+        /// bare name so runtimes that do search PATH still work.
+        /// </summary>
+        public static string ResolveNodeExecutable()
+        {
+            var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "node.exe" : "node";
+
+            var candidates = new List<string>();
+            var pathVariable = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            var separator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ';' : ':';
+            foreach (var directory in pathVariable.Split(separator, StringSplitOptions.RemoveEmptyEntries))
+            {
+                try { candidates.Add(Path.Combine(directory.Trim().Trim('"'), fileName)); }
+                catch { /* Malformed PATH entry — skip it. */ }
+            }
+
+            // Common install locations, in case node is not on the editor's PATH
+            // (e.g. Unity launched from a GUI session with a stale environment).
+            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            if (!string.IsNullOrEmpty(programFiles))
+                candidates.Add(Path.Combine(programFiles, "nodejs", fileName));
+            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            if (!string.IsNullOrEmpty(programFilesX86))
+                candidates.Add(Path.Combine(programFilesX86, "nodejs", fileName));
+
+            foreach (var candidate in candidates)
+            {
+                try
+                {
+                    if (File.Exists(candidate))
+                        return candidate;
+                }
+                catch
+                {
+                    // Inaccessible candidate — skip it.
+                }
+            }
+
+            // Fall back to the bare name and let the OS resolve it.
+            return fileName;
+        }
+
+        #endregion // Node Server Discovery
 
         #region Client Configuration
 
@@ -389,8 +219,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         ///   "mcpServers": {
         ///     "Unity ProjectName": {
         ///       "type": "...",    // optional, only if provided
-        ///       "command": "path/to/unity-mcp-server",
-        ///       "args": ["port=...", "plugin-timeout=...", "client-transport=stdio" /*, "token=..." if auth required */]
+        ///       "command": "node",
+        ///       "args": ["path/to/bin/server.mjs", "--port", "...", "--plugin-timeout-ms", "...", "--authorization", "..." /*, "--token", "..." if auth required */]
         ///     }
         ///   }
         /// }
@@ -410,19 +240,32 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             if (type != null)
                 serverConfig["type"] = type;
 
-            serverConfig["command"] = ExecutableFullPath.Replace('\\', '/');
+            // The AI agent launches the Node.js MCP server via the node runtime.
+            // When the entry script cannot be resolved right now, fall back to the
+            // documented project-local install location so the generated config is
+            // still a valid, copy-pasteable starting point.
+            var serverEntry = ResolveNodeServerEntry()
+                ?? Path.Combine("node_modules", NodeServerPackageName, NodeServerEntryRelativePath);
+
+            serverConfig["command"] = ResolveNodeExecutable().Replace('\\', '/');
 
             var args = new JsonArray
             {
-                $"{Args.Port}={port}",
-                $"{Args.PluginTimeout}={timeoutMs}",
-                $"{Args.ClientTransportMethod}={TransportMethod.stdio}",
-                $"{Args.Authorization}={UnityCopilotPluginEditor.AuthOption}"
+                serverEntry.Replace('\\', '/'),
+                "--port",
+                port.ToString(),
+                "--plugin-timeout-ms",
+                timeoutMs.ToString(),
+                "--authorization",
+                UnityCopilotPluginEditor.AuthOption.ToString()
             };
 
             var authRequired = UnityCopilotPluginEditor.AuthOption == AuthOption.required;
             if (authRequired && !string.IsNullOrEmpty(UnityCopilotPluginEditor.Token))
-                args.Add($"{Args.Token}={UnityCopilotPluginEditor.Token}");
+            {
+                args.Add("--token");
+                args.Add(UnityCopilotPluginEditor.Token);
+            }
 
             serverConfig["args"] = args;
 
@@ -513,40 +356,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             return result;
         }
 
-        public static string DockerSetupRunCommand()
-        {
-            var dockerPortMapping = $"-p {UnityCopilotPluginEditor.Port}:{UnityCopilotPluginEditor.Port}";
-            var dockerEnvVars =
-                $"-e {Env.ClientTransportMethod}={TransportMethod.streamableHttp} " +
-                $"-e {Env.Port}={UnityCopilotPluginEditor.Port} " +
-                $"-e {Env.PluginTimeout}={UnityCopilotPluginEditor.TimeoutMs} " +
-                $"-e {Env.Authorization}={UnityCopilotPluginEditor.AuthOption}";
-
-            var authRequired = UnityCopilotPluginEditor.AuthOption == AuthOption.required;
-            var token = UnityCopilotPluginEditor.Token;
-            if (authRequired && !string.IsNullOrEmpty(token))
-                dockerEnvVars += $" -e {Env.Token}={token}";
-
-            var dockerContainer = $"--name unity-mcp-server-{UnityCopilotPluginEditor.Port}";
-            var dockerImage = $"ivanmurzakdev/unity-mcp-server:{UnityCopilotPlugin.Version}";
-            return $"docker run -d {dockerPortMapping} {dockerEnvVars} {dockerContainer} {dockerImage}";
-        }
-
-        public static string DockerRunCommand()
-        {
-            return $"docker start unity-mcp-server-{UnityCopilotPluginEditor.Port}";
-        }
-
-        public static string DockerStopCommand()
-        {
-            return $"docker stop unity-mcp-server-{UnityCopilotPluginEditor.Port}";
-        }
-
-        public static string DockerRemoveCommand()
-        {
-            return $"docker rm unity-mcp-server-{UnityCopilotPluginEditor.Port}";
-        }
-
         #endregion // Client Configuration
 
         #region Process Lifecycle
@@ -565,7 +374,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     if (process != null && !process.HasExited)
                     {
                         var processName = process.ProcessName.ToLowerInvariant();
-                        if (processName.Contains(McpServerProcessName))
+                        // The server runs as a "node" process, and PIDs get reused, so also
+                        // verify the process still owns this project's port before
+                        // re-attaching — otherwise we might adopt an unrelated node process
+                        // (MCP Inspector, dev server, ...) that recycled our PID.
+                        if (processName.Contains(NodeProcessName) &&
+                            GetPidListeningOnPort(UnityCopilotPluginEditor.Port) == savedPid)
                         {
                             _serverProcess = process;
                             _serverStatus.Value = CopilotServerStatus.Running;
@@ -608,18 +422,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     return false;
                 }
 
-                if (!IsBinaryExists())
-                {
-                    _logger.LogError("server binary not found at: {path}", ExecutableFullPath);
-                    return false;
-                }
-
                 // ── Safe-defaults (fail-closed) gate ──────────────────────────────────────
                 // Refuse to start the local server when the current configuration would
                 // expose it to the network without explicit opt-in. The gate is consulted
-                // BEFORE we mutate _serverStatus / kill orphans / spawn the process so a
-                // reject leaves the manager in a fully clean state. See SafeDefaultsGuard
-                // for the full policy.
+                // BEFORE we mutate _serverStatus / spawn the process so a reject leaves the
+                // manager in a fully clean state. See SafeDefaultsGuard for the full policy.
                 if (SafeDefaultsGuard.ShouldRejectStart(out var rejectReason))
                 {
                     _logger.LogError("Refusing to start server: {reason}", rejectReason);
@@ -639,42 +446,57 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     return false;
                 }
 
-                _serverStatus.Value = CopilotServerStatus.Starting;
+                // If something already listens on this project's port, treat it as an
+                // already-running server (e.g. started externally by the user or a
+                // previous editor session). Do not launch a second instance — just let
+                // the plugin's connect flow attach to it.
+                var ownPid = -1;
+                try { ownPid = _serverProcess?.Id ?? -1; } catch { /* process gone */ }
+                var listeningPid = GetPidListeningOnPort(UnityCopilotPluginEditor.Port);
+                if (listeningPid > 0 && listeningPid != ownPid)
+                {
+                    _logger.LogInformation(
+                        "A server is already listening on port {port} (PID: {pid}) — skipping local launch, the plugin will connect to it",
+                        UnityCopilotPluginEditor.Port, listeningPid);
+                    return true;
+                }
 
-                // Kill any orphaned server processes to free the port
-                KillOrphanedServerProcesses();
+                var serverEntry = ResolveNodeServerEntry();
+                if (serverEntry == null)
+                {
+                    _logger.LogError(
+                        "Node.js MCP server entry not found. Install cocli (npm i -g cocli), or install it into the " +
+                        "Unity project (npm i cocli), or set 'nodeServerPath' in '{config}' to the absolute path of " +
+                        "cocli's bin/server.mjs. The plugin will still connect to an already-running server.",
+                        UnityCopilotPluginEditor.AssetsFilePath);
+                    return false;
+                }
+
+                _serverStatus.Value = CopilotServerStatus.Starting;
 
                 try
                 {
-                    var executablePath = ExecutableFullPath;
-                    var argumentList = BuildArgumentList();
+                    var nodeExecutable = ResolveNodeExecutable();
+                    var argumentList = BuildArgumentList(serverEntry);
 
-                    _logger.LogInformation("Starting server: {path} {args}", executablePath, string.Join(" ", argumentList));
+                    _logger.LogInformation("Starting server: {path} {args}", nodeExecutable, string.Join(" ", argumentList));
 
                     var startInfo = new ProcessStartInfo
                     {
-                        FileName = executablePath,
+                        FileName = nodeExecutable,
                         UseShellExecute = false,
                         CreateNoWindow = true,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        WorkingDirectory = ExecutableFolderPath
+                        WorkingDirectory = UnityCopilotPluginEditor.ProjectRootPath
                     };
 
                     // Use ArgumentList (Collection<string>) rather than the legacy single
                     // Arguments string so that any argument containing spaces or quote
                     // characters is escaped correctly by the runtime. Required because the
-                    // working directory and executable path may live under a project path
-                    // that contains spaces, and a future argument could reference such a
-                    // path.
+                    // server entry path may live under a project path that contains spaces.
                     foreach (var arg in argumentList)
                         startInfo.ArgumentList.Add(arg);
-
-                    // Set executable permissions on Unix-like systems
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        UnixUtils.Set0755(executablePath);
-                    }
 
                     _serverProcess = new Process
                     {
@@ -879,78 +701,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Kills an orphaned unity-mcp-server process that is occupying this project's port.
-        /// Only targets the specific process listening on <see cref="UnityCopilotPluginEditor.Port"/>.
-        /// If the port owner cannot be determined, does nothing (fails safe).
-        /// </summary>
-        static void KillOrphanedServerProcesses()
-        {
-            try
-            {
-                var port = UnityCopilotPluginEditor.Port;
-                var currentPid = _serverProcess?.Id ?? -1;
-
-                var listeningPid = GetPidListeningOnPort(port);
-
-                if (listeningPid <= 0)
-                {
-                    _logger.LogDebug("No process found listening on port {port}, port is available", port);
-                    return;
-                }
-
-                if (listeningPid == currentPid)
-                {
-                    _logger.LogDebug("Our own server process (PID: {pid}) is listening on port {port}", listeningPid, port);
-                    return;
-                }
-
-                try
-                {
-                    using var process = Process.GetProcessById(listeningPid);
-                    if (process == null || process.HasExited)
-                    {
-                        _logger.LogDebug("Process (PID: {pid}) on port {port} has already exited", listeningPid, port);
-                        return;
-                    }
-
-                    var processName = process.ProcessName.ToLowerInvariant();
-                    if (!processName.Contains(McpServerProcessName))
-                    {
-                        _logger.LogWarning(
-                            "Port {port} is occupied by a foreign process '{processName}' (PID: {pid}). " +
-                            "The server may fail to start. Please free the port or change the port in settings.",
-                            port, process.ProcessName, listeningPid);
-                        return;
-                    }
-
-                    _logger.LogWarning("Killing orphaned server process (PID: {pid}) occupying port {port}", listeningPid, port);
-                    process.Kill();
-
-                    if (!process.WaitForExit(3000))
-                        _logger.LogWarning("Orphaned server process (PID: {pid}) did not exit within 3 seconds after kill", listeningPid);
-                    else
-                        _logger.LogDebug("Orphaned server process (PID: {pid}) exited successfully", listeningPid);
-                }
-                catch (ArgumentException)
-                {
-                    _logger.LogDebug("Process (PID: {pid}) on port {port} no longer exists", listeningPid, port);
-                }
-                catch (InvalidOperationException)
-                {
-                    _logger.LogDebug("Process (PID: {pid}) on port {port} exited before it could be terminated", listeningPid, port);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogDebug("Failed to kill orphaned process (PID: {pid}) on port {port}: {message}", listeningPid, port, ex.Message);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogDebug("Error in orphaned server process cleanup: {message}", ex.Message);
-            }
-        }
-
-        /// <summary>
         /// Returns the PID of the process listening on the specified TCP port,
         /// or -1 if no process is found or the lookup fails.
         /// </summary>
@@ -1021,43 +771,36 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Builds the argument list as a structured collection so each entry can be passed
-        /// to <see cref="ProcessStartInfo.ArgumentList"/> verbatim. This is the preferred
-        /// shape for spawning the server because the runtime escapes each entry
-        /// individually — safe for values that contain spaces, quotes, or other characters
-        /// the shell would otherwise interpret. Use <see cref="BuildArguments"/> only for
-        /// human-readable logging.
+        /// Builds the argument list for the Node.js MCP server as a structured collection
+        /// so each entry can be passed to <see cref="ProcessStartInfo.ArgumentList"/>
+        /// verbatim. The runtime escapes each entry individually — safe for values that
+        /// contain spaces, quotes, or other characters the shell would otherwise interpret.
         /// </summary>
-        static IReadOnlyList<string> BuildArgumentList()
+        static IReadOnlyList<string> BuildArgumentList(string serverEntry)
         {
             var port = UnityCopilotPluginEditor.Port;
             var timeout = UnityCopilotPluginEditor.TimeoutMs;
-            var transportMethod = TransportMethod.streamableHttp; // always must be streamableHttp for launching the server.
             var token = UnityCopilotPluginEditor.Token;
             var authOption = UnityCopilotPluginEditor.AuthOption;
 
-            var args = new List<string>(5)
+            // The plugin always talks to the server over REST + WebSocket
+            // (streamable HTTP transport), so no client-transport flag is needed.
+            var args = new List<string>(9)
             {
-                $"{Args.Port}={port}",
-                $"{Args.PluginTimeout}={timeout}",
-                $"{Args.ClientTransportMethod}={transportMethod}",
-                $"{Args.Authorization}={authOption}"
+                serverEntry,
+                "--port", port.ToString(),
+                "--plugin-timeout-ms", timeout.ToString(),
+                "--authorization", authOption.ToString()
             };
 
             if (authOption == AuthOption.required && !string.IsNullOrEmpty(token))
-                args.Add($"{Args.Token}={token}");
+            {
+                args.Add("--token");
+                args.Add(token!);
+            }
 
             return args;
         }
-
-        /// <summary>
-        /// Returns the same arguments as <see cref="BuildArgumentList"/> joined with single
-        /// spaces. Kept for logging and any external diagnostic display. Do not feed this
-        /// string into <see cref="ProcessStartInfo.Arguments"/> when the values may
-        /// contain spaces — use <see cref="BuildArgumentList"/> with
-        /// <see cref="ProcessStartInfo.ArgumentList"/> instead.
-        /// </summary>
-        static string BuildArguments() => string.Join(" ", BuildArgumentList());
 
         /// <summary>
         /// Schedules a verification check 5 seconds after startup to detect early crashes.
@@ -1113,7 +856,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Checks if a process with the given ID is still running and is the server.
+        /// Checks if a process with the given ID is still running and is the Node server.
         /// </summary>
         static bool IsProcessRunning(int processId)
         {
@@ -1124,7 +867,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     return false;
 
                 var processName = process.ProcessName.ToLowerInvariant();
-                return processName.Contains(McpServerProcessName);
+                return processName.Contains(NodeProcessName);
             }
             catch (ArgumentException)
             {

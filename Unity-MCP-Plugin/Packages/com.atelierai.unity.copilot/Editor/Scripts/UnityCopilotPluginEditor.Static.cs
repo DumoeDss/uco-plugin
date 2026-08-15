@@ -184,6 +184,15 @@ namespace com.AtelierAI.Unity.Copilot
                 NotifyChanged(Instance.unityConnectionConfig);
             }
         }
+        public static string? NodeServerPath
+        {
+            get => Instance.unityConnectionConfig.NodeServerPath;
+            set
+            {
+                Instance.unityConnectionConfig.NodeServerPath = value;
+                NotifyChanged(Instance.unityConnectionConfig);
+            }
+        }
 
         // ── Safe-defaults (fail-closed) network gates ─────────────────────────────────
         // Static facades over UnityConnectionConfig.{AllowLanBind, AllowInsecureRemoteHttp,

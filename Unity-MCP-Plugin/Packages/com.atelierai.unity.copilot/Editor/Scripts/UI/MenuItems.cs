@@ -10,8 +10,6 @@
 
 #nullable enable
 #if UNITY_EDITOR
-using System.IO;
-using System.Threading.Tasks;
 using com.AtelierAI.Unity.Copilot.Editor.Branding;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -45,42 +43,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             return true;
         }
 
-        [MenuItem("Tools/AI Game Developer/Server/Download Binaries", priority = 1000)]
-        public static Task DownloadServer() => CopilotServerManager.DownloadAndUnpackBinary();
-
-        [MenuItem("Tools/AI Game Developer/Server/Delete Binaries", priority = 1001)]
-        public static void DeleteServer()
-        {
-            var result = CopilotServerManager.DeleteBinaryFolderIfExists();
-            if (result)
-            {
-                NotificationPopupWindow.Show(
-                    windowTitle: "Success",
-                    title: ProductInfo.NotifyBinariesDeletedTitle,
-                    message: "The server binaries were successfully deleted. You can download them again from the Tools menu.",
-                    width: 350,
-                    minWidth: 350,
-                    height: 200,
-                    minHeight: 200);
-            }
-            else
-            {
-                NotificationPopupWindow.Show(
-                    windowTitle: "Error",
-                    title: ProductInfo.NotifyBinariesNotFoundTitle,
-                    message: "No server binaries were found to delete. They may have already been deleted or were never downloaded.",
-                    width: 350,
-                    minWidth: 350,
-                    height: 200,
-                    minHeight: 200);
-            }
-        }
-
-        [MenuItem("Tools/AI Game Developer/Server/Open Logs", priority = 1002)]
-        public static void OpenServerLogs() => OpenFile(CopilotServerManager.ExecutableFolderPath + "/logs/server-log.txt");
-
-        [MenuItem("Tools/AI Game Developer/Server/Open Log Errors", priority = 1003)]
-        public static void OpenServerLogErrors() => OpenFile(CopilotServerManager.ExecutableFolderPath + "/logs/server-log-error.txt");
+        // NOTE: The old .NET server binary flow (Download Binaries / Delete Binaries /
+        // Open Logs / Open Log Errors) was removed together with the staged
+        // Library/mcp-server binary. The local server is now the Node.js MCP server
+        // (cocli) launched directly by CopilotServerManager; its stdout/stderr is
+        // surfaced in the Editor console.
 
         [MenuItem("Tools/AI Game Developer/Server/Launch MCP Inspector", priority = 1004)]
         public static void LaunchMcpInspector()
@@ -173,16 +140,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             UnityCopilotPluginEditor.ResetConfig();
             // Reload Domain to ensure all changes are picked up.
             EditorUtility.RequestScriptReload();
-        }
-
-        static void OpenFile(string path)
-        {
-            if (!File.Exists(path))
-            {
-                Debug.LogWarning($"File not found: {path}");
-                return;
-            }
-            Application.OpenURL(path);
         }
     }
 }

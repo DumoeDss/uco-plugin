@@ -20,7 +20,7 @@ Unity-MCP Plugin — Unity Editor/Runtime side of the MCP bridge. Attribute-base
 ## Find detail in
 
 - `docs/claude/startup-flow.md` — `[InitializeOnLoad]` 8-step init, deferred SignalR connect, CI detection
-- `docs/claude/transport.md` — Port hashing, server binary download, process lifecycle, domain reload
+- `docs/claude/transport.md` — Port hashing, Node.js server launch/discovery, process lifecycle, domain reload
 - `docs/claude/models.md` — `ObjectRef` hierarchy, supporting data types, `IsValid` validation
 - `docs/claude/auto-config.md` — AI agent configurators: fluent builder, duplicate detection, deprecated cleanup
 - `docs/claude/structure.md` — Directory layout and key classes (`UnityMcpPluginEditor`, `Runtime`, `Startup`)

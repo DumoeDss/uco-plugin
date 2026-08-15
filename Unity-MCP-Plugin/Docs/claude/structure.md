@@ -13,7 +13,7 @@ Packages/com.atelierai.unity.copilot/
 │   ├── Scripts/
 │   │   ├── UnityMcpPluginEditor.cs   # Editor singleton (+ .Static, .Build, .Config)
 │   │   ├── Startup.cs                # [InitializeOnLoad] entry (+ .Editor.cs)
-│   │   ├── McpServerManager.cs       # Server binary lifecycle
+│   │   ├── CopilotServerManager.cs    # Node.js server launch/lifecycle
 │   │   ├── API/
 │   │   │   ├── Tool/                 # MCP tools (partial classes, 1 op per file)
 │   │   │   ├── Prompt/               # MCP prompts
