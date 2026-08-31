@@ -3,8 +3,7 @@
     "rootNamespace": "com.AtelierAI.Unity.Copilot.Editor",
     "references": [
         "com.AtelierAI.Unity.Copilot.Runtime",
-        "com.AtelierAI.Unity.Copilot.DependencyResolver",
-        "Extensions.Unity.PlayerPrefsEx"
+        "com.AtelierAI.Unity.Copilot.DependencyResolver"
     ],
     "includePlatforms": [
         "Editor"

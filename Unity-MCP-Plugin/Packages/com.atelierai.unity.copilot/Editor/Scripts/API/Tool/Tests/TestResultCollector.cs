@@ -13,8 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
-using Extensions.Unity.PlayerPrefsEx;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 

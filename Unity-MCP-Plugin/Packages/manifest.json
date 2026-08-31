@@ -9,8 +9,7 @@
       "url": "https://package.openupm.com",
       "scopes": [
         "com.ivanmurzak",
-        "extensions.unity",
-        "extensions.unity.playerprefsex"
+        "extensions.unity"
       ]
     }
   ]

@@ -9,7 +9,7 @@
 */
 
 #nullable enable
-using Extensions.Unity.PlayerPrefsEx;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI

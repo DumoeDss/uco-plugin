@@ -1,9 +1,7 @@
 {
     "name": "com.AtelierAI.Unity.Copilot.Runtime",
     "rootNamespace": "com.AtelierAI.Unity.Copilot.Runtime",
-    "references": [
-        "Extensions.Unity.PlayerPrefsEx"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
