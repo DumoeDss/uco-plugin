@@ -2,6 +2,10 @@
   {
     "name": "assets-copy",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Copy",
     "description": "Copy assets at given paths and store them at new paths. Does AssetDatabase.Refresh() at the end. Use 'assets-find' tool to find assets before copying.",
     "inputSchema": {
@@ -100,6 +104,10 @@
   {
     "name": "assets-create-folder",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Create Folder",
     "description": "Creates a new folder in the specified parent folder. The parent folder string must start with the 'Assets' folder, and all folders within the parent folder string must already exist. For example, when specifying 'Assets/ParentFolder1/ParentFolder2/', the new folder will be created in 'ParentFolder2' only if ParentFolder1 and ParentFolder2 already exist. Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh() at the end. Returns the GUID of the newly created folder, if successful.",
     "inputSchema": {
@@ -171,6 +179,10 @@
   {
     "name": "assets-delete",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Delete",
     "description": "Delete the assets at paths from the project. Does AssetDatabase.Refresh() at the end. Use 'assets-find' tool to find assets before deleting.",
     "inputSchema": {
@@ -229,6 +241,10 @@
   {
     "name": "assets-find",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Find",
     "description": "Search the asset database using the search filter string. Allows you to search for Assets. The string argument can provide names, labels or types (classnames).",
     "inputSchema": {
@@ -308,6 +324,10 @@
   {
     "name": "assets-find-built-in",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Find (Built-in)",
     "description": "Search the built-in assets of the Unity Editor located in the built-in resources: Resources/unity_builtin_extra. Doesn't support GUIDs since built-in assets do not have them.",
     "inputSchema": {
@@ -384,6 +404,10 @@
   {
     "name": "assets-get-data",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Get Data",
     "description": "Get asset data from the asset file in the Unity project. It includes all serializable fields and properties of the asset. Use 'assets-find' tool to find asset before using this tool.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate to a subtree and/or filter by name regex / max depth / type via Reflector.View. These two parameters are mutually exclusive — supply at most one. When neither is supplied the full asset is serialized as before (backwards compatible).\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -522,6 +546,10 @@
   {
     "name": "assets-material-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Create Material",
     "description": "Create new material asset with default parameters. Creates folders recursively if they do not exist. Provide proper 'shaderName' - use 'assets-shader-list-all' tool to find available shaders.",
     "inputSchema": {
@@ -587,6 +615,10 @@
   {
     "name": "assets-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Modify",
     "description": "Modify asset file in the project. Use 'assets-get-data' tool first to inspect the asset structure before modifying. Not allowed to modify asset file in 'Packages/' folder. Please modify it in 'Assets/' folder.\n\nThree modification surfaces (use whichever fits the task):\n  1. 'content' — full SerializedMember override (legacy, backwards compatible).\n  2. 'pathPatches' — list of {path, value} pairs routed through Reflector.TryModifyAt.\n  3. 'jsonPatch' — JSON Merge Patch routed through Reflector.TryPatch.\nWhen more than one is supplied they run in this order: jsonPatch → pathPatches → content. At least one is required.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -727,6 +759,10 @@
   {
     "name": "assets-move",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Move",
     "description": "Move the assets at paths in the project. Should be used for asset rename. Does AssetDatabase.Refresh() at the end. Use 'assets-find' tool to find assets before moving.",
     "inputSchema": {
@@ -788,36 +824,12 @@
     }
   },
   {
-    "name": "assets-refresh",
-    "enabled": true,
-    "title": "Assets / Refresh",
-    "description": "Refreshes the AssetDatabase. Use it if any file was added or updated in the project outside of Unity API. Use it if need to force scripts recompilation when '.cs' file changed.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "options": {
-          "$ref": "#/$defs/UnityEditor.ImportAssetOptions",
-          "description": "Asset import options."
-        }
-      },
-      "$defs": {
-        "UnityEditor.ImportAssetOptions": {
-          "type": "string",
-          "enum": [
-            "Default",
-            "ForceUpdate",
-            "ForceSynchronousImport",
-            "ImportRecursive",
-            "DontDownloadFromCacheServer",
-            "ForceUncompressedImport"
-          ]
-        }
-      }
-    }
-  },
-  {
     "name": "assets-prefab-close",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Prefab / Close",
     "description": "Close currently opened prefab. Use it when you are in prefab editing mode in Unity Editor. Use 'assets-prefab-open' tool to open a prefab first.",
     "inputSchema": {
@@ -875,6 +887,10 @@
   {
     "name": "assets-prefab-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Prefab / Create",
     "description": "Create a prefab from a GameObject in the current active scene. The prefab will be saved in the project assets at the specified path. Creates folders recursively if they do not exist. If the source GameObject is already a prefab instance and 'connectGameObjectToPrefab' is true, a Prefab Variant is created automatically. To create a Prefab Variant from an existing prefab asset, provide 'sourcePrefabAssetPath' instead of 'gameObjectRef'. Use 'gameobject-find' tool to find the target GameObject first.",
     "inputSchema": {
@@ -985,6 +1001,10 @@
   {
     "name": "assets-prefab-instantiate",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Prefab / Instantiate",
     "description": "Instantiates prefab in the current active scene. Use 'assets-find' tool to find prefab assets in the project.",
     "inputSchema": {
@@ -1096,6 +1116,10 @@
   {
     "name": "assets-prefab-open",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Assets / Prefab / Open",
     "description": "Open prefab edit mode for a specific GameObject. In the Edit mode you can modify the prefab. The modification will be applied to all instances of the prefab across the project. Note: Please use 'assets-prefab-close' tool later to exit prefab editing mode.",
     "inputSchema": {
@@ -1152,6 +1176,10 @@
   {
     "name": "assets-prefab-save",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Prefab / Save",
     "description": "Save a prefab. Use it when you are in prefab editing mode in Unity Editor. Use 'assets-prefab-open' tool to open a prefab first.",
     "inputSchema": {
@@ -1206,8 +1234,44 @@
     }
   },
   {
+    "name": "assets-refresh",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Assets / Refresh",
+    "description": "Refreshes the AssetDatabase. Use it if any file was added or updated in the project outside of Unity API. Use it if need to force scripts recompilation when '.cs' file changed.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "options": {
+          "$ref": "#/$defs/UnityEditor.ImportAssetOptions",
+          "description": "Asset import options."
+        }
+      },
+      "$defs": {
+        "UnityEditor.ImportAssetOptions": {
+          "type": "string",
+          "enum": [
+            "Default",
+            "ForceUpdate",
+            "ForceSynchronousImport",
+            "ImportRecursive",
+            "DontDownloadFromCacheServer",
+            "ForceUncompressedImport"
+          ]
+        }
+      }
+    }
+  },
+  {
     "name": "assets-shader-get-data",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / Shader / Get Data",
     "description": "Get detailed data about a shader asset in the Unity project. Returns shader properties, subshaders, passes, compilation errors, and supported status. Use 'assets-find' tool with filter 't:Shader' to find shaders, or 'assets-shader-list-all' tool to list all shader names.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate to a subtree and/or filter by name regex / max depth / type via Reflector.View. The result populates 'View' on the returned ShaderData. These two parameters are mutually exclusive.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -1592,6 +1656,10 @@
   {
     "name": "assets-shader-list-all",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Assets / List Shaders",
     "description": "List all available shaders in the project assets and packages. Returns their names. Use this to find a shader name for 'assets-material-create' tool.",
     "inputSchema": {
@@ -1625,6 +1693,10 @@
   {
     "name": "batch-execute",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Batch Execute",
     "description": "Execute multiple MCP tool calls in a single WebSocket round-trip. Drastically reduces LLM-to-Unity latency by amortizing transport overhead across many calls.",
     "inputSchema": {
@@ -1800,6 +1872,10 @@
   {
     "name": "build-job-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Build / Get Job",
     "description": "Get the current state of a build job by ID. Returns null when the job ID is unknown.",
     "inputSchema": {
@@ -1880,6 +1956,10 @@
   {
     "name": "build-job-list",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Build / List Jobs",
     "description": "List every build job currently tracked by the editor.",
     "inputSchema": {
@@ -1963,6 +2043,10 @@
   {
     "name": "build-player",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Build / Player",
     "description": "Start a Unity player build for the requested target platform and return a poll-able BuildJobInfo.",
     "inputSchema": {
@@ -2063,6 +2147,10 @@
   {
     "name": "build-scene-add",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Build / Add Scene",
     "description": "Add a scene to EditorBuildSettings.scenes. Returns the updated list.",
     "inputSchema": {
@@ -2133,6 +2221,10 @@
   {
     "name": "build-scene-list",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Build / List Scenes",
     "description": "List scenes registered in EditorBuildSettings, preserving build order.",
     "inputSchema": {
@@ -2182,6 +2274,10 @@
   {
     "name": "build-scene-remove",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Build / Remove Scene",
     "description": "Remove a scene from EditorBuildSettings.scenes by path. Returns the updated list.",
     "inputSchema": {
@@ -2239,6 +2335,10 @@
   {
     "name": "build-switch-platform",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Build / Switch Platform",
     "description": "Switch the editor's active build target. Blocks for the duration of the reimport.",
     "inputSchema": {
@@ -2295,6 +2395,10 @@
   {
     "name": "camera-cm-set-default-blend",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Camera / Cinemachine / Set Default Blend",
     "description": "Set the default blend (style + duration) on the active CinemachineBrain. Returns Ok=false when Cinemachine is not installed or no Brain is present.",
     "inputSchema": {
@@ -2443,6 +2547,10 @@
   {
     "name": "camera-cm-vcam-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Camera / Cinemachine / Configure VCam",
     "description": "Configure a Cinemachine virtual-camera (priority, FOV, optional noise). Returns Ok=false when the Cinemachine package is not installed.",
     "inputSchema": {
@@ -2653,6 +2761,10 @@
   {
     "name": "camera-cm-vcam-priority",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Camera / Cinemachine / Set VCam Priority",
     "description": "Set a Cinemachine virtual-camera's priority (persisted via SerializedProperty). Returns Ok=false when Cinemachine is not installed.",
     "inputSchema": {
@@ -2838,6 +2950,10 @@
   {
     "name": "camera-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Camera / Configure",
     "description": "Configure a UnityEngine.Camera's most-common fields. Only provided (non-null) parameters are written. Use 'camera-get-data' to inspect current values first.",
     "inputSchema": {
@@ -3087,6 +3203,10 @@
   {
     "name": "camera-get-data",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Camera / Get Data",
     "description": "Read a Camera's configuration plus optional Cinemachine virtual-camera priority. Pair with 'camera-configure' to write back.",
     "inputSchema": {
@@ -3267,6 +3387,10 @@
   {
     "name": "camera-list-all",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Camera / List All",
     "description": "List all Cameras in the scenes with a config snapshot per camera. Also reports whether the Cinemachine package is installed.",
     "inputSchema": {
@@ -3403,6 +3527,10 @@
   {
     "name": "console-clear-logs",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Console / Clear Logs",
     "description": "Clears the MCP log cache (used by console-get-logs) and the Unity Editor Console window. Useful for isolating errors related to a specific action by clearing logs before performing the action.",
     "inputSchema": {
@@ -3417,6 +3545,10 @@
   {
     "name": "console-get-logs",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Console / Get Logs",
     "description": "Retrieves Unity Editor logs. Useful for debugging and monitoring Unity Editor activity.",
     "inputSchema": {
@@ -3504,6 +3636,10 @@
   {
     "name": "docs-get-manual",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": true,
     "title": "Docs / Get Manual",
     "description": "Fetch a Unity Manual page by slug and return its parsed title/sections/code examples.",
     "inputSchema": {
@@ -3600,6 +3736,10 @@
   {
     "name": "docs-get-package",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": true,
     "title": "Docs / Get Package",
     "description": "Fetch a Unity package manual page and return its parsed title/sections/code examples.",
     "inputSchema": {
@@ -3702,6 +3842,10 @@
   {
     "name": "docs-get-script-reference",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": true,
     "title": "Docs / Get ScriptReference",
     "description": "Fetch a Unity ScriptReference page (class or member) and return a structured ScriptRefDoc. Verifies class / method signatures and surfaces official code examples for self-correction.",
     "inputSchema": {
@@ -3818,6 +3962,10 @@
   {
     "name": "docs-lookup",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": true,
     "title": "Docs / Lookup",
     "description": "Look up one or more Unity doc queries across ScriptReference, Manual, and Package docs in parallel.",
     "inputSchema": {
@@ -3934,6 +4082,10 @@
   {
     "name": "editor-application-get-state",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Editor / Application / Get State",
     "description": "Returns available information about 'UnityEditor.EditorApplication'. Use it to get information about the current state of the Unity Editor application. Such as: playmode, paused state, compilation state, etc.",
     "inputSchema": {
@@ -4008,6 +4160,10 @@
   {
     "name": "editor-application-set-state",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Editor / Application / Set State",
     "description": "Control the Unity Editor application state. You can start, stop, or pause the 'playmode'. Use 'editor-application-get-state' tool to get the current state first.",
     "inputSchema": {
@@ -4087,6 +4243,10 @@
   {
     "name": "editor-execute-menu-item",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Editor / Execute Menu Item",
     "description": "Execute a Unity Editor menu item by full path. Use the 'editor://menu-items' resource to list available menu paths first.",
     "inputSchema": {
@@ -4140,6 +4300,10 @@
   {
     "name": "editor-selection-get",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Editor / Selection / Get",
     "description": "Get information about the current Selection in the Unity Editor. Use 'editor-selection-set' tool to set the selection.",
     "inputSchema": {
@@ -4319,6 +4483,10 @@
   {
     "name": "editor-selection-set",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Editor / Selection / Set",
     "description": "Set the current Selection in the Unity Editor to the provided objects. Use 'editor-selection-get' tool to get the current selection first.",
     "inputSchema": {
@@ -4506,8 +4674,248 @@
     }
   },
   {
+    "name": "frame-debugger-disable",
+    "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Frame Debugger / Disable",
+    "description": "Disable the Unity Frame Debugger via reflection.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "nothing": {
+          "type": "string"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.FrameDebuggerStatusResult",
+          "description": "Status snapshot for the Unity Frame Debugger."
+        }
+      },
+      "$defs": {
+        "AIGD.FrameDebuggerStatusResult": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether the Frame Debugger is currently enabled."
+            },
+            "EventCount": {
+              "type": "integer",
+              "description": "Number of events the Frame Debugger has captured."
+            }
+          },
+          "required": [
+            "Enabled",
+            "EventCount"
+          ],
+          "description": "Status snapshot for the Unity Frame Debugger."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "frame-debugger-enable",
+    "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Frame Debugger / Enable",
+    "description": "Enable the Unity Frame Debugger via reflection on FrameDebuggerUtility.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "nothing": {
+          "type": "string"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.FrameDebuggerStatusResult",
+          "description": "Status snapshot for the Unity Frame Debugger."
+        }
+      },
+      "$defs": {
+        "AIGD.FrameDebuggerStatusResult": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether the Frame Debugger is currently enabled."
+            },
+            "EventCount": {
+              "type": "integer",
+              "description": "Number of events the Frame Debugger has captured."
+            }
+          },
+          "required": [
+            "Enabled",
+            "EventCount"
+          ],
+          "description": "Status snapshot for the Unity Frame Debugger."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "frame-debugger-get-events",
+    "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Frame Debugger / Get Events",
+    "description": "Page through draw-call events captured by the Frame Debugger.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "description": "Number of events per page. Default: 50."
+        },
+        "cursor": {
+          "type": "integer",
+          "description": "Cursor offset into the event list. Default: 0."
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.FrameDebuggerEventsResult",
+          "description": "Paged result for 'frame-debugger-get-events'."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.List<AIGD.FrameDebuggerEvent>": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AIGD.FrameDebuggerEvent",
+            "description": "Single Frame Debugger event entry. All fields are best-effort via reflection."
+          }
+        },
+        "AIGD.FrameDebuggerEvent": {
+          "type": "object",
+          "properties": {
+            "Index": {
+              "type": "integer",
+              "description": "0-based event index."
+            },
+            "Name": {
+              "type": "string",
+              "description": "Event name (e.g. 'Draw Mesh', 'SetRenderTarget'). May be null."
+            },
+            "EventType": {
+              "type": "string",
+              "description": "Event type as reported by the descriptor. May be null."
+            },
+            "GameObjectInstanceId": {
+              "type": "integer",
+              "description": "Associated GameObject instance id (when known)."
+            },
+            "ShaderName": {
+              "type": "string",
+              "description": "Shader used for the draw. May be null."
+            },
+            "PassName": {
+              "type": "string",
+              "description": "Shader pass name. May be null."
+            },
+            "RtName": {
+              "type": "string",
+              "description": "Render target name. May be null."
+            },
+            "RtWidth": {
+              "type": "integer",
+              "description": "Render target width."
+            },
+            "RtHeight": {
+              "type": "integer",
+              "description": "Render target height."
+            },
+            "VertexCount": {
+              "type": "integer",
+              "description": "Vertex count for the draw."
+            },
+            "IndexCount": {
+              "type": "integer",
+              "description": "Index count for the draw."
+            },
+            "InstanceCount": {
+              "type": "integer",
+              "description": "Instance count for the draw."
+            },
+            "MeshName": {
+              "type": "string",
+              "description": "Mesh name for the draw. May be null."
+            }
+          },
+          "required": [
+            "Index"
+          ],
+          "description": "Single Frame Debugger event entry. All fields are best-effort via reflection."
+        },
+        "AIGD.FrameDebuggerEventsResult": {
+          "type": "object",
+          "properties": {
+            "Events": {
+              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.FrameDebuggerEvent>",
+              "description": "Events on the current page."
+            },
+            "TotalEvents": {
+              "type": "integer",
+              "description": "Total events captured by the Frame Debugger."
+            },
+            "PageSize": {
+              "type": "integer",
+              "description": "Requested page size."
+            },
+            "Cursor": {
+              "type": "integer",
+              "description": "Cursor offset for this page."
+            },
+            "NextCursor": {
+              "type": "integer",
+              "description": "Cursor for the next page; null when this is the last page."
+            }
+          },
+          "required": [
+            "TotalEvents",
+            "PageSize",
+            "Cursor"
+          ],
+          "description": "Paged result for 'frame-debugger-get-events'."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "gameobject-component-add",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "GameObject / Component / Add",
     "description": "Add Component to GameObject in opened Prefab or in a Scene. Use 'gameobject-find' tool to find the target GameObject first. Use 'gameobject-component-list-all' tool to find the component type names to add.",
     "inputSchema": {
@@ -4644,6 +5052,10 @@
   {
     "name": "gameobject-component-destroy",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "GameObject / Component / Destroy",
     "description": "Destroy one or many components from target GameObject. Can't destroy missed components. Use 'gameobject-find' tool to find the target GameObject and 'gameobject-component-get' to get component details first.",
     "inputSchema": {
@@ -4787,6 +5199,10 @@
   {
     "name": "gameobject-component-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Component / Get",
     "description": "Get detailed information about a specific Component on a GameObject. Returns component type, enabled state, and optionally serialized fields and properties. Use this to inspect component data before modifying it. Use 'gameobject-find' tool to get the list of all components on the GameObject.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate to a subtree and/or filter by name regex / max depth / type via Reflector.View. The result is returned in the 'View' field of the response. These two parameters are mutually exclusive — supply at most one.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -5055,6 +5471,10 @@
   {
     "name": "gameobject-component-list-all",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Component / List All",
     "description": "List C# class names extended from UnityEngine.Component. Use this to find component type names for 'gameobject-component-add' tool. Results are paginated to avoid overwhelming responses.",
     "inputSchema": {
@@ -5128,6 +5548,10 @@
   {
     "name": "gameobject-component-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Component / Modify",
     "description": "Modify a specific Component on a GameObject in opened Prefab or in a Scene. Allows direct modification of component fields and properties without wrapping in GameObject structure. Use 'gameobject-component-get' first to inspect the component structure before modifying.\n\nThree modification surfaces (use whichever fits the task):\n  1. 'componentDiff' — full SerializedMember diff (legacy, backwards compatible).\n  2. 'pathPatches' — list of {path, value} pairs routed through Reflector.TryModifyAt; atomic per-path modification, multiple entries can target different depths.\n  3. 'jsonPatch' — a JSON Merge Patch (RFC 7396, extended with [i]/[key] notation) routed through Reflector.TryPatch; multiple fields at any depth in a single call.\nWhen more than one is supplied they run in this order: jsonPatch → pathPatches → componentDiff. At least one is required.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -5377,6 +5801,10 @@
   {
     "name": "gameobject-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "GameObject / Create",
     "description": "Create a new GameObject in opened Prefab or in a Scene. If needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.",
     "inputSchema": {
@@ -5537,6 +5965,10 @@
   {
     "name": "gameobject-destroy",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "GameObject / Destroy",
     "description": "Destroy GameObject and all nested GameObjects recursively in opened Prefab or in a Scene. Use 'gameobject-find' tool to find the target GameObject first.",
     "inputSchema": {
@@ -5626,6 +6058,10 @@
   {
     "name": "gameobject-duplicate",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "GameObject / Duplicate",
     "description": "Duplicate GameObjects in opened Prefab or in a Scene. Use 'gameobject-find' tool to find the target GameObjects first.",
     "inputSchema": {
@@ -5746,6 +6182,10 @@
   {
     "name": "gameobject-find",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Find",
     "description": "Finds specific GameObject by provided information in opened Prefab or in a Scene. First it looks for the opened Prefab, if any Prefab is opened it looks only there ignoring a scene. If no opened Prefab it looks into current active scene. Returns GameObject information and its children. Also, it returns Components preview just for the target GameObject.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate to a subtree and/or filter by name regex / max depth / type via Reflector.View. When either is supplied, the result populates 'Data' on the returned GameObjectData and overrides 'includeData' (which would otherwise produce a full recursive serialization). These two parameters are mutually exclusive — supply at most one.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -6090,6 +6530,10 @@
   {
     "name": "gameobject-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Modify",
     "description": "Modify GameObject fields and properties in opened Prefab or in a Scene. You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects.\n\nThree modification surfaces (per GameObject — parallel arrays must have the same length as gameObjectRefs):\n  1. 'gameObjectDiffs' — full SerializedMember diff per GameObject (legacy, backwards compatible).\n  2. 'pathPatchesPerGameObject' — list of {path, value} patches per GameObject routed through Reflector.TryModifyAt; atomic per-path modification.\n  3. 'jsonPatchesPerGameObject' — JSON Merge Patch per GameObject routed through Reflector.TryPatch.\nWhen more than one is supplied for the same GameObject they run in this order: jsonPatch → pathPatches → diff. At least one of the three is required.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'.",
     "inputSchema": {
@@ -6285,6 +6729,10 @@
   {
     "name": "gameobject-set-parent",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "GameObject / Set Parent",
     "description": "Set parent GameObject to list of GameObjects in opened Prefab or in a Scene. Use 'gameobject-find' tool to find the target GameObjects first.",
     "inputSchema": {
@@ -6367,8 +6815,106 @@
     }
   },
   {
+    "name": "graphics-lightbake-cancel",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Graphics / Lightmap Bake / Cancel",
+    "description": "Cancel the in-progress lightmap bake (Lightmapping.Cancel).",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult"
+        }
+      },
+      "$defs": {
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without an error."
+            },
+            "Status": {
+              "type": "string",
+              "description": "Status discriminator: 'started' | 'cancelled' | 'cleared' | 'no-op'. Null when Ok=false because of an error."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "graphics-lightbake-clear",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Graphics / Lightmap Bake / Clear",
+    "description": "Clear baked lightmaps for the open scenes (Lightmapping.Clear).",
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult"
+        }
+      },
+      "$defs": {
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without an error."
+            },
+            "Status": {
+              "type": "string",
+              "description": "Status discriminator: 'started' | 'cancelled' | 'cleared' | 'no-op'. Null when Ok=false because of an error."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "graphics-lightbake-start",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Lightmap Bake / Start",
     "description": "Start an asynchronous lightmap bake (Lightmapping.BakeAsync).",
     "inputSchema": {
@@ -6419,94 +6965,12 @@
     }
   },
   {
-    "name": "graphics-lightbake-cancel",
-    "enabled": true,
-    "title": "Graphics / Lightmap Bake / Cancel",
-    "description": "Cancel the in-progress lightmap bake (Lightmapping.Cancel).",
-    "inputSchema": {
-      "type": "object",
-      "additionalProperties": false
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult"
-        }
-      },
-      "$defs": {
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without an error."
-            },
-            "Status": {
-              "type": "string",
-              "description": "Status discriminator: 'started' | 'cancelled' | 'cleared' | 'no-op'. Null when Ok=false because of an error."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            }
-          },
-          "required": [
-            "Ok"
-          ]
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "graphics-lightbake-clear",
-    "enabled": true,
-    "title": "Graphics / Lightmap Bake / Clear",
-    "description": "Clear baked lightmaps for the open scenes (Lightmapping.Clear).",
-    "inputSchema": {
-      "type": "object",
-      "additionalProperties": false
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult"
-        }
-      },
-      "$defs": {
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+LightBakeResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without an error."
-            },
-            "Status": {
-              "type": "string",
-              "description": "Status discriminator: 'started' | 'cancelled' | 'cleared' | 'no-op'. Null when Ok=false because of an error."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            }
-          },
-          "required": [
-            "Ok"
-          ]
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "graphics-lightbake-status",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Lightmap Bake / Status",
     "description": "Get current lightmap bake status and generated lightmap stats.",
     "inputSchema": {
@@ -6555,6 +7019,10 @@
   {
     "name": "graphics-rendering-stats",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Graphics / Rendering Stats",
     "description": "Sample UnityEditor.UnityStats for the most-recent frame's renderer counters.",
     "inputSchema": {
@@ -6629,6 +7097,10 @@
   {
     "name": "graphics-urp-asset-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / URP Asset / Get",
     "description": "Read URP UniversalRenderPipelineAsset settings.",
     "inputSchema": {
@@ -6709,6 +7181,10 @@
   {
     "name": "graphics-urp-asset-set",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / URP Asset / Set",
     "description": "Mutate URP UniversalRenderPipelineAsset settings (only non-null params are written).",
     "inputSchema": {
@@ -6833,84 +7309,12 @@
     }
   },
   {
-    "name": "graphics-urp-renderer-feature-list",
-    "enabled": true,
-    "title": "Graphics / URP Renderer Feature / List",
-    "description": "Enumerate URP renderer features on a ScriptableRendererData asset.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "rendererDataPath": {
-          "type": "string",
-          "description": "ScriptableRendererData asset path. Optional — defaults to the URP asset's first renderer."
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureListResult"
-        }
-      },
-      "$defs": {
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo[]": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo"
-          }
-        },
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo": {
-          "type": "object",
-          "properties": {
-            "TypeName": {
-              "type": "string",
-              "description": "Concrete .NET type name of the renderer feature (e.g. 'RenderObjects')."
-            },
-            "Name": {
-              "type": "string",
-              "description": "Asset name of the renderer feature sub-asset (UnityEngine.Object.name)."
-            },
-            "IsActive": {
-              "type": "boolean",
-              "description": "ScriptableRendererFeature.isActive flag."
-            },
-            "Index": {
-              "type": "integer",
-              "description": "0-based index in the renderer feature list of the host ScriptableRendererData."
-            }
-          },
-          "required": [
-            "IsActive",
-            "Index"
-          ]
-        },
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureListResult": {
-          "type": "object",
-          "properties": {
-            "Features": {
-              "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo[]",
-              "description": "Renderer features attached to the resolved ScriptableRendererData asset."
-            },
-            "RendererDataPath": {
-              "type": "string",
-              "description": "Resolved ScriptableRendererData asset path."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when the listing failed. Null on success."
-            }
-          }
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "graphics-urp-renderer-feature-add",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / URP Renderer Feature / Add",
     "description": "Add a ScriptableRendererFeature to a URP renderer data asset.",
     "inputSchema": {
@@ -6994,93 +7398,12 @@
     }
   },
   {
-    "name": "graphics-urp-renderer-feature-remove",
-    "enabled": true,
-    "title": "Graphics / URP Renderer Feature / Remove",
-    "description": "Remove a URP renderer feature by 0-based index or type-name match.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "rendererDataPath": {
-          "type": "string",
-          "description": "ScriptableRendererData asset path (required)."
-        },
-        "typeNameOrIndex": {
-          "type": "string",
-          "description": "Type name (matches what was added) OR 0-based index."
-        }
-      },
-      "required": [
-        "rendererDataPath",
-        "typeNameOrIndex"
-      ]
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureResult"
-        }
-      },
-      "$defs": {
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo": {
-          "type": "object",
-          "properties": {
-            "TypeName": {
-              "type": "string",
-              "description": "Concrete .NET type name of the renderer feature (e.g. 'RenderObjects')."
-            },
-            "Name": {
-              "type": "string",
-              "description": "Asset name of the renderer feature sub-asset (UnityEngine.Object.name)."
-            },
-            "IsActive": {
-              "type": "boolean",
-              "description": "ScriptableRendererFeature.isActive flag."
-            },
-            "Index": {
-              "type": "integer",
-              "description": "0-based index in the renderer feature list of the host ScriptableRendererData."
-            }
-          },
-          "required": [
-            "IsActive",
-            "Index"
-          ]
-        },
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without an error."
-            },
-            "RendererDataPath": {
-              "type": "string",
-              "description": "Resolved ScriptableRendererData asset path."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            },
-            "Feature": {
-              "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo",
-              "description": "Affected renderer feature, when the operation has a single target. Null when irrelevant."
-            }
-          },
-          "required": [
-            "Ok"
-          ]
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "graphics-urp-renderer-feature-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / URP Renderer Feature / Configure",
     "description": "Set a single field on a URP renderer feature (JSON-encoded value).",
     "inputSchema": {
@@ -7174,8 +7497,181 @@
     }
   },
   {
+    "name": "graphics-urp-renderer-feature-list",
+    "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Graphics / URP Renderer Feature / List",
+    "description": "Enumerate URP renderer features on a ScriptableRendererData asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "rendererDataPath": {
+          "type": "string",
+          "description": "ScriptableRendererData asset path. Optional — defaults to the URP asset's first renderer."
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureListResult"
+        }
+      },
+      "$defs": {
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo[]": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo"
+          }
+        },
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo": {
+          "type": "object",
+          "properties": {
+            "TypeName": {
+              "type": "string",
+              "description": "Concrete .NET type name of the renderer feature (e.g. 'RenderObjects')."
+            },
+            "Name": {
+              "type": "string",
+              "description": "Asset name of the renderer feature sub-asset (UnityEngine.Object.name)."
+            },
+            "IsActive": {
+              "type": "boolean",
+              "description": "ScriptableRendererFeature.isActive flag."
+            },
+            "Index": {
+              "type": "integer",
+              "description": "0-based index in the renderer feature list of the host ScriptableRendererData."
+            }
+          },
+          "required": [
+            "IsActive",
+            "Index"
+          ]
+        },
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureListResult": {
+          "type": "object",
+          "properties": {
+            "Features": {
+              "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo[]",
+              "description": "Renderer features attached to the resolved ScriptableRendererData asset."
+            },
+            "RendererDataPath": {
+              "type": "string",
+              "description": "Resolved ScriptableRendererData asset path."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when the listing failed. Null on success."
+            }
+          }
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "graphics-urp-renderer-feature-remove",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Graphics / URP Renderer Feature / Remove",
+    "description": "Remove a URP renderer feature by 0-based index or type-name match.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "rendererDataPath": {
+          "type": "string",
+          "description": "ScriptableRendererData asset path (required)."
+        },
+        "typeNameOrIndex": {
+          "type": "string",
+          "description": "Type name (matches what was added) OR 0-based index."
+        }
+      },
+      "required": [
+        "rendererDataPath",
+        "typeNameOrIndex"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureResult"
+        }
+      },
+      "$defs": {
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo": {
+          "type": "object",
+          "properties": {
+            "TypeName": {
+              "type": "string",
+              "description": "Concrete .NET type name of the renderer feature (e.g. 'RenderObjects')."
+            },
+            "Name": {
+              "type": "string",
+              "description": "Asset name of the renderer feature sub-asset (UnityEngine.Object.name)."
+            },
+            "IsActive": {
+              "type": "boolean",
+              "description": "ScriptableRendererFeature.isActive flag."
+            },
+            "Index": {
+              "type": "integer",
+              "description": "0-based index in the renderer feature list of the host ScriptableRendererData."
+            }
+          },
+          "required": [
+            "IsActive",
+            "Index"
+          ]
+        },
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without an error."
+            },
+            "RendererDataPath": {
+              "type": "string",
+              "description": "Resolved ScriptableRendererData asset path."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            },
+            "Feature": {
+              "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Graphics+RendererFeatureInfo",
+              "description": "Affected renderer feature, when the operation has a single target. Null when irrelevant."
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "graphics-volume-add-override",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Volume / Add Override",
     "description": "Add a VolumeComponent override (e.g. Bloom, ColorAdjustments) to a VolumeProfile. profileOrVolumePath accepts either an asset path or a scene Volume's hierarchy path.",
     "inputSchema": {
@@ -7244,6 +7740,10 @@
   {
     "name": "graphics-volume-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Volume / Create",
     "description": "Create a Volume GameObject with a VolumeProfile assigned. Reuses an existing profile if profileAssetPath is set, otherwise creates a blank one.",
     "inputSchema": {
@@ -7425,6 +7925,10 @@
   {
     "name": "graphics-volume-list",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Graphics / Volume / List",
     "description": "List every UnityEngine.Rendering.Volume in the opened scenes. Filter by sceneGlob (wildcard against scene asset path) or onlyWithProfile.",
     "inputSchema": {
@@ -7516,6 +8020,10 @@
   {
     "name": "graphics-volume-remove-override",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Volume / Remove Override",
     "description": "Remove a VolumeComponent override (e.g. Bloom) from a VolumeProfile.",
     "inputSchema": {
@@ -7580,6 +8088,10 @@
   {
     "name": "graphics-volume-set-field",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Graphics / Volume / Set Field",
     "description": "Set a VolumeParameter<T> field on a VolumeComponent override (e.g. Bloom.intensity = 1.5). Optionally toggles VolumeParameter.overrideState.",
     "inputSchema": {
@@ -7682,6 +8194,10 @@
   {
     "name": "instance-get-current",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Instance / Get Current",
     "description": "Return identity metadata of the calling Unity Editor: port, project path, project name, Unity version, process id, and stable instance id.",
     "inputSchema": {
@@ -7754,6 +8270,10 @@
   {
     "name": "instance-list-all",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Instance / List All",
     "description": "List all Unity Editor instances registered on this machine plus identify the calling Editor.",
     "inputSchema": {
@@ -7854,6 +8374,10 @@
   {
     "name": "object-get-data",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Object / Get Data",
     "description": "Get data of the specified Unity Object. Returns serialized data of the object including its properties and fields. If need to modify the data use 'object-modify' tool.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate to a subtree and/or filter by name regex / max depth / type via Reflector.View. These two parameters are mutually exclusive — supply at most one. When neither is supplied the full object is serialized as before (backwards compatible).\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -7980,6 +8504,10 @@
   {
     "name": "object-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Object / Modify",
     "description": "Modify the specified Unity Object. Allows direct modification of object fields and properties. Use 'object-get-data' first to inspect the object structure before modifying.\n\nThree modification surfaces (use whichever fits the task):\n  1. 'objectDiff' — full SerializedMember diff (legacy, backwards compatible).\n  2. 'pathPatches' — list of {path, value} pairs routed through Reflector.TryModifyAt; atomic per-path modification, multiple entries can target different depths.\n  3. 'jsonPatch' — a JSON Merge Patch (RFC 7396, extended with [i]/[key] notation) routed through Reflector.TryPatch; multiple fields at any depth in a single call.\nWhen more than one is supplied they run in this order: jsonPatch → pathPatches → objectDiff. At least one is required.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped.",
     "inputSchema": {
@@ -8184,6 +8712,10 @@
   {
     "name": "package-add",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": true,
     "title": "Package Manager / Add",
     "description": "Install a package from the Unity Package Manager registry, Git URL, or local path. This operation modifies the project's manifest.json and triggers package resolution. Note: Package installation may trigger a domain reload. The result will be sent after the reload completes. Use 'package-search' tool to search for packages and 'package-list' to list installed packages.",
     "inputSchema": {
@@ -8202,6 +8734,10 @@
   {
     "name": "package-list",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Package Manager / List Installed",
     "description": "List all packages installed in the Unity project (UPM packages). Returns information about each installed package including name, version, source, and description. Use this to check which packages are currently installed before adding or removing packages.",
     "inputSchema": {
@@ -8284,6 +8820,10 @@
   {
     "name": "package-remove",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Package Manager / Remove",
     "description": "Remove (uninstall) a package from the Unity project. This removes the package from the project's manifest.json and triggers package resolution. Note: Built-in packages and packages that are dependencies of other installed packages cannot be removed. Note: Package removal may trigger a domain reload. The result will be sent after the reload completes. Use 'package-list' tool to list installed packages first.",
     "inputSchema": {
@@ -8302,6 +8842,10 @@
   {
     "name": "package-search",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": true,
     "title": "Package Manager / Search",
     "description": "Search for packages in both Unity Package Manager registry and installed packages. Use this to find packages by name before installing them. Returns available versions and installation status. Searches both the Unity registry and locally installed packages (including Git, local, and embedded sources). Results are prioritized: exact name match, exact display name match, name substring, display name substring, description substring. Note: Online mode fetches exact matches from live registry, then supplements with cached substring matches.",
     "inputSchema": {
@@ -8391,6 +8935,10 @@
   {
     "name": "physics-collision-matrix-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Collision Matrix / Get",
     "description": "Read the layer-vs-layer collision matrix for the requested dimension.",
     "inputSchema": {
@@ -8523,6 +9071,10 @@
   {
     "name": "physics-collision-matrix-set",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Collision Matrix / Set",
     "description": "Toggle collision between two layers for the requested dimension. Layer arguments accept either a layer name or a numeric index.",
     "inputSchema": {
@@ -8672,6 +9224,10 @@
   {
     "name": "physics-force-apply",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Force / Apply",
     "description": "Apply a force / torque / explosion / impulse to a Rigidbody (3D or 2D).",
     "inputSchema": {
@@ -8821,6 +9377,10 @@
   {
     "name": "physics-joint-add",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Joint / Add",
     "description": "Attach a 3D or 2D Joint component to a GameObject. Auto-adds Rigidbody/Rigidbody2D when missing. Use 'physics-joint-configure' afterwards to tune motors/limits/springs.",
     "inputSchema": {
@@ -8966,6 +9526,10 @@
   {
     "name": "physics-joint-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Joint / Configure",
     "description": "Configure an existing 3D or 2D Joint on a GameObject. Only provided (non-null) parameters are written. Use 'jointIndex' + 'jointType' to disambiguate multi-joint GameObjects.",
     "inputSchema": {
@@ -9238,6 +9802,10 @@
   {
     "name": "physics-joint-remove",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Joint / Remove",
     "description": "Remove one or all Joint / Joint2D components from a GameObject. Pass jointIndex=-1 to remove every match.",
     "inputSchema": {
@@ -9343,6 +9911,10 @@
   {
     "name": "physics-linecast",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Linecast",
     "description": "Linecast between two world-space points (3D or 2D).",
     "inputSchema": {
@@ -9478,276 +10050,12 @@
     }
   },
   {
-    "name": "physics-material-create",
-    "enabled": true,
-    "title": "Physics / Material / Create",
-    "description": "Create a new physics material asset (3D or 2D). Path must live under 'Assets/' and end with '.physicMaterial' (3D) or '.physicsMaterial2D' (2D).",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Asset path under 'Assets/'. Must end with '.physicMaterial' (3D) or '.physicsMaterial2D' (2D)."
-        },
-        "dimension": {
-          "type": "string",
-          "description": "Dimension: '3d' (default) or '2d'."
-        },
-        "dynamicFriction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Dynamic friction (3D only). Default 0.6."
-        },
-        "staticFriction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Static friction (3D only). Default 0.6."
-        },
-        "friction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Combined friction value (2D only). Default 0.4."
-        },
-        "bounciness": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Bounciness. Default 0. Applies to both dimensions."
-        },
-        "frictionCombine": {
-          "type": "string",
-          "description": "Friction combine mode (3D only): Average, Minimum, Multiply, Maximum."
-        },
-        "bounceCombine": {
-          "type": "string",
-          "description": "Bounce combine mode (3D only): Average, Minimum, Multiply, Maximum."
-        },
-        "overwrite": {
-          "type": "boolean",
-          "description": "If true, overwrite an existing asset at the same path. Default false."
-        }
-      },
-      "$defs": {
-        "System.Single": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "path"
-      ]
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.PhysicsMaterialResult",
-          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<System.String>": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "AIGD.PhysicsMaterialResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without errors."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            },
-            "Path": {
-              "type": "string",
-              "description": "Asset path of the affected physics material."
-            },
-            "Dimension": {
-              "type": "string",
-              "description": "Dimension of the affected material: '2d' or '3d'."
-            },
-            "DynamicFriction": {
-              "type": "number",
-              "description": "3D dynamic friction (null for 2D materials)."
-            },
-            "StaticFriction": {
-              "type": "number",
-              "description": "3D static friction (null for 2D materials)."
-            },
-            "Friction": {
-              "type": "number",
-              "description": "2D combined friction (null for 3D materials)."
-            },
-            "Bounciness": {
-              "type": "number",
-              "description": "Bounciness (both dimensions)."
-            },
-            "FrictionCombine": {
-              "type": "string",
-              "description": "Friction-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
-            },
-            "BounceCombine": {
-              "type": "string",
-              "description": "Bounce-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
-            },
-            "Changed": {
-              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
-              "description": "Names of properties mutated by configure / create. Empty for assign."
-            },
-            "AssignedGameObject": {
-              "type": "string",
-              "description": "For assign: name of the GameObject the material was assigned to."
-            },
-            "AssignedCollider": {
-              "type": "string",
-              "description": "For assign: name of the collider component the material was assigned to."
-            }
-          },
-          "required": [
-            "Ok"
-          ],
-          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "physics-material-configure",
-    "enabled": true,
-    "title": "Physics / Material / Configure",
-    "description": "Mutate properties of an existing physics material asset.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Asset path of the existing physics material."
-        },
-        "dimension": {
-          "type": "string",
-          "description": "Dimension override: '3d' or '2d'. If omitted, inferred from the file extension."
-        },
-        "dynamicFriction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Dynamic friction (3D only)."
-        },
-        "staticFriction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Static friction (3D only)."
-        },
-        "friction": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Combined friction value (2D only)."
-        },
-        "bounciness": {
-          "$ref": "#/$defs/System.Single",
-          "description": "Bounciness. Applies to both dimensions."
-        },
-        "frictionCombine": {
-          "type": "string",
-          "description": "Friction combine mode (3D only): Average, Minimum, Multiply, Maximum."
-        },
-        "bounceCombine": {
-          "type": "string",
-          "description": "Bounce combine mode (3D only): Average, Minimum, Multiply, Maximum."
-        }
-      },
-      "$defs": {
-        "System.Single": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "path"
-      ]
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.PhysicsMaterialResult",
-          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<System.String>": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "AIGD.PhysicsMaterialResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without errors."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            },
-            "Path": {
-              "type": "string",
-              "description": "Asset path of the affected physics material."
-            },
-            "Dimension": {
-              "type": "string",
-              "description": "Dimension of the affected material: '2d' or '3d'."
-            },
-            "DynamicFriction": {
-              "type": "number",
-              "description": "3D dynamic friction (null for 2D materials)."
-            },
-            "StaticFriction": {
-              "type": "number",
-              "description": "3D static friction (null for 2D materials)."
-            },
-            "Friction": {
-              "type": "number",
-              "description": "2D combined friction (null for 3D materials)."
-            },
-            "Bounciness": {
-              "type": "number",
-              "description": "Bounciness (both dimensions)."
-            },
-            "FrictionCombine": {
-              "type": "string",
-              "description": "Friction-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
-            },
-            "BounceCombine": {
-              "type": "string",
-              "description": "Bounce-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
-            },
-            "Changed": {
-              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
-              "description": "Names of properties mutated by configure / create. Empty for assign."
-            },
-            "AssignedGameObject": {
-              "type": "string",
-              "description": "For assign: name of the GameObject the material was assigned to."
-            },
-            "AssignedCollider": {
-              "type": "string",
-              "description": "For assign: name of the collider component the material was assigned to."
-            }
-          },
-          "required": [
-            "Ok"
-          ],
-          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "physics-material-assign",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Material / Assign",
     "description": "Assign a physics material asset to a collider on a GameObject.",
     "inputSchema": {
@@ -9888,8 +10196,288 @@
     }
   },
   {
+    "name": "physics-material-configure",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Physics / Material / Configure",
+    "description": "Mutate properties of an existing physics material asset.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Asset path of the existing physics material."
+        },
+        "dimension": {
+          "type": "string",
+          "description": "Dimension override: '3d' or '2d'. If omitted, inferred from the file extension."
+        },
+        "dynamicFriction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Dynamic friction (3D only)."
+        },
+        "staticFriction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Static friction (3D only)."
+        },
+        "friction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Combined friction value (2D only)."
+        },
+        "bounciness": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Bounciness. Applies to both dimensions."
+        },
+        "frictionCombine": {
+          "type": "string",
+          "description": "Friction combine mode (3D only): Average, Minimum, Multiply, Maximum."
+        },
+        "bounceCombine": {
+          "type": "string",
+          "description": "Bounce combine mode (3D only): Average, Minimum, Multiply, Maximum."
+        }
+      },
+      "$defs": {
+        "System.Single": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.PhysicsMaterialResult",
+          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.List<System.String>": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "AIGD.PhysicsMaterialResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without errors."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            },
+            "Path": {
+              "type": "string",
+              "description": "Asset path of the affected physics material."
+            },
+            "Dimension": {
+              "type": "string",
+              "description": "Dimension of the affected material: '2d' or '3d'."
+            },
+            "DynamicFriction": {
+              "type": "number",
+              "description": "3D dynamic friction (null for 2D materials)."
+            },
+            "StaticFriction": {
+              "type": "number",
+              "description": "3D static friction (null for 2D materials)."
+            },
+            "Friction": {
+              "type": "number",
+              "description": "2D combined friction (null for 3D materials)."
+            },
+            "Bounciness": {
+              "type": "number",
+              "description": "Bounciness (both dimensions)."
+            },
+            "FrictionCombine": {
+              "type": "string",
+              "description": "Friction-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
+            },
+            "BounceCombine": {
+              "type": "string",
+              "description": "Bounce-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
+            },
+            "Changed": {
+              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
+              "description": "Names of properties mutated by configure / create. Empty for assign."
+            },
+            "AssignedGameObject": {
+              "type": "string",
+              "description": "For assign: name of the GameObject the material was assigned to."
+            },
+            "AssignedCollider": {
+              "type": "string",
+              "description": "For assign: name of the collider component the material was assigned to."
+            }
+          },
+          "required": [
+            "Ok"
+          ],
+          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "physics-material-create",
+    "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Physics / Material / Create",
+    "description": "Create a new physics material asset (3D or 2D). Path must live under 'Assets/' and end with '.physicMaterial' (3D) or '.physicsMaterial2D' (2D).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Asset path under 'Assets/'. Must end with '.physicMaterial' (3D) or '.physicsMaterial2D' (2D)."
+        },
+        "dimension": {
+          "type": "string",
+          "description": "Dimension: '3d' (default) or '2d'."
+        },
+        "dynamicFriction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Dynamic friction (3D only). Default 0.6."
+        },
+        "staticFriction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Static friction (3D only). Default 0.6."
+        },
+        "friction": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Combined friction value (2D only). Default 0.4."
+        },
+        "bounciness": {
+          "$ref": "#/$defs/System.Single",
+          "description": "Bounciness. Default 0. Applies to both dimensions."
+        },
+        "frictionCombine": {
+          "type": "string",
+          "description": "Friction combine mode (3D only): Average, Minimum, Multiply, Maximum."
+        },
+        "bounceCombine": {
+          "type": "string",
+          "description": "Bounce combine mode (3D only): Average, Minimum, Multiply, Maximum."
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "If true, overwrite an existing asset at the same path. Default false."
+        }
+      },
+      "$defs": {
+        "System.Single": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.PhysicsMaterialResult",
+          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.List<System.String>": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "AIGD.PhysicsMaterialResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without errors."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            },
+            "Path": {
+              "type": "string",
+              "description": "Asset path of the affected physics material."
+            },
+            "Dimension": {
+              "type": "string",
+              "description": "Dimension of the affected material: '2d' or '3d'."
+            },
+            "DynamicFriction": {
+              "type": "number",
+              "description": "3D dynamic friction (null for 2D materials)."
+            },
+            "StaticFriction": {
+              "type": "number",
+              "description": "3D static friction (null for 2D materials)."
+            },
+            "Friction": {
+              "type": "number",
+              "description": "2D combined friction (null for 3D materials)."
+            },
+            "Bounciness": {
+              "type": "number",
+              "description": "Bounciness (both dimensions)."
+            },
+            "FrictionCombine": {
+              "type": "string",
+              "description": "Friction-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
+            },
+            "BounceCombine": {
+              "type": "string",
+              "description": "Bounce-combine mode name (3D only). Average, Minimum, Multiply, Maximum."
+            },
+            "Changed": {
+              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
+              "description": "Names of properties mutated by configure / create. Empty for assign."
+            },
+            "AssignedGameObject": {
+              "type": "string",
+              "description": "For assign: name of the GameObject the material was assigned to."
+            },
+            "AssignedCollider": {
+              "type": "string",
+              "description": "For assign: name of the collider component the material was assigned to."
+            }
+          },
+          "required": [
+            "Ok"
+          ],
+          "description": "Result of a 'physics-material-create', '-configure' or '-assign' call."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "physics-overlap",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Overlap",
     "description": "Find all colliders overlapping a primitive volume (3D or 2D).",
     "inputSchema": {
@@ -10033,6 +10621,10 @@
   {
     "name": "physics-raycast",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Raycast",
     "description": "Cast a ray and return the first hit (3D or 2D).",
     "inputSchema": {
@@ -10181,6 +10773,10 @@
   {
     "name": "physics-raycast-all",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Raycast / All",
     "description": "Cast a ray and return every collider it hits (3D or 2D).",
     "inputSchema": {
@@ -10333,161 +10929,12 @@
     }
   },
   {
-    "name": "physics-rigidbody-get",
-    "enabled": true,
-    "title": "Physics / Rigidbody / Get",
-    "description": "Snapshot the Rigidbody / Rigidbody2D state on the target GameObject.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "target": {
-          "$ref": "#/$defs/AIGD.GameObjectRef",
-          "description": "Target GameObject with a Rigidbody or Rigidbody2D."
-        },
-        "dimension": {
-          "type": "string",
-          "description": "Dimension override: '3d' or '2d'. If omitted, inferred from the present component."
-        }
-      },
-      "$defs": {
-        "System.Type": {
-          "type": "string"
-        },
-        "AIGD.GameObjectRef": {
-          "type": "object",
-          "properties": {
-            "instanceID": {
-              "type": "integer",
-              "description": "instanceID of the UnityEngine.Object. If it is '0' and 'path', 'name', 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'. Priority: 1 (Recommended)"
-            },
-            "path": {
-              "type": "string",
-              "description": "Path of a GameObject in the hierarchy Sample 'character/hand/finger/particle'. Priority: 2."
-            },
-            "name": {
-              "type": "string",
-              "description": "Name of a GameObject in hierarchy. Priority: 3."
-            },
-            "assetType": {
-              "$ref": "#/$defs/System.Type",
-              "description": "Type of the asset."
-            },
-            "assetPath": {
-              "type": "string",
-              "description": "Path to the asset within the project. Starts with 'Assets/'"
-            },
-            "assetGuid": {
-              "type": "string",
-              "description": "Unique identifier for the asset."
-            }
-          },
-          "required": [
-            "instanceID"
-          ],
-          "description": "Find GameObject in opened Prefab or in the active Scene."
-        }
-      },
-      "required": [
-        "target"
-      ]
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.RigidbodyResult",
-          "description": "Snapshot of a Rigidbody / Rigidbody2D and the changes applied to it."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<System.String>": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "AIGD.RigidbodyResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the operation completed without errors."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Error message when Ok is false. Null on success."
-            },
-            "Target": {
-              "type": "string",
-              "description": "Name of the host GameObject."
-            },
-            "Dimension": {
-              "type": "string",
-              "description": "Dimension of the rigidbody: '2d' or '3d'."
-            },
-            "Mass": {
-              "type": "number",
-              "description": "Rigidbody mass."
-            },
-            "LinearDamping": {
-              "type": "number",
-              "description": "Linear damping (Unity 6) / drag (pre-Unity 6)."
-            },
-            "AngularDamping": {
-              "type": "number",
-              "description": "Angular damping (Unity 6) / angularDrag (pre-Unity 6)."
-            },
-            "IsKinematic": {
-              "type": "boolean",
-              "description": "Whether the body is kinematic."
-            },
-            "CollisionDetection": {
-              "type": "string",
-              "description": "Collision detection mode name."
-            },
-            "Constraints": {
-              "type": "string",
-              "description": "Constraints flags as a comma-separated enum name list."
-            },
-            "UseGravity": {
-              "type": "boolean",
-              "description": "Whether 3D gravity is applied (3D only)."
-            },
-            "Interpolation": {
-              "type": "string",
-              "description": "Interpolation mode name (3D only)."
-            },
-            "GravityScale": {
-              "type": "number",
-              "description": "2D gravity scale (2D only)."
-            },
-            "BodyType": {
-              "type": "string",
-              "description": "2D body type name (Dynamic / Kinematic / Static)."
-            },
-            "Simulated": {
-              "type": "boolean",
-              "description": "Whether the 2D body is simulated."
-            },
-            "Changed": {
-              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
-              "description": "Names of properties mutated by configure. Empty for get."
-            }
-          },
-          "required": [
-            "Ok"
-          ],
-          "description": "Snapshot of a Rigidbody / Rigidbody2D and the changes applied to it."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "physics-rigidbody-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Rigidbody / Configure",
     "description": "Mutate fields of a Rigidbody / Rigidbody2D on the target GameObject.",
     "inputSchema": {
@@ -10689,8 +11136,169 @@
     }
   },
   {
+    "name": "physics-rigidbody-get",
+    "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Physics / Rigidbody / Get",
+    "description": "Snapshot the Rigidbody / Rigidbody2D state on the target GameObject.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/AIGD.GameObjectRef",
+          "description": "Target GameObject with a Rigidbody or Rigidbody2D."
+        },
+        "dimension": {
+          "type": "string",
+          "description": "Dimension override: '3d' or '2d'. If omitted, inferred from the present component."
+        }
+      },
+      "$defs": {
+        "System.Type": {
+          "type": "string"
+        },
+        "AIGD.GameObjectRef": {
+          "type": "object",
+          "properties": {
+            "instanceID": {
+              "type": "integer",
+              "description": "instanceID of the UnityEngine.Object. If it is '0' and 'path', 'name', 'assetPath' and 'assetGuid' is not provided, empty or null, then it will be used as 'null'. Priority: 1 (Recommended)"
+            },
+            "path": {
+              "type": "string",
+              "description": "Path of a GameObject in the hierarchy Sample 'character/hand/finger/particle'. Priority: 2."
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of a GameObject in hierarchy. Priority: 3."
+            },
+            "assetType": {
+              "$ref": "#/$defs/System.Type",
+              "description": "Type of the asset."
+            },
+            "assetPath": {
+              "type": "string",
+              "description": "Path to the asset within the project. Starts with 'Assets/'"
+            },
+            "assetGuid": {
+              "type": "string",
+              "description": "Unique identifier for the asset."
+            }
+          },
+          "required": [
+            "instanceID"
+          ],
+          "description": "Find GameObject in opened Prefab or in the active Scene."
+        }
+      },
+      "required": [
+        "target"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.RigidbodyResult",
+          "description": "Snapshot of a Rigidbody / Rigidbody2D and the changes applied to it."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.List<System.String>": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "AIGD.RigidbodyResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the operation completed without errors."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Error message when Ok is false. Null on success."
+            },
+            "Target": {
+              "type": "string",
+              "description": "Name of the host GameObject."
+            },
+            "Dimension": {
+              "type": "string",
+              "description": "Dimension of the rigidbody: '2d' or '3d'."
+            },
+            "Mass": {
+              "type": "number",
+              "description": "Rigidbody mass."
+            },
+            "LinearDamping": {
+              "type": "number",
+              "description": "Linear damping (Unity 6) / drag (pre-Unity 6)."
+            },
+            "AngularDamping": {
+              "type": "number",
+              "description": "Angular damping (Unity 6) / angularDrag (pre-Unity 6)."
+            },
+            "IsKinematic": {
+              "type": "boolean",
+              "description": "Whether the body is kinematic."
+            },
+            "CollisionDetection": {
+              "type": "string",
+              "description": "Collision detection mode name."
+            },
+            "Constraints": {
+              "type": "string",
+              "description": "Constraints flags as a comma-separated enum name list."
+            },
+            "UseGravity": {
+              "type": "boolean",
+              "description": "Whether 3D gravity is applied (3D only)."
+            },
+            "Interpolation": {
+              "type": "string",
+              "description": "Interpolation mode name (3D only)."
+            },
+            "GravityScale": {
+              "type": "number",
+              "description": "2D gravity scale (2D only)."
+            },
+            "BodyType": {
+              "type": "string",
+              "description": "2D body type name (Dynamic / Kinematic / Static)."
+            },
+            "Simulated": {
+              "type": "boolean",
+              "description": "Whether the 2D body is simulated."
+            },
+            "Changed": {
+              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
+              "description": "Names of properties mutated by configure. Empty for get."
+            }
+          },
+          "required": [
+            "Ok"
+          ],
+          "description": "Snapshot of a Rigidbody / Rigidbody2D and the changes applied to it."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "physics-settings-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Settings / Get",
     "description": "Read current physics settings (gravity, solver iterations, thresholds, query flags) for the requested dimension.",
     "inputSchema": {
@@ -10805,6 +11413,10 @@
   {
     "name": "physics-settings-set",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Settings / Set",
     "description": "Mutate physics settings for the requested dimension (gravity, thresholds, solver counts, global query flags). Only non-null arguments are applied.",
     "inputSchema": {
@@ -10998,6 +11610,10 @@
   {
     "name": "physics-shapecast",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Shapecast",
     "description": "Shapecast a primitive volume (box/sphere/capsule) and return the colliders it hits.",
     "inputSchema": {
@@ -11197,6 +11813,10 @@
   {
     "name": "physics-simulate-step",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Physics / Simulate / Step",
     "description": "Advance the physics simulation by one step in Edit Mode (3D or 2D).",
     "inputSchema": {
@@ -11259,6 +11879,10 @@
   {
     "name": "physics-validate",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Physics / Validate",
     "description": "Scan all loaded scenes for common physics misconfigurations and return a list of issues.",
     "inputSchema": {
@@ -11359,8 +11983,107 @@
     }
   },
   {
+    "name": "profiler-get-counters",
+    "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Profiler / Get Counters",
+    "description": "Sample ProfilerRecorder counters in a category. Pass explicit names or omit to enumerate all in the category.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "ProfilerCategory name. Examples: Render, Scripts, Memory, Physics, Animation, Audio."
+        },
+        "counters": {
+          "$ref": "#/$defs/System.String[]",
+          "description": "Optional list of explicit counter names. Omit to read every counter available in the category."
+        }
+      },
+      "$defs": {
+        "System.String[]": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "category"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.CounterReadResult",
+          "description": "Batch result for 'profiler-get-counters'."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.List<AIGD.CounterSample>": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AIGD.CounterSample",
+            "description": "A single ProfilerRecorder counter sample."
+          }
+        },
+        "AIGD.CounterSample": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string",
+              "description": "Counter name."
+            },
+            "Value": {
+              "type": "integer",
+              "description": "Sample value from the last completed frame."
+            },
+            "Valid": {
+              "type": "boolean",
+              "description": "True when the underlying ProfilerRecorder reports Valid."
+            },
+            "UnitType": {
+              "type": "string",
+              "description": "ProfilerMarkerDataUnit name of the sample (e.g. TimeNanoseconds, Bytes, Count)."
+            }
+          },
+          "required": [
+            "Value",
+            "Valid"
+          ],
+          "description": "A single ProfilerRecorder counter sample."
+        },
+        "AIGD.CounterReadResult": {
+          "type": "object",
+          "properties": {
+            "Category": {
+              "type": "string",
+              "description": "ProfilerCategory the counters were sampled from."
+            },
+            "Counters": {
+              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.CounterSample>",
+              "description": "Per-counter samples."
+            }
+          },
+          "description": "Batch result for 'profiler-get-counters'."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "profiler-get-frame-timing",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Profiler / Get Frame Timing",
     "description": "Capture the latest FrameTimingManager frame timing data.",
     "inputSchema": {
@@ -11460,99 +12183,12 @@
     }
   },
   {
-    "name": "profiler-get-counters",
-    "enabled": false,
-    "title": "Profiler / Get Counters",
-    "description": "Sample ProfilerRecorder counters in a category. Pass explicit names or omit to enumerate all in the category.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "category": {
-          "type": "string",
-          "description": "ProfilerCategory name. Examples: Render, Scripts, Memory, Physics, Animation, Audio."
-        },
-        "counters": {
-          "$ref": "#/$defs/System.String[]",
-          "description": "Optional list of explicit counter names. Omit to read every counter available in the category."
-        }
-      },
-      "$defs": {
-        "System.String[]": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "required": [
-        "category"
-      ]
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.CounterReadResult",
-          "description": "Batch result for 'profiler-get-counters'."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<AIGD.CounterSample>": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/AIGD.CounterSample",
-            "description": "A single ProfilerRecorder counter sample."
-          }
-        },
-        "AIGD.CounterSample": {
-          "type": "object",
-          "properties": {
-            "Name": {
-              "type": "string",
-              "description": "Counter name."
-            },
-            "Value": {
-              "type": "integer",
-              "description": "Sample value from the last completed frame."
-            },
-            "Valid": {
-              "type": "boolean",
-              "description": "True when the underlying ProfilerRecorder reports Valid."
-            },
-            "UnitType": {
-              "type": "string",
-              "description": "ProfilerMarkerDataUnit name of the sample (e.g. TimeNanoseconds, Bytes, Count)."
-            }
-          },
-          "required": [
-            "Value",
-            "Valid"
-          ],
-          "description": "A single ProfilerRecorder counter sample."
-        },
-        "AIGD.CounterReadResult": {
-          "type": "object",
-          "properties": {
-            "Category": {
-              "type": "string",
-              "description": "ProfilerCategory the counters were sampled from."
-            },
-            "Counters": {
-              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.CounterSample>",
-              "description": "Per-counter samples."
-            }
-          },
-          "description": "Batch result for 'profiler-get-counters'."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "profiler-get-object-memory",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Profiler / Get Object Memory",
     "description": "Return runtime memory size for a scene or asset object via Profiler.GetRuntimeMemorySizeLong.",
     "inputSchema": {
@@ -11613,385 +12249,12 @@
     }
   },
   {
-    "name": "frame-debugger-enable",
-    "enabled": false,
-    "title": "Frame Debugger / Enable",
-    "description": "Enable the Unity Frame Debugger via reflection on FrameDebuggerUtility.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "nothing": {
-          "type": "string"
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.FrameDebuggerStatusResult",
-          "description": "Status snapshot for the Unity Frame Debugger."
-        }
-      },
-      "$defs": {
-        "AIGD.FrameDebuggerStatusResult": {
-          "type": "object",
-          "properties": {
-            "Enabled": {
-              "type": "boolean",
-              "description": "Whether the Frame Debugger is currently enabled."
-            },
-            "EventCount": {
-              "type": "integer",
-              "description": "Number of events the Frame Debugger has captured."
-            }
-          },
-          "required": [
-            "Enabled",
-            "EventCount"
-          ],
-          "description": "Status snapshot for the Unity Frame Debugger."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "frame-debugger-disable",
-    "enabled": false,
-    "title": "Frame Debugger / Disable",
-    "description": "Disable the Unity Frame Debugger via reflection.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "nothing": {
-          "type": "string"
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.FrameDebuggerStatusResult",
-          "description": "Status snapshot for the Unity Frame Debugger."
-        }
-      },
-      "$defs": {
-        "AIGD.FrameDebuggerStatusResult": {
-          "type": "object",
-          "properties": {
-            "Enabled": {
-              "type": "boolean",
-              "description": "Whether the Frame Debugger is currently enabled."
-            },
-            "EventCount": {
-              "type": "integer",
-              "description": "Number of events the Frame Debugger has captured."
-            }
-          },
-          "required": [
-            "Enabled",
-            "EventCount"
-          ],
-          "description": "Status snapshot for the Unity Frame Debugger."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "frame-debugger-get-events",
-    "enabled": false,
-    "title": "Frame Debugger / Get Events",
-    "description": "Page through draw-call events captured by the Frame Debugger.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "pageSize": {
-          "type": "integer",
-          "description": "Number of events per page. Default: 50."
-        },
-        "cursor": {
-          "type": "integer",
-          "description": "Cursor offset into the event list. Default: 0."
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.FrameDebuggerEventsResult",
-          "description": "Paged result for 'frame-debugger-get-events'."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<AIGD.FrameDebuggerEvent>": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/AIGD.FrameDebuggerEvent",
-            "description": "Single Frame Debugger event entry. All fields are best-effort via reflection."
-          }
-        },
-        "AIGD.FrameDebuggerEvent": {
-          "type": "object",
-          "properties": {
-            "Index": {
-              "type": "integer",
-              "description": "0-based event index."
-            },
-            "Name": {
-              "type": "string",
-              "description": "Event name (e.g. 'Draw Mesh', 'SetRenderTarget'). May be null."
-            },
-            "EventType": {
-              "type": "string",
-              "description": "Event type as reported by the descriptor. May be null."
-            },
-            "GameObjectInstanceId": {
-              "type": "integer",
-              "description": "Associated GameObject instance id (when known)."
-            },
-            "ShaderName": {
-              "type": "string",
-              "description": "Shader used for the draw. May be null."
-            },
-            "PassName": {
-              "type": "string",
-              "description": "Shader pass name. May be null."
-            },
-            "RtName": {
-              "type": "string",
-              "description": "Render target name. May be null."
-            },
-            "RtWidth": {
-              "type": "integer",
-              "description": "Render target width."
-            },
-            "RtHeight": {
-              "type": "integer",
-              "description": "Render target height."
-            },
-            "VertexCount": {
-              "type": "integer",
-              "description": "Vertex count for the draw."
-            },
-            "IndexCount": {
-              "type": "integer",
-              "description": "Index count for the draw."
-            },
-            "InstanceCount": {
-              "type": "integer",
-              "description": "Instance count for the draw."
-            },
-            "MeshName": {
-              "type": "string",
-              "description": "Mesh name for the draw. May be null."
-            }
-          },
-          "required": [
-            "Index"
-          ],
-          "description": "Single Frame Debugger event entry. All fields are best-effort via reflection."
-        },
-        "AIGD.FrameDebuggerEventsResult": {
-          "type": "object",
-          "properties": {
-            "Events": {
-              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.FrameDebuggerEvent>",
-              "description": "Events on the current page."
-            },
-            "TotalEvents": {
-              "type": "integer",
-              "description": "Total events captured by the Frame Debugger."
-            },
-            "PageSize": {
-              "type": "integer",
-              "description": "Requested page size."
-            },
-            "Cursor": {
-              "type": "integer",
-              "description": "Cursor offset for this page."
-            },
-            "NextCursor": {
-              "type": "integer",
-              "description": "Cursor for the next page; null when this is the last page."
-            }
-          },
-          "required": [
-            "TotalEvents",
-            "PageSize",
-            "Cursor"
-          ],
-          "description": "Paged result for 'frame-debugger-get-events'."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "profiler-memory-snapshot-take",
-    "enabled": false,
-    "title": "Profiler / Memory Snapshot / Take",
-    "description": "Capture a Unity memory snapshot to a .snap file (requires com.unity.memoryprofiler).",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "snapshotPath": {
-          "type": "string",
-          "description": "Output path for the .snap file. Optional — when empty, writes to Application.temporaryCachePath/MemoryCaptures/ with a timestamped name."
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.MemorySnapshotResult",
-          "description": "Result for 'profiler-memory-snapshot-take'."
-        }
-      },
-      "$defs": {
-        "AIGD.MemorySnapshotResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the snapshot was captured successfully."
-            },
-            "Path": {
-              "type": "string",
-              "description": "Resolved snapshot file path."
-            },
-            "SizeBytes": {
-              "type": "integer",
-              "description": "File size in bytes when Ok is true."
-            },
-            "SizeMb": {
-              "type": "number",
-              "description": "File size in megabytes when Ok is true."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Failure description when Ok is false."
-            }
-          },
-          "required": [
-            "Ok",
-            "SizeBytes",
-            "SizeMb"
-          ],
-          "description": "Result for 'profiler-memory-snapshot-take'."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "profiler-memory-snapshot-list",
-    "enabled": false,
-    "title": "Profiler / Memory Snapshot / List",
-    "description": "List .snap memory snapshot files in known or supplied directories.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "searchPath": {
-          "type": "string",
-          "description": "Optional directory to search for .snap files. When empty, scans the default snapshot directories."
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.MemorySnapshotListResult",
-          "description": "Result for 'profiler-memory-snapshot-list'."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.List<AIGD.MemorySnapshotInfo>": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/AIGD.MemorySnapshotInfo",
-            "description": "Metadata for a single .snap memory snapshot file."
-          }
-        },
-        "AIGD.MemorySnapshotInfo": {
-          "type": "object",
-          "properties": {
-            "Path": {
-              "type": "string",
-              "description": "Absolute path to the .snap file."
-            },
-            "SizeBytes": {
-              "type": "integer",
-              "description": "File size in bytes."
-            },
-            "SizeMb": {
-              "type": "number",
-              "description": "File size in megabytes (rounded to 2 decimals)."
-            },
-            "CreatedUtc": {
-              "type": "string",
-              "description": "File creation time in ISO-8601 UTC ('o' round-trip format)."
-            }
-          },
-          "required": [
-            "SizeBytes",
-            "SizeMb"
-          ],
-          "description": "Metadata for a single .snap memory snapshot file."
-        },
-        "System.Collections.Generic.List<System.String>": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "AIGD.MemorySnapshotListResult": {
-          "type": "object",
-          "properties": {
-            "Ok": {
-              "type": "boolean",
-              "description": "True when the listing completed (package present)."
-            },
-            "Error": {
-              "type": "string",
-              "description": "Failure description when Ok is false."
-            },
-            "Snapshots": {
-              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.MemorySnapshotInfo>",
-              "description": "Snapshot files discovered."
-            },
-            "SearchedDirs": {
-              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
-              "description": "Directories that were scanned."
-            }
-          },
-          "required": [
-            "Ok"
-          ],
-          "description": "Result for 'profiler-memory-snapshot-list'."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "profiler-memory-snapshot-compare",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Profiler / Memory Snapshot / Compare",
     "description": "Compare two .snap files at file-metadata level (size and creation-time delta).",
     "inputSchema": {
@@ -12097,25 +12360,20 @@
     }
   },
   {
-    "name": "profiler-start",
+    "name": "profiler-memory-snapshot-list",
     "enabled": false,
-    "title": "Profiler / Start",
-    "description": "Enable the Unity Profiler. Optionally record to a .raw file and enable allocation callstacks.",
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Profiler / Memory Snapshot / List",
+    "description": "List .snap memory snapshot files in known or supplied directories.",
     "inputSchema": {
       "type": "object",
       "properties": {
-        "logFile": {
+        "searchPath": {
           "type": "string",
-          "description": "Absolute path for an optional binary '.raw' profiler recording. The parent directory must exist."
-        },
-        "enableCallstacks": {
-          "$ref": "#/$defs/System.Boolean",
-          "description": "If true, enables Profiler.enableAllocationCallstacks. Default: false."
-        }
-      },
-      "$defs": {
-        "System.Boolean": {
-          "type": "boolean"
+          "description": "Optional directory to search for .snap files. When empty, scans the default snapshot directories."
         }
       }
     },
@@ -12123,51 +12381,74 @@
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
-          "description": "Unity Profiler session status snapshot."
+          "$ref": "#/$defs/AIGD.MemorySnapshotListResult",
+          "description": "Result for 'profiler-memory-snapshot-list'."
         }
       },
       "$defs": {
-        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "boolean"
+        "System.Collections.Generic.List<AIGD.MemorySnapshotInfo>": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AIGD.MemorySnapshotInfo",
+            "description": "Metadata for a single .snap memory snapshot file."
           }
         },
-        "AIGD.ProfilerStatusResult": {
+        "AIGD.MemorySnapshotInfo": {
           "type": "object",
           "properties": {
-            "Enabled": {
-              "type": "boolean",
-              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
-            },
-            "Recording": {
-              "type": "boolean",
-              "description": "Whether the profiler is currently recording to a binary log."
-            },
-            "LogFile": {
+            "Path": {
               "type": "string",
-              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
+              "description": "Absolute path to the .snap file."
             },
-            "AllocationCallstacks": {
-              "type": "boolean",
-              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
+            "SizeBytes": {
+              "type": "integer",
+              "description": "File size in bytes."
             },
-            "Areas": {
-              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
-              "description": "Per-ProfilerArea enabled flag map."
+            "SizeMb": {
+              "type": "number",
+              "description": "File size in megabytes (rounded to 2 decimals)."
             },
-            "PreviousLogFile": {
+            "CreatedUtc": {
               "type": "string",
-              "description": "On 'Stop', the log file path captured before recording stopped."
+              "description": "File creation time in ISO-8601 UTC ('o' round-trip format)."
             }
           },
           "required": [
-            "Enabled",
-            "Recording",
-            "AllocationCallstacks"
+            "SizeBytes",
+            "SizeMb"
           ],
-          "description": "Unity Profiler session status snapshot."
+          "description": "Metadata for a single .snap memory snapshot file."
+        },
+        "System.Collections.Generic.List<System.String>": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "AIGD.MemorySnapshotListResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean",
+              "description": "True when the listing completed (package present)."
+            },
+            "Error": {
+              "type": "string",
+              "description": "Failure description when Ok is false."
+            },
+            "Snapshots": {
+              "$ref": "#/$defs/System.Collections.Generic.List<AIGD.MemorySnapshotInfo>",
+              "description": "Snapshot files discovered."
+            },
+            "SearchedDirs": {
+              "$ref": "#/$defs/System.Collections.Generic.List<System.String>",
+              "description": "Directories that were scanned."
+            }
+          },
+          "required": [
+            "Ok"
+          ],
+          "description": "Result for 'profiler-memory-snapshot-list'."
         }
       },
       "required": [
@@ -12176,15 +12457,20 @@
     }
   },
   {
-    "name": "profiler-stop",
+    "name": "profiler-memory-snapshot-take",
     "enabled": false,
-    "title": "Profiler / Stop",
-    "description": "Disable the Unity Profiler and stop recording.",
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Profiler / Memory Snapshot / Take",
+    "description": "Capture a Unity memory snapshot to a .snap file (requires com.unity.memoryprofiler).",
     "inputSchema": {
       "type": "object",
       "properties": {
-        "nothing": {
-          "type": "string"
+        "snapshotPath": {
+          "type": "string",
+          "description": "Output path for the .snap file. Optional — when empty, writes to Application.temporaryCachePath/MemoryCaptures/ with a timestamped name."
         }
       }
     },
@@ -12192,120 +12478,41 @@
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
-          "description": "Unity Profiler session status snapshot."
+          "$ref": "#/$defs/AIGD.MemorySnapshotResult",
+          "description": "Result for 'profiler-memory-snapshot-take'."
         }
       },
       "$defs": {
-        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "boolean"
-          }
-        },
-        "AIGD.ProfilerStatusResult": {
+        "AIGD.MemorySnapshotResult": {
           "type": "object",
           "properties": {
-            "Enabled": {
+            "Ok": {
               "type": "boolean",
-              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
+              "description": "True when the snapshot was captured successfully."
             },
-            "Recording": {
-              "type": "boolean",
-              "description": "Whether the profiler is currently recording to a binary log."
-            },
-            "LogFile": {
+            "Path": {
               "type": "string",
-              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
+              "description": "Resolved snapshot file path."
             },
-            "AllocationCallstacks": {
-              "type": "boolean",
-              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
+            "SizeBytes": {
+              "type": "integer",
+              "description": "File size in bytes when Ok is true."
             },
-            "Areas": {
-              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
-              "description": "Per-ProfilerArea enabled flag map."
+            "SizeMb": {
+              "type": "number",
+              "description": "File size in megabytes when Ok is true."
             },
-            "PreviousLogFile": {
+            "Error": {
               "type": "string",
-              "description": "On 'Stop', the log file path captured before recording stopped."
+              "description": "Failure description when Ok is false."
             }
           },
           "required": [
-            "Enabled",
-            "Recording",
-            "AllocationCallstacks"
+            "Ok",
+            "SizeBytes",
+            "SizeMb"
           ],
-          "description": "Unity Profiler session status snapshot."
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
-    "name": "profiler-status",
-    "enabled": false,
-    "title": "Profiler / Status",
-    "description": "Return Unity Profiler state and the per-area enabled map.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "nothing": {
-          "type": "string"
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
-          "description": "Unity Profiler session status snapshot."
-        }
-      },
-      "$defs": {
-        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "boolean"
-          }
-        },
-        "AIGD.ProfilerStatusResult": {
-          "type": "object",
-          "properties": {
-            "Enabled": {
-              "type": "boolean",
-              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
-            },
-            "Recording": {
-              "type": "boolean",
-              "description": "Whether the profiler is currently recording to a binary log."
-            },
-            "LogFile": {
-              "type": "string",
-              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
-            },
-            "AllocationCallstacks": {
-              "type": "boolean",
-              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
-            },
-            "Areas": {
-              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
-              "description": "Per-ProfilerArea enabled flag map."
-            },
-            "PreviousLogFile": {
-              "type": "string",
-              "description": "On 'Stop', the log file path captured before recording stopped."
-            }
-          },
-          "required": [
-            "Enabled",
-            "Recording",
-            "AllocationCallstacks"
-          ],
-          "description": "Unity Profiler session status snapshot."
+          "description": "Result for 'profiler-memory-snapshot-take'."
         }
       },
       "required": [
@@ -12316,6 +12523,10 @@
   {
     "name": "profiler-set-areas",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Profiler / Set Areas",
     "description": "Toggle Unity ProfilerArea values via Profiler.SetAreaEnabled.",
     "inputSchema": {
@@ -12395,8 +12606,241 @@
     }
   },
   {
+    "name": "profiler-start",
+    "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
+    "title": "Profiler / Start",
+    "description": "Enable the Unity Profiler. Optionally record to a .raw file and enable allocation callstacks.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "logFile": {
+          "type": "string",
+          "description": "Absolute path for an optional binary '.raw' profiler recording. The parent directory must exist."
+        },
+        "enableCallstacks": {
+          "$ref": "#/$defs/System.Boolean",
+          "description": "If true, enables Profiler.enableAllocationCallstacks. Default: false."
+        }
+      },
+      "$defs": {
+        "System.Boolean": {
+          "type": "boolean"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "AIGD.ProfilerStatusResult": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
+            },
+            "Recording": {
+              "type": "boolean",
+              "description": "Whether the profiler is currently recording to a binary log."
+            },
+            "LogFile": {
+              "type": "string",
+              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
+            },
+            "AllocationCallstacks": {
+              "type": "boolean",
+              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
+            },
+            "Areas": {
+              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
+              "description": "Per-ProfilerArea enabled flag map."
+            },
+            "PreviousLogFile": {
+              "type": "string",
+              "description": "On 'Stop', the log file path captured before recording stopped."
+            }
+          },
+          "required": [
+            "Enabled",
+            "Recording",
+            "AllocationCallstacks"
+          ],
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "profiler-status",
+    "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Profiler / Status",
+    "description": "Return Unity Profiler state and the per-area enabled map.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "nothing": {
+          "type": "string"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "AIGD.ProfilerStatusResult": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
+            },
+            "Recording": {
+              "type": "boolean",
+              "description": "Whether the profiler is currently recording to a binary log."
+            },
+            "LogFile": {
+              "type": "string",
+              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
+            },
+            "AllocationCallstacks": {
+              "type": "boolean",
+              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
+            },
+            "Areas": {
+              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
+              "description": "Per-ProfilerArea enabled flag map."
+            },
+            "PreviousLogFile": {
+              "type": "string",
+              "description": "On 'Stop', the log file path captured before recording stopped."
+            }
+          },
+          "required": [
+            "Enabled",
+            "Recording",
+            "AllocationCallstacks"
+          ],
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
+    "name": "profiler-stop",
+    "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Profiler / Stop",
+    "description": "Disable the Unity Profiler and stop recording.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "nothing": {
+          "type": "string"
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.ProfilerStatusResult",
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "$defs": {
+        "System.Collections.Generic.Dictionary<System.String,System.Boolean>": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "AIGD.ProfilerStatusResult": {
+          "type": "object",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "description": "Whether 'UnityEngine.Profiling.Profiler.enabled' is true."
+            },
+            "Recording": {
+              "type": "boolean",
+              "description": "Whether the profiler is currently recording to a binary log."
+            },
+            "LogFile": {
+              "type": "string",
+              "description": "Current 'Profiler.logFile' path when 'Recording' is true; otherwise null."
+            },
+            "AllocationCallstacks": {
+              "type": "boolean",
+              "description": "Whether 'Profiler.enableAllocationCallstacks' is true."
+            },
+            "Areas": {
+              "$ref": "#/$defs/System.Collections.Generic.Dictionary<System.String,System.Boolean>",
+              "description": "Per-ProfilerArea enabled flag map."
+            },
+            "PreviousLogFile": {
+              "type": "string",
+              "description": "On 'Stop', the log file path captured before recording stopped."
+            }
+          },
+          "required": [
+            "Enabled",
+            "Recording",
+            "AllocationCallstacks"
+          ],
+          "description": "Unity Profiler session status snapshot."
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "reflection-method-call",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Method C# / Call",
     "description": "Call C# method. Any method could be called, even private methods. It requires to receive proper method schema. Use 'reflection-method-find' to find available method before using it. Receives input parameters and returns result.",
     "inputSchema": {
@@ -12585,6 +13029,10 @@
   {
     "name": "reflection-method-find",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Method C# / Find",
     "description": "Find method in the project using C# Reflection. It looks for all assemblies in the project and finds method by its name, class name and parameters. Even private methods are available. Use 'reflection-method-call' to call the method after finding it.",
     "inputSchema": {
@@ -12675,6 +13123,10 @@
   {
     "name": "scene-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Scene / Create",
     "description": "Create new scene in the project assets. Use 'scene-list-opened' tool to list all opened scenes after creation.",
     "inputSchema": {
@@ -12775,6 +13227,10 @@
   {
     "name": "scene-get-data",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Scene / Get Data",
     "description": "This tool retrieves the list of root GameObjects in the specified scene. Use 'scene-list-opened' tool to get the list of all opened scenes.\n\nPath-scoped reads (token-saving): supply 'paths' (a list of paths) to read only the listed fields/elements from the scene's root-GameObjects array via Reflector.TryReadAt, or 'viewQuery' (a ViewQuery) to navigate/filter the same array via Reflector.View. The result populates 'Data' on the returned SceneData. These two parameters are mutually exclusive.\nPath syntax: 'fieldName', 'nested/field', 'arrayField/[i]', 'dictField/[key]'. Leading '#/' is stripped. Example: paths=['[0]/name'] reads the name of the first root GameObject.",
     "inputSchema": {
@@ -13139,6 +13595,10 @@
   {
     "name": "scene-list-opened",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Scene / List Opened",
     "description": "Returns the list of currently opened scenes in Unity Editor. Use 'scene-get-data' tool to get detailed information about a specific scene.",
     "inputSchema": {
@@ -13219,6 +13679,10 @@
   {
     "name": "scene-open",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Scene / Open",
     "description": "Open scene from the project asset file. Use 'assets-find' tool to find the scene asset first.",
     "inputSchema": {
@@ -13342,6 +13806,10 @@
   {
     "name": "scene-save",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Scene / Save",
     "description": "Save Opened scene to the asset file. Use 'scene-list-opened' tool to get the list of all opened scenes.",
     "inputSchema": {
@@ -13361,6 +13829,10 @@
   {
     "name": "scene-set-active",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Scene / Set Active",
     "description": "Set the specified opened scene as the active scene. Use 'scene-list-opened' tool to get the list of all opened scenes.",
     "inputSchema": {
@@ -13475,6 +13947,10 @@
   {
     "name": "scene-unload",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Scene / Unload",
     "description": "Unload scene from the Opened scenes in Unity Editor. Use 'scene-list-opened' tool to get the list of all opened scenes.",
     "inputSchema": {
@@ -13547,6 +14023,10 @@
   {
     "name": "screenshot-camera",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Screenshot / Camera",
     "description": "Captures a screenshot from a camera and returns it as an image. If no camera is specified, uses the Main Camera. Returns the image directly for visual inspection by the LLM.",
     "inputSchema": {
@@ -13608,6 +14088,10 @@
   {
     "name": "screenshot-game-view",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Screenshot / Game View",
     "description": "Captures a screenshot from the Unity Editor Game View and returns it as an image. Reads the Game View's own render texture directly via the Unity Editor API. The image size matches the current Game View resolution. Returns the image directly for visual inspection by the LLM.",
     "inputSchema": {
@@ -13622,6 +14106,10 @@
   {
     "name": "screenshot-isolated",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Screenshot / Isolated GameObject",
     "description": "Renders a screenshot of a target GameObject with configurable isolation, background, camera angle, and lighting. When isolated=true (default), only the target object is visible via layer-based culling and inactive children of the target are temporarily activated for the render (their OnEnable callbacks may fire — restored in finally, but side effects like audio/network/animation events are not undoable). When isolated=false, the existing scene state is rendered as-is without activating inactive objects. Supports custom multi-light setups via JSON. Returns a base64-encoded PNG.",
     "inputSchema": {
@@ -13751,6 +14239,10 @@
   {
     "name": "screenshot-scene-view",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Screenshot / Scene View",
     "description": "Captures a screenshot from the Unity Editor Scene View and returns it as an image. Returns the image directly for visual inspection by the LLM.",
     "inputSchema": {
@@ -13770,6 +14262,10 @@
   {
     "name": "script-apply-edits",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": false,
     "title": "Script / Apply Edits",
     "description": "Apply LSP-style line/column ranged edits to a .cs file. Send only the diff, not the whole file. Optional SHA-based optimistic locking; Roslyn syntax validation before write.",
     "inputSchema": {
@@ -13929,6 +14425,10 @@
   {
     "name": "script-delete",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Script / Delete",
     "description": "Delete the script file(s). Does AssetDatabase.Refresh() and waits for Unity compilation to complete before reporting results. Use 'script-read' tool to read existing script files first.",
     "inputSchema": {
@@ -13955,6 +14455,10 @@
   {
     "name": "script-execute",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": true,
     "title": "Script / Execute",
     "description": "Compiles and executes C# code dynamically using Roslyn. Supports two modes: full code mode (default) requires a complete class definition, while body-only mode (isMethodBody=true) auto-generates the boilerplate so you only provide the method body. Unity objects (GameObject, Component, etc.) can be passed as parameters using their Ref types (GameObjectRef, ComponentRef, etc.) or directly by type.",
     "inputSchema": {
@@ -14088,6 +14592,10 @@
   {
     "name": "script-find-in-file",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Script / Find In File",
     "description": "Search files under Assets/ or Packages/ for a regex or plain-text pattern (ripgrep-style). Returns matching lines with optional context.",
     "inputSchema": {
@@ -14212,6 +14720,10 @@
   {
     "name": "script-get-sha",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Script / Get SHA",
     "description": "Compute the SHA-256 hash of a script file's raw bytes (hex, lower-case). Pair with 'script-apply-edits' as an optimistic-lock token.",
     "inputSchema": {
@@ -14266,6 +14778,10 @@
   {
     "name": "script-read",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Script / Read",
     "description": "Reads the content of a script file and returns it as a string. Use 'script-update-or-create' tool to update or create script files.",
     "inputSchema": {
@@ -14303,6 +14819,10 @@
   {
     "name": "script-update-or-create",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": false,
     "title": "Script / Update or Create",
     "description": "Updates or creates script file with the provided C# code. Does AssetDatabase.Refresh() at the end. Provides compilation error details if the code has syntax errors. Use 'script-read' tool to read existing script files first.",
     "inputSchema": {
@@ -14326,6 +14846,10 @@
   {
     "name": "script-validate",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Script / Validate",
     "description": "Validates C# source via Roslyn at Syntax / Semantic / Strict levels without compiling to an assembly or writing any file. Use as a pre-flight check before 'script-update-or-create'. Semantic/Strict catch references to unknown namespaces, types, and methods against the project's loaded assemblies.",
     "inputSchema": {
@@ -14439,6 +14963,10 @@
   {
     "name": "tests-run",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Tests / Run",
     "description": "Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method. Recommended to use 'EditMode' for faster iteration during development. Precondition: every open scene MUST be saved (no unsaved changes). If any open scene is dirty, this tool throws an InvalidOperationException listing the dirty scenes; save them and retry.",
     "inputSchema": {
@@ -14644,6 +15172,10 @@
   {
     "name": "texture-create-checker",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Texture / Create Checker Pattern",
     "description": "Generate a Texture2D with a two-color checkerboard pattern and save it as a PNG asset under 'Assets/'.",
     "inputSchema": {
@@ -14755,6 +15287,10 @@
   {
     "name": "texture-create-gradient",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Texture / Create Gradient",
     "description": "Generate a Texture2D containing a linear gradient and save it as a PNG asset under 'Assets/'.",
     "inputSchema": {
@@ -14874,6 +15410,10 @@
   {
     "name": "texture-create-noise",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Texture / Create Perlin Noise",
     "description": "Generate a Texture2D filled with Perlin / fBm noise and save it as a PNG asset under 'Assets/'.",
     "inputSchema": {
@@ -14997,6 +15537,10 @@
   {
     "name": "texture-create-solid",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Texture / Create Solid Color",
     "description": "Generate a Texture2D filled with a single RGBA color and save it as a PNG asset under 'Assets/'.",
     "inputSchema": {
@@ -15100,6 +15644,10 @@
   {
     "name": "texture-read",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Texture / Read Metadata",
     "description": "Read metadata of an existing texture asset (.png / .jpg / .jpeg) under 'Assets/'.",
     "inputSchema": {
@@ -15178,104 +15726,12 @@
     }
   },
   {
-    "name": "unity-tool-list",
-    "enabled": true,
-    "title": "Tool / List",
-    "description": "List all Unity-MCP tools registered in the connected Unity Editor instance. Optionally filter by regex across tool names, descriptions, and arguments.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "regexSearch": {
-          "type": "string",
-          "description": "Regex pattern to filter tools. Matches against tool name, description, and argument names and descriptions."
-        },
-        "includeDescription": {
-          "$ref": "#/$defs/System.Boolean",
-          "description": "Include tool descriptions in the result. Default: false"
-        },
-        "includeInputs": {
-          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Tool+InputRequest",
-          "description": "Include input arguments in the result. Default: None"
-        }
-      },
-      "$defs": {
-        "System.Boolean": {
-          "type": "boolean"
-        },
-        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Tool+InputRequest": {
-          "type": "string",
-          "enum": [
-            "None",
-            "Inputs",
-            "InputsWithDescription"
-          ],
-          "description": "Specifies what to include for tool input arguments."
-        }
-      }
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/$defs/AIGD.ToolInfoData[]"
-        }
-      },
-      "$defs": {
-        "AIGD.ToolInfoData": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Tool name."
-            },
-            "description": {
-              "type": "string",
-              "description": "Tool description."
-            },
-            "inputs": {
-              "$ref": "#/$defs/AIGD.ToolInputData[]",
-              "description": "Tool input arguments."
-            }
-          },
-          "description": "MCP tool information."
-        },
-        "AIGD.ToolInputData[]": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/AIGD.ToolInputData",
-            "description": "MCP tool input argument."
-          }
-        },
-        "AIGD.ToolInputData": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Argument name."
-            },
-            "description": {
-              "type": "string",
-              "description": "Argument description."
-            }
-          },
-          "description": "MCP tool input argument."
-        },
-        "AIGD.ToolInfoData[]": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/AIGD.ToolInfoData",
-            "description": "MCP tool information."
-          }
-        }
-      },
-      "required": [
-        "result"
-      ]
-    }
-  },
-  {
     "name": "tool-set-enabled-state",
     "enabled": false,
+    "readOnlyHint": null,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Tool / Set Enabled State",
     "description": "Enable or disable MCP tools by name. Allows controlling which tools are available for the AI agent.",
     "inputSchema": {
@@ -15390,6 +15846,10 @@
   {
     "name": "tools-list-groups",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Tools / List Groups",
     "description": "List all MCP tool groups with current enabled state and tool membership.",
     "inputSchema": {
@@ -15461,6 +15921,10 @@
   {
     "name": "tools-set-group-enabled",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "Tools / Set Group Enabled",
     "description": "Enable or disable an MCP tool group at runtime, persisting the choice to EditorPrefs. Soft hint only — disabled tools remain callable through the upstream request pipeline.",
     "inputSchema": {
@@ -15534,6 +15998,10 @@
   {
     "name": "type-get-json-schema",
     "enabled": false,
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "Type / Get Json Schema",
     "description": "Generates a JSON Schema for a given C# type name using reflection. Supports primitives, enums, arrays, generic collections, dictionaries, and complex objects. The type must be present in any loaded assembly. Use the full type name (e.g. 'UnityEngine.Vector3') for best results.",
     "inputSchema": {
@@ -15589,6 +16057,10 @@
   {
     "name": "ui-document-attach",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / Document / Attach",
     "description": "Attach a UIDocument to a GameObject and wire it to a UXML asset.",
     "inputSchema": {
@@ -15698,6 +16170,10 @@
   {
     "name": "ui-document-detach",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / Document / Detach",
     "description": "Detach a UIDocument from a GameObject.",
     "inputSchema": {
@@ -15791,6 +16267,10 @@
   {
     "name": "ui-element-query",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / Element / Query",
     "description": "Query VisualElements under a UIDocument's rootVisualElement by UQuery-style selector.",
     "inputSchema": {
@@ -15954,6 +16434,10 @@
   {
     "name": "ui-uss-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / USS / Create",
     "description": "Create a new USS asset under 'Assets/'.",
     "inputSchema": {
@@ -16014,6 +16498,10 @@
   {
     "name": "ui-uss-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / USS / Modify",
     "description": "Modify a USS file via text operations: 'append', 'replace-all', 'add-rule', 'remove-rule'.",
     "inputSchema": {
@@ -16086,6 +16574,10 @@
   {
     "name": "ui-uss-read",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "UI / USS / Read",
     "description": "Read USS content as a string.",
     "inputSchema": {
@@ -16141,6 +16633,10 @@
   {
     "name": "ui-uxml-create",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / UXML / Create",
     "description": "Create a new UXML asset under 'Assets/'. Validates XML before writing.",
     "inputSchema": {
@@ -16201,6 +16697,10 @@
   {
     "name": "ui-uxml-modify",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "UI / UXML / Modify",
     "description": "Structurally modify a UXML file. Use 'ui-uxml-read' first to inspect existing content.",
     "inputSchema": {
@@ -16277,6 +16777,10 @@
   {
     "name": "ui-uxml-read",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "UI / UXML / Read",
     "description": "Read UXML content as a string.",
     "inputSchema": {
@@ -16330,8 +16834,112 @@
     }
   },
   {
+    "name": "unity-tool-list",
+    "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
+    "title": "Tool / List",
+    "description": "List all Unity-MCP tools registered in the connected Unity Editor instance. Optionally filter by regex across tool names, descriptions, and arguments.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "regexSearch": {
+          "type": "string",
+          "description": "Regex pattern to filter tools. Matches against tool name, description, and argument names and descriptions."
+        },
+        "includeDescription": {
+          "$ref": "#/$defs/System.Boolean",
+          "description": "Include tool descriptions in the result. Default: false"
+        },
+        "includeInputs": {
+          "$ref": "#/$defs/com.IvanMurzak.Unity.MCP.Editor.API.Tool_Tool+InputRequest",
+          "description": "Include input arguments in the result. Default: None"
+        }
+      },
+      "$defs": {
+        "System.Boolean": {
+          "type": "boolean"
+        },
+        "com.IvanMurzak.Unity.MCP.Editor.API.Tool_Tool+InputRequest": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Inputs",
+            "InputsWithDescription"
+          ],
+          "description": "Specifies what to include for tool input arguments."
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/AIGD.ToolInfoData[]"
+        }
+      },
+      "$defs": {
+        "AIGD.ToolInfoData": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Tool name."
+            },
+            "description": {
+              "type": "string",
+              "description": "Tool description."
+            },
+            "inputs": {
+              "$ref": "#/$defs/AIGD.ToolInputData[]",
+              "description": "Tool input arguments."
+            }
+          },
+          "description": "MCP tool information."
+        },
+        "AIGD.ToolInputData[]": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AIGD.ToolInputData",
+            "description": "MCP tool input argument."
+          }
+        },
+        "AIGD.ToolInputData": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Argument name."
+            },
+            "description": {
+              "type": "string",
+              "description": "Argument description."
+            }
+          },
+          "description": "MCP tool input argument."
+        },
+        "AIGD.ToolInfoData[]": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AIGD.ToolInfoData",
+            "description": "MCP tool information."
+          }
+        }
+      },
+      "required": [
+        "result"
+      ]
+    }
+  },
+  {
     "name": "vfx-graph-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "VFX / Graph / Configure",
     "description": "Set a single exposed property on a VFX Graph VisualEffect. Returns Ok=false when the VFX Graph package is not installed.",
     "inputSchema": {
@@ -16444,6 +17052,10 @@
   {
     "name": "vfx-particle-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "VFX / Particle / Configure",
     "description": "Configure a ParticleSystem's most-common module fields. Only provided (non-null) parameters are written. Use 'vfx-particle-get' to inspect current values first.",
     "inputSchema": {
@@ -16816,6 +17428,10 @@
   {
     "name": "vfx-particle-control",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "VFX / Particle / Control",
     "description": "Control ParticleSystem playback (play / pause / stop / clear / emit). Use 'emit' to inject a one-shot burst of N particles.",
     "inputSchema": {
@@ -17080,6 +17696,10 @@
   {
     "name": "vfx-particle-get",
     "enabled": true,
+    "readOnlyHint": true,
+    "destructiveHint": null,
+    "idempotentHint": true,
+    "openWorldHint": null,
     "title": "VFX / Particle / Get",
     "description": "Read a ParticleSystem's main/emission/shape/velocity-over-lifetime modules. Pair with 'vfx-particle-configure' to write back.",
     "inputSchema": {
@@ -17335,6 +17955,10 @@
   {
     "name": "vfx-trail-configure",
     "enabled": true,
+    "readOnlyHint": null,
+    "destructiveHint": true,
+    "idempotentHint": null,
+    "openWorldHint": null,
     "title": "VFX / Trail / Configure",
     "description": "Configure a TrailRenderer's most-common fields. Only provided (non-null) parameters are written.",
     "inputSchema": {

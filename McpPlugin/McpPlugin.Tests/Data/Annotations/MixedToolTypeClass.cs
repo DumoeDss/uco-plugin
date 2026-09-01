@@ -19,7 +19,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data.Annotations
         [McpPluginTool("standard-tool-b", "Standard Tool B")]
         public static string StandardB() => "b";
 
-        [McpPluginTool("system-tool-x", "System Tool X", ToolType = McpToolType.System)]
+        [McpPluginTool(
+            "system-tool-x",
+            "System Tool X",
+            ToolType = McpToolType.System,
+            ReadOnlyHint = true,
+            DestructiveHint = false,
+            IdempotentHint = true,
+            OpenWorldHint = false)]
         public static string SystemX() => "x";
 
         [McpPluginTool("system-tool-y", "System Tool Y", ToolType = McpToolType.System)]

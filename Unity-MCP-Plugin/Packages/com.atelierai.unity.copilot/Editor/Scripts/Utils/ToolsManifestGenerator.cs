@@ -11,9 +11,11 @@
 #nullable enable
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Nodes;
 using com.AtelierAI.Unity.Copilot.Editor.Branding;
 using com.IvanMurzak.McpPlugin;
@@ -30,7 +32,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// or MCP server required).
     /// <para>
     /// Each entry contains <c>name</c>, <c>enabled</c>, <c>title</c>,
-    /// <c>description</c>, <c>inputSchema</c>, and optionally <c>outputSchema</c>
+    /// <c>description</c>, <c>inputSchema</c>, optionally <c>outputSchema</c>,
+    /// and the four nullable safety-hint members
     /// — exactly matching <see cref="com.IvanMurzak.McpPlugin.Server.Api.DirectToolCallEndpoints"/>.
     /// The <c>enabled</c> field reflects the DEFAULT state from
     /// <see cref="McpPluginToolAttribute"/> (not per-project runtime overrides)
@@ -71,19 +74,43 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 return;
             }
 
-            // Build a JSON array whose entries match the /api/tools response shape
-            // (see DirectToolCallEndpoints.ListToolsHandler).
-            var tools = toolManager.GetAllTools()
-                .OrderBy(t => t.Name, StringComparer.Ordinal)
-                .ToList();
+            var packageRoot = ResolvePackageRoot();
+            if (!Directory.Exists(packageRoot))
+            {
+                Debug.LogError(
+                    $"{ProductInfo.LogPrefix} Package directory not found: {packageRoot}\n" +
+                    "The plugin must be installed as an embedded or local-copy package.");
+                return;
+            }
 
+            var manifestPath = Path.Combine(packageRoot, ManifestFileName);
+            var toolCount = GenerateManifest(toolManager.GetAllTools(), manifestPath);
+
+            AssetDatabase.Refresh();
+            Debug.Log(
+                $"{ProductInfo.LogPrefix} Tools manifest generated: {manifestPath} ({toolCount} tools)");
+        }
+
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Generate Tools Manifest", validate = true)]
+        public static bool ValidateGenerateManifest()
+        {
+            // Only show the menu when the editor singleton is available.
+            return UnityCopilotPluginEditor.HasInstance;
+        }
+
+        internal static JsonArray BuildToolsArray(IEnumerable<IRunTool> tools)
+        {
             var toolsArray = new JsonArray();
-            foreach (var tool in tools)
+            foreach (var tool in tools.OrderBy(t => t.Name, StringComparer.Ordinal))
             {
                 var entry = new JsonObject
                 {
                     ["name"] = tool.Name,
                     ["enabled"] = ResolveDefaultEnabled(tool),
+                    ["readOnlyHint"] = JsonValue.Create(tool.ReadOnlyHint),
+                    ["destructiveHint"] = JsonValue.Create(tool.DestructiveHint),
+                    ["idempotentHint"] = JsonValue.Create(tool.IdempotentHint),
+                    ["openWorldHint"] = JsonValue.Create(tool.OpenWorldHint),
                 };
                 if (tool.Title != null)
                     entry["title"] = tool.Title;
@@ -96,30 +123,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
                 toolsArray.Add(entry);
             }
-
-            var packageRoot = ResolvePackageRoot();
-            if (!Directory.Exists(packageRoot))
-            {
-                Debug.LogError(
-                    $"{ProductInfo.LogPrefix} Package directory not found: {packageRoot}\n" +
-                    "The plugin must be installed as an embedded or local-copy package.");
-                return;
-            }
-
-            var manifestPath = Path.Combine(packageRoot, ManifestFileName);
-            var jsonOptions = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
-            File.WriteAllText(manifestPath, toolsArray.ToJsonString(jsonOptions) + "\n");
-
-            AssetDatabase.Refresh();
-            Debug.Log(
-                $"{ProductInfo.LogPrefix} Tools manifest generated: {manifestPath} ({toolsArray.Count} tools)");
+            return toolsArray;
         }
 
-        [MenuItem(ProductInfo.ToolsMenuRoot + "/Generate Tools Manifest", validate = true)]
-        public static bool ValidateGenerateManifest()
+        internal static int GenerateManifest(IEnumerable<IRunTool> tools, string manifestPath)
         {
-            // Only show the menu when the editor singleton is available.
-            return UnityCopilotPluginEditor.HasInstance;
+            var toolsArray = BuildToolsArray(tools);
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(
+                manifestPath,
+                toolsArray.ToJsonString(jsonOptions) + "\n",
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            return toolsArray.Count;
         }
 
         /// <summary>

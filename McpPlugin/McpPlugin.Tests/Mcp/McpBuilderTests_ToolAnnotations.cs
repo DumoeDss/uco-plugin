@@ -7,11 +7,15 @@
 │  See the LICENSE file in the project root for more information.        │
 └────────────────────────────────────────────────────────────────────────┘
 */
+using System.Net.WebSockets;
 using System.Threading.Tasks;
+using System.Text.Json;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
 using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -116,6 +120,46 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             tool.DestructiveHint.ShouldBe(false);
             tool.IdempotentHint.ShouldBe(true);
             tool.OpenWorldHint.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task ToolAnnotations_ProductionWebSocketEnvelope_ShouldKeepFalseAndUnknownHints()
+        {
+            var annotated = await GetTool("tool-all-hints");
+            var legacy = await GetTool("tool-no-hints");
+            using var services = new ServiceCollection().BuildServiceProvider();
+            var provider = new WebSocketConnectionProvider(
+                NullLogger<ClientWebSocket>.Instance,
+                new Reflector(),
+                services);
+            var options = provider.JsonSerializerOptions;
+            var response = ResponseData<ResponseListTool[]>.Success("wire-list");
+            response.Value = new[] { annotated, legacy };
+            var envelope = new WsResponse
+            {
+                Id = "wire-list",
+                Result = JsonSerializer.SerializeToElement(response, options),
+            };
+
+            using var wireJson = JsonDocument.Parse(WsEnvelope.SerializeResponse(envelope, options));
+            var tools = wireJson.RootElement.GetProperty("result").GetProperty("value");
+            var annotatedRoot = tools[0];
+            annotatedRoot.GetProperty("readOnlyHint").GetBoolean().ShouldBeTrue();
+            annotatedRoot.GetProperty("destructiveHint").GetBoolean().ShouldBeFalse();
+            annotatedRoot.GetProperty("idempotentHint").GetBoolean().ShouldBeTrue();
+            annotatedRoot.GetProperty("openWorldHint").GetBoolean().ShouldBeFalse();
+
+            var legacyRoot = tools[1];
+            AssertUnknownOrOmitted(legacyRoot, "readOnlyHint");
+            AssertUnknownOrOmitted(legacyRoot, "destructiveHint");
+            AssertUnknownOrOmitted(legacyRoot, "idempotentHint");
+            AssertUnknownOrOmitted(legacyRoot, "openWorldHint");
+        }
+
+        private static void AssertUnknownOrOmitted(JsonElement value, string propertyName)
+        {
+            if (value.TryGetProperty(propertyName, out var property))
+                property.ValueKind.ShouldBe(JsonValueKind.Null);
         }
     }
 }

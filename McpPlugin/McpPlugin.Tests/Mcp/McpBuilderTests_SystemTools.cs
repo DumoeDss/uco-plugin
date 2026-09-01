@@ -10,12 +10,15 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
 using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -193,6 +196,64 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             names.ShouldContain("standard-default");
             names.ShouldNotContain("system-tool-x");
             names.ShouldNotContain("system-tool-y");
+        }
+
+        [Fact]
+        public async Task ListSystemTools_ShouldPreserveExplicitSafetyHints()
+        {
+            var plugin = BuildWithMixedTools();
+            var response = await plugin.McpManager.SystemToolManager!
+                .RunListSystemTool(new RequestListTool());
+
+            response.Status.ShouldBe(ResponseStatus.Success);
+            var tool = response.Value!.Single(entry => entry.Name == "system-tool-x");
+            tool.ReadOnlyHint.ShouldBe(true);
+            tool.DestructiveHint.ShouldBe(false);
+            tool.IdempotentHint.ShouldBe(true);
+            tool.OpenWorldHint.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task ListSystemTools_ShouldKeepUnsetSafetyHintsNull()
+        {
+            var plugin = BuildWithMixedTools();
+            var response = await plugin.McpManager.SystemToolManager!
+                .RunListSystemTool(new RequestListTool());
+
+            response.Status.ShouldBe(ResponseStatus.Success);
+            var tool = response.Value!.Single(entry => entry.Name == "system-tool-y");
+            tool.ReadOnlyHint.ShouldBeNull();
+            tool.DestructiveHint.ShouldBeNull();
+            tool.IdempotentHint.ShouldBeNull();
+            tool.OpenWorldHint.ShouldBeNull();
+
+            using var services = new ServiceCollection().BuildServiceProvider();
+            var provider = new WebSocketConnectionProvider(
+                NullLogger<ClientWebSocket>.Instance,
+                new Reflector(),
+                services);
+            var options = provider.JsonSerializerOptions;
+            var envelope = new WsResponse
+            {
+                Id = "system-list",
+                Result = JsonSerializer.SerializeToElement(response, options),
+            };
+            using var wireJson = JsonDocument.Parse(WsEnvelope.SerializeResponse(envelope, options));
+            var wireTool = wireJson.RootElement
+                .GetProperty("result")
+                .GetProperty("value")
+                .EnumerateArray()
+                .Single(entry => entry.GetProperty("name").GetString() == "system-tool-y");
+            AssertUnknownOrOmitted(wireTool, "readOnlyHint");
+            AssertUnknownOrOmitted(wireTool, "destructiveHint");
+            AssertUnknownOrOmitted(wireTool, "idempotentHint");
+            AssertUnknownOrOmitted(wireTool, "openWorldHint");
+        }
+
+        private static void AssertUnknownOrOmitted(JsonElement value, string propertyName)
+        {
+            if (value.TryGetProperty(propertyName, out var property))
+                property.ValueKind.ShouldBe(JsonValueKind.Null);
         }
 
         // ── SystemToolManager available when no system tools registered ─
