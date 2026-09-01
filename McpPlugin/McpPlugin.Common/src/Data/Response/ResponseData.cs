@@ -49,6 +49,23 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public ResponseStatus Status { get; set; }
         public string? Message { get; set; }
 
+        /// <summary>
+        /// Optional structured error for controlled calls.  The member is
+        /// additive: legacy callers can continue to deserialize responses
+        /// without looking at it.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("error")]
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public ToolCallError? StructuredError { get; set; }
+
+        /// <summary>Non-wire alias for callers that prefer an error-data name.</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ToolCallError? ErrorData
+        {
+            get => StructuredError;
+            set => StructuredError = value;
+        }
+
         public ResponseData() { }
         public ResponseData(string requestId, ResponseStatus status)
         {

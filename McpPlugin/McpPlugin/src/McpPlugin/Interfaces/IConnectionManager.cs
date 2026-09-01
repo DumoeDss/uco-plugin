@@ -61,8 +61,21 @@ namespace com.IvanMurzak.McpPlugin
         IDisposable RegisterHandler<TParam, TResult>(string method, Func<TParam?, Task<TResult?>> handler);
 
         /// <summary>
+        /// Registers a request handler that receives the active connection
+        /// cancellation token. The original overload remains compatible.
+        /// </summary>
+        IDisposable RegisterHandler<TParam, TResult>(
+            string method,
+            Func<TParam?, CancellationToken, Task<TResult?>> handler);
+
+        /// <summary>
         /// Registers a handler for an incoming notification (no response expected).
         /// </summary>
         IDisposable RegisterNotification<TParam>(string method, Func<TParam?, Task> handler);
+
+        /// <summary>Registers a notification handler with the connection token.</summary>
+        IDisposable RegisterNotification<TParam>(
+            string method,
+            Func<TParam?, CancellationToken, Task> handler);
     }
 }

@@ -168,10 +168,10 @@ namespace com.IvanMurzak.McpPlugin
             {
                 connectionManager.RegisterHandler<RequestCallTool, ResponseData<ResponseCallTool>>(
                     nameof(IClientToolHub.RunCallTool),
-                    data =>
+                    (data, requestCancellationToken) =>
                     {
                         _logger.LogDebug("{class}.{method}", nameof(IClientToolHub), nameof(IClientToolHub.RunCallTool));
-                        return _mcpManager.ToolHub!.RunCallTool(data!);
+                        return _mcpManager.ToolHub!.RunCallTool(data!, requestCancellationToken);
                     })
                     .AddTo(disposables);
 
@@ -246,10 +246,10 @@ namespace com.IvanMurzak.McpPlugin
             {
                 connectionManager.RegisterHandler<RequestCallTool, ResponseData<ResponseCallTool>>(
                     nameof(IClientSystemToolHub.RunSystemTool),
-                    data =>
+                    (data, requestCancellationToken) =>
                     {
                         _logger.LogDebug("{class}.{method}", nameof(IClientSystemToolHub), nameof(IClientSystemToolHub.RunSystemTool));
-                        return _mcpManager.SystemToolHub!.RunSystemTool(data!);
+                        return _mcpManager.SystemToolHub!.RunSystemTool(data!, requestCancellationToken);
                     })
                     .AddTo(disposables);
 

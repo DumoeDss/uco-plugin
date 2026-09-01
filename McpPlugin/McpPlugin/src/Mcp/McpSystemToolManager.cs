@@ -35,12 +35,19 @@ namespace com.IvanMurzak.McpPlugin
     {
         readonly ILogger _logger;
         readonly SystemToolRunnerCollection _tools;
+        readonly ToolExecutionPipeline _executionPipeline;
 
-        public McpSystemToolManager(ILogger<McpSystemToolManager> logger, SystemToolRunnerCollection tools)
+        public ToolExecutionPipeline ExecutionPipeline => _executionPipeline;
+
+        public McpSystemToolManager(
+            ILogger<McpSystemToolManager> logger,
+            SystemToolRunnerCollection tools,
+            ToolExecutionPipeline? executionPipeline = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor");
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
+            _executionPipeline = executionPipeline ?? new ToolExecutionPipeline();
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -67,27 +74,153 @@ namespace com.IvanMurzak.McpPlugin
                 return ResponseData<ResponseCallTool>.Error(string.Empty, "Request is null.");
 
             var name = request.Name;
-            if (string.IsNullOrWhiteSpace(name))
+            if (request.Control == null && string.IsNullOrWhiteSpace(name))
                 return ResponseData<ResponseCallTool>.Error(request.RequestID, "System tool name is empty.");
 
-            if (!_tools.TryGetValue(name, out var tool))
+            ToolCallNormalizationResult normalized;
+            try
+            {
+                normalized = ToolCallContextNormalizer.Normalize(request, cancellationToken);
+            }
+            catch (ToolCallControlException ex)
+            {
+                if (request.Control != null)
+                    return CreateControlledError(request, ex);
+
+                return ResponseData<ResponseCallTool>.Error(request.RequestID, ex.Message);
+            }
+
+            var normalizedRequest = normalized.Request;
+            var context = normalized.Context;
+            if (!_tools.TryGetValue(normalizedRequest.Name, out var tool))
             {
                 _logger.LogWarning("System tool '{name}' not found. Available: [{available}]",
-                    name, string.Join(", ", _tools.Keys.OrderBy(k => k)));
-                return ResponseData<ResponseCallTool>.Error(request.RequestID, $"System tool '{name}' not found.");
+                    normalizedRequest.Name, string.Join(", ", _tools.Keys.OrderBy(k => k)));
+                return ResponseData<ResponseCallTool>.Error(normalizedRequest.RequestID, $"System tool '{normalizedRequest.Name}' not found.");
             }
 
             try
             {
-                _logger.LogDebug("Executing system tool '{name}'.", name);
-                var result = await tool.Run(request.RequestID, request.Arguments, cancellationToken);
-                return result.Pack(request.RequestID);
+                _logger.LogDebug("Executing system tool '{name}'.", normalizedRequest.Name);
+                var result = await _executionPipeline.InvokeAsync(
+                    context,
+                    async invocationContext =>
+                    {
+                        using var invocationScope = ToolCallInvocationScope.Push(invocationContext);
+                        return await tool.Run(
+                            invocationContext.CallId,
+                            normalizedRequest.Arguments,
+                            invocationContext.CancellationToken).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
+                if (result == null)
+                {
+                    if (!context.Legacy)
+                    {
+                        return CreateControlledError(
+                            normalizedRequest,
+                            new ToolCallControlException(
+                                ToolCallErrorCodes.ToolExecutionFailed,
+                                $"System tool '{normalizedRequest.Name}' returned null result.",
+                                callId: context.CallId,
+                                correlationId: context.CorrelationId),
+                            context);
+                    }
+
+                    return ResponseData<ResponseCallTool>.Error(
+                        normalizedRequest.RequestID,
+                        $"System tool '{normalizedRequest.Name}' returned null result.");
+                }
+
+                if (!context.Legacy && result.Status == ResponseStatus.Error)
+                {
+                    result.StructuredError ??= new ToolCallError(
+                        ToolCallErrorCodes.ToolExecutionFailed,
+                        $"System tool '{normalizedRequest.Name}' failed.",
+                        callId: context.CallId,
+                        correlationId: context.CorrelationId);
+                    EnsureErrorCorrelation(result.StructuredError, context);
+                }
+
+                return result.Pack(normalizedRequest.RequestID);
+            }
+            catch (ToolCallControlException ex)
+            {
+                if (!context.Legacy)
+                {
+                    _logger.LogWarning(ex, "Controlled middleware rejected or interrupted system tool '{name}'.", normalizedRequest.Name);
+                    return CreateControlledError(normalizedRequest, ex, context);
+                }
+
+                return ResponseData<ResponseCallTool>.Error(normalizedRequest.RequestID, ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "System tool '{name}' failed.", name);
-                return ResponseData<ResponseCallTool>.Error(request.RequestID, $"System tool '{name}' failed: {ex.Message}");
+                _logger.LogError(ex, "System tool '{name}' failed.", normalizedRequest.Name);
+                if (!context.Legacy)
+                {
+                    var response = CreateControlledError(
+                        normalizedRequest,
+                        new ToolCallControlException(
+                            ToolCallErrorCodes.ToolExecutionFailed,
+                            $"System tool '{normalizedRequest.Name}' failed.",
+                            callId: context.CallId,
+                            correlationId: context.CorrelationId),
+                        context);
+                    return response;
+                }
+
+                return ResponseData<ResponseCallTool>.Error(normalizedRequest.RequestID, $"System tool '{normalizedRequest.Name}' failed: {ex.Message}");
             }
+        }
+
+        private static ResponseData<ResponseCallTool> CreateControlledError(
+            RequestCallTool request,
+            ToolCallControlException exception,
+            ToolCallContext? context = null)
+        {
+            var callId = FirstNonEmpty(
+                exception.CallId,
+                context?.CallId,
+                request.Control?.CallId,
+                request.RequestID);
+            var correlationId = FirstNonEmpty(
+                exception.CorrelationId,
+                context?.CorrelationId,
+                request.Control?.CorrelationId,
+                callId);
+            var error = new ToolCallError(
+                exception.Code,
+                exception.Message,
+                exception.Retryable,
+                callId,
+                correlationId,
+                exception.Details);
+            var responseRequestId = FirstNonEmpty(
+                request.RequestID,
+                context?.RequestID,
+                callId) ?? string.Empty;
+            var response = ResponseData<ResponseCallTool>.Error(responseRequestId, error.Message);
+            response.StructuredError = error;
+            return response;
+        }
+
+        private static void EnsureErrorCorrelation(ToolCallError error, ToolCallContext context)
+        {
+            if (string.IsNullOrWhiteSpace(error.CallId))
+                error.CallId = context.CallId;
+            if (string.IsNullOrWhiteSpace(error.CorrelationId))
+                error.CorrelationId = context.CorrelationId;
+        }
+
+        private static string? FirstNonEmpty(params string?[] values)
+        {
+            foreach (var value in values)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+            }
+
+            return null;
         }
 
         public Task<ResponseData<ResponseListTool[]>> RunListSystemTool(RequestListTool request, CancellationToken cancellationToken = default)

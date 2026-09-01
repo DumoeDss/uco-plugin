@@ -33,20 +33,27 @@ namespace com.IvanMurzak.McpPlugin
         private ulong toolCallsCount = 0;
 
         readonly ToolRunnerCollection _tools;
+        readonly ToolExecutionPipeline _executionPipeline;
         readonly Subject<Unit> _onToolsUpdated = new();
 
         public Reflector Reflector => _reflector;
         public Observable<Unit> OnToolsUpdated => _onToolsUpdated;
+        public ToolExecutionPipeline ExecutionPipeline => _executionPipeline;
 
         public IEnumerable<IRunTool> GetAllTools() => _tools.Values.ToList();
         public ulong ToolCallsCount => (ulong)Interlocked.Read(ref Unsafe.As<ulong, long>(ref toolCallsCount));
 
-        public McpToolManager(ILogger<McpToolManager> logger, Reflector reflector, ToolRunnerCollection tools)
+        public McpToolManager(
+            ILogger<McpToolManager> logger,
+            Reflector reflector,
+            ToolRunnerCollection tools,
+            ToolExecutionPipeline? executionPipeline = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor");
             _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
             _tools = tools ?? throw new ArgumentNullException(nameof(tools));
+            _executionPipeline = executionPipeline ?? new ToolExecutionPipeline();
 
             if (_logger.IsEnabled(LogLevel.Trace))
             {
@@ -128,38 +135,163 @@ namespace com.IvanMurzak.McpPlugin
                 return ResponseData<ResponseCallTool>.Error(Common.Consts.Guid.Zero, "Tool data is null.")
                     .Log(_logger);
 
-            if (string.IsNullOrEmpty(data.Name))
+            if (data.Control == null && string.IsNullOrEmpty(data.Name))
                 return ResponseData<ResponseCallTool>.Error(data.RequestID, "Tool.Name is null.")
                     .Log(_logger);
 
-            if (!_tools.TryGetValue(data.Name, out var runner))
-                return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool with Name '{data.Name}' not found.")
+            ToolCallNormalizationResult normalized;
+            try
+            {
+                normalized = ToolCallContextNormalizer.Normalize(data, cancellationToken);
+            }
+            catch (ToolCallControlException ex)
+            {
+                if (data.Control != null)
+                    return CreateControlledError(data, ex).Log(_logger);
+
+                return ResponseData<ResponseCallTool>.Error(data.RequestID, ex.Message)
+                    .Log(_logger);
+            }
+
+            var request = normalized.Request;
+            var context = normalized.Context;
+            if (!_tools.TryGetValue(request.Name, out var runner))
+                return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Tool with Name '{request.Name}' not found.")
                     .Log(_logger);
             try
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    var message = data.Arguments == null
-                        ? $"Run tool '{data.Name}' with no parameters."
-                        : $"Run tool '{data.Name}' with parameters[{data.Arguments.Count}]:\n{string.Join(",\n", data.Arguments)}\n";
+                    var message = request.Arguments == null
+                        ? $"Run tool '{request.Name}' with no parameters."
+                        : $"Run tool '{request.Name}' with parameters[{request.Arguments.Count}]:\n{string.Join(",\n", request.Arguments)}\n";
                     _logger.LogInformation(message);
                 }
 
-                var result = await runner.Run(data.RequestID, data.Arguments, cancellationToken);
+                var result = await _executionPipeline.InvokeAsync(
+                    context,
+                    async invocationContext =>
+                    {
+                        using var invocationScope = ToolCallInvocationScope.Push(invocationContext);
+                        return await runner.Run(
+                            invocationContext.CallId,
+                            request.Arguments,
+                            invocationContext.CancellationToken).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
                 if (result == null)
-                    return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned null result.")
+                {
+                    if (!context.Legacy)
+                    {
+                        return CreateControlledError(
+                            request,
+                            new ToolCallControlException(
+                                ToolCallErrorCodes.ToolExecutionFailed,
+                                $"Tool '{request.Name}' returned null result.",
+                                callId: context.CallId,
+                                correlationId: context.CorrelationId),
+                            context).Log(_logger);
+                    }
+
+                    return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Tool '{request.Name}' returned null result.")
                         .Log(_logger);
+                }
+
+                if (!context.Legacy && result.Status == ResponseStatus.Error)
+                {
+                    result.StructuredError ??= new ToolCallError(
+                        ToolCallErrorCodes.ToolExecutionFailed,
+                        $"Failed to run tool '{request.Name}'.",
+                        callId: context.CallId,
+                        correlationId: context.CorrelationId);
+                    EnsureErrorCorrelation(result.StructuredError, context);
+                }
 
                 result.Log(_logger);
 
-                return result.Pack(data.RequestID);
+                return result.Pack(request.RequestID);
+            }
+            catch (ToolCallControlException ex)
+            {
+                if (!context.Legacy)
+                {
+                    _logger.LogWarning(ex, "Controlled middleware rejected or interrupted RunCallTool[{name}].", request.Name);
+                    return CreateControlledError(request, ex, context);
+                }
+
+                return ResponseData<ResponseCallTool>.Error(request.RequestID, ex.Message)
+                    .Log(_logger, $"RunCallTool[{request.Name}]", ex);
             }
             catch (Exception ex)
             {
-                // Handle or log the exception as needed
-                return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Failed to run tool '{data.Name}'. Exception: {ex}")
-                    .Log(_logger, $"RunCallTool[{data.Name}]", ex);
+                // Preserve the existing string-oriented response for legacy
+                // callers, while controlled callers receive a stable error.
+                if (!context.Legacy)
+                {
+                    var response = CreateControlledError(
+                        request,
+                        new ToolCallControlException(
+                            ToolCallErrorCodes.ToolExecutionFailed,
+                            $"Failed to run tool '{request.Name}'.",
+                            callId: context.CallId,
+                            correlationId: context.CorrelationId),
+                        context);
+                    _logger.LogError(ex, "RunCallTool[{name}] failed.", request.Name);
+                    return response;
+                }
+
+                return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Failed to run tool '{request.Name}'. Exception: {ex}")
+                    .Log(_logger, $"RunCallTool[{request.Name}]", ex);
             }
+        }
+
+        private static ResponseData<ResponseCallTool> CreateControlledError(
+            RequestCallTool request,
+            ToolCallControlException exception,
+            ToolCallContext? context = null)
+        {
+            var callId = FirstNonEmpty(
+                exception.CallId,
+                context?.CallId,
+                request.Control?.CallId,
+                request.RequestID);
+            var correlationId = FirstNonEmpty(
+                exception.CorrelationId,
+                context?.CorrelationId,
+                request.Control?.CorrelationId,
+                callId);
+            var error = new ToolCallError(
+                exception.Code,
+                exception.Message,
+                exception.Retryable,
+                callId,
+                correlationId,
+                exception.Details);
+            var responseRequestId = FirstNonEmpty(
+                request.RequestID,
+                context?.RequestID,
+                callId) ?? string.Empty;
+            var response = ResponseData<ResponseCallTool>.Error(responseRequestId, error.Message);
+            response.StructuredError = error;
+            return response;
+        }
+
+        private static void EnsureErrorCorrelation(ToolCallError error, ToolCallContext context)
+        {
+            if (string.IsNullOrWhiteSpace(error.CallId))
+                error.CallId = context.CallId;
+            if (string.IsNullOrWhiteSpace(error.CorrelationId))
+                error.CorrelationId = context.CorrelationId;
+        }
+
+        private static string? FirstNonEmpty(params string?[] values)
+        {
+            foreach (var value in values)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+            }
+
+            return null;
         }
 
         public Task<ResponseData<ResponseListTool[]>> RunListTool(RequestListTool data) => RunListTool(data, default);

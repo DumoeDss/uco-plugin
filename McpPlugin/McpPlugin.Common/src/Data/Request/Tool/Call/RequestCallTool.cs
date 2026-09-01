@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.McpPlugin.Common.Model
 {
@@ -18,6 +19,14 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public string RequestID { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public IReadOnlyDictionary<string, JsonElement> Arguments { get; set; } = new Dictionary<string, JsonElement>();
+        /// <summary>
+        /// Optional version-one call-control metadata.  Keeping this member
+        /// nullable preserves the legacy wire shape when no control object is
+        /// supplied.
+        /// </summary>
+        [JsonPropertyName("control")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ToolCallControl? Control { get; set; }
 
         public RequestCallTool() { }
         public RequestCallTool(string name, IReadOnlyDictionary<string, JsonElement> arguments)
@@ -28,6 +37,22 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
         }
+
+        public RequestCallTool(
+            string requestId,
+            string name,
+            IReadOnlyDictionary<string, JsonElement> arguments,
+            ToolCallControl? control)
+            : this(requestId, name, arguments)
+        {
+            Control = control;
+        }
+
+        public RequestCallTool(
+            string name,
+            IReadOnlyDictionary<string, JsonElement> arguments,
+            ToolCallControl? control)
+            : this(Guid.NewGuid().ToString(), name, arguments, control) { }
 
         public virtual void Dispose()
         {

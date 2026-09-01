@@ -54,8 +54,6 @@ namespace com.IvanMurzak.McpPlugin
 
         public MethodInfo Method => _methodInfo;
 
-        protected string? RequestID { get; set; }
-
         /// <summary>
         /// Cached lookup dictionary for case-insensitive parameter name matching.
         /// Built once during construction for performance.
@@ -84,8 +82,15 @@ namespace com.IvanMurzak.McpPlugin
         {
             if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
             {
-                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", RequestID);
-                return RequestID;
+                var requestId = ToolCallInvocationScope.Current?.RequestID;
+                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", requestId);
+                return requestId;
+            }
+            if (paramInfo.GetCustomAttribute<ToolCallContextAttribute>() != null)
+            {
+                var context = ToolCallInvocationScope.Current;
+                _logger?.LogTrace("Injecting tool call context: {CallId}", context?.CallId);
+                return context;
             }
             return FixEnumConversion(paramInfo, base.GetParameterValue(reflector, paramInfo, value));
         }
@@ -93,8 +98,15 @@ namespace com.IvanMurzak.McpPlugin
         {
             if (paramInfo.GetCustomAttribute<RequestIDAttribute>() != null)
             {
-                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", RequestID);
-                return RequestID;
+                var requestId = ToolCallInvocationScope.Current?.RequestID;
+                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", requestId);
+                return requestId;
+            }
+            if (paramInfo.GetCustomAttribute<ToolCallContextAttribute>() != null)
+            {
+                var context = ToolCallInvocationScope.Current;
+                _logger?.LogTrace("Injecting tool call context: {CallId}", context?.CallId);
+                return context;
             }
 
             return FixEnumConversion(paramInfo, base.GetParameterValue(reflector, paramInfo, namedParameters));
@@ -103,8 +115,15 @@ namespace com.IvanMurzak.McpPlugin
         {
             if (methodParameter.GetCustomAttribute<RequestIDAttribute>() != null)
             {
-                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", RequestID);
-                return RequestID;
+                var requestId = ToolCallInvocationScope.Current?.RequestID;
+                _logger?.LogTrace("Injecting RequestID parameter: {RequestID}", requestId);
+                return requestId;
+            }
+            if (methodParameter.GetCustomAttribute<ToolCallContextAttribute>() != null)
+            {
+                var context = ToolCallInvocationScope.Current;
+                _logger?.LogTrace("Injecting tool call context: {CallId}", context?.CallId);
+                return context;
             }
             return FixEnumConversion(methodParameter, base.GetDefaultParameterValue(reflector, methodParameter));
         }
@@ -154,7 +173,7 @@ namespace com.IvanMurzak.McpPlugin
             if (validationResult != null)
                 return validationResult;
 
-            RequestID = requestId;
+            using var invocationScope = ToolCallInvocationScope.PushIfMissing(requestId, cancellationToken);
             try
             {
                 // Invoke the method (static or instance)
@@ -176,6 +195,13 @@ namespace com.IvanMurzak.McpPlugin
                 return ResponseCallTool
                     .Error(errorMessage)
                     .SetRequestID(requestId);
+            }
+            catch (OperationCanceledException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+            {
+                // Let the controlled execution pipeline distinguish a caller
+                // cancellation from a deadline expiry. Legacy direct callers
+                // retain the historical string-oriented error below.
+                throw;
             }
             catch (Exception ex)
             {
@@ -201,7 +227,7 @@ namespace com.IvanMurzak.McpPlugin
             if (validationResult != null)
                 return validationResult;
 
-            RequestID = requestId;
+            using var invocationScope = ToolCallInvocationScope.PushIfMissing(requestId, cancellationToken);
             try
             {
                 var finalParameters = ConvertNamedParameters(namedParameters);
@@ -225,6 +251,12 @@ namespace com.IvanMurzak.McpPlugin
                 return ResponseCallTool
                     .Error(errorMessage)
                     .SetRequestID(requestId);
+            }
+            catch (OperationCanceledException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+            {
+                // See the positional overload above: controlled calls must
+                // surface cancellation to the shared pipeline.
+                throw;
             }
             catch (Exception ex)
             {

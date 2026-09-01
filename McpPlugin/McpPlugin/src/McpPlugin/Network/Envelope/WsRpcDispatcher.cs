@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.McpPlugin.Common.Model;
 
 namespace com.IvanMurzak.McpPlugin
 {
@@ -20,12 +21,12 @@ namespace com.IvanMurzak.McpPlugin
 
     internal sealed class HandlerEntry
     {
-        public Func<JsonElement?, Task<(JsonElement? result, WsError? error)>> Invoker { get; set; } = null!;
+        public Func<JsonElement?, CancellationToken, Task<(JsonElement? result, WsError? error)>> Invoker { get; set; } = null!;
     }
 
     internal sealed class NotificationEntry
     {
-        public Func<JsonElement?, Task> Invoker { get; set; } = null!;
+        public Func<JsonElement?, CancellationToken, Task> Invoker { get; set; } = null!;
     }
 
     internal sealed class Registration : IDisposable
@@ -84,20 +85,60 @@ namespace com.IvanMurzak.McpPlugin
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
+            return RegisterHandler<TParam, TResult>(method, (param, _) => handler(param));
+        }
+
+        /// <summary>
+        /// Registers a request handler that receives the cancellation token of
+        /// the active WebSocket connection/request. The one-argument overload
+        /// remains available for existing handlers.
+        /// </summary>
+        public IDisposable RegisterHandler<TParam, TResult>(
+            string method,
+            Func<TParam?, CancellationToken, Task<TResult?>> handler)
+        {
+            if (string.IsNullOrEmpty(method))
+                throw new ArgumentNullException(nameof(method));
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
             var entry = new HandlerEntry
             {
-                Invoker = async (paramsElement) =>
+                Invoker = async (paramsElement, requestCancellationToken) =>
                 {
                     try
                     {
+                        // System.Text.Json maps an explicit null to the
+                        // default value for non-nullable value properties.
+                        // Check the raw tool-call payload first so a malformed
+                        // known control member cannot become version 0 (and be
+                        // reported as an unsupported version) on this typed
+                        // dispatch path.
+                        if (typeof(TParam) == typeof(RequestCallTool))
+                            ValidateRawToolCallControl(paramsElement);
+
                         TParam? param = default;
                         if (paramsElement.HasValue && paramsElement.Value.ValueKind != JsonValueKind.Null)
                             param = paramsElement.Value.Deserialize<TParam>(_options);
 
-                        var result = await handler(param).ConfigureAwait(false);
+                        var result = await handler(param, requestCancellationToken).ConfigureAwait(false);
                         if (result == null)
                             return ((JsonElement?)null, (WsError?)null);
                         return (JsonSerializer.SerializeToElement(result, _options), (WsError?)null);
+                    }
+                    catch (JsonException) when (typeof(TParam) == typeof(RequestCallTool))
+                    {
+                        return ((JsonElement?)null, CreateStructuredError(
+                            WsErrorCodes.InvalidParams,
+                            CreateMalformedToolCallError(paramsElement)));
+                    }
+                    catch (ToolCallControlException ex)
+                    {
+                        var error = ex.ToError();
+                        AttachToolCallIdentity(error, paramsElement);
+                        return ((JsonElement?)null, CreateStructuredError(
+                            WsErrorCodes.InvalidParams,
+                            error));
                     }
                     catch (Exception ex)
                     {
@@ -125,15 +166,28 @@ namespace com.IvanMurzak.McpPlugin
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
+            return RegisterNotification<TParam>(method, (param, _) => handler(param));
+        }
+
+        /// <summary>Registers a notification handler with its connection token.</summary>
+        public IDisposable RegisterNotification<TParam>(
+            string method,
+            Func<TParam?, CancellationToken, Task> handler)
+        {
+            if (string.IsNullOrEmpty(method))
+                throw new ArgumentNullException(nameof(method));
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
             var entry = new NotificationEntry
             {
-                Invoker = async (paramsElement) =>
+                Invoker = async (paramsElement, requestCancellationToken) =>
                 {
                     TParam? param = default;
                     if (paramsElement.HasValue && paramsElement.Value.ValueKind != JsonValueKind.Null)
                         param = paramsElement.Value.Deserialize<TParam>(_options);
 
-                    await handler(param).ConfigureAwait(false);
+                    await handler(param, requestCancellationToken).ConfigureAwait(false);
                 }
             };
 
@@ -267,25 +321,36 @@ namespace com.IvanMurzak.McpPlugin
         /// Called by <see cref="WsReceiveLoop"/> for each incoming message.
         /// Dispatches to the appropriate handler or resolves pending requests.
         /// </summary>
-        public async Task HandleIncomingAsync(WsParsedMessage? message)
+        public Task HandleIncomingAsync(WsParsedMessage? message)
+            => HandleIncomingAsync(message, CancellationToken.None);
+
+        /// <summary>
+        /// Handles one incoming message with the cancellation token owned by
+        /// its WebSocket connection/request.
+        /// </summary>
+        public async Task HandleIncomingAsync(
+            WsParsedMessage? message,
+            CancellationToken requestCancellationToken)
         {
             if (message == null) return;
 
             switch (message.Type)
             {
                 case WsMessageType.Request:
-                    await HandleRequestAsync(message).ConfigureAwait(false);
+                    await HandleRequestAsync(message, requestCancellationToken).ConfigureAwait(false);
                     break;
                 case WsMessageType.Response:
                     ResolveResponse(message.Id!, message.Result, message.Error);
                     break;
                 case WsMessageType.Notification:
-                    await HandleNotificationAsync(message).ConfigureAwait(false);
+                    await HandleNotificationAsync(message, requestCancellationToken).ConfigureAwait(false);
                     break;
             }
         }
 
-        private async Task HandleRequestAsync(WsParsedMessage message)
+        private async Task HandleRequestAsync(
+            WsParsedMessage message,
+            CancellationToken requestCancellationToken)
         {
             var method = message.Method;
             if (string.IsNullOrEmpty(method) || message.Id == null) return;
@@ -305,7 +370,9 @@ namespace com.IvanMurzak.McpPlugin
 
             try
             {
-                var (result, error) = await entry.Invoker(message.Params).ConfigureAwait(false);
+                var (result, error) = await entry.Invoker(
+                    message.Params,
+                    requestCancellationToken).ConfigureAwait(false);
                 await SendResponseAsync(message.Id, result, error).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -320,7 +387,9 @@ namespace com.IvanMurzak.McpPlugin
             }
         }
 
-        private async Task HandleNotificationAsync(WsParsedMessage message)
+        private async Task HandleNotificationAsync(
+            WsParsedMessage message,
+            CancellationToken requestCancellationToken)
         {
             var method = message.Method;
             if (string.IsNullOrEmpty(method)) return;
@@ -329,7 +398,9 @@ namespace com.IvanMurzak.McpPlugin
             {
                 try
                 {
-                    await entry.Invoker(message.Params).ConfigureAwait(false);
+                    await entry.Invoker(
+                        message.Params,
+                        requestCancellationToken).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -360,6 +431,92 @@ namespace com.IvanMurzak.McpPlugin
                 // If we can't send the response (connection dropped), swallow —
                 // the receive loop will detect the drop and trigger reconnect
             }
+        }
+
+        private WsError CreateStructuredError(int rpcCode, ToolCallError error)
+            => new WsError
+            {
+                Code = rpcCode,
+                Message = error.Message,
+                Data = JsonSerializer.SerializeToElement(error, _options)
+            };
+
+        private static ToolCallError CreateMalformedToolCallError(JsonElement? paramsElement)
+        {
+            var identity = ExtractToolCallIdentity(paramsElement);
+            return new ToolCallError(
+                ToolCallErrorCodes.InvalidControl,
+                "Tool call control metadata is invalid.",
+                callId: identity.CallId ?? identity.RequestId,
+                correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
+        }
+
+        private static void ValidateRawToolCallControl(JsonElement? paramsElement)
+        {
+            if (!paramsElement.HasValue || paramsElement.Value.ValueKind != JsonValueKind.Object)
+                return;
+
+            var control = TryGetProperty(paramsElement.Value, "control");
+            if (!control.HasValue || control.Value.ValueKind != JsonValueKind.Object)
+                return;
+
+            var version = TryGetProperty(control.Value, "version");
+            if (version.HasValue && version.Value.ValueKind == JsonValueKind.Null)
+            {
+                var identity = ExtractToolCallIdentity(paramsElement);
+                throw new ToolCallControlException(
+                    ToolCallErrorCodes.InvalidControl,
+                    "Tool call control version must be an integer.",
+                    callId: identity.CallId ?? identity.RequestId,
+                    correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
+            }
+        }
+
+        private static void AttachToolCallIdentity(ToolCallError error, JsonElement? paramsElement)
+        {
+            var identity = ExtractToolCallIdentity(paramsElement);
+            if (string.IsNullOrWhiteSpace(error.CallId))
+                error.CallId = identity.CallId ?? identity.RequestId;
+            if (string.IsNullOrWhiteSpace(error.CorrelationId))
+                error.CorrelationId = identity.CorrelationId ?? identity.CallId ?? identity.RequestId ?? error.CallId;
+        }
+
+        private static (string? RequestId, string? CallId, string? CorrelationId)
+            ExtractToolCallIdentity(JsonElement? paramsElement)
+        {
+            if (!paramsElement.HasValue || paramsElement.Value.ValueKind != JsonValueKind.Object)
+                return (null, null, null);
+
+            var requestId = TryGetStringProperty(paramsElement.Value, "requestID");
+            string? callId = null;
+            string? correlationId = null;
+            var control = TryGetProperty(paramsElement.Value, "control");
+            if (control.HasValue && control.Value.ValueKind == JsonValueKind.Object)
+            {
+                callId = TryGetStringProperty(control.Value, "callId");
+                correlationId = TryGetStringProperty(control.Value, "correlationId");
+            }
+
+            return (requestId, callId, correlationId);
+        }
+
+        private static JsonElement? TryGetProperty(JsonElement element, string name)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                if (string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase))
+                    return property.Value;
+            }
+
+            return null;
+        }
+
+        private static string? TryGetStringProperty(JsonElement element, string name)
+        {
+            var property = TryGetProperty(element, name);
+            return property.HasValue && property.Value.ValueKind == JsonValueKind.String
+                ? property.Value.GetString()
+                : null;
         }
 
         // ── Pending-request resolution (called by receive loop) ───────────

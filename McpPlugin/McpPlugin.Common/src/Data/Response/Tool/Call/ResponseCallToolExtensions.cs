@@ -29,18 +29,24 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
 
         public static ResponseData<ResponseCallTool> Pack(this ResponseCallTool target, string requestId, string? message = null)
         {
+            ResponseData<ResponseCallTool> packed;
             if (target.Status == ResponseStatus.Error)
-                return ResponseData<ResponseCallTool>.Error(requestId, message ?? target.GetMessage() ?? "Tool execution error.")
+                packed = ResponseData<ResponseCallTool>.Error(requestId, message ?? target.GetMessage() ?? "Tool execution error.")
                     .SetData(target);
             else if (target.Status == ResponseStatus.Success)
-                return ResponseData<ResponseCallTool>.Success(requestId, message ?? target.GetMessage() ?? "Tool executed successfully.")
+                packed = ResponseData<ResponseCallTool>.Success(requestId, message ?? target.GetMessage() ?? "Tool executed successfully.")
                     .SetData(target);
             else if (target.Status == ResponseStatus.Processing)
-                return ResponseData<ResponseCallTool>.Processing(requestId, message ?? target.GetMessage() ?? "Tool is processing.")
+                packed = ResponseData<ResponseCallTool>.Processing(requestId, message ?? target.GetMessage() ?? "Tool is processing.")
+                    .SetData(target);
+            else
+                packed = ResponseData<ResponseCallTool>.Error(requestId, $"Unknown tool status `{target.Status}`.")
                     .SetData(target);
 
-            return ResponseData<ResponseCallTool>.Error(requestId, $"Unknown tool status `{target.Status}`.")
-                .SetData(target);
+            // Keep a controlled structured error visible at the outer response
+            // level as well as on the inner tool value.
+            packed.StructuredError = target.StructuredError;
+            return packed;
         }
     }
 }

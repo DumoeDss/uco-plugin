@@ -37,6 +37,17 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 });
         }
 
+        /// <summary>Creates a structured controlled-call error response.</summary>
+        public static ResponseCallTool Error(ToolCallError error)
+        {
+            if (error == null)
+                throw new ArgumentNullException(nameof(error));
+
+            var response = Error(error.Message);
+            response.StructuredError = error;
+            return response;
+        }
+
         public static ResponseCallTool Success(string? message = null)
         {
             return new ResponseCallTool(

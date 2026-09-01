@@ -34,6 +34,11 @@ namespace com.IvanMurzak.McpPlugin
         IMcpPluginBuilder WithToolsFromAssembly(IEnumerable<Assembly> assemblies);
         IMcpPluginBuilder WithToolsFromAssembly(Assembly? assembly = null);
 
+        // Tool execution middleware
+        IMcpPluginBuilder AddToolExecutionMiddleware<T>()
+            where T : class, IToolExecutionMiddleware;
+        IMcpPluginBuilder AddToolExecutionMiddleware(IToolExecutionMiddleware middleware);
+
         // Prompt methods
         IMcpPluginBuilder WithPrompt(string name, Type classType, MethodInfo methodInfo);
         IMcpPluginBuilder AddPrompt(string name, IRunPrompt runner);

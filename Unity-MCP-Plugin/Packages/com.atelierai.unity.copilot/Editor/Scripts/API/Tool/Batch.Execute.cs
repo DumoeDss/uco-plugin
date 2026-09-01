@@ -80,7 +80,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             [Description("Hint for max parallel workers when parallel=true. Default 4. Ignored when parallel=false " +
                 "or when the implementation falls back to sequential.")]
-            int maxParallelism = 4
+            int maxParallelism = 4,
+
+            [ToolCallContext]
+            ToolCallContext? context = null
         )
         {
             // ------ Input validation ------
@@ -101,6 +104,20 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 : null;
             if (toolManager == null)
                 throw new InvalidOperationException(Error.ToolManagerNotAvailable());
+
+            // The pipeline injects the parent context for normal calls. Keep a
+            // generated root context for direct/reflected callers that invoke
+            // this method without going through McpToolManager.
+            var parentContext = context;
+            if (parentContext == null)
+            {
+                var parentRequestId = Guid.NewGuid().ToString();
+                parentContext = ToolCallContextNormalizer.Normalize(
+                    new RequestCallTool(
+                        parentRequestId,
+                        BatchExecuteToolId,
+                        new Dictionary<string, System.Text.Json.JsonElement>())).Context;
+            }
 
             // Pre-build a name set so we can validate each command without re-enumerating
             // the manager per command. Case-sensitive: tool ids are kebab-case and the
@@ -213,8 +230,22 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     // Params may be null when the JSON deserializer drops the property.
                     // RunCallTool requires a non-null parameters dictionary.
                     var parameters = cmd.Params ?? new Dictionary<string, System.Text.Json.JsonElement>();
-                    var request = new RequestCallTool(cmd.Tool, parameters);
-                    var response = await toolManager.RunCallTool(request).ConfigureAwait(false);
+                    // Every valid command receives a fresh request id and a
+                    // derived logical context. Child keys are not inherited by
+                    // DeriveChild, and the parent deadline remains bounded.
+                    var childRequestId = Guid.NewGuid().ToString();
+                    var childContext = ToolCallContextNormalizer.DeriveChild(
+                        parentContext,
+                        requestId: childRequestId,
+                        cancellationToken: parentContext.CancellationToken);
+                    var request = new RequestCallTool(
+                        childContext.RequestID,
+                        cmd.Tool,
+                        parameters,
+                        childContext.ToControl());
+                    var response = await toolManager.RunCallTool(
+                        request,
+                        childContext.CancellationToken).ConfigureAwait(false);
 
                     if (response == null)
                     {

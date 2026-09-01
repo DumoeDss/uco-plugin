@@ -17,6 +17,7 @@ using com.IvanMurzak.McpPlugin.Common.Model;
 using com.IvanMurzak.McpPlugin.Skills;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Version = com.IvanMurzak.McpPlugin.Common.Version;
@@ -97,6 +98,13 @@ namespace com.IvanMurzak.McpPlugin
             _services.AddSingleton<IClientMcpManager>(sp => sp.GetRequiredService<McpManager>());
 
             _services.AddSingleton<ISkillFileGenerator, SkillFileGenerator>();
+
+            // Register the concrete pipeline once.  The pass-through middleware
+            // is appended during Build so custom middleware registered through
+            // the additive APIs retains its registration order and wraps the
+            // default behavior.
+            _services.AddSingleton<ToolExecutionPipeline>(sp =>
+                new ToolExecutionPipeline(sp.GetServices<IToolExecutionMiddleware>()));
         }
 
         #region Tool
@@ -143,6 +151,24 @@ namespace com.IvanMurzak.McpPlugin
                 throw new ArgumentException($"Tool with name '{name}' already exists.");
 
             _toolRunners.Add(name, runner);
+            return this;
+        }
+
+        public virtual IMcpPluginBuilder AddToolExecutionMiddleware<T>()
+            where T : class, IToolExecutionMiddleware
+        {
+            ThrowIfBuilt();
+            _services.AddSingleton<IToolExecutionMiddleware, T>();
+            return this;
+        }
+
+        public virtual IMcpPluginBuilder AddToolExecutionMiddleware(IToolExecutionMiddleware middleware)
+        {
+            ThrowIfBuilt();
+            if (middleware == null)
+                throw new ArgumentNullException(nameof(middleware));
+
+            _services.AddSingleton<IToolExecutionMiddleware>(middleware);
             return this;
         }
         #endregion
@@ -336,6 +362,12 @@ namespace com.IvanMurzak.McpPlugin
 
             _services.AddSingleton(new SkillContentCollection(_loggerProvider?.CreateLogger(nameof(SkillContentCollection)))
                 .Add(_skillFields));
+
+            // The pass-through implementation is deliberately registered last:
+            // custom middleware runs in the exact order in which callers added
+            // it, while an empty builder still has a concrete default.
+            _services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IToolExecutionMiddleware, PassThroughToolExecutionMiddleware>());
 
             if (_externalConfig != null)
                 _services.AddSingleton<IOptions<ConnectionConfig>>(new OptionsWrapper<ConnectionConfig>(_externalConfig));

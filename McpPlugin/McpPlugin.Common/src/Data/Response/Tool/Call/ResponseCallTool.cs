@@ -11,6 +11,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.McpPlugin.Common.Model
@@ -21,6 +22,14 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public virtual ResponseStatus Status { get; set; } = ResponseStatus.Error;
         public virtual List<ContentBlock> Content { get; set; } = new List<ContentBlock>();
         public virtual JsonNode? StructuredContent { get; set; } = null;
+
+        /// <summary>
+        /// Optional structured failure produced by the execution seam. It is
+        /// additive and omitted for ordinary legacy tool responses.
+        /// </summary>
+        [JsonPropertyName("error")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ToolCallError? StructuredError { get; set; }
 
         public ResponseCallTool() { }
         public ResponseCallTool(ResponseStatus status, List<ContentBlock> content) : this(

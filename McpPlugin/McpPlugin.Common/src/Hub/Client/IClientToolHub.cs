@@ -17,6 +17,17 @@ namespace com.IvanMurzak.McpPlugin.Common.Hub.Client
     public interface IClientToolHub
     {
         Task<ResponseData<ResponseCallTool>> RunCallTool(RequestCallTool request);
+
+        /// <summary>
+        /// Token-aware overload used by the WebSocket request handler. The
+        /// default implementation keeps existing third-party hubs source and
+        /// binary compatible while allowing managers to observe cancellation.
+        /// </summary>
+        Task<ResponseData<ResponseCallTool>> RunCallTool(
+            RequestCallTool request,
+            CancellationToken cancellationToken = default)
+            => RunCallTool(request);
+
         Task<ResponseData<ResponseListTool[]>> RunListTool(RequestListTool request, CancellationToken cancellationToken = default);
     }
 }

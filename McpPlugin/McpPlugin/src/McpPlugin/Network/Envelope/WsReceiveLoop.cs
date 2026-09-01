@@ -132,7 +132,7 @@ namespace com.IvanMurzak.McpPlugin
                     {
                         try
                         {
-                            await _dispatcher.HandleIncomingAsync(parsed).ConfigureAwait(false);
+                            await _dispatcher.HandleIncomingAsync(parsed, cancellationToken).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
