@@ -72,6 +72,25 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                         correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
                 }
 
+                // Nullable CLR properties cannot distinguish an omitted
+                // member from an explicit JSON null. Inspect the raw object
+                // so malformed authoring controls fail before lookup or
+                // execution rather than silently becoming defaults.
+                if (rawControl.HasValue && rawControl.Value.ValueKind == JsonValueKind.Object)
+                {
+                    var identity = ExtractRequestIdentity(requestElement);
+                    foreach (var member in new[] { "confirm", "dryRun", "confirmation" })
+                    {
+                        var rawValue = TryGetProperty(rawControl.Value, member);
+                        if (rawValue.HasValue && rawValue.Value.ValueKind == JsonValueKind.Null)
+                            throw new ToolCallControlException(
+                                ToolCallErrorCodes.InvalidControl,
+                                member + " must not be null when supplied.",
+                                callId: identity.CallId ?? identity.RequestId,
+                                correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
+                    }
+                }
+
                 var request = JsonSerializer.Deserialize<RequestCallTool>(
                     requestElement.GetRawText(),
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -113,6 +132,9 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                     deadlineUnixMs: null,
                     cancellationId: null,
                     idempotencyKey: null,
+                    confirm: null,
+                    dryRun: "none",
+                    confirmation: null,
                     cancellationToken: cancellationToken,
                     legacy: true,
                     unknownMembers: null);
@@ -190,7 +212,7 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 : callId;
             ValidateRequiredId(effectiveRequestId, "requestID");
 
-            return CreateContext(
+            var derived = CreateContext(
                 requestId: effectiveRequestId,
                 callId: callId,
                 correlationId: parent.CorrelationId,
@@ -198,9 +220,14 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 deadlineUnixMs: EarlierDeadline(parent.DeadlineUnixMs, checkedChild.Context.DeadlineUnixMs),
                 cancellationId: checkedChild.Context.CancellationId,
                 idempotencyKey: checkedChild.Context.IdempotencyKey,
+                confirm: checkedChild.Context.Confirm,
+                dryRun: checkedChild.Context.DryRun,
+                confirmation: checkedChild.Context.Confirmation,
                 cancellationToken: cancellationToken.CanBeCanceled ? cancellationToken : parent.CancellationToken,
                 legacy: false,
                 unknownMembers: checkedChild.Context.UnknownMembers);
+            derived.IssueConfirmationOnly = child.IssueConfirmationOnly;
+            return derived;
         }
 
         public static ToolCallContext DeriveChildContext(
@@ -241,6 +268,9 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
             var deadline = NormalizeDeadline(control.DeadlineUnixMs);
             var effectiveCancellationId = NormalizeOpaqueString(control.CancellationId);
             var idempotencyKey = NormalizeOpaqueString(control.IdempotencyKey);
+            var confirm = NormalizeConfirm(control.Confirm);
+            var dryRun = NormalizeDryRun(control.DryRun);
+            var confirmation = NormalizeConfirmation(control.Confirmation);
             effectiveRequestId ??= callId;
 
             var unknownMembers = CloneUnknownMembers(control.UnknownMembers);
@@ -253,6 +283,10 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 DeadlineUnixMs = deadline,
                 CancellationId = effectiveCancellationId,
                 IdempotencyKey = idempotencyKey,
+                Confirm = confirm,
+                DryRun = control.DryRun == null ? null : dryRun,
+                Confirmation = confirmation,
+                IssueConfirmationOnly = control.IssueConfirmationOnly,
                 UnknownMembers = unknownMembers,
             };
 
@@ -264,9 +298,13 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 deadlineUnixMs: deadline,
                 cancellationId: effectiveCancellationId,
                 idempotencyKey: idempotencyKey,
+                confirm: confirm,
+                dryRun: dryRun,
+                confirmation: confirmation,
                 cancellationToken: cancellationToken,
                 legacy: false,
                 unknownMembers: unknownMembers);
+            context.IssueConfirmationOnly = control.IssueConfirmationOnly;
             return (normalizedControl, context);
         }
 
@@ -278,6 +316,9 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
             long? deadlineUnixMs,
             string? cancellationId,
             string? idempotencyKey,
+            bool? confirm,
+            string dryRun,
+            ToolCallConfirmation? confirmation,
             CancellationToken cancellationToken,
             bool legacy,
             IDictionary<string, JsonElement>? unknownMembers)
@@ -292,6 +333,9 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 DeadlineUnixMs = deadlineUnixMs,
                 CancellationId = cancellationId,
                 IdempotencyKey = idempotencyKey,
+                Confirm = confirm,
+                DryRun = dryRun,
+                Confirmation = confirmation?.Clone(),
                 CancellationToken = cancellationToken,
                 Legacy = legacy,
             };
@@ -342,6 +386,33 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 throw Invalid("deadlineUnixMs must be a non-negative integer.");
             return value;
         }
+
+        private static bool? NormalizeConfirm(bool? value)
+            => value;
+
+        private static string NormalizeDryRun(string? value)
+        {
+            // A typed caller cannot distinguish omitted from null. The raw
+            // JsonElement overload rejects explicit null before deserialization;
+            // typed callers receive the documented omitted-value default.
+            if (value == null) return "none";
+            if (value == "none" || value == "validate" || value == "plan")
+                return value;
+            throw Invalid("dryRun must be one of: none, validate, plan.");
+        }
+
+        private static ToolCallConfirmation? NormalizeConfirmation(ToolCallConfirmation? value)
+        {
+            if (value == null) return null;
+            if (string.IsNullOrWhiteSpace(value.PlanId))
+                throw Invalid("confirmation.planId must be a non-empty string.");
+            if (string.IsNullOrWhiteSpace(value.PlanHash))
+                throw Invalid("confirmation.planHash must be a non-empty string.");
+            if (!value.ExpiresAtUnixMs.HasValue || value.ExpiresAtUnixMs.Value < 0)
+                throw Invalid("confirmation.expiresAtUnixMs must be a non-negative integer.");
+            return value.Clone();
+        }
+
         private static void ValidateVersion(
             int version,
             string? callId = null,

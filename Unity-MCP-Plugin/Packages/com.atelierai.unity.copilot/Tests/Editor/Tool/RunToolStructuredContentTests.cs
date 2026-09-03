@@ -27,6 +27,9 @@ using UnityEngine.TestTools;
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     [TestFixture]
+    // g-005: the reflected runner fails closed for a direct call unless its registration is
+    // read-only (or the call was approved by the safety pipeline). These helper methods are pure,
+    // so the fixtures register them with readOnlyHint: true.
     public class RunToolStructuredContentTests
     {
         private Reflector _reflector = new Reflector();
@@ -52,7 +55,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnInt));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnInt();
 
             // Act
@@ -83,7 +86,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnString));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnString();
 
             // Act
@@ -114,7 +117,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnFloat));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnFloat();
 
             // Act
@@ -145,7 +148,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnBool));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnBool();
 
             // Act
@@ -176,7 +179,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnEnum));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedEnumValue = TestReturnTypeMethods.ReturnEnum();
 
             // Act
@@ -222,7 +225,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnNull));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", CancellationToken.None);
@@ -242,7 +245,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnMicrosoftLogLevel));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnMicrosoftLogLevel();
 
             // Act
@@ -291,7 +294,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnCustomClass));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnCustomClass();
 
             // Act
@@ -328,7 +331,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnNestedClass));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnNestedClass();
 
             // Act
@@ -361,7 +364,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnList));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnList();
 
             // Act
@@ -389,7 +392,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnDictionary));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnDictionary();
 
             // Act
@@ -417,7 +420,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnArray));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnArray();
 
             // Act
@@ -449,7 +452,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnVector3));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnVector3();
 
             // Act
@@ -486,7 +489,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnColor));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnColor();
 
             // Act
@@ -522,7 +525,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnQuaternion));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnQuaternion();
 
             // Act
@@ -562,7 +565,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnResponseCallTool));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", CancellationToken.None);
@@ -586,7 +589,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnListOfCustomObjects));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnListOfCustomObjects();
 
             // Act
@@ -618,7 +621,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnDictionaryWithComplexValues));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnDictionaryWithComplexValues();
 
             // Act
@@ -654,7 +657,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestReturnTypeMethods).GetMethod(nameof(TestReturnTypeMethods.ReturnCustomClass));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var expectedValue = TestReturnTypeMethods.ReturnCustomClass();
 
             // Act

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -30,6 +31,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             GameObjectDuplicateToolId,
             Title = "GameObject / Duplicate"
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Duplicate,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Duplicate a batch of GameObjects in the currently opened Prefab or active Scene. " +
             "Marks each affected scene as dirty after duplication. " +
             "Use '" + GameObjectFindToolId + "' to locate the source GameObjects first.")]
@@ -49,6 +58,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
 
                 var gos = new List<GameObject>(gameObjectRefs.Count);
@@ -74,7 +85,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 Unsupported.DuplicateGameObjectsUsingPasteboard();
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 
-                var modifiedScenes = Selection.gameObjects
+                // The pasteboard duplication registers its own Undo record
+                // inside the current (transaction) group; track the created
+                // objects for the report without a second registration.
+                var duplicatedObjects = Selection.gameObjects;
+                foreach (var duplicated in duplicatedObjects)
+                    UnityAuthoringUndo.RecordHostRegistered(duplicated);
+                if (duplicatedObjects.Length > 0)
+                    UnityAuthoringUndo.MarkMutated();
+
+                var modifiedScenes = duplicatedObjects
                     .Select(go => go.scene)
                     .Distinct()
                     .ToList();

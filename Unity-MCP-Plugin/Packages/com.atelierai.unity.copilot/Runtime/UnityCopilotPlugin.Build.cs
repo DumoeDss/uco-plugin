@@ -116,6 +116,9 @@ namespace com.AtelierAI.Unity.Copilot
 
             var assemblies = AssemblyUtils.AllAssemblies;
             var mcpPluginBuilder = new McpPluginBuilder(version, loggerProvider)
+                .WithProjectPathPolicy(new ProjectPathPolicy(
+                    System.IO.Directory.GetParent(Application.dataPath)?.FullName
+                    ?? Application.dataPath))
                 .SetConfig(unityConnectionConfig ?? throw new InvalidOperationException("UnityConnectionConfig must be set before building the plugin."))
                 .AddLogging(loggingBuilder =>
                 {

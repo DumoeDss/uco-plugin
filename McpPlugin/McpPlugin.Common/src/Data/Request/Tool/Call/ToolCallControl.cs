@@ -51,6 +51,30 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? IdempotencyKey { get; set; }
 
+        /// <summary>
+        /// Explicit approval directive.  It is intentionally nullable so a
+        /// missing member keeps the legacy/normalization distinction.
+        /// </summary>
+        [JsonPropertyName("confirm")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Confirm { get; set; }
+
+        /// <summary>
+        /// Exact g-005 vocabulary.  Null means the member was omitted and is
+        /// normalized to <c>none</c>; explicit malformed values are rejected
+        /// by <see cref="ToolCallContextNormalizer"/>.
+        /// </summary>
+        [JsonPropertyName("dryRun")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? DryRun { get; set; }
+
+        [JsonPropertyName("confirmation")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ToolCallConfirmation? Confirmation { get; set; }
+
+        [JsonIgnore]
+        public bool IssueConfirmationOnly { get; set; }
+
         [JsonExtensionData]
         public Dictionary<string, JsonElement> UnknownMembers { get; set; }
             = new Dictionary<string, JsonElement>();
@@ -66,6 +90,10 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 DeadlineUnixMs = DeadlineUnixMs,
                 CancellationId = CancellationId,
                 IdempotencyKey = IdempotencyKey,
+                Confirm = Confirm,
+                DryRun = DryRun,
+                Confirmation = Confirmation?.Clone(),
+                IssueConfirmationOnly = IssueConfirmationOnly,
             };
 
             foreach (var member in UnknownMembers)

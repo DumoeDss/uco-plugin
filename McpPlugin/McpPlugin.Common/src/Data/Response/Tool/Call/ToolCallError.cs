@@ -24,6 +24,15 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public const string Cancelled = "cancelled";
         public const string MiddlewareRejected = "middleware_rejected";
         public const string ToolExecutionFailed = "tool_execution_failed";
+        public const string ConfirmationRequired = "confirmation_required";
+        public const string ConfirmationInvalid = "confirmation_invalid";
+        public const string ConfirmationExpired = "confirmation_expired";
+        public const string ConfirmationStale = "confirmation_stale";
+        public const string DryRunUnsupported = "dry_run_unsupported";
+        public const string PathPolicyViolation = "path_policy_violation";
+        public const string SafetyUnsupported = "safety_unsupported";
+        public const string UndoUnavailable = "undo_unavailable";
+        public const string AuthoringTransactionFailed = "authoring_transaction_failed";
     }
 
     /// <summary>Singular-name compatibility alias for the stable code constants.</summary>
@@ -35,6 +44,15 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public const string Cancelled = ToolCallErrorCodes.Cancelled;
         public const string MiddlewareRejected = ToolCallErrorCodes.MiddlewareRejected;
         public const string ToolExecutionFailed = ToolCallErrorCodes.ToolExecutionFailed;
+        public const string ConfirmationRequired = ToolCallErrorCodes.ConfirmationRequired;
+        public const string ConfirmationInvalid = ToolCallErrorCodes.ConfirmationInvalid;
+        public const string ConfirmationExpired = ToolCallErrorCodes.ConfirmationExpired;
+        public const string ConfirmationStale = ToolCallErrorCodes.ConfirmationStale;
+        public const string DryRunUnsupported = ToolCallErrorCodes.DryRunUnsupported;
+        public const string PathPolicyViolation = ToolCallErrorCodes.PathPolicyViolation;
+        public const string SafetyUnsupported = ToolCallErrorCodes.SafetyUnsupported;
+        public const string UndoUnavailable = ToolCallErrorCodes.UndoUnavailable;
+        public const string AuthoringTransactionFailed = ToolCallErrorCodes.AuthoringTransactionFailed;
     }
 
     /// <summary>

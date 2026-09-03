@@ -19,11 +19,31 @@ namespace com.IvanMurzak.McpPlugin
     /// No per-call values are stored on a shared <see cref="RunTool"/>
     /// instance, so concurrent calls cannot overwrite one another.
     /// </summary>
-    internal static class ToolCallInvocationScope
+    public static class ToolCallInvocationScope
     {
-        private static readonly AsyncLocal<ToolCallContext?> CurrentValue = new();
+        private sealed class ScopeValue
+        {
+            public ToolCallContext Context { get; }
+            public AuthoringInvocation? Invocation { get; }
+            public bool RunnerExecutionAuthorized { get; }
 
-        public static ToolCallContext? Current => CurrentValue.Value;
+            public ScopeValue(
+                ToolCallContext context,
+                AuthoringInvocation? invocation,
+                bool runnerExecutionAuthorized = false)
+            {
+                Context = context;
+                Invocation = invocation;
+                RunnerExecutionAuthorized = runnerExecutionAuthorized;
+            }
+        }
+
+        private static readonly AsyncLocal<ScopeValue?> CurrentValue = new();
+
+        public static ToolCallContext? Current => CurrentValue.Value?.Context;
+        public static AuthoringInvocation? CurrentInvocation => CurrentValue.Value?.Invocation;
+        internal static bool IsRunnerExecutionAuthorized
+            => CurrentValue.Value?.RunnerExecutionAuthorized == true;
 
         public static IDisposable Push(ToolCallContext context)
         {
@@ -31,8 +51,44 @@ namespace com.IvanMurzak.McpPlugin
                 throw new ArgumentNullException(nameof(context));
 
             var previous = CurrentValue.Value;
-            CurrentValue.Value = context;
+            CurrentValue.Value = new ScopeValue(context, null);
             return new Scope(previous);
+        }
+
+        /// <summary>
+        /// Pushes the immutable runner metadata required by the authoring
+        /// middleware. The metadata comes from the existing registration and
+        /// cannot be supplied as a generated tool argument.
+        /// </summary>
+        public static IDisposable Push(ToolCallContext context, AuthoringInvocation invocation)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            if (invocation == null)
+                throw new ArgumentNullException(nameof(invocation));
+
+            var previous = CurrentValue.Value;
+            CurrentValue.Value = new ScopeValue(context, invocation);
+            return new Scope(previous);
+        }
+
+        internal static IDisposable AuthorizeRunnerExecution(IRunTool runner)
+        {
+            if (runner == null)
+                throw new ArgumentNullException(nameof(runner));
+
+            var current = CurrentValue.Value;
+            var authorized = current?.Invocation != null
+                && current.Invocation.PolicyApproved
+                && ReferenceEquals(current.Invocation.Runner, runner);
+            if (!authorized)
+                return NoopDisposable.Instance;
+
+            CurrentValue.Value = new ScopeValue(
+                current!.Context,
+                current.Invocation,
+                runnerExecutionAuthorized: true);
+            return new Scope(current);
         }
 
         /// <summary>
@@ -58,10 +114,10 @@ namespace com.IvanMurzak.McpPlugin
 
         private sealed class Scope : IDisposable
         {
-            private readonly ToolCallContext? _previous;
+            private readonly ScopeValue? _previous;
             private int _disposed;
 
-            public Scope(ToolCallContext? previous) => _previous = previous;
+            public Scope(ScopeValue? previous) => _previous = previous;
 
             public void Dispose()
             {

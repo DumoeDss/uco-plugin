@@ -59,7 +59,17 @@ namespace com.IvanMurzak.McpPlugin
 
         public int TotalToolsCount => _tools.Count;
 
-        public IEnumerable<IRunTool> GetAllTools() => _tools.Values.ToList();
+        public IEnumerable<IRunTool> GetAllTools()
+            => _tools.Keys.ToArray().Select(GetGuardedRunner).ToList();
+
+        private IRunTool GetGuardedRunner(string name)
+        {
+            var runner = _tools[name];
+            var guarded = GuardedRunTool.Wrap(runner);
+            if (!ReferenceEquals(runner, guarded))
+                _tools[name] = guarded;
+            return guarded;
+        }
 
         public bool HasTool(string name)
         {
@@ -92,24 +102,36 @@ namespace com.IvanMurzak.McpPlugin
 
             var normalizedRequest = normalized.Request;
             var context = normalized.Context;
-            if (!_tools.TryGetValue(normalizedRequest.Name, out var tool))
+            if (!_tools.ContainsKey(normalizedRequest.Name))
             {
                 _logger.LogWarning("System tool '{name}' not found. Available: [{available}]",
                     normalizedRequest.Name, string.Join(", ", _tools.Keys.OrderBy(k => k)));
                 return ResponseData<ResponseCallTool>.Error(normalizedRequest.RequestID, $"System tool '{normalizedRequest.Name}' not found.");
             }
+            var tool = GetGuardedRunner(normalizedRequest.Name);
 
             try
             {
                 _logger.LogDebug("Executing system tool '{name}'.", normalizedRequest.Name);
+                var authoringInvocation = new AuthoringInvocation(
+                    context,
+                    normalizedRequest.Name,
+                    normalizedRequest.Arguments ?? new Dictionary<string, JsonElement>(),
+                    tool);
+                using var invocationScope = ToolCallInvocationScope.Push(context, authoringInvocation);
                 var result = await _executionPipeline.InvokeAsync(
                     context,
                     async invocationContext =>
                     {
-                        using var invocationScope = ToolCallInvocationScope.Push(invocationContext);
+                        var terminalInvocation = ToolCallInvocationScope.CurrentInvocation
+                            ?? authoringInvocation.WithContext(invocationContext);
+                        using var terminalScope = ToolCallInvocationScope.Push(
+                            invocationContext,
+                            terminalInvocation.WithContext(invocationContext));
+                        using var executionAuthorization = ToolCallInvocationScope.AuthorizeRunnerExecution(tool);
                         return await tool.Run(
                             invocationContext.CallId,
-                            normalizedRequest.Arguments,
+                            terminalInvocation.Arguments,
                             invocationContext.CancellationToken).ConfigureAwait(false);
                     }).ConfigureAwait(false);
                 if (result == null)
@@ -228,25 +250,26 @@ namespace com.IvanMurzak.McpPlugin
             try
             {
                 _logger.LogDebug("Listing system tools.");
-                var result = _tools
-                    .Select(kvp =>
+                var result = _tools.Keys.ToArray()
+                    .Select(GetGuardedRunner)
+                    .Select(tool =>
                     {
                         var response = new ResponseListTool()
                         {
-                            Name = kvp.Value.Name,
-                            Enabled = kvp.Value.Enabled,
-                            Title = kvp.Value.Title,
-                            Description = kvp.Value.Description,
-                            InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? Common.Consts.MCP.EmptyInputSchema,
-                            ReadOnlyHint = kvp.Value.ReadOnlyHint,
-                            DestructiveHint = kvp.Value.DestructiveHint,
-                            IdempotentHint = kvp.Value.IdempotentHint,
-                            OpenWorldHint = kvp.Value.OpenWorldHint
+                            Name = tool.Name,
+                            Enabled = tool.Enabled,
+                            Title = tool.Title,
+                            Description = tool.Description,
+                            InputSchema = tool.InputSchema.ToJsonElement() ?? Common.Consts.MCP.EmptyInputSchema,
+                            ReadOnlyHint = tool.ReadOnlyHint,
+                            DestructiveHint = tool.DestructiveHint,
+                            IdempotentHint = tool.IdempotentHint,
+                            OpenWorldHint = tool.OpenWorldHint
                         };
-                        if (kvp.Value.OutputSchema == null)
+                        if (tool.OutputSchema == null)
                             return response;
 
-                        if (kvp.Value.OutputSchema is not JsonNode jn)
+                        if (tool.OutputSchema is not JsonNode jn)
                             return response;
 
                         if (jn.GetValueKind() != JsonValueKind.Object)

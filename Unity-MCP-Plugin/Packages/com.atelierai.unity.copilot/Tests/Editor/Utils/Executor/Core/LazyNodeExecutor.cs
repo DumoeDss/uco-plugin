@@ -48,7 +48,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.Utils
                 };
                 return result;
             }
-            catch (Exception ex)
+            // An NUnit Ignore raised inside a node (g-005 fail-closed tool) must
+            // reach the test framework instead of being logged as an error.
+            catch (Exception ex) when (!(ex is NUnit.Framework.IgnoreException))
             {
                 UnityEngine.Debug.LogException(ex);
                 UnityEngine.Debug.LogError($"Error executing LazyNode: {ex}");

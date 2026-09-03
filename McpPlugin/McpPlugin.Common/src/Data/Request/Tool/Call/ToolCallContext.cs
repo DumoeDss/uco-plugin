@@ -59,11 +59,26 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? IdempotencyKey { get; set; }
 
+        [JsonPropertyName("confirm")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Confirm { get; set; }
+
+        /// <summary>Semantic default is <c>none</c> when the wire member is absent.</summary>
+        [JsonPropertyName("dryRun")]
+        public string DryRun { get; set; } = "none";
+
+        [JsonPropertyName("confirmation")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ToolCallConfirmation? Confirmation { get; set; }
+
         [JsonIgnore]
         public CancellationToken CancellationToken { get; set; }
 
         [JsonIgnore]
         public bool Legacy { get; set; }
+
+        [JsonIgnore]
+        public bool IssueConfirmationOnly { get; set; }
 
         [JsonExtensionData]
         public Dictionary<string, JsonElement> UnknownMembers { get; set; }
@@ -81,6 +96,12 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 DeadlineUnixMs = DeadlineUnixMs,
                 CancellationId = CancellationId,
                 IdempotencyKey = IdempotencyKey,
+                Confirm = Confirm,
+                DryRun = string.Equals(DryRun, "none", System.StringComparison.Ordinal)
+                    ? null
+                    : DryRun,
+                Confirmation = Confirmation?.Clone(),
+                IssueConfirmationOnly = IssueConfirmationOnly,
             };
 
             foreach (var member in UnknownMembers)
@@ -101,8 +122,12 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
                 DeadlineUnixMs = DeadlineUnixMs,
                 CancellationId = CancellationId,
                 IdempotencyKey = IdempotencyKey,
+                Confirm = Confirm,
+                DryRun = DryRun,
+                Confirmation = Confirmation?.Clone(),
                 CancellationToken = CancellationToken,
                 Legacy = Legacy,
+                IssueConfirmationOnly = IssueConfirmationOnly,
             };
 
             foreach (var member in UnknownMembers)

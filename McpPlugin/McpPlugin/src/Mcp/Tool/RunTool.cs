@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin.Common.Model;
@@ -35,6 +36,7 @@ namespace com.IvanMurzak.McpPlugin
         public bool? DestructiveHint { get; protected set; }
         public bool? IdempotentHint { get; protected set; }
         public bool? OpenWorldHint { get; protected set; }
+        public AuthoringCapabilityDescriptor? AuthoringCapability { get; protected set; }
 
         /// <summary>
         /// Reads <see cref="McpPluginSkillDescriptionAttribute"/> from the underlying method, if present.
@@ -60,22 +62,42 @@ namespace com.IvanMurzak.McpPlugin
         /// </summary>
         private readonly Dictionary<string, string>? _paramNameLookup;
 
-        public RunTool(Reflector reflector, ILogger? logger, string name, MethodInfo methodInfo) : base(reflector, logger, methodInfo)
+        public RunTool(
+            Reflector reflector,
+            ILogger? logger,
+            string name,
+            MethodInfo methodInfo,
+            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
+            AuthoringCapability = authoringCapability;
         }
 
-        public RunTool(Reflector reflector, ILogger? logger, string name, object targetInstance, MethodInfo methodInfo) : base(reflector, logger, targetInstance, methodInfo)
+        public RunTool(
+            Reflector reflector,
+            ILogger? logger,
+            string name,
+            object targetInstance,
+            MethodInfo methodInfo,
+            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, targetInstance, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
+            AuthoringCapability = authoringCapability;
         }
 
-        public RunTool(Reflector reflector, ILogger? logger, string name, Type classType, MethodInfo methodInfo) : base(reflector, logger, classType, methodInfo)
+        public RunTool(
+            Reflector reflector,
+            ILogger? logger,
+            string name,
+            Type classType,
+            MethodInfo methodInfo,
+            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, classType, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
+            AuthoringCapability = authoringCapability;
         }
 
         protected override object? GetParameterValue(Reflector reflector, ParameterInfo paramInfo, object? value)
@@ -173,6 +195,14 @@ namespace com.IvanMurzak.McpPlugin
             if (validationResult != null)
                 return validationResult;
 
+            var pathBindingResult = ValidateCanonicalPathScope(requestId);
+            if (pathBindingResult != null)
+                return pathBindingResult;
+
+            var authoringScopeResult = ValidateAuthoringScope(requestId);
+            if (authoringScopeResult != null)
+                return authoringScopeResult;
+
             using var invocationScope = ToolCallInvocationScope.PushIfMissing(requestId, cancellationToken);
             try
             {
@@ -196,6 +226,19 @@ namespace com.IvanMurzak.McpPlugin
                     .Error(errorMessage)
                     .SetRequestID(requestId);
             }
+            catch (ToolCallControlException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+            {
+                // Preserve stable policy errors raised by a path-aware
+                // adapter so the shared pipeline can map them without
+                // exposing the underlying exception.
+                throw;
+            }
+            catch (ToolCallControlException ex)
+            {
+                return ResponseCallTool
+                    .Error(ex.Message)
+                    .SetRequestID(requestId);
+            }
             catch (OperationCanceledException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
             {
                 // Let the controlled execution pipeline distinguish a caller
@@ -205,6 +248,17 @@ namespace com.IvanMurzak.McpPlugin
             }
             catch (Exception ex)
             {
+                var controlException = FindControlException(ex);
+                if (controlException != null)
+                {
+                    if (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+                        throw controlException;
+
+                    return ResponseCallTool
+                        .Error(controlException.Message)
+                        .SetRequestID(requestId);
+                }
+
                 var errorMessage = $"Tool execution failed for '{Title ?? this.Method?.Name}': {(ex.InnerException ?? ex).Message}";
                 _logger?.LogError(ex, $"{errorMessage}\n{ex.StackTrace}");
                 return ResponseCallTool
@@ -226,6 +280,14 @@ namespace com.IvanMurzak.McpPlugin
             var validationResult = ValidateRunParameters(requestId, namedParameters);
             if (validationResult != null)
                 return validationResult;
+
+            var pathBindingResult = ValidateCanonicalPathScope(requestId);
+            if (pathBindingResult != null)
+                return pathBindingResult;
+
+            var authoringScopeResult = ValidateAuthoringScope(requestId);
+            if (authoringScopeResult != null)
+                return authoringScopeResult;
 
             using var invocationScope = ToolCallInvocationScope.PushIfMissing(requestId, cancellationToken);
             try
@@ -252,6 +314,19 @@ namespace com.IvanMurzak.McpPlugin
                     .Error(errorMessage)
                     .SetRequestID(requestId);
             }
+            catch (ToolCallControlException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+            {
+                // Preserve stable policy errors raised by a path-aware
+                // adapter so the shared pipeline can map them without
+                // exposing the underlying exception.
+                throw;
+            }
+            catch (ToolCallControlException ex)
+            {
+                return ResponseCallTool
+                    .Error(ex.Message)
+                    .SetRequestID(requestId);
+            }
             catch (OperationCanceledException) when (!(ToolCallInvocationScope.Current?.Legacy ?? true))
             {
                 // See the positional overload above: controlled calls must
@@ -260,6 +335,17 @@ namespace com.IvanMurzak.McpPlugin
             }
             catch (Exception ex)
             {
+                var controlException = FindControlException(ex);
+                if (controlException != null)
+                {
+                    if (!(ToolCallInvocationScope.Current?.Legacy ?? true))
+                        throw controlException;
+
+                    return ResponseCallTool
+                        .Error(controlException.Message)
+                        .SetRequestID(requestId);
+                }
+
                 var errorMessage = $"Tool execution failed for '{Title ?? this.Method?.Name}': {(ex.InnerException ?? ex).Message}";
                 _logger?.LogError(ex, $"{errorMessage}\n{ex.StackTrace}");
                 return ResponseCallTool
@@ -305,6 +391,195 @@ namespace com.IvanMurzak.McpPlugin
             }
 
             return null; // Validation passed
+        }
+
+        /// <summary>
+        /// A path-sensitive reflected runner is only safe when entered through
+        /// the policy middleware with canonical arguments. This protects the
+        /// direct RunTool API and custom pipelines that accidentally omit the
+        /// authoring middleware; raw caller paths are never passed to a tool.
+        /// </summary>
+        private ResponseCallTool? ValidateCanonicalPathScope(string requestId)
+        {
+            var declarations = AuthoringCapability?.PathBindings;
+            if (declarations == null || declarations.Count == 0)
+                return null;
+
+            var invocation = ToolCallInvocationScope.CurrentInvocation;
+            var isControlled = ToolCallInvocationScope.Current?.Legacy == false;
+            if (invocation == null
+                || !invocation.HasCanonicalArguments
+                || !ReferenceEquals(invocation.Runner, this)
+                || !string.Equals(invocation.Name, Name, StringComparison.Ordinal))
+            {
+                var error = new ToolCallError(
+                    ToolCallErrorCodes.PathPolicyViolation,
+                    "A canonical project path binding is required before this tool can run.",
+                    callId: ToolCallInvocationScope.Current?.CallId,
+                    correlationId: ToolCallInvocationScope.Current?.CorrelationId,
+                    details: new JsonObject
+                    {
+                        ["reason"] = invocation == null || !invocation.HasCanonicalArguments
+                            ? "missing_canonical_binding"
+                            : "scope_runner_mismatch",
+                    });
+                if (isControlled)
+                    throw new ToolCallControlException(
+                        error.Code,
+                        error.Message,
+                        callId: error.CallId,
+                        correlationId: error.CorrelationId,
+                        details: error.Details);
+                return ResponseCallTool.Error(error).SetRequestID(requestId);
+            }
+
+            foreach (var declaration in declarations)
+            {
+                if (declaration == null || string.IsNullOrWhiteSpace(declaration.ArgumentName))
+                    continue;
+
+                var hasRawArgument = TryGetArgument(
+                    invocation.RawArguments,
+                    declaration.ArgumentName,
+                    out var rawArgument);
+                var hasCanonicalBinding = invocation.PathBindings.TryGetValue(
+                    declaration.ArgumentName,
+                    out var canonicalBinding);
+                var optionalEmptyArgument = hasRawArgument
+                    && (rawArgument.ValueKind == JsonValueKind.Null
+                        || (rawArgument.ValueKind == JsonValueKind.String
+                            && string.Equals(rawArgument.GetString(), string.Empty, StringComparison.Ordinal)));
+
+                if (!hasCanonicalBinding && (declaration.Required || (hasRawArgument && !optionalEmptyArgument)))
+                {
+                    var error = new ToolCallError(
+                        ToolCallErrorCodes.PathPolicyViolation,
+                        declaration.Required
+                            ? "A required canonical project path binding is missing."
+                            : "A canonical project path binding is missing.",
+                        callId: invocation.Context.CallId,
+                        correlationId: invocation.Context.CorrelationId,
+                        details: new JsonObject
+                        {
+                            ["reason"] = declaration.Required
+                                ? "required_canonical_binding_missing"
+                                : "canonical_binding_missing",
+                        });
+                    if (isControlled)
+                        throw new ToolCallControlException(
+                            error.Code,
+                            error.Message,
+                            callId: error.CallId,
+                            correlationId: error.CorrelationId,
+                            details: error.Details);
+                    return ResponseCallTool.Error(error).SetRequestID(requestId);
+                }
+
+                if (hasCanonicalBinding
+                    && (!hasRawArgument
+                        || canonicalBinding == null
+                        || canonicalBinding.Resolution.Intent != (ProjectPathAccessIntent)declaration.Intent
+                        || !TryGetArgument(
+                            invocation.Arguments,
+                            declaration.ArgumentName,
+                            out var canonicalArgument)
+                        || canonicalArgument.ValueKind != JsonValueKind.String
+                        || !string.Equals(
+                            canonicalArgument.GetString(),
+                            canonicalBinding.RelativePath,
+                            StringComparison.Ordinal)))
+                {
+                    var error = new ToolCallError(
+                        ToolCallErrorCodes.PathPolicyViolation,
+                        "The canonical project path binding does not match this tool call.",
+                        callId: invocation.Context.CallId,
+                        correlationId: invocation.Context.CorrelationId,
+                        details: new JsonObject { ["reason"] = "canonical_binding_mismatch" });
+                    if (isControlled)
+                        throw new ToolCallControlException(
+                            error.Code,
+                            error.Message,
+                            callId: error.CallId,
+                            correlationId: error.CorrelationId,
+                            details: error.Details);
+                    return ResponseCallTool.Error(error).SetRequestID(requestId);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// A reflected runner must not be callable directly when its
+        /// registration can mutate state. Managers enter an invocation scope
+        /// before the shared safety middleware; direct callers have no trusted
+        /// policy decision and therefore fail closed.
+        /// </summary>
+        private ResponseCallTool? ValidateAuthoringScope(string requestId)
+        {
+            var capability = AuthoringCapability;
+            var mutationCapable = capability == null
+                ? ReadOnlyHint != true
+                : capability.IsOpaque || (capability.MutationKind != AuthoringMutationKind.Read);
+            if (!mutationCapable)
+                return null;
+
+            var invocation = ToolCallInvocationScope.CurrentInvocation;
+            if (invocation != null
+                && invocation.PolicyApproved
+                && ReferenceEquals(invocation.Runner, this)
+                && string.Equals(invocation.Name, Name, StringComparison.Ordinal))
+                return null;
+
+            var context = ToolCallInvocationScope.Current;
+            var error = new ToolCallError(
+                ToolCallErrorCodes.SafetyUnsupported,
+                "Tool invocation must enter the authoring safety pipeline.",
+                callId: context?.CallId,
+                correlationId: context?.CorrelationId,
+                details: new JsonObject { ["reason"] = "direct_runner_bypass" });
+            if (context?.Legacy == false)
+                throw new ToolCallControlException(
+                    error.Code,
+                    error.Message,
+                    callId: error.CallId,
+                    correlationId: error.CorrelationId,
+                    details: error.Details);
+            return ResponseCallTool.Error(error).SetRequestID(requestId);
+        }
+
+        private static bool TryGetArgument(
+            IReadOnlyDictionary<string, JsonElement> arguments,
+            string argumentName,
+            out JsonElement value)
+        {
+            if (arguments.TryGetValue(argumentName, out value))
+                return true;
+
+            foreach (var argument in arguments)
+            {
+                if (string.Equals(argument.Key, argumentName, StringComparison.OrdinalIgnoreCase))
+                {
+                    value = argument.Value;
+                    return true;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+
+        private static ToolCallControlException? FindControlException(Exception exception)
+        {
+            var current = exception;
+            while (current != null)
+            {
+                if (current is ToolCallControlException controlException)
+                    return controlException;
+                current = current.InnerException;
+            }
+
+            return null;
         }
 
         /// <summary>

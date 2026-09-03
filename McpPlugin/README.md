@@ -5,7 +5,7 @@
 
 > ## Fork notice
 >
-> This is the **`unity-copilot` fork** of [`IvanMurzak/MCP-Plugin-dotnet`](https://github.com/IvanMurzak/MCP-Plugin-dotnet) 6.3.2.
+> This is the **`unity-copilot` fork** of [`IvanMurzak/MCP-Plugin-dotnet`](https://github.com/IvanMurzak/MCP-Plugin-dotnet), based on upstream 6.3.2. The fork release described here is **`7.0.0-unity-copilot.1`**.
 >
 > **The MCP protocol layer has been stripped.** The original upstream is an MCP bridge that exposes tools/prompts/resources to MCP clients (Claude Desktop, Cursor, etc.) via JSON-RPC. This fork removes that entire layer — the binary now exposes only:
 >
@@ -17,6 +17,27 @@
 > **Why**：upstream `IvanMurzak/MCP-Plugin-dotnet` has been forked permanently into the `unity-copilot` workspace to support Phase A (HTTP session isolation) and Phase B (cross-instance tool routing). With the fork already in place and 100% of traffic going through a CLI (cocli) that talks plain REST, the MCP protocol layer became dead code worth ~2,500 lines of C# + two NuGet packages. Stripping it reduced maintenance surface and simplified the Strategy abstraction. See `../docs/skills-vs-cli-strategy.md §15` for the full rationale.
 >
 > **This fork does not merge with upstream anymore.** If you need MCP client compatibility, use upstream `IvanMurzak/MCP-Plugin-dotnet` directly.
+
+## 7.0 API compatibility and migration
+
+Fork release `7.0.0-unity-copilot.1` deliberately introduces a source and binary compatibility break from upstream-based `6.3.2`. Applications upgrading to this major version **must recompile** and migrate affected source; this release does not claim binary compatibility.
+
+`ToolRunnerCollection` and `SystemToolRunnerCollection` formerly inherited `Dictionary<string, IRunTool>`. They are now guarded registry types implementing `IDictionary<string, IRunTool>` and `IReadOnlyDictionary<string, IRunTool>` instead. Type registry variables and APIs against those interfaces:
+
+```csharp
+IDictionary<string, IRunTool> writable = toolRunners;
+IReadOnlyDictionary<string, IRunTool> readable = toolRunners;
+
+writable.Add(tool.Name, tool);
+if (readable.TryGetValue(tool.Name, out var registered))
+{
+    // Use metadata here; execute tools through McpToolManager/McpSystemToolManager.
+}
+```
+
+Remove assumptions that either registry can be assigned or cast to `Dictionary<string, IRunTool>`, passed to an API requiring that concrete type, inspected as a `Dictionary` base type, or used through concrete-`Dictionary`-only APIs. Supported replacements are the `IDictionary` indexer, `Add`, `Remove`, `Clear`, `ContainsKey`, `TryGetValue`, `Keys`, `Values`, `Count`, key/value-pair collection operations, and enumeration; read-only consumers can use the corresponding `IReadOnlyDictionary` indexer, lookup, keys, values, count, and enumeration.
+
+This change closes an execution-safety bypass caused by non-virtual `Dictionary` insertion APIs. Every insertion route into either registry wraps the runner with the framework guard, and every indexer, lookup, values view, or enumeration retrieval exposes only the guarded stored runner. Invoke registered tools through `McpToolManager` or `McpSystemToolManager`; direct runner execution remains rejected by the guard.
 
 ## Overview
 

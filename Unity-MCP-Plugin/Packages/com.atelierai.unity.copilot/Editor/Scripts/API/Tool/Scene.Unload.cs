@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
@@ -31,6 +32,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SceneUnloadToolId,
             Title = "Scene / Unload"
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Delete,
+            UndoLevel = AuthoringUndoLevel.None,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner))]
         [McpPluginSkillDescription("Unload an opened scene from the Unity Editor (asynchronously via " +
             "`SceneManager.UnloadSceneAsync`). " +
             "Use '" + SceneListOpenedToolId + "' to find the scene name first.")]
@@ -52,6 +60,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(async () =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var logger = UnityLoggerFactory.LoggerFactory.CreateLogger<Tool_Scene>();
 
                 if (string.IsNullOrEmpty(name))

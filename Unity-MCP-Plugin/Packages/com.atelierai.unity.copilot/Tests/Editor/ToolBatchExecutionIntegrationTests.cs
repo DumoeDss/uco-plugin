@@ -31,8 +31,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             originalInstance.BuildMcpPluginIfNeeded();
             var originalPlugin = originalInstance.McpPluginInstance;
             var middleware = new RecordingMiddleware();
-            var successfulRunner = new BatchTestRunner("batch-test-success", shouldFail: false);
-            var failingRunner = new BatchTestRunner("batch-test-failure", shouldFail: true);
+            var successfulRunner = new BatchTestRunner("batch-test-success", shouldFail: false, targetBound: false);
+            var failingRunner = new BatchTestRunner("batch-test-failure", shouldFail: true, targetBound: true);
             var replacement = new TestUnityCopilotPluginEditor(
                 middleware,
                 successfulRunner,
@@ -45,7 +45,28 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 var manager = replacement.Tools;
                 Assert.IsNotNull(manager, "The test plugin should expose a production tool manager.");
 
-                var request = BuildBatchRequest();
+                // g-005: batch-execute carries DestructiveHint=true, so the
+                // parent call must obtain a read-only plan and confirm it.
+                // The plan short-circuits inside the outermost safety
+                // middleware and therefore never reaches the recording
+                // middleware or any child runner.
+                var planning = manager!.RunCallTool(BuildBatchRequest(planControl: true, confirmation: null));
+                yield return WaitForTask(planning);
+                var planResponse = planning.Result;
+                Assert.AreEqual(ResponseStatus.Success, planResponse.Status, planResponse.Message);
+                var plan = planResponse.Value!.StructuredContent!["result"]!["confirmationPlan"]!.AsObject();
+                var childRecords = plan["childRecords"]!.AsArray();
+                Assert.AreEqual(3, childRecords.Count);
+                Assert.AreEqual(0, middleware.Contexts.Count, "A plan must not reach later middleware.");
+                Assert.AreEqual(0, successfulRunner.InvocationCount + failingRunner.InvocationCount,
+                    "A plan must not invoke a child runner.");
+
+                var request = BuildBatchRequest(planControl: false, confirmation: new ToolCallConfirmation
+                {
+                    PlanId = plan["planId"]!.GetValue<string>(),
+                    PlanHash = plan["planHash"]!.GetValue<string>(),
+                    ExpiresAtUnixMs = plan["expiresAtUnixMs"]!.GetValue<long>(),
+                });
                 LogAssert.Expect(
                     UnityEngine.LogType.Error,
                     new System.Text.RegularExpressions.Regex("Error Response to AI"));
@@ -64,6 +85,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 Assert.IsTrue(batchResult.Aborted);
                 Assert.AreEqual(3, batchResult.Results.Length);
                 Assert.IsTrue(batchResult.Results[0].Ok);
+                Assert.IsNotNull(batchResult.Results[0].Transaction,
+                    "A completed child's transaction report must survive a later runtime failure.");
+                Assert.IsTrue(batchResult.Results[0].Transaction!["completed"]!.GetValue<bool>());
+                Assert.AreEqual("none", batchResult.Results[0].Transaction!["undo"]!.GetValue<string>());
                 Assert.IsFalse(batchResult.Results[1].Ok);
                 Assert.IsFalse(batchResult.Results[1].Skipped);
                 Assert.IsTrue(batchResult.Results[2].Skipped);
@@ -84,9 +109,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 Assert.AreEqual("batch-trace", secondChild.CorrelationId);
                 Assert.AreEqual("batch-parent", firstChild.ParentCallId);
                 Assert.AreEqual("batch-parent", secondChild.ParentCallId);
-                Assert.IsFalse(string.Equals(parent.CallId, firstChild.CallId, StringComparison.Ordinal));
-                Assert.IsFalse(string.Equals(firstChild.CallId, secondChild.CallId, StringComparison.Ordinal));
-                Assert.IsFalse(string.Equals(firstChild.RequestID, secondChild.RequestID, StringComparison.Ordinal));
+                Assert.AreEqual(childRecords[0]!["requestID"]!.GetValue<string>(), firstChild.RequestID);
+                Assert.AreEqual(childRecords[0]!["callId"]!.GetValue<string>(), firstChild.CallId);
+                Assert.AreEqual(childRecords[1]!["requestID"]!.GetValue<string>(), secondChild.RequestID);
+                Assert.AreEqual(childRecords[1]!["callId"]!.GetValue<string>(), secondChild.CallId);
+                Assert.AreEqual(true, firstChild.Confirm);
+                Assert.AreEqual(true, secondChild.Confirm);
+                Assert.AreEqual(childRecords[0]!["planId"]!.GetValue<string>(), firstChild.Confirmation!.PlanId);
+                Assert.AreEqual(childRecords[1]!["planId"]!.GetValue<string>(), secondChild.Confirmation!.PlanId,
+                    "Execution must redeem the aggregate-issued token rather than mint a replacement.");
+                Assert.AreEqual(childRecords[1]!["planHash"]!.GetValue<string>(), secondChild.Confirmation.PlanHash);
+                Assert.AreEqual(childRecords[1]!["expiresAtUnixMs"]!.GetValue<long>(), secondChild.Confirmation.ExpiresAtUnixMs);
                 Assert.AreEqual(1, successfulRunner.InvocationCount);
                 Assert.AreEqual(1, failingRunner.InvocationCount);
             }
@@ -96,7 +129,56 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             }
         }
 
-        private static RequestCallTool BuildBatchRequest()
+        [UnityTest]
+        public IEnumerator Execute_RejectsTamperedApprovedChildBeforeAnyRunner()
+        {
+            var originalInstance = UnityCopilotPluginEditor.Instance;
+            originalInstance.BuildMcpPluginIfNeeded();
+            var originalPlugin = originalInstance.McpPluginInstance;
+            var middleware = new RecordingMiddleware { TamperApprovedChild = true };
+            var first = new BatchTestRunner("batch-test-success", shouldFail: false, targetBound: false);
+            var second = new BatchTestRunner("batch-test-failure", shouldFail: true, targetBound: true);
+            var replacement = new TestUnityCopilotPluginEditor(middleware, first, second);
+
+            SetEditorSingleton(replacement);
+            try
+            {
+                replacement.BuildMcpPluginIfNeeded();
+                var manager = replacement.Tools;
+                Assert.IsNotNull(manager);
+
+                var planning = manager!.RunCallTool(BuildBatchRequest(planControl: true, confirmation: null));
+                yield return WaitForTask(planning);
+                var planResponse = planning.Result;
+                Assert.AreEqual(ResponseStatus.Success, planResponse.Status, planResponse.Message);
+                var plan = planResponse.Value!.StructuredContent!["result"]!["confirmationPlan"]!.AsObject();
+
+                var execution = manager.RunCallTool(BuildBatchRequest(
+                    planControl: false,
+                    confirmation: new ToolCallConfirmation
+                    {
+                        PlanId = plan["planId"]!.GetValue<string>(),
+                        PlanHash = plan["planHash"]!.GetValue<string>(),
+                        ExpiresAtUnixMs = plan["expiresAtUnixMs"]!.GetValue<long>(),
+                    }));
+                yield return WaitForTask(execution);
+
+                var response = execution.Result;
+                Assert.AreEqual(ResponseStatus.Success, response.Status, response.Message);
+                var batchResult = DeserializeBatchResult(response.Value!);
+                Assert.IsTrue(batchResult.Aborted);
+                Assert.AreEqual(0, batchResult.Succeeded);
+                Assert.AreEqual(0, first.InvocationCount + second.InvocationCount,
+                    "No child runner may start after an approved child binding changes.");
+                Assert.AreEqual(ToolCallErrorCodes.ConfirmationStale, batchResult.Results[0].ErrorCode);
+            }
+            finally
+            {
+                RestoreEditorSingleton(originalInstance, originalPlugin, replacement);
+            }
+        }
+
+        private static RequestCallTool BuildBatchRequest(bool planControl, ToolCallConfirmation? confirmation)
         {
             var commands = new[]
             {
@@ -121,6 +203,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ["commands"] = JsonSerializer.SerializeToElement(commands),
                 ["failFast"] = JsonSerializer.SerializeToElement(true),
             };
+            // The plan and the execution share requestID, callId, and
+            // correlationId: the confirmation binding covers all of them.
             return new RequestCallTool(
                 "batch-request",
                 Tool_Batch.BatchExecuteToolId,
@@ -130,6 +214,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     Version = ToolCallControl.CurrentVersion,
                     CallId = "batch-parent",
                     CorrelationId = "batch-trace",
+                    DryRun = planControl ? "plan" : null,
+                    Confirm = confirmation == null ? (bool?)null : true,
+                    Confirmation = confirmation,
                 });
         }
 
@@ -179,6 +266,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             {
                 _middleware = middleware;
                 _runners = runners;
+                ConnectionConfigForTests.KeepConnected = false;
             }
 
             protected override IMcpPlugin BuildMcpPlugin(
@@ -204,12 +292,22 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private sealed class RecordingMiddleware : IToolExecutionMiddleware
         {
             public List<ToolCallContext> Contexts { get; } = new();
+            public bool TamperApprovedChild { get; set; }
 
             public async Task<ResponseCallTool> InvokeAsync(
                 ToolCallContext context,
                 ToolCallNext next)
             {
                 Contexts.Add(context.Clone());
+                var invocation = ToolCallInvocationScope.CurrentInvocation;
+                if (TamperApprovedChild
+                    && string.Equals(invocation?.Name, Tool_Batch.BatchExecuteToolId, StringComparison.Ordinal)
+                    && invocation.ApprovedPlan?.ChildRecords is AuthoringChildPlanSummary[] children
+                    && children.Length > 0)
+                {
+                    children[0].ArgumentsHash = "sha256-tampered";
+                    TamperApprovedChild = false;
+                }
                 return await next(context).ConfigureAwait(false);
             }
         }
@@ -218,10 +316,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             private readonly bool _shouldFail;
 
-            public BatchTestRunner(string name, bool shouldFail)
+            public BatchTestRunner(string name, bool shouldFail, bool targetBound)
             {
                 Name = name;
                 _shouldFail = shouldFail;
+                AuthoringCapability = targetBound
+                    ? new AuthoringCapabilityDescriptor
+                    {
+                        MutationKind = AuthoringMutationKind.Delete,
+                        UndoLevel = AuthoringUndoLevel.None,
+                        SupportsValidation = true,
+                        SupportsPlanning = true,
+                        Validator = new BatchInspector(),
+                        Planner = new BatchInspector(),
+                    }
+                    : null;
             }
 
             public string Name { get; }
@@ -235,9 +344,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             public JsonNode? OutputSchema => null;
             public McpToolType ToolType => McpToolType.Standard;
             public bool? ReadOnlyHint => null;
-            public bool? DestructiveHint => null;
+            public bool? DestructiveHint => AuthoringCapability == null ? (bool?)null : true;
             public bool? IdempotentHint => null;
             public bool? OpenWorldHint => null;
+            public AuthoringCapabilityDescriptor? AuthoringCapability { get; }
             public int TokenCount => 0;
             public int InvocationCount { get; private set; }
 
@@ -258,6 +368,31 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
                 return Task.FromResult(ResponseCallTool.Success("ok").SetRequestID(requestId));
             }
+        }
+
+        private sealed class BatchInspector : IAuthoringValidator, IAuthoringPlanner
+        {
+            public AuthoringValidationResult Validate(AuthoringInvocation invocation)
+                => new AuthoringValidationResult
+                {
+                    Valid = true,
+                    Targets = new[]
+                    {
+                        new AuthoringTargetSummary
+                        {
+                            Kind = "batch-test",
+                            Name = invocation.Name,
+                            Fingerprint = AuthoringConfirmationBinding.ComputeArgumentsHash(invocation.Arguments),
+                        },
+                    },
+                };
+
+            public AuthoringPlanSummary Plan(AuthoringInvocation invocation)
+                => new AuthoringPlanSummary
+                {
+                    Targets = Validate(invocation).Targets,
+                    PredictedEffects = new[] { "test failure" },
+                };
         }
     }
 }

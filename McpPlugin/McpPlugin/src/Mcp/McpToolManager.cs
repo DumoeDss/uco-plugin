@@ -40,8 +40,18 @@ namespace com.IvanMurzak.McpPlugin
         public Observable<Unit> OnToolsUpdated => _onToolsUpdated;
         public ToolExecutionPipeline ExecutionPipeline => _executionPipeline;
 
-        public IEnumerable<IRunTool> GetAllTools() => _tools.Values.ToList();
+        public IEnumerable<IRunTool> GetAllTools()
+            => _tools.Keys.ToArray().Select(GetGuardedRunner).ToList();
         public ulong ToolCallsCount => (ulong)Interlocked.Read(ref Unsafe.As<ulong, long>(ref toolCallsCount));
+
+        private IRunTool GetGuardedRunner(string name)
+        {
+            var runner = _tools[name];
+            var guarded = GuardedRunTool.Wrap(runner);
+            if (!ReferenceEquals(runner, guarded))
+                _tools[name] = guarded;
+            return guarded;
+        }
 
         public McpToolManager(
             ILogger<McpToolManager> logger,
@@ -64,7 +74,7 @@ namespace com.IvanMurzak.McpPlugin
         }
 
         #region Tools
-        public int EnabledToolsCount => _tools.Count(kvp => kvp.Value.Enabled);
+        public int EnabledToolsCount => GetAllTools().Count(tool => tool.Enabled);
         public int TotalToolsCount => _tools.Count;
 
         /// <summary>
@@ -72,9 +82,9 @@ namespace com.IvanMurzak.McpPlugin
         /// This is calculated as the sum of TokenCount for each enabled tool.
         /// Recalculates on each access but should be performant for typical tool counts.
         /// </summary>
-        public int EnabledToolsTokenCount => _tools
-            .Where(kvp => kvp.Value.Enabled)
-            .Sum(kvp => kvp.Value.TokenCount);
+        public int EnabledToolsTokenCount => GetAllTools()
+            .Where(tool => tool.Enabled)
+            .Sum(tool => tool.TokenCount);
 
         public bool HasTool(string name) => _tools.ContainsKey(name);
         public bool AddTool(string name, IRunTool runner)
@@ -85,7 +95,7 @@ namespace com.IvanMurzak.McpPlugin
                 return false;
             }
 
-            _tools[name] = runner;
+            _tools[name] = GuardedRunTool.Wrap(runner);
             _onToolsUpdated.OnNext(Unit.Default);
             return true;
         }
@@ -105,22 +115,23 @@ namespace com.IvanMurzak.McpPlugin
         }
         public bool IsToolEnabled(string name)
         {
-            if (!_tools.TryGetValue(name, out var runner))
+            if (!_tools.ContainsKey(name))
             {
                 _logger.LogWarning("Tool with Name '{0}' not found.", name);
                 return false;
             }
 
-            return runner.Enabled;
+            return GetGuardedRunner(name).Enabled;
         }
         public bool SetToolEnabled(string name, bool enabled)
         {
-            if (!_tools.TryGetValue(name, out var runner))
+            if (!_tools.ContainsKey(name))
             {
                 _logger.LogWarning("Tool with Name '{0}' not found.", name);
                 return false;
             }
 
+            var runner = GetGuardedRunner(name);
             runner.Enabled = enabled;
             _onToolsUpdated.OnNext(Unit.Default);
 
@@ -155,9 +166,10 @@ namespace com.IvanMurzak.McpPlugin
 
             var request = normalized.Request;
             var context = normalized.Context;
-            if (!_tools.TryGetValue(request.Name, out var runner))
+            if (!_tools.ContainsKey(request.Name))
                 return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Tool with Name '{request.Name}' not found.")
                     .Log(_logger);
+            var runner = GetGuardedRunner(request.Name);
             try
             {
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -168,14 +180,28 @@ namespace com.IvanMurzak.McpPlugin
                     _logger.LogInformation(message);
                 }
 
+                // Publish runner metadata before entering the pipeline so
+                // the outermost authoring policy can classify this exact
+                // registration without a second name-keyed safety registry.
+                var authoringInvocation = new AuthoringInvocation(
+                    context,
+                    request.Name,
+                    request.Arguments ?? new Dictionary<string, JsonElement>(),
+                    runner);
+                using var invocationScope = ToolCallInvocationScope.Push(context, authoringInvocation);
                 var result = await _executionPipeline.InvokeAsync(
                     context,
                     async invocationContext =>
                     {
-                        using var invocationScope = ToolCallInvocationScope.Push(invocationContext);
+                        var terminalInvocation = ToolCallInvocationScope.CurrentInvocation
+                            ?? authoringInvocation.WithContext(invocationContext);
+                        using var terminalScope = ToolCallInvocationScope.Push(
+                            invocationContext,
+                            terminalInvocation.WithContext(invocationContext));
+                        using var executionAuthorization = ToolCallInvocationScope.AuthorizeRunnerExecution(runner);
                         return await runner.Run(
                             invocationContext.CallId,
-                            request.Arguments,
+                            terminalInvocation.Arguments,
                             invocationContext.CancellationToken).ConfigureAwait(false);
                     }).ConfigureAwait(false);
                 if (result == null)
@@ -300,25 +326,26 @@ namespace com.IvanMurzak.McpPlugin
             try
             {
                 _logger.LogDebug("Listing tools.");
-                var result = _tools
-                    .Select(kvp =>
+                var result = _tools.Keys.ToArray()
+                    .Select(GetGuardedRunner)
+                    .Select(tool =>
                     {
                         var response = new ResponseListTool()
                         {
-                            Name = kvp.Value.Name,
-                            Enabled = kvp.Value.Enabled,
-                            Title = kvp.Value.Title,
-                            Description = kvp.Value.Description,
-                            InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? Common.Consts.MCP.EmptyInputSchema,
-                            ReadOnlyHint = kvp.Value.ReadOnlyHint,
-                            DestructiveHint = kvp.Value.DestructiveHint,
-                            IdempotentHint = kvp.Value.IdempotentHint,
-                            OpenWorldHint = kvp.Value.OpenWorldHint
+                            Name = tool.Name,
+                            Enabled = tool.Enabled,
+                            Title = tool.Title,
+                            Description = tool.Description,
+                            InputSchema = tool.InputSchema.ToJsonElement() ?? Common.Consts.MCP.EmptyInputSchema,
+                            ReadOnlyHint = tool.ReadOnlyHint,
+                            DestructiveHint = tool.DestructiveHint,
+                            IdempotentHint = tool.IdempotentHint,
+                            OpenWorldHint = tool.OpenWorldHint
                         };
-                        if (kvp.Value.OutputSchema == null)
+                        if (tool.OutputSchema == null)
                             return response;
 
-                        if (kvp.Value.OutputSchema is not JsonNode jn)
+                        if (tool.OutputSchema is not JsonNode jn)
                             return response;
 
                         if (jn.GetValueKind() != JsonValueKind.Object)

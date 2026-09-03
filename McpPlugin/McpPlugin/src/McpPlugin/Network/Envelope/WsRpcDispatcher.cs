@@ -470,7 +470,52 @@ namespace com.IvanMurzak.McpPlugin
                     callId: identity.CallId ?? identity.RequestId,
                     correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
             }
+
+            // System.Text.Json maps explicit JSON null to null for the
+            // nullable authoring fields. Without this raw check, `null` would
+            // become indistinguishable from an omitted directive and could
+            // reach a manager as a legacy/default value. Validate the fields
+            // whose wire presence is semantically significant before typed
+            // deserialization or runner lookup.
+            var identityForAuthoring = ExtractToolCallIdentity(paramsElement);
+            var confirm = TryGetProperty(control.Value, "confirm");
+            if (confirm.HasValue && (confirm.Value.ValueKind == JsonValueKind.Null
+                || (confirm.Value.ValueKind != JsonValueKind.True
+                    && confirm.Value.ValueKind != JsonValueKind.False)))
+            {
+                throw InvalidRawAuthoringControl(
+                    "confirm must be a boolean.",
+                    identityForAuthoring);
+            }
+
+            var dryRun = TryGetProperty(control.Value, "dryRun");
+            if (dryRun.HasValue && (dryRun.Value.ValueKind != JsonValueKind.String
+                || (dryRun.Value.GetString() != "none"
+                    && dryRun.Value.GetString() != "validate"
+                    && dryRun.Value.GetString() != "plan")))
+            {
+                throw InvalidRawAuthoringControl(
+                    "dryRun must be one of: none, validate, plan.",
+                    identityForAuthoring);
+            }
+
+            var confirmation = TryGetProperty(control.Value, "confirmation");
+            if (confirmation.HasValue && confirmation.Value.ValueKind != JsonValueKind.Object)
+            {
+                throw InvalidRawAuthoringControl(
+                    "confirmation must be an object.",
+                    identityForAuthoring);
+            }
         }
+
+        private static ToolCallControlException InvalidRawAuthoringControl(
+            string message,
+            (string? RequestId, string? CallId, string? CorrelationId) identity)
+            => new ToolCallControlException(
+                ToolCallErrorCodes.InvalidControl,
+                message,
+                callId: identity.CallId ?? identity.RequestId,
+                correlationId: identity.CorrelationId ?? identity.CallId ?? identity.RequestId);
 
         private static void AttachToolCallIdentity(ToolCallError error, JsonElement? paramsElement)
         {

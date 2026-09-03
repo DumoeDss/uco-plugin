@@ -52,6 +52,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
               name: nameof(child.transform.position),
               value: newPosition));
 
+      // g-005: direct tool-method invocation requires an explicit authoring transaction.
+      using var authoringTransaction = BeginTestAuthoringTransaction();
       var result = new Tool_GameObject().ModifyComponent(
           gameObjectRef: new GameObjectRef(child!.GetInstanceID()),
           componentRef: new ComponentRef(child!.transform.GetInstanceID()),
@@ -93,6 +95,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
       Debug.Log($"Data:\n{componentDiff.ToJson(reflector)}\n");
 
+      // g-005: direct tool-method invocation requires an explicit authoring transaction.
+      using var authoringTransaction = BeginTestAuthoringTransaction();
       var response = new Tool_GameObject().ModifyComponent(
           gameObjectRef: new GameObjectRef(go.GetInstanceID()),
           componentRef: new ComponentRef(component.GetInstanceID()),

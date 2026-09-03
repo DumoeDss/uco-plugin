@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.McpPlugin.Common.Hub.Client;
@@ -99,6 +100,18 @@ namespace com.IvanMurzak.McpPlugin
 
             _services.AddSingleton<ISkillFileGenerator, SkillFileGenerator>();
 
+            // Authoring safety is the outermost policy middleware. Register it
+            // before caller-provided middleware so no custom layer can perform
+            // an authoring side effect before policy approval. The default root
+            // follows the host's current project directory; Unity's builder
+            // supplies Application.dataPath's parent explicitly.
+            _services.TryAddSingleton<ProjectPathPolicy>(_ =>
+                new ProjectPathPolicy(Directory.GetCurrentDirectory()));
+            _services.TryAddSingleton<AuthoringSafetyPolicy>(sp =>
+                new AuthoringSafetyPolicy(sp.GetRequiredService<ProjectPathPolicy>()));
+            _services.AddSingleton<IToolExecutionMiddleware>(sp =>
+                new AuthoringSafetyMiddleware(sp.GetRequiredService<AuthoringSafetyPolicy>()));
+
             // Register the concrete pipeline once.  The pass-through middleware
             // is appended during Build so custom middleware registered through
             // the additive APIs retains its registration order and wraps the
@@ -150,7 +163,7 @@ namespace com.IvanMurzak.McpPlugin
             if (_toolRunners.ContainsKey(name))
                 throw new ArgumentException($"Tool with name '{name}' already exists.");
 
-            _toolRunners.Add(name, runner);
+            _toolRunners.Add(name, GuardedRunTool.Wrap(runner));
             return this;
         }
 
@@ -169,6 +182,16 @@ namespace com.IvanMurzak.McpPlugin
                 throw new ArgumentNullException(nameof(middleware));
 
             _services.AddSingleton<IToolExecutionMiddleware>(middleware);
+            return this;
+        }
+
+        public virtual IMcpPluginBuilder WithProjectPathPolicy(ProjectPathPolicy policy)
+        {
+            ThrowIfBuilt();
+            if (policy == null)
+                throw new ArgumentNullException(nameof(policy));
+
+            _services.AddSingleton(policy);
             return this;
         }
         #endregion

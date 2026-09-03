@@ -39,8 +39,9 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard)
-            => new RunTool(reflector, logger, name, methodInfo)
+            McpToolType toolType = McpToolType.Standard,
+            AuthoringCapabilityDescriptor? authoringCapability = null)
+            => new RunTool(reflector, logger, name, methodInfo, authoringCapability)
             {
                 Title = title,
                 ToolType = toolType,
@@ -68,8 +69,9 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard)
-            => new RunTool(reflector, logger, name, targetInstance, methodInfo)
+            McpToolType toolType = McpToolType.Standard,
+            AuthoringCapabilityDescriptor? authoringCapability = null)
+            => new RunTool(reflector, logger, name, targetInstance, methodInfo, authoringCapability)
             {
                 Title = title,
                 ToolType = toolType,
@@ -100,8 +102,9 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard)
-            => new RunTool(reflector, logger, name, classType, methodInfo)
+            McpToolType toolType = McpToolType.Standard,
+            AuthoringCapabilityDescriptor? authoringCapability = null)
+            => new RunTool(reflector, logger, name, classType, methodInfo, authoringCapability)
             {
                 Title = title,
                 ToolType = toolType,

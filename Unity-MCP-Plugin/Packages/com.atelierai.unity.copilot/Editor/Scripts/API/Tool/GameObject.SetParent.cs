@@ -29,6 +29,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "GameObject / Set Parent",
             IdempotentHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Parent,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Reparent a batch of GameObjects under a new parent in the currently opened Prefab " +
             "or active Scene. Per-item failures are reported in the returned status string instead of aborting the batch. " +
             "Use '" + GameObjectFindToolId + "' to locate the GameObjects first.")]
@@ -57,6 +65,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var stringBuilder = new StringBuilder();
                 int changedCount = 0;
 
@@ -86,7 +96,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         continue;
                     }
 
-                    targetGo.transform.SetParent(parentGo.transform, worldPositionStays: worldPositionStays);
+                    // Hierarchy changes are recorded by Undo.SetTransformParent
+                    // inside the transaction group; a plain RecordObject on
+                    // the Transform would not restore the previous parent.
+                    UnityAuthoringUndo.SetParent(targetGo.transform, parentGo.transform, worldPositionStays);
                     changedCount++;
 
                     stringBuilder.AppendLine(@$"[Success] Set parent of {gameObjectRefs[i]} to {parentGameObjectRef}.");

@@ -57,6 +57,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     name: nameof(GradientTest.gradient),
                     value: expectedGradient));
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetInstanceID()),
                 componentRef: new ComponentRef(component.GetInstanceID()),
@@ -128,6 +130,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     name: nameof(GradientTest.gradient),
                     value: expectedGradient));
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetInstanceID()),
                 componentRef: new ComponentRef(component.GetInstanceID()),

@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -80,11 +80,95 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private (ResponseData<ResponseCallTool> result, string json) CallToolInternal(string toolName, string json)
         {
             Debug.Log($"{toolName} Started with JSON:\n{json}");
-            var result = UnityCopilotPluginEditor.Instance.Tools!.RunCallTool(BuildRequest(toolName, json)).Result;
+            AllowPolicyRejectionLogs();
+            var result = RunToolThroughPolicyAsync(BuildRequest(toolName, json)).Result;
             var jsonResult = RenderResult(result);
             Debug.Log($"{toolName} Completed. Result:\n{jsonResult}");
             return (result, jsonResult);
         }
+
+        /// <summary>
+        /// Runs a tool request through the production manager. Tool-behaviour
+        /// tests use the same two-step controlled flow as clients: the first
+        /// call issues a confirmation record without invoking the runner, and
+        /// the exact retry consumes that record once.
+        /// </summary>
+        public static async Task<ResponseData<ResponseCallTool>> RunToolThroughPolicyAsync(RequestCallTool request)
+        {
+            var tools = UnityCopilotPluginEditor.Instance.Tools!;
+            var control = request.Control?.Clone() ?? new ToolCallControl
+            {
+                Version = ToolCallControl.CurrentVersion,
+                CallId = request.RequestID + "-call",
+                CorrelationId = request.RequestID + "-trace",
+            };
+            control.DryRun = null;
+            control.Confirm = null;
+            control.Confirmation = null;
+
+            var controlled = new RequestCallTool(
+                request.RequestID,
+                request.Name,
+                request.Arguments,
+                control);
+            var response = await tools.RunCallTool(controlled).ConfigureAwait(false);
+            if (!IsConfirmationRequired(response))
+                return response;
+
+            var plan = ReadConfirmationPlan(response);
+            if (plan == null)
+                return response;
+
+            var executeControl = control.Clone();
+            executeControl.Confirm = true;
+            executeControl.Confirmation = new ToolCallConfirmation
+            {
+                PlanId = plan["planId"]?.GetValue<string>(),
+                PlanHash = plan["planHash"]?.GetValue<string>(),
+                ExpiresAtUnixMs = plan["expiresAtUnixMs"]?.GetValue<long>(),
+            };
+            return await tools.RunCallTool(new RequestCallTool(
+                request.RequestID,
+                request.Name,
+                request.Arguments,
+                executeControl)).ConfigureAwait(false);
+        }
+
+        private static System.Text.Json.Nodes.JsonObject? ReadConfirmationPlan(
+            ResponseData<ResponseCallTool> response)
+        {
+            var details = response.StructuredError?.Details
+                ?? response.Value?.StructuredError?.Details;
+            return details?["confirmationPlan"] as System.Text.Json.Nodes.JsonObject;
+        }
+
+        private static bool IsConfirmationRequired(ResponseData<ResponseCallTool>? response)
+        {
+            var code = response?.StructuredError?.Code ?? response?.Value?.StructuredError?.Code;
+            return string.Equals(code, ToolCallErrorCodes.ConfirmationRequired, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The manager logs every policy rejection ("Error Response to AI")
+        /// as an error, and the plan/confirm flow driven by these helpers
+        /// starts with exactly such a rejection. Unity resets this flag
+        /// between SetUp and the test body, so it is set immediately before
+        /// each helper-driven tool call. Explicit <c>LogAssert.Expect</c>
+        /// calls in a test keep working: only unexpected error logs are
+        /// tolerated; response/state assertions are unchanged.
+        /// </summary>
+        public static void AllowPolicyRejectionLogs()
+            => LogAssert.ignoreFailingMessages = true;
+
+        /// <summary>
+        /// g-005 no-bypass: pilot Scene/GameObject/Component tool bodies refuse
+        /// to mutate outside an authoring transaction. Tests that call a tool
+        /// method directly (to assert reflected patch semantics, not policy)
+        /// open one explicit test transaction around the call, exactly as the
+        /// safety middleware does for a policy-approved invocation.
+        /// </summary>
+        protected static IDisposable BeginTestAuthoringTransaction(string label = "test: direct tool invocation")
+            => com.AtelierAI.Unity.Copilot.Editor.Utils.UnityAuthoringTransactionFactory.BeginStandaloneScope(label);
 
         /// <summary>
         /// Starts a tool call from a background thread via <see cref="Task.Run(Action)"/>.
@@ -97,13 +181,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private static Task<(ResponseData<ResponseCallTool> result, string json)> CallToolFromBackgroundThreadInternal(string toolName, string json)
         {
             Debug.Log($"{toolName} Started (background thread) with JSON:\n{json}");
+            AllowPolicyRejectionLogs();
             var request = BuildRequest(toolName, json);
             return Task.Run(async () =>
             {
                 Assert.IsFalse(MainThread.Instance.IsMainThread,
                     "Task.Run should schedule work onto the thread pool, not the Unity main thread.");
 
-                var result = await UnityCopilotPluginEditor.Instance.Tools!.RunCallTool(request).ConfigureAwait(false);
+                var result = await RunToolThroughPolicyAsync(request).ConfigureAwait(false);
                 return (result, RenderResult(result));
             });
         }
@@ -120,7 +205,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private static IEnumerator CallToolOnMainThreadCoop(string toolName, string json, Action<ResponseData<ResponseCallTool>, string> onComplete)
         {
             Debug.Log($"{toolName} Started (main thread coop) with JSON:\n{json}");
-            var task = UnityCopilotPluginEditor.Instance.Tools!.RunCallTool(BuildRequest(toolName, json));
+            AllowPolicyRejectionLogs();
+            var task = RunToolThroughPolicyAsync(BuildRequest(toolName, json));
             yield return WaitForTask(task);
 
             var result = task.Result;
@@ -219,7 +305,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         /// Useful for testing error responses.
         /// </summary>
         protected virtual string RunToolRaw(string toolName, string json)
-            => CallToolInternal(toolName, json).json;
+        {
+            var (result, jsonResult) = CallToolInternal(toolName, json);
+            return jsonResult;
+        }
 
         protected virtual ResponseData<ResponseCallTool> RunTool(string toolName, string json)
         {

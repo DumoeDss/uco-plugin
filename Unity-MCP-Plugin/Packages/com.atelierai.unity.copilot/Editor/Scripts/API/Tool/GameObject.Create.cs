@@ -30,6 +30,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             GameObjectCreateToolId,
             Title = "GameObject / Create"
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Create,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Create a new GameObject in the currently opened Prefab or active Scene, optionally " +
             "parented under another GameObject and pre-positioned. Pass `primitiveType` to spawn a Unity primitive " +
             "(Cube, Sphere, etc.) instead of an empty GameObject.")]
@@ -67,6 +75,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var parentGo = default(GameObject);
                 if (parentGameObjectRef?.IsValid(out _) == true)
                 {
@@ -83,6 +93,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     ? GameObject.CreatePrimitive(primitiveType.Value)
                     : new GameObject(name);
 
+                UnityAuthoringUndo.RecordCreated(go);
+                // Register the initial object snapshot before applying the
+                // caller's name/parent/transform mutations.  Both records
+                // belong to the one transaction group.
+                UnityAuthoringUndo.RecordModified(go, completeSnapshot: true);
                 go.name = name;
 
                 // Set parent if provided
@@ -95,6 +110,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     rotation: rotation,
                     scale: scale,
                     isLocalSpace: isLocalSpace);
+
+                UnityAuthoringUndo.MarkMutated();
 
                 EditorUtility.SetDirty(go);
                 EditorUtils.RepaintAllEditorWindows();

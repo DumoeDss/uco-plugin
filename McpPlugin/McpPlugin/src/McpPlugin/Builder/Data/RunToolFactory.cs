@@ -24,7 +24,7 @@ namespace com.IvanMurzak.McpPlugin
         {
             var attr = method.Attribute;
 
-            return method.MethodInfo.IsStatic
+            var runner = method.MethodInfo.IsStatic
                 ? (IRunTool)RunTool.CreateFromStaticMethod(
                     reflector: reflector,
                     logger: logger,
@@ -36,7 +36,8 @@ namespace com.IvanMurzak.McpPlugin
                     idempotentHint: attr.IdempotentHintValue,
                     openWorldHint: attr.OpenWorldHintValue,
                     enabled: attr.EnabledValue,
-                    toolType: attr.ToolType)
+                    toolType: attr.ToolType,
+                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo))
                 : RunTool.CreateFromClassMethod(
                     reflector: reflector,
                     logger: logger,
@@ -49,7 +50,10 @@ namespace com.IvanMurzak.McpPlugin
                     idempotentHint: attr.IdempotentHintValue,
                     openWorldHint: attr.OpenWorldHintValue,
                     enabled: attr.EnabledValue,
-                    toolType: attr.ToolType);
+                    toolType: attr.ToolType,
+                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo));
+
+            return GuardedRunTool.Wrap(runner);
         }
     }
 }

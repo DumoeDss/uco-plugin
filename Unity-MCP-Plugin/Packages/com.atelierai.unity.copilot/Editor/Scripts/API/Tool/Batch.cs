@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using com.IvanMurzak.McpPlugin;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -117,10 +118,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         /// <summary>
-        /// Outcome of a single command inside a batch-execute call. Exactly one
-        /// of <see cref="Data"/> or <see cref="Error"/> is meaningful at a time:
-        /// <see cref="Data"/> when <see cref="Ok"/> is true; <see cref="Error"/>
-        /// otherwise.
+        /// Outcome of a single command inside a batch-execute call. Data normally
+        /// contains a successful result payload. When a shared parent abort cannot
+        /// prove complete rollback, a failed prior child may retain bounded data
+        /// alongside its error for diagnosis and recovery.
         /// </summary>
         [Description("Result of a single command inside a batch-execute call.")]
         public class BatchCommandResult
@@ -137,9 +138,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [Description("Error message when Ok=false.")]
             public string? Error { get; set; }
 
-            [Description("Successful result payload (structure depends on the tool). " +
-                "Typically the JSON-stringified output of the underlying tool.")]
+            [Description("Stable safety/error code when the command was rejected before execution.")]
+            public string? ErrorCode { get; set; }
+
+            [Description("Result payload, typically the JSON-stringified output of the underlying tool. " +
+                "A failed prior child may retain a bounded payload when shared rollback leaves final mutation state uncertain.")]
             public object? Data { get; set; }
+
+            [Description("Optional bounded authoring transaction report returned by this child.")]
+            public JsonObject? Transaction { get; set; }
         }
     }
 }

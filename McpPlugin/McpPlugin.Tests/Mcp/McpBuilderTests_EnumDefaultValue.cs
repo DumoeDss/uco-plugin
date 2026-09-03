@@ -67,9 +67,11 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var mcpPluginBuilder = new McpPluginBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
+            // g-005: these helper methods are pure parameter-binding fixtures.
+            // Register them as read-only so the authoring safety policy does
+            // not fail them closed as `unknown` mutations.
             mcpPluginBuilder.WithTool(
-                name: toolName,
-                title: toolTitle,
+                new McpPluginToolAttribute(toolName, toolTitle) { ReadOnlyHint = true },
                 classType: classType,
                 methodInfo: method);
 

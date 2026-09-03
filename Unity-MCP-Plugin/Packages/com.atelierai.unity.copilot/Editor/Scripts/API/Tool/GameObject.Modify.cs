@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -31,6 +32,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "GameObject / Modify",
             IdempotentHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Modify,
+            UndoLevel = AuthoringUndoLevel.Partial,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Modify GameObject fields and properties in opened Prefab or in a Scene. " +
             "You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects. " +
             "Three modification surfaces are available per GameObject (gameObjectDiffs, pathPatchesPerGameObject, jsonPatchesPerGameObject) — see the skill body for details.")]
@@ -105,6 +114,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var logs = new Logs();
                 var reflector = UnityCopilotPluginEditor.Instance.Reflector ?? throw new Exception("Reflector is not available.");
                 var logger = UnityLoggerFactory.LoggerFactory.CreateLogger<Tool_GameObject>();
@@ -123,6 +134,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         continue;
                     }
 
+                    // Reflected patches can touch nested serialized state;
+                    // request a complete pre-mutation snapshot and report the
+                    // capability as partial when Unity cannot prove every
+                    // nested dependency is covered.
+                    UnityAuthoringUndo.RecordModified(go, completeSnapshot: true);
                     var objToModify = (object?)go;
                     var anyChange = false;
 
@@ -168,7 +184,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     }
 
                     if (anyChange)
+                    {
+                        UnityAuthoringUndo.MarkMutated();
                         UnityEditor.EditorUtility.SetDirty(go);
+                    }
                 }
 
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -32,6 +33,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "GameObject / Component / Modify",
             IdempotentHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Modify,
+            UndoLevel = AuthoringUndoLevel.Partial,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Modify a specific Component on a GameObject in opened Prefab or in a Scene. " +
             "Allows direct modification of component fields and properties without wrapping in GameObject structure. " +
             "Use '" + GameObjectComponentGetToolId + "' first to inspect the component structure before modifying. " +
@@ -92,6 +101,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var go = gameObjectRef.FindGameObject(out var error);
                 if (error != null)
                     throw new Exception(error);
@@ -123,6 +134,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 };
 
                 var logs = new Logs();
+                // Reflected/nested members require a complete snapshot before
+                // any patch is attempted. The capability is advertised as
+                // partial because third-party nested references may still be
+                // outside Unity's serialized Undo graph.
+                UnityAuthoringUndo.RecordModified(targetComponent, completeSnapshot: true);
                 var objToModify = (object?)targetComponent;
                 var reflector = UnityCopilotPluginEditor.Instance.Reflector ?? throw new Exception("Reflector is not available.");
                 var logger = UnityLoggerFactory.LoggerFactory.CreateLogger<Tool_GameObject>();
@@ -161,6 +177,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
                 if (anySuccess)
                 {
+                    UnityAuthoringUndo.MarkMutated();
                     UnityEditor.EditorUtility.SetDirty(go);
                     UnityEditor.EditorUtility.SetDirty(targetComponent);
                     response.Success = true;

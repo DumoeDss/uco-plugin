@@ -172,6 +172,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var (go, solar, _, _) = BuildSolarFixture();
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },
@@ -198,6 +200,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var (go, solar, _, _) = BuildSolarFixture();
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },
@@ -219,6 +223,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             Assert.AreEqual(10f, solar.planets[0].orbitRadius);
             var earthRef = solar.planets[0].planet; // capture so we can assert it survives
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },
@@ -254,6 +260,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
                 new Regex("thisFieldDoesNotExist", RegexOptions.IgnoreCase));
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },
@@ -339,6 +347,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 }
             };
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var logs = new Tool_GameObject().Modify(
                 gameObjectRefs: refs,
                 pathPatchesPerGameObject: perGo);
@@ -435,6 +445,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var (go, solar, _, _) = BuildSolarFixture();
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },
@@ -503,6 +515,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     type: typeof(float),
                     value: 99f));
 
+            // g-005: direct tool-method invocation requires an explicit authoring transaction.
+            using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
                 gameObjectRef: new GameObjectRef(go.GetEntityId()),
                 componentRef: new ComponentRef { TypeName = typeof(SolarSystem).FullName! },

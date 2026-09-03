@@ -38,6 +38,7 @@ namespace com.IvanMurzak.McpPlugin
         IMcpPluginBuilder AddToolExecutionMiddleware<T>()
             where T : class, IToolExecutionMiddleware;
         IMcpPluginBuilder AddToolExecutionMiddleware(IToolExecutionMiddleware middleware);
+        IMcpPluginBuilder WithProjectPathPolicy(ProjectPathPolicy policy);
 
         // Prompt methods
         IMcpPluginBuilder WithPrompt(string name, Type classType, MethodInfo methodInfo);

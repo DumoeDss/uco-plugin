@@ -31,6 +31,15 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ToolCallError? StructuredError { get; set; }
 
+        /// <summary>
+        /// Optional immediate authoring transaction report.  It is a JSON
+        /// object so the common transport assembly stays independent from
+        /// UnityEditor and legacy callers can ignore the additive member.
+        /// </summary>
+        [JsonPropertyName("transaction")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public JsonObject? Transaction { get; set; }
+
         public ResponseCallTool() { }
         public ResponseCallTool(ResponseStatus status, List<ContentBlock> content) : this(
             requestId: string.Empty,

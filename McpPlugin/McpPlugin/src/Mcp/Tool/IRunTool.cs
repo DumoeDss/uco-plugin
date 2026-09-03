@@ -78,6 +78,13 @@ namespace com.IvanMurzak.McpPlugin
         bool? OpenWorldHint { get; }
 
         /// <summary>
+        /// Optional authoring capability attached to this existing runner
+        /// registration. Safety policy reads this descriptor directly from
+        /// the runner; it is not maintained in a second name-keyed registry.
+        /// </summary>
+        AuthoringCapabilityDescriptor? AuthoringCapability => null;
+
+        /// <summary>
         /// Gets the semantic token count for this tool based on its JSON schema (including description).
         /// </summary>
         int TokenCount { get; }

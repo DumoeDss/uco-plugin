@@ -13,6 +13,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -28,6 +29,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "GameObject / Component / Destroy",
             DestructiveHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Delete,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Destroy one or more Components from a target GameObject. Missing (null) components " +
             "are skipped — they cannot be destroyed. " +
             "Use '" + GameObjectFindToolId + "' and '" + GameObjectComponentGetToolId +
@@ -64,6 +73,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var go = gameObjectRef.FindGameObject(out var error);
                 if (error != null)
                     throw new Exception(error);
@@ -85,7 +96,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     if (destroyComponentRefs.Any(cr => cr.Matches(component)))
                     {
                         var destroyedComponentRef = new ComponentRef(component);
-                        UnityEngine.Object.DestroyImmediate(component);
+                        UnityAuthoringUndo.Destroy(component);
                         destroyCounter++;
                         response.DestroyedComponents ??= new ComponentRefList();
                         response.DestroyedComponents.Add(destroyedComponentRef);

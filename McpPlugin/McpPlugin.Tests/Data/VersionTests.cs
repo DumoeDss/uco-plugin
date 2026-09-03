@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.        │
 └────────────────────────────────────────────────────────────────────────┘
 */
+using System.Reflection;
 using com.IvanMurzak.McpPlugin.Common;
 using Shouldly;
 using Xunit;
@@ -15,6 +16,16 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
 {
     public class VersionTests
     {
+        [Fact]
+        public void PackageVersions_StayAlignedWithPluginVersionConstant()
+        {
+            const string expectedVersion = "7.0.0-unity-copilot.1";
+
+            Consts.PluginVersion.ShouldBe(expectedVersion);
+            InformationalVersion(typeof(McpPluginBuilder).Assembly).ShouldBe(expectedVersion);
+            InformationalVersion(typeof(Consts).Assembly).ShouldBe(expectedVersion);
+        }
+
         [Fact]
         public void Version_DefaultValues_ShouldBeInitialized()
         {
@@ -82,5 +93,11 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
             version.Plugin.ShouldBe("4.3.2");
             version.Environment.ShouldBe("2023.1.5f1");
         }
+
+        private static string InformationalVersion(Assembly assembly)
+            => assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+                .InformationalVersion
+                .Split('+')[0];
     }
 }

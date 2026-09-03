@@ -46,7 +46,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.Utils
                 var parameters = reflector.JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
                 var request = new RequestCallTool(toolName, parameters!);
 
-                var task = UnityCopilotPluginEditor.Instance.Tools!.RunCallTool(request);
+                BaseTest.AllowPolicyRejectionLogs();
+                var task = BaseTest.RunToolThroughPolicyAsync(request);
                 var result = task.Result;
 
                 Debug.Log($"{toolName} Completed");

@@ -27,6 +27,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SceneOpenToolId,
             Title = "Scene / Open"
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Modify,
+            UndoLevel = AuthoringUndoLevel.None,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner))]
         [McpPluginSkillDescription("Open a Unity scene asset in Single or Additive mode. " +
             "Returns the post-open list of all opened scenes. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' to locate the scene asset first.")]
@@ -51,6 +58,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var sceneAsset = sceneRef.FindAssetObject<UnityEditor.SceneAsset>()
                     ?? throw new System.ArgumentException($"Requested scene is not valid or not found.");
 

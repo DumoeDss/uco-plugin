@@ -25,6 +25,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SceneCreateToolId,
             Title = "Scene / Create"
         )]
+        // NewScene + SaveScene writes a new asset file and replaces or adds an
+        // open scene; neither is restored by an Undo group, so the capability
+        // truthfully reports Undo=none and therefore requires a confirmed plan.
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Create,
+            UndoLevel = AuthoringUndoLevel.None,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner))]
+        [AuthoringPathBinding(
+            "path",
+            Intent = AuthoringPathAccessIntent.Create,
+            RootCategory = ProjectPathRootCategories.Assets,
+            Required = true)]
         [McpPluginSkillDescription("Create a new Unity scene asset and save it at the given `.unity` path. " +
             "Use '" + SceneListOpenedToolId + "' to inspect the resulting opened-scene set afterwards.")]
         [McpPluginSkillBody("Create new scene in the project assets. " +
@@ -48,6 +63,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 if (string.IsNullOrEmpty(path))
                     throw new System.Exception(Error.ScenePathIsEmpty());
 
@@ -63,6 +80,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, path);
                 if (!saved)
                     throw new System.Exception($"Failed to save scene at '{path}'.\n{OpenedScenesText}");
+
+                // Scene creation is an external asset write (Undo=none); no
+                // transaction is open, so this only marks an ambient batch
+                // parent when one exists.
+                UnityAuthoringUndo.MarkMutated();
 
                 EditorUtils.RepaintAllEditorWindows();
 

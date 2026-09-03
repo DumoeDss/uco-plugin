@@ -47,9 +47,22 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         static Task<T> Dispatch<T>(Func<T> body)
         {
             var tcs = new TaskCompletionSource<T>();
+            // Flow the caller's execution context so AsyncLocal-backed scopes
+            // survive the hop onto the main thread (see MainThread.Editor.cs).
+            var context = System.Threading.ExecutionContext.Capture();
             MainThreadDispatcher.Enqueue(() =>
             {
-                try { tcs.SetResult(body()); }
+                try
+                {
+                    if (context == null)
+                        tcs.SetResult(body());
+                    else
+                    {
+                        T result = default!;
+                        System.Threading.ExecutionContext.Run(context, _ => result = body(), null);
+                        tcs.SetResult(result);
+                    }
+                }
                 catch (Exception ex) { tcs.SetException(ex); }
             });
             return tcs.Task;

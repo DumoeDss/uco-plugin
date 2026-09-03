@@ -28,6 +28,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "Scene / Save",
             IdempotentHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Modify,
+            UndoLevel = AuthoringUndoLevel.None,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner))]
+        [AuthoringPathBinding(
+            "path",
+            Intent = AuthoringPathAccessIntent.Modify,
+            RootCategory = ProjectPathRootCategories.Assets,
+            Required = false)]
         [McpPluginSkillDescription("Save an opened scene back to its asset file (or to a new path when `path` is " +
             "provided). When `openedSceneName` is empty, saves the currently active scene. " +
             "Use '" + SceneListOpenedToolId + "' to find the scene name first.")]
@@ -52,6 +64,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var scene = string.IsNullOrEmpty(openedSceneName)
                     ? SceneUtils.GetActiveScene()
                     : SceneUtils.GetAllOpenedScenes()
@@ -66,7 +80,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 if (string.IsNullOrEmpty(path))
                     throw new Exception($"Scene '{scene.name}' has no path. Please provide a path to save the scene.");
 
-                if (!path!.EndsWith(".unity"))
+                // The destination can be caller supplied or derived from the
+                // opened scene. Both forms are write targets and must pass the
+                // same project policy immediately before SaveScene; the
+                // middleware's optional binding alone cannot authorize the
+                // derived scene.path fallback.
+                var pathPolicy = ProjectPathPolicyContext.Current
+                    ?? throw new ProjectPathPolicyException(
+                        "policy_context_missing",
+                        ProjectPathRootCategories.Assets);
+                path = pathPolicy.ResolveForWrite(
+                    path!,
+                    ProjectPathAccessIntent.Modify,
+                    ProjectPathRootCategories.Assets).RelativePath;
+
+                if (!path.EndsWith(".unity"))
                     throw new Exception(Error.FilePathMustEndsWithUnity());
 
                 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, path);

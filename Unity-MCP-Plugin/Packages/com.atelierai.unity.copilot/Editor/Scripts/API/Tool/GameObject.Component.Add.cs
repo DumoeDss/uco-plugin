@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -28,6 +29,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             GameObjectComponentAddToolId,
             Title = "GameObject / Component / Add"
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Add,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription("Add one or more Components to a GameObject in the opened Prefab or active Scene. " +
             "Component types are looked up by full name (with namespace) or by class-name fallback. " +
             "Use '" + GameObjectFindToolId + "' to locate the host GameObject and '" + ComponentListToolId +
@@ -68,6 +77,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var go = gameObjectRef.FindGameObject(out var error);
                 if (error != null)
                     throw new Exception(error);
@@ -76,6 +87,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     throw new Exception("GameObject not found.");
 
                 var response = new AddComponentResponse();
+                var addedAny = false;
 
                 foreach (var componentName in componentNames)
                 {
@@ -100,7 +112,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         continue;
                     }
 
-                    var newComponent = go.AddComponent(type);
+                    // Undo.AddComponent creates and registers the component
+                    // inside the transaction group in one step.
+                    var newComponent = UnityAuthoringUndo.AddComponent(go, type);
                     if (newComponent == null)
                     {
                         response.Warnings ??= new List<string>();
@@ -108,13 +122,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         continue;
                     }
 
+                    addedAny = true;
+
                     response.Messages ??= new List<string>();
                     response.Messages.Add($"Added component '{componentName}'.");
 
                     response.AddedComponents.Add(new ComponentDataShallow(newComponent));
                 }
 
-                UnityEditor.EditorUtility.SetDirty(go);
+                if (addedAny)
+                    UnityEditor.EditorUtility.SetDirty(go);
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 
                 return response;

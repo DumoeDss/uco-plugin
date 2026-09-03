@@ -25,6 +25,9 @@ using UnityEngine.TestTools;
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     [TestFixture]
+    // g-005: the reflected runner fails closed for a direct call unless its registration is
+    // read-only (or the call was approved by the safety pipeline). These helper methods are pure,
+    // so the fixtures register them with readOnlyHint: true.
     public class RunToolTests
     {
         private Reflector _reflector = new Reflector();
@@ -44,7 +47,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.SimpleStaticMethod));
 
             // Act
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo: methodInfo, title: "Test Tool");
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo: methodInfo, title: "Test Tool", readOnlyHint: true);
 
             // Assert
             Assert.IsNotNull(runTool, "RunTool should be created successfully");
@@ -60,7 +63,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var methodInfo = typeof(TestInstanceMethods).GetMethod(nameof(TestInstanceMethods.SimpleInstanceMethod));
 
             // Act
-            var runTool = RunTool.CreateFromInstanceMethod(_reflector, _mockLogger, name: "name", testInstance, methodInfo, title: "Instance Tool");
+            var runTool = RunTool.CreateFromInstanceMethod(_reflector, _mockLogger, name: "name", testInstance, methodInfo, title: "Instance Tool", readOnlyHint: true);
 
             // Assert
             Assert.IsNotNull(runTool, "RunTool should be created successfully");
@@ -73,7 +76,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.AddNumbers));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", CancellationToken.None, 5, 3);
@@ -96,7 +99,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.AddNumbers));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             var namedParams = new Dictionary<string, JsonElement>
             {
                 {"a", JsonSerializer.SerializeToElement(10)},
@@ -123,7 +126,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.MethodWithRequestID));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
             const string expectedRequestId = "test-request-123";
 
             // Act
@@ -146,7 +149,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.ThrowingMethod));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", CancellationToken.None);
@@ -170,7 +173,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.SimpleStaticMethod));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo: methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo: methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", null!, CancellationToken.None);
@@ -207,7 +210,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // Arrange
             var methodInfo = typeof(TestStaticMethods).GetMethod(nameof(TestStaticMethods.AsyncMethod));
-            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo);
+            var runTool = RunTool.CreateFromStaticMethod(_reflector, _mockLogger, name: "name", methodInfo, readOnlyHint: true);
 
             // Act
             var task = runTool.Run("test-request-id", CancellationToken.None, "Hello");

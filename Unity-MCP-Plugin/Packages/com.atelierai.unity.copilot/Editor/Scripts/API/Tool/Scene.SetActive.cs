@@ -28,6 +28,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "Scene / Set Active",
             IdempotentHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Modify,
+            UndoLevel = AuthoringUndoLevel.None,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner))]
         [McpPluginSkillDescription("Mark an opened scene as the Editor's active scene (the one new GameObjects are " +
             "added to and that's used as the default for many operations). " +
             "Use '" + SceneListOpenedToolId + "' to enumerate opened scenes first.")]
@@ -45,6 +52,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var sceneAsset = sceneRef.FindAssetObject<UnityEditor.SceneAsset>()
                     ?? throw new System.ArgumentException($"Requested scene is not valid or not found.");
 

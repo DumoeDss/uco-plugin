@@ -171,7 +171,17 @@ namespace com.IvanMurzak.McpPlugin
         public IDisposable RegisterHandler<TParam, TResult>(string method, Func<TParam?, Task<TResult?>> handler)
             => _dispatcher.RegisterHandler<TParam, TResult>(method, handler);
 
+        public IDisposable RegisterHandler<TParam, TResult>(
+            string method,
+            Func<TParam?, CancellationToken, Task<TResult?>> handler)
+            => _dispatcher.RegisterHandler<TParam, TResult>(method, handler);
+
         public IDisposable RegisterNotification<TParam>(string method, Func<TParam?, Task> handler)
+            => _dispatcher.RegisterNotification<TParam>(method, handler);
+
+        public IDisposable RegisterNotification<TParam>(
+            string method,
+            Func<TParam?, CancellationToken, Task> handler)
             => _dispatcher.RegisterNotification<TParam>(method, handler);
 
         // ── Dispose ───────────────────────────────────────────────────────

@@ -469,7 +469,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             public JsonNode? InputSchema => new JsonObject();
             public JsonNode? OutputSchema => null;
             public McpToolType ToolType => McpToolType.Standard;
-            public bool? ReadOnlyHint => null;
+            public bool? ReadOnlyHint => true;
             public bool? DestructiveHint => null;
             public bool? IdempotentHint => null;
             public bool? OpenWorldHint => null;

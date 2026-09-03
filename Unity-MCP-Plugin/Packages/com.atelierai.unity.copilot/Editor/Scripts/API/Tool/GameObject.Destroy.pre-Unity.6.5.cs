@@ -32,6 +32,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Title = "GameObject / Destroy",
             DestructiveHint = true
         )]
+        [AuthoringCapability(
+            MutationKind = AuthoringMutationKind.Delete,
+            UndoLevel = AuthoringUndoLevel.Full,
+            SupportsValidation = true,
+            SupportsPlanning = true,
+            ValidatorType = typeof(UnityPilotAuthoringValidator),
+            PlannerType = typeof(UnityPilotAuthoringPlanner),
+            TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
         [McpPluginSkillDescription(DestroySkill.Description)]
         [McpPluginSkillBody(DestroySkill.Body)]
         [Description("Destroy GameObject and all nested GameObjects recursively in opened Prefab or in a Scene. " +
@@ -46,6 +54,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
+                // g-005: fail closed before the first mutation unless the policy pipeline approved this call.
+                UnityAuthoringUndo.RequireAuthoringScope();
                 var logger = UnityLoggerFactory.LoggerFactory.CreateLogger<Tool_GameObject>();
 
                 var go = gameObjectRef.FindGameObject(out var error);
@@ -59,7 +69,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 logger.LogInformation("Destroying GameObject '{Name}' (InstanceID: {InstanceId}) at path '{Path}'",
                     destroyedName, destroyedInstanceId, destroyedPath);
 
-                UnityEngine.Object.DestroyImmediate(go);
+                UnityAuthoringUndo.Destroy(go);
 
                 logger.LogInformation("Successfully destroyed GameObject '{Name}' (InstanceID: {InstanceId})",
                     destroyedName, destroyedInstanceId);

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -117,6 +118,286 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         }
 
         [Fact]
+        public void GuardedCollections_SupportDictionaryInterfaceConsumers()
+        {
+            var reflector = new Reflector();
+            var regular = new ToolRunnerCollection(reflector, null);
+            var system = new SystemToolRunnerCollection(reflector, null);
+
+            AssertSupportedDictionaryContract(
+                regular,
+                regular,
+                new FakeRunTool("regular-interface-tool"));
+            AssertSupportedDictionaryContract(
+                system,
+                system,
+                new FakeRunTool("system-interface-tool") { ToolType = McpToolType.System });
+        }
+
+        [Fact]
+        public void BuilderAndTypedCollections_GuardCustomRunnersImmediately()
+        {
+            var reflector = new Reflector();
+            var collectionRunner = MutatingRunner("collection-tool", McpToolType.Standard);
+            var systemCollectionRunner = MutatingRunner("system-collection-tool", McpToolType.System);
+            var managerRunner = MutatingRunner("manager-tool", McpToolType.Standard);
+            var builderRunner = MutatingRunner("builder-tool", McpToolType.Standard);
+            var collection = new ToolRunnerCollection(reflector, null)
+                .Add(new Dictionary<string, IRunTool>
+                {
+                    [collectionRunner.Name] = collectionRunner,
+                });
+            var systemCollection = new SystemToolRunnerCollection(reflector, null)
+                .Add(new Dictionary<string, IRunTool>
+                {
+                    [systemCollectionRunner.Name] = systemCollectionRunner,
+                });
+            var manager = new McpToolManager(
+                NullLogger<McpToolManager>.Instance,
+                reflector,
+                new ToolRunnerCollection(reflector, null));
+            manager.AddTool(managerRunner.Name, managerRunner).ShouldBeTrue();
+            var builder = new McpPluginBuilder(new com.IvanMurzak.McpPlugin.Common.Version());
+            builder.AddTool(builderRunner.Name, builderRunner);
+            var plugin = builder.Build(reflector);
+
+            collection[collectionRunner.Name].ShouldNotBeSameAs(collectionRunner);
+            systemCollection[systemCollectionRunner.Name].ShouldNotBeSameAs(systemCollectionRunner);
+            manager.GetAllTools().Single().ShouldNotBeSameAs(managerRunner);
+            plugin.McpManager.ToolManager!.GetAllTools().Single().ShouldNotBeSameAs(builderRunner);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task DictionaryRegistration_GuardsEveryValueBeforeManagerLookup(bool systemTool)
+        {
+            var reflector = new Reflector();
+            object concreteCollection = systemTool
+                ? new SystemToolRunnerCollection(reflector, null)
+                : new ToolRunnerCollection(reflector, null);
+            var dictionary = (IDictionary<string, IRunTool>)concreteCollection;
+            var toolType = systemTool ? McpToolType.System : McpToolType.Standard;
+            var indexerRunner = MutatingRunner("indexer-tool", toolType);
+            var addRunner = MutatingRunner("add-tool", toolType);
+            var collectionAddRunner = MutatingRunner("collection-add-tool", toolType);
+            var bulkAddRunner = MutatingRunner("bulk-add-tool", toolType);
+
+            dictionary[indexerRunner.Name] = indexerRunner;
+            dictionary.Add(addRunner.Name, addRunner);
+            ((ICollection<KeyValuePair<string, IRunTool>>)dictionary).Add(
+                new KeyValuePair<string, IRunTool>(collectionAddRunner.Name, collectionAddRunner));
+            var bulkAdd = concreteCollection.GetType().GetMethod(
+                "Add",
+                new[] { typeof(IDictionary<string, IRunTool>) });
+            bulkAdd.ShouldNotBeNull();
+            bulkAdd!.Invoke(concreteCollection, new object[]
+            {
+                new Dictionary<string, IRunTool> { [bulkAddRunner.Name] = bulkAddRunner },
+            });
+
+            var fromIndexer = dictionary[indexerRunner.Name];
+            dictionary.TryGetValue(addRunner.Name, out var fromTryGetValue).ShouldBeTrue();
+            var fromValues = dictionary.Values.Single(tool => tool.Name == collectionAddRunner.Name);
+            var fromEnumeration = dictionary.Single(pair => pair.Key == bulkAddRunner.Name).Value;
+            var exposedRunners = new[]
+            {
+                fromIndexer,
+                fromTryGetValue,
+                fromValues,
+                fromEnumeration,
+            };
+
+            foreach (var exposed in exposedRunners)
+            {
+                var direct = await exposed.Run("direct-request", EmptyArguments());
+                direct.Status.ShouldBe(ResponseStatus.Error);
+                direct.StructuredError.ShouldNotBeNull();
+                direct.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.SafetyUnsupported);
+                direct.StructuredError.Details!["reason"]!.GetValue<string>()
+                    .ShouldBe("direct_runner_bypass");
+            }
+
+            var rawRunners = new[]
+            {
+                indexerRunner,
+                addRunner,
+                collectionAddRunner,
+                bulkAddRunner,
+            };
+            dictionary.Count.ShouldBe(rawRunners.Length);
+            dictionary.ContainsKey(indexerRunner.Name.ToUpperInvariant()).ShouldBeFalse();
+            dictionary.Values.ShouldAllBe(exposed => rawRunners.All(raw => !ReferenceEquals(exposed, raw)));
+            rawRunners.ShouldAllBe(raw => raw.Calls == 0);
+
+            (concreteCollection is Dictionary<string, IRunTool>).ShouldBeFalse();
+            Should.Throw<InvalidCastException>(() =>
+            {
+                _ = (Dictionary<string, IRunTool>)concreteCollection;
+            });
+
+            // A caller's independently retained original object is not a framework execution path;
+            // the registry boundary guarantees only the values it stores and exposes.
+            rawRunners.ShouldAllBe(raw => dictionary.Values.All(exposed => !ReferenceEquals(raw, exposed)));
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task GuardedRegistry_BlocksDirectAndMiddlewareBypasses_ButExecutesConfirmedManagerCallOnce(bool systemTool)
+        {
+            const string registrationKey = "MiXeD-Key";
+            var reflector = new Reflector();
+            var capability = new AuthoringCapabilityDescriptor
+            {
+                MutationKind = AuthoringMutationKind.Modify,
+                UndoLevel = AuthoringUndoLevel.None,
+            };
+            var inputSchema = new JsonObject { ["type"] = "object" };
+            var outputSchema = new JsonObject { ["type"] = "object" };
+            var rawRunner = new FakeRunTool("declared-runner-name")
+            {
+                ToolType = systemTool ? McpToolType.System : McpToolType.Standard,
+                Title = "Metadata title",
+                Description = "Metadata description",
+                Method = typeof(ToolExecutionNoBypassTests).GetMethod(
+                    nameof(MetadataMethod),
+                    BindingFlags.NonPublic | BindingFlags.Static),
+                SkillDescription = "Skill description",
+                SkillBody = "Skill body",
+                InputSchema = inputSchema,
+                OutputSchema = outputSchema,
+                ReadOnlyHint = false,
+                DestructiveHint = false,
+                IdempotentHint = true,
+                OpenWorldHint = false,
+                AuthoringCapability = capability,
+                TokenCount = 17,
+            };
+            var probe = new RunnerProbeMiddleware();
+            var pipeline = new ToolExecutionPipeline(new IToolExecutionMiddleware[]
+            {
+                new AuthoringSafetyMiddleware(),
+                probe,
+            });
+
+            Func<IEnumerable<IRunTool>> getAllTools;
+            Func<string, bool> hasTool;
+            Func<RequestCallTool, Task<ResponseData<ResponseCallTool>>> runTool;
+            Func<string, IRunTool> getStoredRunner;
+            if (systemTool)
+            {
+                var tools = new SystemToolRunnerCollection(reflector, null);
+                tools[registrationKey] = rawRunner;
+                var manager = new McpSystemToolManager(
+                    NullLogger<McpSystemToolManager>.Instance,
+                    tools,
+                    pipeline);
+                getAllTools = manager.GetAllTools;
+                hasTool = manager.HasTool;
+                runTool = request => manager.RunSystemTool(request);
+                getStoredRunner = key => tools[key];
+            }
+            else
+            {
+                var tools = new ToolRunnerCollection(reflector, null);
+                tools[registrationKey] = rawRunner;
+                var manager = new McpToolManager(
+                    NullLogger<McpToolManager>.Instance,
+                    reflector,
+                    tools,
+                    pipeline);
+                getAllTools = manager.GetAllTools;
+                hasTool = manager.HasTool;
+                runTool = request => manager.RunCallTool(request);
+                getStoredRunner = key => tools[key];
+            }
+
+            var exposed = getAllTools().Single();
+            probe.Runner = exposed;
+
+            exposed.ShouldNotBeSameAs(rawRunner);
+            getStoredRunner(registrationKey).ShouldBeSameAs(exposed);
+            getAllTools().Single().ShouldBeSameAs(exposed);
+            GuardedRunTool.Wrap(exposed).ShouldBeSameAs(exposed);
+            hasTool(registrationKey).ShouldBeTrue();
+            hasTool(registrationKey.ToLowerInvariant()).ShouldBeFalse();
+            exposed.Name.ShouldBe(rawRunner.Name);
+            exposed.Title.ShouldBe(rawRunner.Title);
+            exposed.Description.ShouldBe(rawRunner.Description);
+            exposed.Method.ShouldBe(rawRunner.Method);
+            exposed.SkillDescription.ShouldBe(rawRunner.SkillDescription);
+            exposed.SkillBody.ShouldBe(rawRunner.SkillBody);
+            exposed.InputSchema.ShouldBeSameAs(inputSchema);
+            exposed.OutputSchema.ShouldBeSameAs(outputSchema);
+            exposed.ToolType.ShouldBe(rawRunner.ToolType);
+            exposed.ReadOnlyHint.ShouldBe(rawRunner.ReadOnlyHint);
+            exposed.DestructiveHint.ShouldBe(rawRunner.DestructiveHint);
+            exposed.IdempotentHint.ShouldBe(rawRunner.IdempotentHint);
+            exposed.OpenWorldHint.ShouldBe(rawRunner.OpenWorldHint);
+            exposed.AuthoringCapability.ShouldBeSameAs(capability);
+            exposed.TokenCount.ShouldBe(rawRunner.TokenCount);
+            exposed.Enabled = false;
+            rawRunner.Enabled.ShouldBeFalse();
+            exposed.Enabled = true;
+
+            var direct = await exposed.Run("direct-request", EmptyArguments());
+            direct.Status.ShouldBe(ResponseStatus.Error);
+            direct.RequestID.ShouldBe("direct-request");
+            direct.StructuredError.ShouldNotBeNull();
+            direct.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.SafetyUnsupported);
+            direct.StructuredError.Details!["reason"]!.GetValue<string>().ShouldBe("direct_runner_bypass");
+            rawRunner.Calls.ShouldBe(0);
+
+            var issueRequest = ControlledRequest(
+                "manager-request",
+                registrationKey,
+                "manager-call",
+                "manager-trace");
+            var issued = await runTool(issueRequest);
+            issued.Status.ShouldBe(ResponseStatus.Error);
+            issued.RequestID.ShouldBe("manager-request");
+            issued.StructuredError.ShouldNotBeNull();
+            issued.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.ConfirmationRequired);
+            rawRunner.Calls.ShouldBe(0);
+
+            var plan = issued.StructuredError.Details!["confirmationPlan"]!.AsObject();
+            var confirmedControl = issueRequest.Control!.Clone();
+            confirmedControl.Confirm = true;
+            confirmedControl.Confirmation = new ToolCallConfirmation
+            {
+                PlanId = plan["planId"]!.GetValue<string>(),
+                PlanHash = plan["planHash"]!.GetValue<string>(),
+                ExpiresAtUnixMs = plan["expiresAtUnixMs"]!.GetValue<long>(),
+            };
+
+            ResponseCallTool? nestedAttempt = null;
+            rawRunner.DuringRun = async () =>
+            {
+                nestedAttempt = await exposed.Run("nested-request", EmptyArguments());
+            };
+            var confirmed = await runTool(new RequestCallTool(
+                issueRequest.RequestID,
+                registrationKey,
+                EmptyArguments(),
+                confirmedControl));
+
+            confirmed.Status.ShouldBe(ResponseStatus.Success);
+            confirmed.RequestID.ShouldBe("manager-request");
+            rawRunner.Calls.ShouldBe(1);
+            probe.Attempt.ShouldNotBeNull();
+            probe.Attempt!.Status.ShouldBe(ResponseStatus.Error);
+            probe.Attempt.RequestID.ShouldBe("middleware-request");
+            probe.Attempt.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.SafetyUnsupported);
+            probe.Attempt.StructuredError.Details!["reason"]!.GetValue<string>().ShouldBe("direct_runner_bypass");
+            nestedAttempt.ShouldNotBeNull();
+            nestedAttempt!.Status.ShouldBe(ResponseStatus.Error);
+            nestedAttempt.RequestID.ShouldBe("nested-request");
+            nestedAttempt.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.SafetyUnsupported);
+            nestedAttempt.StructuredError.Details!["reason"]!.GetValue<string>().ShouldBe("direct_runner_bypass");
+        }
+
+        [Fact]
         public async Task WsDispatcherHandlers_RejectRegularAndSystemCallsBeforeRunners()
         {
             var middleware = new RejectingMiddleware();
@@ -186,6 +467,31 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             systemRunner.Calls.ShouldBe(0);
         }
 
+        private static void AssertSupportedDictionaryContract(
+            IDictionary<string, IRunTool> writable,
+            IReadOnlyDictionary<string, IRunTool> readable,
+            IRunTool rawRunner)
+        {
+            writable.Add(rawRunner.Name, rawRunner);
+
+            writable.ContainsKey(rawRunner.Name).ShouldBeTrue();
+            writable.TryGetValue(rawRunner.Name, out var writableRunner).ShouldBeTrue();
+            readable.TryGetValue(rawRunner.Name, out var readableRunner).ShouldBeTrue();
+            readable[rawRunner.Name].ShouldBeSameAs(readableRunner);
+            writableRunner.ShouldBeSameAs(readableRunner);
+            readableRunner.ShouldNotBeSameAs(rawRunner);
+            readable.Keys.Single().ShouldBe(rawRunner.Name);
+            readable.Values.Single().ShouldBeSameAs(readableRunner);
+            readable.Single().Value.ShouldBeSameAs(readableRunner);
+            readable.Count.ShouldBe(1);
+
+            writable.Remove(rawRunner.Name).ShouldBeTrue();
+            writable.Count.ShouldBe(0);
+            writable[rawRunner.Name] = rawRunner;
+            writable.Clear();
+            readable.Count.ShouldBe(0);
+        }
+
         private static async Task DispatchToolRequest(
             WsRpcDispatcher dispatcher,
             string envelopeId,
@@ -240,6 +546,35 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             return options;
         }
 
+        private static FakeRunTool MutatingRunner(string name, McpToolType toolType)
+            => new FakeRunTool(name)
+            {
+                ToolType = toolType,
+                ReadOnlyHint = false,
+                AuthoringCapability = new AuthoringCapabilityDescriptor
+                {
+                    MutationKind = AuthoringMutationKind.Modify,
+                    UndoLevel = AuthoringUndoLevel.None,
+                },
+            };
+
+        private static void MetadataMethod()
+        {
+        }
+
+        private sealed class RunnerProbeMiddleware : IToolExecutionMiddleware
+        {
+            public IRunTool? Runner { get; set; }
+            public ResponseCallTool? Attempt { get; private set; }
+
+            public async Task<ResponseCallTool> InvokeAsync(ToolCallContext context, ToolCallNext next)
+            {
+                if (Runner != null)
+                    Attempt = await Runner.Run("middleware-request", EmptyArguments());
+                return await next(context);
+            }
+        }
+
         private sealed class RejectingMiddleware : IToolExecutionMiddleware
         {
             public List<ToolCallContext> Contexts { get; } = new List<ToolCallContext>();
@@ -262,22 +597,24 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             public string Name { get; }
             public bool Enabled { get; set; } = true;
-            public string? Title => Name;
-            public string? Description => null;
-            public MethodInfo? Method => null;
-            public string? SkillDescription => null;
-            public string? SkillBody => null;
-            public JsonNode? InputSchema => new JsonObject();
-            public JsonNode? OutputSchema => null;
-            public McpToolType ToolType => McpToolType.Standard;
-            public bool? ReadOnlyHint => null;
-            public bool? DestructiveHint => null;
-            public bool? IdempotentHint => null;
-            public bool? OpenWorldHint => null;
-            public int TokenCount => 0;
+            public string? Title { get; set; }
+            public string? Description { get; set; }
+            public MethodInfo? Method { get; set; }
+            public string? SkillDescription { get; set; }
+            public string? SkillBody { get; set; }
+            public JsonNode? InputSchema { get; set; } = new JsonObject();
+            public JsonNode? OutputSchema { get; set; }
+            public McpToolType ToolType { get; set; } = McpToolType.Standard;
+            public bool? ReadOnlyHint { get; set; } = true;
+            public bool? DestructiveHint { get; set; }
+            public bool? IdempotentHint { get; set; }
+            public bool? OpenWorldHint { get; set; }
+            public AuthoringCapabilityDescriptor? AuthoringCapability { get; set; }
+            public int TokenCount { get; set; }
             public int Calls { get; private set; }
+            public Func<Task>? DuringRun { get; set; }
 
-            public Task<ResponseCallTool> Run(
+            public async Task<ResponseCallTool> Run(
                 string requestId,
                 IReadOnlyDictionary<string, JsonElement>? namedParameters,
                 CancellationToken cancellationToken = default)
@@ -285,7 +622,9 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 _ = namedParameters;
                 _ = cancellationToken;
                 Calls++;
-                return Task.FromResult(ResponseCallTool.Success().SetRequestID(requestId));
+                if (DuringRun != null)
+                    await DuringRun();
+                return ResponseCallTool.Success().SetRequestID(requestId);
             }
         }
     }

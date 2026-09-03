@@ -11,7 +11,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
@@ -98,19 +97,11 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var count2 = tool.TokenCount;
             var count3 = tool.TokenCount;
 
-            // Assert - All calls should return the same cached value
+            // Assert - The guarded registration preserves the cached value
+            // without exposing the executable reflected runner.
             count1.ShouldBe(count2);
             count2.ShouldBe(count3);
-
-            // Verify caching by checking that the private field is modified using reflection
-            var runTool = tool as RunTool;
-            runTool.ShouldNotBeNull();
-            var cacheField = typeof(RunTool).GetField("_cachedTokenCount", BindingFlags.NonPublic | BindingFlags.Instance);
-            cacheField.ShouldNotBeNull();
-            var cachedValue = cacheField!.GetValue(runTool);
-            cachedValue.ShouldNotBeNull();
-            ((int?)cachedValue).ShouldNotBeNull();
-            ((int?)cachedValue)!.Value.ShouldBe(count1);
+            (tool is RunTool).ShouldBeFalse();
         }
 
         [Fact]
