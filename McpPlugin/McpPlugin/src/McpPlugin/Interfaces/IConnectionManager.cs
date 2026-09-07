@@ -11,6 +11,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.McpPlugin.Common.Model;
 using R3;
 
 namespace com.IvanMurzak.McpPlugin
@@ -26,6 +27,19 @@ namespace com.IvanMurzak.McpPlugin
         /// </summary>
         int ConnectionGeneration { get; }
 
+        long ActiveAttemptId { get; }
+        ConnectionAttemptDiagnostics LastAttempt { get; }
+
+        void ReportAttemptStage(string stage, string? rootCause = null, bool terminal = false);
+        void ReportConnectionInitializationFailure(int generation, string stage, string rootCause);
+        ResponseCancelToolCall CancelToolCall(RequestCancelToolCall? request)
+            => new ResponseCancelToolCall
+            {
+                Accepted = false,
+                Code = "cancellation_unavailable",
+                Message = "In-flight cancellation is not supported by this connection manager."
+            };
+
         CancellationToken ConnectionCancellationToken { get; }
 
         /// <summary>
@@ -33,6 +47,13 @@ namespace com.IvanMurzak.McpPlugin
         /// Called by the application layer after a successful handshake.
         /// </summary>
         void SetConnected();
+
+        /// <summary>
+        /// Atomically completes the owned initialization attempt for <paramref name="generation"/>
+        /// and publishes <see cref="ConnectionState.Connected"/>. Returns false for stale or
+        /// already-terminal generations.
+        /// </summary>
+        bool TrySetConnected(int generation);
 
         /// <summary>
         /// Fires the <see cref="IConnection.OnAuthorizationRejected"/> event.

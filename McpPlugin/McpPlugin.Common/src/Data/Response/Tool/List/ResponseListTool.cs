@@ -24,6 +24,8 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public bool? DestructiveHint { get; set; }
         public bool? IdempotentHint { get; set; }
         public bool? OpenWorldHint { get; set; }
+        public string ExecutionAffinity { get; set; } = "main-thread";
+        public bool ThreadSafeRead { get; set; }
 
         public ResponseListTool() { }
     }

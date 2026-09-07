@@ -39,6 +39,10 @@ namespace com.IvanMurzak.McpPlugin
 
         private bool _enabled = true;
         private bool _enabledSet;
+        private ToolExecutionAffinity _executionAffinity = ToolExecutionAffinity.MainThread;
+        private bool _executionAffinitySet;
+        private bool _threadSafeRead;
+        private bool _threadSafeReadSet;
 
         /// <summary>
         /// If set to false, the tool will be disabled by default when first discovered.
@@ -106,6 +110,31 @@ namespace com.IvanMurzak.McpPlugin
 
         /// <summary>Gets the OpenWorldHint value, or null if it was not explicitly set.</summary>
         public bool? OpenWorldHintValue => _openWorldHintSet ? _openWorldHint : null;
+
+        public ToolExecutionAffinity ExecutionAffinity
+        {
+            get => _executionAffinity;
+            set { _executionAffinity = value; _executionAffinitySet = true; }
+        }
+
+        public bool ThreadSafeRead
+        {
+            get => _threadSafeRead;
+            set { _threadSafeRead = value; _threadSafeReadSet = true; }
+        }
+
+        public bool DurableOperationStart { get; set; }
+
+        public ToolExecutionSchedulingMetadata? ExecutionScheduling
+            => !_executionAffinitySet && !_threadSafeReadSet
+                ? null
+                : new ToolExecutionSchedulingMetadata
+                {
+                    ExecutionAffinity = _executionAffinitySet
+                        ? _executionAffinity
+                        : ToolExecutionAffinity.MainThread,
+                    ThreadSafeRead = _threadSafeReadSet && _threadSafeRead
+                };
 
         public McpPluginToolAttribute(string name, string? title = null)
         {

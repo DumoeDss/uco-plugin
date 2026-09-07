@@ -110,6 +110,10 @@ namespace com.IvanMurzak.McpPlugin
         public const int PluginNotConnected = -32000;
         public const int PluginTimeout = -32001;
         public const int AuthRejected = -32002;
+        public const int CallCancelled = -32003;
+        public const int CallDeadlineExceeded = -32004;
+        public const int MiddlewareRejected = -32005;
+        public const int PendingCapacityExceeded = -32006;
     }
 
     // ── Serialization helpers ────────────────────────────────────────────

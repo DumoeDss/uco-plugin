@@ -85,6 +85,31 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         }
 
         [Fact]
+        public async Task CancellationWhileQueuedStopsBeforeConfirmationConsumptionAndTransaction()
+        {
+            var scheduler = new BlockingScheduler();
+            var fixture = new Fixture(scheduler: scheduler);
+            var context = ControlledContext("cancel-in-queue");
+            var token = await PlanAsync(fixture.Middleware, fixture.Runner, context, EmptyArguments());
+            using var cancellation = new CancellationTokenSource();
+            var execute = context.Clone();
+            execute.Confirm = true;
+            execute.Confirmation = token;
+            execute.CancellationToken = cancellation.Token;
+
+            var execution = ExecuteAsync(fixture.Middleware, fixture.Runner, execute, EmptyArguments());
+            await scheduler.Entered.Task;
+            cancellation.Cancel();
+            var response = await execution;
+
+            response.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.Cancelled);
+            response.StructuredError.Details!["stage"]!.GetValue<string>().ShouldBe("scheduler_queue");
+            fixture.Store.TryGet(token.PlanId!, out _).ShouldBeTrue();
+            fixture.Transactions.BeginCalls.ShouldBe(0);
+            fixture.Runner.Calls.ShouldBe(0);
+        }
+
+        [Fact]
         public async Task CancellationInsideLaterMiddlewareIsCaughtByTerminalRecheck()
         {
             var fixture = new Fixture(requireConfirmation: false);
@@ -183,7 +208,9 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             public FakeRunTool Runner { get; }
             public AuthoringSafetyMiddleware Middleware { get; }
 
-            public Fixture(bool requireConfirmation = true)
+            public Fixture(
+                bool requireConfirmation = true,
+                IToolExecutionScheduler? scheduler = null)
             {
                 Store = new ConfirmationPlanStore();
                 Runner = new FakeRunTool(requireConfirmation ? "delete" : "modify")
@@ -196,7 +223,23 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                         Inspector,
                         Transactions),
                 };
-                Middleware = new AuthoringSafetyMiddleware(new AuthoringSafetyPolicy(null, Store));
+                Middleware = new AuthoringSafetyMiddleware(
+                    new AuthoringSafetyPolicy(null, Store), scheduler);
+            }
+        }
+
+        private sealed class BlockingScheduler : IToolExecutionScheduler
+        {
+            public TaskCompletionSource<bool> Entered { get; }
+                = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            public async Task<IToolExecutionLease> AcquireAsync(
+                ToolExecutionSchedulingRequest request,
+                CancellationToken cancellationToken = default)
+            {
+                Entered.TrySetResult(true);
+                await Task.Delay(Timeout.Infinite, cancellationToken);
+                throw new InvalidOperationException("unreachable");
             }
         }
     }

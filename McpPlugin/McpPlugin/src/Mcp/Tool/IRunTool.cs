@@ -85,6 +85,15 @@ namespace com.IvanMurzak.McpPlugin
         AuthoringCapabilityDescriptor? AuthoringCapability => null;
 
         /// <summary>
+        /// Optional execution-affinity declaration. Existing runners default to
+        /// main-thread serialized execution and never gain parallelism from ReadOnlyHint alone.
+        /// </summary>
+        ToolExecutionSchedulingMetadata? ExecutionScheduling => null;
+
+        /// <summary>True only for a tool whose successful return starts durable work.</summary>
+        bool ReturnsDurableOperationHandle => false;
+
+        /// <summary>
         /// Gets the semantic token count for this tool based on its JSON schema (including description).
         /// </summary>
         int TokenCount { get; }

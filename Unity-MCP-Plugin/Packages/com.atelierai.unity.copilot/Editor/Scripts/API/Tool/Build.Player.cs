@@ -20,6 +20,7 @@ using System.Linq;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -34,7 +35,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         (
             BuildPlayerToolId,
             Title = "Build / Player",
-            DestructiveHint = true
+            DestructiveHint = true,
+            DurableOperationStart = true
         )]
         [McpPluginSkillDescription("Start a Unity player build for the requested target platform. " +
             "Returns a `BuildJobInfo` carrying a `JobId`. Inspect progress via '" + BuildJobGetToolId + "' " +
@@ -94,15 +96,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 if (string.IsNullOrWhiteSpace(resolvedOutput))
                     throw new ArgumentException(Error.OutputPathEmpty(), nameof(outputPath));
 
-                var job = new BuildJobInfo
-                {
-                    JobId = BuildJobRegistry.NewJobId(),
-                    Status = "queued",
-                    BuildTarget = target.ToString(),
-                    OutputPath = resolvedOutput,
-                    StartedAtUtc = FormatUtc(DateTime.UtcNow),
-                };
-                BuildJobRegistry.Register(job);
+                var job = BuildJobRegistry.Create(target.ToString(), resolvedOutput);
 
                 var options = new BuildPlayerOptions
                 {
@@ -116,7 +110,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 // BuildPipeline.BuildPlayer must run on the main thread and blocks until done.
                 // Defer to the next editor tick so this tool returns immediately with Status='queued'
                 // and the caller can poll via build-job-get.
-                EditorApplication.delayCall += () => RunBuildOnMainThread(job, options);
+                EditorOperationOwnerRegistry.ScheduleExecution(
+                    job.JobId, "build-player", () => RunBuildOnMainThread(job.JobId, options));
 
                 if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Info))
                     Debug.Log($"[Build] Queued job '{job.JobId}' for {target} -> {resolvedOutput}");
@@ -125,10 +120,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             });
         }
 
-        static void RunBuildOnMainThread(BuildJobInfo job, BuildPlayerOptions options)
+        static void RunBuildOnMainThread(string jobId, BuildPlayerOptions options)
         {
-            job.Status = "running";
-            job.StartedAtUtc = FormatUtc(DateTime.UtcNow);
+            var queued = BuildJobRegistry.Get(jobId);
+            if (queued == null || queued.Status == "cancelled") return;
             var startedTicks = DateTime.UtcNow;
 
             try
@@ -150,38 +145,47 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 var completed = DateTime.UtcNow;
                 var summary = report.summary;
 
-                job.CompletedAtUtc = FormatUtc(completed);
-                job.DurationSeconds = (completed - startedTicks).TotalSeconds;
-                job.TotalSizeBytes = (long)summary.totalSize;
-                job.TotalErrors = summary.totalErrors;
-                job.TotalWarnings = summary.totalWarnings;
+                var durationSeconds = (completed - startedTicks).TotalSeconds;
+
+                // BuildPipeline.BuildPlayer cannot be interrupted safely. A cancellation
+                // request made while it owns the main thread is therefore recorded as
+                // pending and becomes the unique terminal state as soon as Unity returns.
+                if (EditorOperationRegistry.IsCancellationRequested(jobId))
+                {
+                    BuildJobRegistry.CancelAfterBuildReturns(jobId, durationSeconds,
+                        (long)summary.totalSize, summary.totalErrors, summary.totalWarnings);
+                    return;
+                }
 
                 if (summary.result == BuildResult.Succeeded)
                 {
-                    job.Status = "succeeded";
+                    BuildJobRegistry.Complete(jobId, durationSeconds, (long)summary.totalSize,
+                        summary.totalErrors, summary.totalWarnings);
                     if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Info))
                     {
-                        Debug.Log($"[Build] Job '{job.JobId}' succeeded ({summary.totalSize} bytes, " +
-                                  $"{job.DurationSeconds:F1}s) -> {job.OutputPath}");
+                        Debug.Log($"[Build] Job '{jobId}' succeeded ({summary.totalSize} bytes, " +
+                                  $"{durationSeconds:F1}s) -> {options.locationPathName}");
                     }
                 }
                 else
                 {
-                    job.Status = "failed";
-                    job.Error = $"BuildResult={summary.result}, errors={summary.totalErrors}";
+                    var error = $"BuildResult={summary.result}, errors={summary.totalErrors}";
+                    BuildJobRegistry.Fail(jobId, error);
                     if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Error))
-                        Debug.LogError($"[Build] Job '{job.JobId}' failed: {job.Error}");
+                        Debug.LogError($"[Build] Job '{jobId}' failed: {error}");
                 }
             }
             catch (Exception ex)
             {
-                job.Status = "failed";
-                job.CompletedAtUtc = FormatUtc(DateTime.UtcNow);
-                job.DurationSeconds = (DateTime.UtcNow - startedTicks).TotalSeconds;
-                job.Error = ex.Message;
+                if (EditorOperationRegistry.IsCancellationRequested(jobId))
+                    EditorOperationRegistry.CancelRunning(jobId,
+                        "cancelled-after-non-interruptible-build-error",
+                        JsonUtility.ToJson(new { error = ex.GetBaseException().Message }));
+                else
+                    BuildJobRegistry.Fail(jobId, ex.Message);
 
                 if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Error))
-                    Debug.LogError($"[Build] Job '{job.JobId}' threw: {ex}");
+                    Debug.LogError($"[Build] Job '{jobId}' threw: {ex}");
             }
         }
     }

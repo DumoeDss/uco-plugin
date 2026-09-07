@@ -164,6 +164,12 @@ namespace com.IvanMurzak.McpPlugin
 
             // ── Tool events (request-response) ────────────────────────────
 
+            connectionManager.RegisterHandler<RequestCancelToolCall, ResponseCancelToolCall>(
+                "CancelToolCall",
+                (request, requestCancellationToken) => Task.FromResult<ResponseCancelToolCall?>(
+                    _connectionManager.CancelToolCall(request)))
+                .AddTo(disposables);
+
             if (_mcpManager.ToolHub != null)
             {
                 connectionManager.RegisterHandler<RequestCallTool, ResponseData<ResponseCallTool>>(

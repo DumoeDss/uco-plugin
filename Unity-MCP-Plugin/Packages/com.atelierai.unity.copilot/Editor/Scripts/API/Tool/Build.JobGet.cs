@@ -28,7 +28,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             BuildJobGetToolId,
             Title = "Build / Get Job",
             ReadOnlyHint = true,
-            IdempotentHint = true
+            IdempotentHint = true,
+            ExecutionAffinity = ToolExecutionAffinity.Background,
+            ThreadSafeRead = true
         )]
         [McpPluginSkillDescription("Get the current state of a build job by ID. " +
             "Returns the same `BuildJobInfo` instance produced by '" + BuildPlayerToolId + "', with " +
@@ -36,9 +38,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "completion fields (`CompletedAtUtc`, `DurationSeconds`, `TotalSizeBytes`, etc.) populated " +
             "once the build finishes. Returns `null` if the job ID is unknown.")]
         [McpPluginSkillBody("Poll a build job for status. " +
-            "The registry is in-memory and survives for the life of the editor process; static state is " +
-            "cleared on domain reload but `BuildPipeline.BuildPlayer` blocks the editor thread, so no " +
-            "domain reload can occur mid-build.\n\n" +
+            "The job is a projection of the project-local durable operation record and remains queryable " +
+            "across request timeouts and compatible Editor generations.\n\n" +
             "## Returns\n\n" +
             "- The full `BuildJobInfo` record, or `null` when `jobId` does not exist.")]
         [Description("Get the current state of a build job by ID. Returns null when the job ID is unknown.")]

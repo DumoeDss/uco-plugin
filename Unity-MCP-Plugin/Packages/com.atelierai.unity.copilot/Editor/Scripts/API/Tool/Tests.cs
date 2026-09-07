@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.API.TestRunner;
@@ -41,14 +42,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         const string PendingTestNamespaceKey = "MCP_PendingTestRun_TestNamespace";
         const string PendingTestClassKey = "MCP_PendingTestRun_TestClass";
         const string PendingTestMethodKey = "MCP_PendingTestRun_TestMethod";
+        const string PendingTestOperationIdKey = "MCP_PendingTestRun_OperationId";
 
         static Tool_Tests()
         {
             _testRunnerApi ??= CreateInstance();
-
-            // Check for pending test run that was deferred due to script recompilation + domain reload
-            if (HasPendingTestRun())
-                EditorApplication.update += ResumePendingTestRunOnce;
+            // g-006 owner registration performs every reload claim and only schedules
+            // resume after persisted state validates and the scheduler lease is reacquired.
         }
 
         public static TestRunnerApi TestRunnerApi
@@ -95,12 +95,25 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             // none
         }
 
-        static bool HasPendingTestRun()
+        internal static string CurrentTestOperationId
+        {
+            get => TestResultCollector.TestOperationId.Value;
+            set => TestResultCollector.TestOperationId.Value = value;
+        }
+
+        internal static string CurrentTestRequestId
+        {
+            get => TestResultCollector.TestCallRequestID.Value;
+            set => TestResultCollector.TestCallRequestID.Value = value;
+        }
+
+        internal static bool HasPendingTestRun()
             => !string.IsNullOrEmpty(SessionState.GetString(PendingTestRunKey, string.Empty));
 
-        static void SavePendingTestRun(TestMode testMode, string? testAssembly, string? testNamespace, string? testClass, string? testMethod)
+        internal static void SavePendingTestRun(string operationId, TestMode testMode, string? testAssembly, string? testNamespace, string? testClass, string? testMethod)
         {
             SessionState.SetString(PendingTestRunKey, "pending");
+            SessionState.SetString(PendingTestOperationIdKey, operationId);
             SessionState.SetInt(PendingTestModeKey, (int)testMode);
             SessionState.SetString(PendingTestAssemblyKey, testAssembly ?? string.Empty);
             SessionState.SetString(PendingTestNamespaceKey, testNamespace ?? string.Empty);
@@ -108,7 +121,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SessionState.SetString(PendingTestMethodKey, testMethod ?? string.Empty);
         }
 
-        static void ClearPendingTestRun()
+        internal static void ClearPendingTestRun()
         {
             SessionState.EraseString(PendingTestRunKey);
             SessionState.EraseInt(PendingTestModeKey);
@@ -116,9 +129,49 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SessionState.EraseString(PendingTestNamespaceKey);
             SessionState.EraseString(PendingTestClassKey);
             SessionState.EraseString(PendingTestMethodKey);
+            SessionState.EraseString(PendingTestOperationIdKey);
         }
 
-        static void ResumePendingTestRunOnce()
+        internal static bool TryClaimPendingTestRun(out string operationId)
+        {
+            operationId = SessionState.GetString(PendingTestOperationIdKey, string.Empty);
+            var operation = EditorOperationRegistry.Get(operationId);
+            if (string.IsNullOrEmpty(operationId) || operation == null || operation.IsTerminal)
+            {
+                ClearTestRunOwnership(operationId);
+                return false;
+            }
+
+            EditorOperationRegistry.Claim(operationId, "waiting-for-compilation");
+            return true;
+        }
+
+        internal static void ClearTestRunOwnership(string operationId)
+        {
+            if (string.IsNullOrEmpty(operationId))
+            {
+                ClearPendingTestRun();
+                return;
+            }
+
+            if (string.Equals(SessionState.GetString(PendingTestOperationIdKey, string.Empty),
+                    operationId, StringComparison.Ordinal))
+            {
+                ClearPendingTestRun();
+                EditorApplication.update -= ResumePendingTestRunOnce;
+            }
+
+            if (!string.Equals(TestResultCollector.TestOperationId.Value,
+                    operationId, StringComparison.Ordinal))
+                return;
+
+            TestResultCollector.TestOperationId.Value = string.Empty;
+            TestResultCollector.TestCallRequestID.Value = string.Empty;
+            TestResultCollector.ExpectedDiscoveredTests.Value = 0;
+            TestResultCollector.ExpectedMatchedTests.Value = 0;
+        }
+
+        internal static void ResumePendingTestRunOnce()
         {
             // If still compiling, wait for next update tick
             if (EditorApplication.isCompiling)
@@ -127,6 +180,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             // Compilation finished (or was never happening), unsubscribe
             EditorApplication.update -= ResumePendingTestRunOnce;
 
+            if (!TryClaimPendingTestRun(out var operationId))
+                return;
+
             var requestId = TestResultCollector.TestCallRequestID.Value;
 
             // Check for compilation failure
@@ -134,8 +190,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             {
                 ClearPendingTestRun();
                 TestResultCollector.TestCallRequestID.Value = string.Empty;
+                TestResultCollector.TestOperationId.Value = string.Empty;
 
                 var errorDetails = ScriptUtils.GetCompilationErrorDetails();
+                if (!string.IsNullOrEmpty(operationId))
+                    EditorOperationRegistry.Fail(operationId, "test-compilation-failed", errorDetails, "compilation-failed");
                 var response = ResponseCallValueTool<TestRunResponse>
                     .Error($"Cannot run tests: compilation errors after script recompilation.\n\n{errorDetails}")
                     .SetRequestID(requestId);
@@ -143,6 +202,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 _ = UnityCopilotPluginEditor.NotifyToolRequestCompleted(new RequestToolCompletedData
                 {
                     RequestId = requestId,
+                    OperationId = operationId,
                     Result = response
                 });
                 return;
@@ -168,8 +228,57 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Info))
                 Debug.Log($"[TestRunner] Resuming test run after recompilation. Mode: {testMode}, Filters: {filterParams}");
 
-            var filter = CreateTestFilter(testMode, filterParams);
-            TestRunnerApi.Execute(new ExecutionSettings(filter));
+            _ = ResumePendingTestRunAsync(operationId, requestId, testMode, filterParams);
+        }
+
+        static async Task ResumePendingTestRunAsync(
+            string operationId,
+            string requestId,
+            TestMode testMode,
+            TestFilterParameters filterParams)
+        {
+            try
+            {
+                var operation = EditorOperationRegistry.Get(operationId);
+                if (operation == null || operation.IsTerminal)
+                {
+                    ClearTestRunOwnership(operationId);
+                    return;
+                }
+                TestOperationMetadata? metadata = null;
+                try
+                {
+                    if (!string.IsNullOrEmpty(operation?.MetadataJson))
+                        metadata = JsonUtility.FromJson<TestOperationMetadata>(operation.MetadataJson);
+                }
+                catch { }
+                var wait = TimeSpan.FromSeconds(metadata?.WaitTimeoutSeconds
+                    ?? DefaultWaitTimeoutSeconds);
+                var discovery = await DiscoverMatchingTests(TestRunnerApi, testMode, filterParams, wait);
+                operation = EditorOperationRegistry.Get(operationId);
+                if (operation == null || operation.IsTerminal)
+                {
+                    ClearTestRunOwnership(operationId);
+                    return;
+                }
+                if (discovery.MatchedNames.Length == 0)
+                {
+                    var message = Error.NoTestsFound(filterParams);
+                    EditorOperationRegistry.Fail(operationId, "tests-no-match", message, "filter-validation");
+                    TestResultCollector.TestOperationId.Value = string.Empty;
+                    TestResultCollector.TestCallRequestID.Value = string.Empty;
+                    return;
+                }
+
+                StartDiscoveredTests(operationId, testMode, filterParams, discovery);
+            }
+            catch (Exception ex)
+            {
+                var operation = EditorOperationRegistry.Get(operationId);
+                if (operation != null && !operation.IsTerminal)
+                    EditorOperationRegistry.Fail(operationId, "tests-resume-failed", ex.Message, "resume-failed");
+                ClearTestRunOwnership(operationId);
+            }
         }
 
         /// <summary>

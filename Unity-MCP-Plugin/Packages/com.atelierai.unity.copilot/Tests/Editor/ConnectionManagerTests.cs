@@ -130,6 +130,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
+        public void UnityCopilotPluginEditor_Connect_ShouldExposeCancellationToken()
+        {
+            var parameterTypes = new[] { typeof(CancellationToken) };
+            var editorConnect = typeof(UnityCopilotPluginEditor).GetMethod(
+                nameof(UnityCopilotPluginEditor.Connect), parameterTypes);
+
+            Assert.IsNotNull(editorConnect,
+                "The Editor facade must expose the cancellable connection API to scripts");
+        }
+
+        [Test]
         public void ConnectionManager_Endpoint_ShouldHandleValidUrls()
         {
             // Arrange & Act

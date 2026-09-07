@@ -109,8 +109,11 @@ namespace com.IvanMurzak.McpPlugin
                 new ProjectPathPolicy(Directory.GetCurrentDirectory()));
             _services.TryAddSingleton<AuthoringSafetyPolicy>(sp =>
                 new AuthoringSafetyPolicy(sp.GetRequiredService<ProjectPathPolicy>()));
+            _services.TryAddSingleton<IToolExecutionScheduler, InlineToolExecutionScheduler>();
             _services.AddSingleton<IToolExecutionMiddleware>(sp =>
-                new AuthoringSafetyMiddleware(sp.GetRequiredService<AuthoringSafetyPolicy>()));
+                new AuthoringSafetyMiddleware(
+                    sp.GetRequiredService<AuthoringSafetyPolicy>(),
+                    sp.GetRequiredService<IToolExecutionScheduler>()));
 
             // Register the concrete pipeline once.  The pass-through middleware
             // is appended during Build so custom middleware registered through
@@ -192,6 +195,17 @@ namespace com.IvanMurzak.McpPlugin
                 throw new ArgumentNullException(nameof(policy));
 
             _services.AddSingleton(policy);
+            return this;
+        }
+
+        public virtual IMcpPluginBuilder WithToolExecutionScheduler(IToolExecutionScheduler scheduler)
+        {
+            ThrowIfBuilt();
+            if (scheduler == null)
+                throw new ArgumentNullException(nameof(scheduler));
+
+            _services.Replace(
+                ServiceDescriptor.Singleton<IToolExecutionScheduler>(scheduler));
             return this;
         }
         #endregion

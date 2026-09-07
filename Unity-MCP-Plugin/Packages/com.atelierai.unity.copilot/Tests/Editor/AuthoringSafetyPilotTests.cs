@@ -44,6 +44,31 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private static readonly BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
         private bool _ignoreFailingMessages;
+        private static UnityCopilotPluginEditor _sessionOriginalEditor = null!;
+
+        [OneTimeSetUp]
+        public void CaptureSessionSingleton()
+        {
+            _sessionOriginalEditor = UnityCopilotPluginEditor.Instance;
+            _sessionOriginalEditor.BuildMcpPluginIfNeeded();
+        }
+
+        [OneTimeTearDown]
+        public void RestoreSessionSingleton()
+        {
+            // An abandoned coroutine (the runner fails the test on an
+            // unexpected error log, e.g. the replacement's hub handshake
+            // failing ~10 s after build) never reaches the replacing tests'
+            // `finally { RestoreEditorSingleton }`, so a broken double stays
+            // installed and every later fixture resolves it instead of the
+            // real editor. Fixture-level teardown runs after every test of
+            // this fixture regardless of failure or abandonment — restore
+            // the captured session singleton whenever one of this fixture's
+            // doubles is still installed.
+            if (UnityCopilotPluginEditor.Instance is TestUnityCopilotPluginEditor leaked)
+                RestoreEditorSingleton(
+                    _sessionOriginalEditor, _sessionOriginalEditor.McpPluginInstance, leaked);
+        }
 
         public override IEnumerator SetUp()
         {

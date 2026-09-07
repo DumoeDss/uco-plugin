@@ -293,6 +293,130 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network
             result.GetRawText().ShouldNotContain("error");
         }
 
+        [Fact]
+        public async Task WsRpcDispatcher_CancelToolCall_CancelsOnlyMatchingGeneration()
+        {
+            var dispatcher = new WsRpcDispatcher(_options) { CurrentGeneration = 7 };
+            dispatcher.SendFunc = (_, _) => Task.CompletedTask;
+            var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var cancelled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            dispatcher.RegisterHandler<RequestCallTool, ResponseData<ResponseCallTool>>(
+                "RunCallTool",
+                async (_, token) =>
+                {
+                    started.TrySetResult(true);
+                    try
+                    {
+                        await Task.Delay(Timeout.Infinite, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        cancelled.TrySetResult(true);
+                        throw;
+                    }
+                    return new ResponseData<ResponseCallTool>
+                    {
+                        RequestID = "request-1",
+                        Status = ResponseStatus.Success,
+                        Value = ResponseCallTool.Success()
+                    };
+                });
+
+            var request = new WsParsedMessage
+            {
+                Type = WsMessageType.Request,
+                Id = "envelope-1",
+                Method = "RunCallTool",
+                Params = JsonSerializer.SerializeToElement(new RequestCallTool
+                {
+                    RequestID = "request-1",
+                    Name = "fixture",
+                    Control = new ToolCallControl
+                    {
+                        CallId = "call-1",
+                        CancellationId = "cancel-1"
+                    }
+                }, _options)
+            };
+            var dispatch = dispatcher.HandleIncomingAsync(request, CancellationToken.None);
+            await started.Task;
+
+            var stale = dispatcher.CancelToolCall(new RequestCancelToolCall
+            {
+                RequestID = "request-1",
+                CallId = "call-1",
+                CancellationId = "cancel-1",
+                Generation = 6
+            });
+            stale.Accepted.ShouldBeFalse();
+            stale.Code.ShouldBe("stale_generation");
+            cancelled.Task.IsCompleted.ShouldBeFalse();
+
+            var accepted = dispatcher.CancelToolCall(new RequestCancelToolCall
+            {
+                RequestID = "request-1",
+                CallId = "call-1",
+                CancellationId = "cancel-1",
+                Generation = 7
+            });
+            accepted.Accepted.ShouldBeTrue();
+            accepted.Code.ShouldBe("cancelled");
+            await cancelled.Task;
+            await dispatch;
+
+            dispatcher.CancelToolCall(new RequestCancelToolCall
+            {
+                RequestID = "request-1",
+                CallId = "call-1",
+                CancellationId = "cancel-1",
+                Generation = 7
+            }).Accepted.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task WsRpcDispatcher_CancelAllInFlight_ReleasesGenerationOwnedCalls()
+        {
+            var dispatcher = new WsRpcDispatcher(_options) { CurrentGeneration = 9 };
+            dispatcher.SendFunc = (_, _) => Task.CompletedTask;
+            var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            dispatcher.RegisterHandler<RequestCallTool, ResponseData<ResponseCallTool>>(
+                "RunCallTool",
+                async (_, token) =>
+                {
+                    started.TrySetResult(true);
+                    await Task.Delay(Timeout.Infinite, token);
+                    return new ResponseData<ResponseCallTool>
+                    {
+                        RequestID = "request-2",
+                        Status = ResponseStatus.Success,
+                        Value = ResponseCallTool.Success()
+                    };
+                });
+            var request = new WsParsedMessage
+            {
+                Type = WsMessageType.Request,
+                Id = "envelope-2",
+                Method = "RunCallTool",
+                Params = JsonSerializer.SerializeToElement(new RequestCallTool
+                {
+                    RequestID = "request-2",
+                    Name = "fixture",
+                    Control = new ToolCallControl { CallId = "call-2" }
+                }, _options)
+            };
+
+            var dispatch = dispatcher.HandleIncomingAsync(request, CancellationToken.None);
+            await started.Task;
+            dispatcher.CancelAllInFlight();
+            await dispatch;
+            dispatcher.CancelToolCall(new RequestCancelToolCall
+            {
+                RequestID = "request-2",
+                CallId = "call-2",
+                Generation = 9
+            }).Accepted.ShouldBeFalse();
+        }
+
         // ── Task 12.5: ResponseStatus lowercase serialization ────────────
 
         [Fact]

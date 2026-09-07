@@ -27,14 +27,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             BuildJobListToolId,
             Title = "Build / List Jobs",
             ReadOnlyHint = true,
-            IdempotentHint = true
+            IdempotentHint = true,
+            ExecutionAffinity = ToolExecutionAffinity.Background,
+            ThreadSafeRead = true
         )]
         [McpPluginSkillDescription("List every build job registered in this editor session. " +
             "Set `includeCompleted=false` to drop succeeded/failed jobs and return only active " +
             "(`queued` or `running`) entries.")]
         [McpPluginSkillBody("List build jobs. " +
-            "The job registry lives in-memory for the editor process lifetime and is cleared on domain " +
-            "reload. Each entry is the same `BuildJobInfo` produced by '" + BuildPlayerToolId + "', so " +
+            "The list projects the project-local durable operation registry. Each entry is the same " +
+            "`BuildJobInfo` produced by '" + BuildPlayerToolId + "', so " +
             "callers can rely on the same fields and lifecycle semantics.\n\n" +
             "## Inputs\n\n" +
             "- `includeCompleted` (default `true`) — when `false`, only jobs with `Status='queued'` or " +

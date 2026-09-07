@@ -12,6 +12,7 @@
 using com.AtelierAI.Unity.Copilot.Editor.UI;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
+using Microsoft.Extensions.Logging;
 using UnityEditor;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -25,6 +26,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor
 
         static Startup()
         {
+            if (!UnityProcessGuard.ShouldInitialize(AssetDatabase.IsAssetImportWorkerProcess()))
+            {
+                return;
+            }
+
+            EditorOperationOwners.RegisterAndReconcile();
             UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
 
@@ -44,5 +51,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             UpdateChecker.Init();
             PackageUtils.Init();
         }
+    }
+
+    /// <summary>
+    /// Asset Import Workers inherit the main Editor's environment variables but
+    /// must never create their own MCP plugin/server lifecycle. A worker bridge
+    /// advertises the same project instance ID, cannot complete normal Editor
+    /// registration, and can otherwise displace the main Editor connection.
+    /// </summary>
+    internal static class UnityProcessGuard
+    {
+        internal static bool ShouldInitialize(bool isAssetImportWorkerProcess)
+            => !isAssetImportWorkerProcess;
     }
 }

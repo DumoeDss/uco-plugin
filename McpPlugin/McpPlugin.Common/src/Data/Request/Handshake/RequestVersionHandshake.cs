@@ -7,6 +7,7 @@
 │  See the LICENSE file in the project root for more information.        │
 └────────────────────────────────────────────────────────────────────────┘
 */
+using System;
 using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.McpPlugin.Common.Model
@@ -24,5 +25,11 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
 
         [JsonPropertyName("environment")]
         public string Environment { get; set; } = string.Empty;
+
+        [JsonPropertyName("capabilities")]
+        public string[] Capabilities { get; set; } = Array.Empty<string>();
+
+        [JsonPropertyName("generation")]
+        public int Generation { get; set; }
     }
 }

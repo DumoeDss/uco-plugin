@@ -37,6 +37,8 @@ namespace com.IvanMurzak.McpPlugin
         public bool? IdempotentHint { get; protected set; }
         public bool? OpenWorldHint { get; protected set; }
         public AuthoringCapabilityDescriptor? AuthoringCapability { get; protected set; }
+        public ToolExecutionSchedulingMetadata? ExecutionScheduling { get; protected set; }
+        public bool ReturnsDurableOperationHandle { get; protected set; }
 
         /// <summary>
         /// Reads <see cref="McpPluginSkillDescriptionAttribute"/> from the underlying method, if present.
@@ -67,11 +69,15 @@ namespace com.IvanMurzak.McpPlugin
             ILogger? logger,
             string name,
             MethodInfo methodInfo,
-            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, methodInfo)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false) : base(reflector, logger, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
             AuthoringCapability = authoringCapability;
+            ExecutionScheduling = executionScheduling?.Clone();
+            ReturnsDurableOperationHandle = returnsDurableOperationHandle;
         }
 
         public RunTool(
@@ -80,11 +86,15 @@ namespace com.IvanMurzak.McpPlugin
             string name,
             object targetInstance,
             MethodInfo methodInfo,
-            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, targetInstance, methodInfo)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false) : base(reflector, logger, targetInstance, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
             AuthoringCapability = authoringCapability;
+            ExecutionScheduling = executionScheduling?.Clone();
+            ReturnsDurableOperationHandle = returnsDurableOperationHandle;
         }
 
         public RunTool(
@@ -93,11 +103,15 @@ namespace com.IvanMurzak.McpPlugin
             string name,
             Type classType,
             MethodInfo methodInfo,
-            AuthoringCapabilityDescriptor? authoringCapability = null) : base(reflector, logger, classType, methodInfo)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false) : base(reflector, logger, classType, methodInfo)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _paramNameLookup = ParameterNameUtils.BuildParameterNameLookup(methodInfo?.GetParameters());
             AuthoringCapability = authoringCapability;
+            ExecutionScheduling = executionScheduling?.Clone();
+            ReturnsDurableOperationHandle = returnsDurableOperationHandle;
         }
 
         protected override object? GetParameterValue(Reflector reflector, ParameterInfo paramInfo, object? value)
@@ -177,9 +191,12 @@ namespace com.IvanMurzak.McpPlugin
                     .SetRequestID(requestId);
             }
 
-            return ResponseCallTool
-                .SuccessStructured(System.Text.Json.JsonSerializer.SerializeToNode(result, _reflector.JsonSerializerOptions))
-                .SetRequestID(requestId);
+            var structured = ResponseCallTool.SuccessStructured(
+                System.Text.Json.JsonSerializer.SerializeToNode(
+                    result, _reflector.JsonSerializerOptions));
+            if (ReturnsDurableOperationHandle && result is IDurableOperationHandle)
+                structured.Status = ResponseStatus.Processing;
+            return structured.SetRequestID(requestId);
         }
 
         /// <summary>

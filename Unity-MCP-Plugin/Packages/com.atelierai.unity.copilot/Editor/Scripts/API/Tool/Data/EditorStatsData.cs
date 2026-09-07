@@ -12,11 +12,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Model;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace AIGD
 {
@@ -47,8 +50,40 @@ namespace AIGD
         [Description("The time since the editor was started. (Read Only)")]
         public double TimeSinceStartup { get; set; } = 0;
 
+        [Description("True when one or more open scenes have unsaved changes.")]
+        public bool HasUnsavedScenes { get; set; }
+
+        [Description("Paths or names of open scenes with unsaved changes.")]
+        public string[] DirtyScenes { get; set; } = Array.Empty<string>();
+
+        [Description("Bounded close/readiness blockers derived from the current Editor state.")]
+        public string[] Blockers { get; set; } = Array.Empty<string>();
+
+        [Description("Canonical staged Editor readiness and scheduler snapshot.")]
+        public EditorReadinessSnapshot Readiness { get; set; } = new();
+
         public static EditorStatsData FromEditor()
         {
+            var dirtyScenes = new List<string>();
+            for (var i = 0; i < EditorSceneManager.sceneCount; i++)
+            {
+                var scene = EditorSceneManager.GetSceneAt(i);
+                if (!scene.isDirty) continue;
+                dirtyScenes.Add(string.IsNullOrWhiteSpace(scene.path) ? scene.name : scene.path);
+            }
+
+            var readiness = EditorToolExecutionScheduler.Shared.Snapshot(
+                com.AtelierAI.Unity.Copilot.UnityCopilotPluginEditor.HasInstance
+                && com.AtelierAI.Unity.Copilot.UnityCopilotPluginEditor.ConnectionState.CurrentValue
+                    == com.IvanMurzak.McpPlugin.ConnectionState.Connected,
+                ignoreCurrentSerializedCall: true);
+            var blockers = new List<string>();
+            if (EditorApplication.isCompiling) blockers.Add("compiling");
+            if (EditorApplication.isUpdating) blockers.Add("updating-or-importing");
+            if (EditorApplication.isPlaying) blockers.Add("play-mode");
+            else if (EditorApplication.isPlayingOrWillChangePlaymode) blockers.Add("play-mode-transition");
+            if (dirtyScenes.Count > 0) blockers.Add("unsaved-scenes");
+
             return new EditorStatsData
             {
                 IsPlaying = EditorApplication.isPlaying,
@@ -58,7 +93,11 @@ namespace AIGD
                 IsUpdating = EditorApplication.isUpdating,
                 ApplicationContentsPath = EditorApplication.applicationContentsPath,
                 ApplicationPath = EditorApplication.applicationPath,
-                TimeSinceStartup = EditorApplication.timeSinceStartup
+                TimeSinceStartup = EditorApplication.timeSinceStartup,
+                HasUnsavedScenes = dirtyScenes.Count > 0,
+                DirtyScenes = dirtyScenes.ToArray(),
+                Blockers = blockers.Distinct(StringComparer.Ordinal).Take(8).ToArray(),
+                Readiness = readiness
             };
         }
     }

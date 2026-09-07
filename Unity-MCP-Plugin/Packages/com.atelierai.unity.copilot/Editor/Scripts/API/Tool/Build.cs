@@ -14,12 +14,13 @@
 
 #nullable enable
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
+using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -35,8 +36,29 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [Description("Unique job ID for polling via build-job-get.")]
             public string JobId { get; set; } = "";
 
-            [Description("'queued' | 'running' | 'succeeded' | 'failed'")]
+            [Description("'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled' | 'interrupted'")]
             public string Status { get; set; } = "";
+
+            [Description("Current durable operation phase.")]
+            public string Phase { get; set; } = "";
+
+            [Description("Operation progress in [0,1], or -1 when not reported.")]
+            public double Progress { get; set; } = -1;
+
+            [Description("Last update timestamp (ISO 8601 UTC).")]
+            public string UpdatedAtUtc { get; set; } = "";
+
+            [Description("Editor process that owns the operation.")]
+            public int EditorPid { get; set; }
+
+            [Description("Editor domain generation that owns the operation.")]
+            public string DomainGeneration { get; set; } = "";
+
+            [Description("Whether cancellation was requested.")]
+            public bool CancellationRequested { get; set; }
+
+            [Description("Whether cancellation is waiting for a non-interruptible Unity API call.")]
+            public bool CancellationPending { get; set; }
 
             [Description("Target platform name.")]
             public string BuildTarget { get; set; } = "";
@@ -243,38 +265,117 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         // -----------------------------------------------------------------
-        // In-memory job registry. Persists for the lifetime of the editor
-        // process (cleared on domain reload, which is fine since
-        // BuildPipeline.BuildPlayer blocks the editor thread and therefore
-        // no reload can occur mid-build).
+        // Compatibility projection over the shared durable operation registry.
         // -----------------------------------------------------------------
 
         internal static class BuildJobRegistry
         {
-            private static readonly ConcurrentDictionary<string, BuildJobInfo> s_jobs = new();
-
-            public static string NewJobId() => Guid.NewGuid().ToString("N");
-
-            public static BuildJobInfo Register(BuildJobInfo job)
+            [Serializable]
+            sealed class BuildMetadata
             {
-                s_jobs[job.JobId] = job;
-                return job;
+                public string BuildTarget = string.Empty;
+                public string OutputPath = string.Empty;
+            }
+
+            [Serializable]
+            sealed class BuildCompletion
+            {
+                public double DurationSeconds;
+                public long TotalSizeBytes;
+                public int TotalErrors;
+                public int TotalWarnings;
+            }
+
+            public static BuildJobInfo Create(string buildTarget, string outputPath)
+            {
+                var metadata = JsonUtility.ToJson(new BuildMetadata
+                {
+                    BuildTarget = buildTarget,
+                    OutputPath = outputPath
+                });
+                return Project(EditorOperationOwnerRegistry.Create("build-player", "queued", metadata))!;
             }
 
             public static BuildJobInfo? Get(string id)
-                => s_jobs.TryGetValue(id, out var j) ? j : null;
+            {
+                var operation = EditorOperationRegistry.Get(id);
+                return operation?.Kind == "build-player" ? Project(operation) : null;
+            }
 
             public static BuildJobInfo[] All()
-                => s_jobs.Values.ToArray();
+                => EditorOperationRegistry.List("build-player").Select(Project).Where(j => j != null).Cast<BuildJobInfo>().ToArray();
 
             public static BuildJobInfo[] Filter(bool includeCompleted)
-            {
-                if (includeCompleted)
-                    return s_jobs.Values.ToArray();
+                => EditorOperationRegistry.List("build-player", includeCompleted)
+                    .Select(Project).Where(j => j != null).Cast<BuildJobInfo>().ToArray();
 
-                return s_jobs.Values
-                    .Where(j => j.Status == "queued" || j.Status == "running")
-                    .ToArray();
+            public static void Start(string id)
+                => EditorOperationRegistry.Start(id, "build-player");
+
+            public static void Complete(string id, double durationSeconds, long totalSizeBytes,
+                int totalErrors, int totalWarnings)
+            {
+                var result = JsonUtility.ToJson(new BuildCompletion
+                {
+                    DurationSeconds = durationSeconds,
+                    TotalSizeBytes = totalSizeBytes,
+                    TotalErrors = totalErrors,
+                    TotalWarnings = totalWarnings
+                });
+                EditorOperationRegistry.Succeed(id, result);
+            }
+
+            public static void Fail(string id, string message)
+                => EditorOperationRegistry.Fail(id, "build-player-failed", message, "build-failed");
+
+            public static void CancelAfterBuildReturns(string id, double durationSeconds,
+                long totalSizeBytes, int totalErrors, int totalWarnings)
+            {
+                var result = JsonUtility.ToJson(new BuildCompletion
+                {
+                    DurationSeconds = durationSeconds,
+                    TotalSizeBytes = totalSizeBytes,
+                    TotalErrors = totalErrors,
+                    TotalWarnings = totalWarnings
+                });
+                EditorOperationRegistry.CancelRunning(id,
+                    "cancelled-after-non-interruptible-build", result);
+            }
+
+            static BuildJobInfo? Project(EditorOperationInfo operation)
+            {
+                BuildMetadata? metadata = null;
+                BuildCompletion? completion = null;
+                try
+                {
+                    if (!string.IsNullOrEmpty(operation.MetadataJson))
+                        metadata = JsonUtility.FromJson<BuildMetadata>(operation.MetadataJson);
+                    if (!string.IsNullOrEmpty(operation.ResultJson))
+                        completion = JsonUtility.FromJson<BuildCompletion>(operation.ResultJson);
+                }
+                catch { }
+
+                return new BuildJobInfo
+                {
+                    JobId = operation.OperationId,
+                    Status = operation.Status,
+                    Phase = operation.Phase,
+                    Progress = operation.Progress,
+                    BuildTarget = metadata?.BuildTarget ?? string.Empty,
+                    OutputPath = metadata?.OutputPath ?? string.Empty,
+                    StartedAtUtc = operation.CreatedAtUtc,
+                    UpdatedAtUtc = operation.UpdatedAtUtc,
+                    CompletedAtUtc = operation.CompletedAtUtc,
+                    EditorPid = operation.EditorPid,
+                    DomainGeneration = operation.DomainGeneration,
+                    CancellationRequested = operation.CancellationRequested,
+                    CancellationPending = operation.CancellationPending,
+                    DurationSeconds = completion?.DurationSeconds,
+                    TotalSizeBytes = completion?.TotalSizeBytes,
+                    TotalErrors = completion?.TotalErrors,
+                    TotalWarnings = completion?.TotalWarnings,
+                    Error = operation.ErrorMessage
+                };
             }
         }
 

@@ -37,7 +37,9 @@ namespace com.IvanMurzak.McpPlugin
                     openWorldHint: attr.OpenWorldHintValue,
                     enabled: attr.EnabledValue,
                     toolType: attr.ToolType,
-                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo))
+                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo),
+                    executionScheduling: attr.ExecutionScheduling,
+                    returnsDurableOperationHandle: attr.DurableOperationStart)
                 : RunTool.CreateFromClassMethod(
                     reflector: reflector,
                     logger: logger,
@@ -51,7 +53,9 @@ namespace com.IvanMurzak.McpPlugin
                     openWorldHint: attr.OpenWorldHintValue,
                     enabled: attr.EnabledValue,
                     toolType: attr.ToolType,
-                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo));
+                    authoringCapability: AuthoringCapabilityDescriptorFactory.FromMethod(method.MethodInfo),
+                    executionScheduling: attr.ExecutionScheduling,
+                    returnsDurableOperationHandle: attr.DurableOperationStart);
 
             return GuardedRunTool.Wrap(runner);
         }

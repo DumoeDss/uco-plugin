@@ -13,9 +13,10 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
     public class RequestToolCompletedData
     {
         public string RequestId { get; set; } = string.Empty;
+        public string? OperationId { get; set; }
         public ResponseCallTool Result { get; set; } = null!;
 
         public override string ToString()
-            => $"RequestId: {RequestId}, Result: {Result}";
+            => $"RequestId: {RequestId}, OperationId: {OperationId}, Result: {Result}";
     }
 }

@@ -40,8 +40,11 @@ namespace com.IvanMurzak.McpPlugin
             bool? openWorldHint = null,
             bool? enabled = null,
             McpToolType toolType = McpToolType.Standard,
-            AuthoringCapabilityDescriptor? authoringCapability = null)
-            => new RunTool(reflector, logger, name, methodInfo, authoringCapability)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false)
+            => new RunTool(reflector, logger, name, methodInfo, authoringCapability,
+                executionScheduling, returnsDurableOperationHandle)
             {
                 Title = title,
                 ToolType = toolType,
@@ -70,8 +73,11 @@ namespace com.IvanMurzak.McpPlugin
             bool? openWorldHint = null,
             bool? enabled = null,
             McpToolType toolType = McpToolType.Standard,
-            AuthoringCapabilityDescriptor? authoringCapability = null)
-            => new RunTool(reflector, logger, name, targetInstance, methodInfo, authoringCapability)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false)
+            => new RunTool(reflector, logger, name, targetInstance, methodInfo, authoringCapability,
+                executionScheduling, returnsDurableOperationHandle)
             {
                 Title = title,
                 ToolType = toolType,
@@ -103,8 +109,11 @@ namespace com.IvanMurzak.McpPlugin
             bool? openWorldHint = null,
             bool? enabled = null,
             McpToolType toolType = McpToolType.Standard,
-            AuthoringCapabilityDescriptor? authoringCapability = null)
-            => new RunTool(reflector, logger, name, classType, methodInfo, authoringCapability)
+            AuthoringCapabilityDescriptor? authoringCapability = null,
+            ToolExecutionSchedulingMetadata? executionScheduling = null,
+            bool returnsDurableOperationHandle = false)
+            => new RunTool(reflector, logger, name, classType, methodInfo, authoringCapability,
+                executionScheduling, returnsDurableOperationHandle)
             {
                 Title = title,
                 ToolType = toolType,

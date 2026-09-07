@@ -26,6 +26,7 @@ namespace com.AtelierAI.Unity.Copilot
 
         public UnityCopilotPluginEditor BuildMcpPluginIfNeeded()
         {
+            EditorOperationOwners.RegisterAndReconcile();
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var loggerProvider = BuildLoggerProvider();
 
@@ -53,7 +54,8 @@ namespace com.AtelierAI.Unity.Copilot
                 version: BuildVersion(),
                 reflector: CreateDefaultReflector(),
                 loggerProvider: loggerProvider,
-                configure: _ => { }
+                configure: builder => builder.WithToolExecutionScheduler(
+                    EditorToolExecutionScheduler.Shared)
             ));
             stopwatch.Stop();
 

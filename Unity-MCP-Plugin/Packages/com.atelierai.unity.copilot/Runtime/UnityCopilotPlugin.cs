@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot
 
     public partial class UnityCopilotPlugin : IDisposable
     {
-        public const string Version = "0.73.0";
+        public const string Version = "0.74.0";
 
         private static int _singletonCount = 0;
         public static bool HasAnyInstance => _singletonCount > 0;
@@ -114,14 +114,24 @@ namespace com.AtelierAI.Unity.Copilot
 
         // --- Connection methods ---
 
-        public Task<bool> ConnectIfNeeded()
+        public Task<bool> ConnectIfNeeded(CancellationToken cancellationToken = default)
         {
             if (!unityConnectionConfig.KeepConnected)
                 return Task.FromResult(false);
-            return Connect();
+            return ConnectCore(restartPendingAttempt: false, cancellationToken);
         }
 
-        public async Task<bool> Connect()
+        /// <summary>
+        /// Starts an explicit connection attempt. If an earlier attempt is still pending while
+        /// the plugin is disconnected, it is cancelled first so the new attempt does not merely
+        /// wait behind stale connection work.
+        /// </summary>
+        public Task<bool> Connect(CancellationToken cancellationToken = default)
+            => ConnectCore(restartPendingAttempt: true, cancellationToken);
+
+        private async Task<bool> ConnectCore(
+            bool restartPendingAttempt,
+            CancellationToken cancellationToken)
         {
             _logger.LogTrace("{method} called.", nameof(Connect));
             try
@@ -132,7 +142,17 @@ namespace com.AtelierAI.Unity.Copilot
                     _logger.LogError("{method}: McpPlugin instance is null.", nameof(Connect));
                     return false;
                 }
-                return await mcpPlugin.Connect();
+
+                if (restartPendingAttempt
+                    && mcpPlugin.ConnectionState.CurrentValue != WsState.Connected)
+                {
+                    // ConnectionManager cancellation happens before its bounded synchronous
+                    // cleanup, so the old attempt releases its gate while the new call waits
+                    // with the caller-provided cancellation token.
+                    mcpPlugin.DisconnectImmediate();
+                }
+
+                return await mcpPlugin.Connect(cancellationToken);
             }
             finally
             {

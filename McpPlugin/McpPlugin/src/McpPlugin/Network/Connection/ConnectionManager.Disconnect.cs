@@ -38,6 +38,7 @@ namespace com.IvanMurzak.McpPlugin
                 return;
             }
 
+            Interlocked.Increment(ref _disconnectSequence);
             CancelInternalToken(dispose: false);
             _continueToReconnect.Value = false;
 
@@ -84,10 +85,11 @@ namespace com.IvanMurzak.McpPlugin
                 return;
             }
 
+            Interlocked.Increment(ref _disconnectSequence);
             CancelInternalToken(dispose: false);
             _continueToReconnect.Value = false;
 
-            var acquiredGate = _gate.Wait(TimeSpan.FromSeconds(1));
+            var acquiredGate = _gate.Wait(TimeSpan.Zero);
             try
             {
                 _logger.LogDebug("{class}[{guid}] {method} Gate acquired: {acquired}",
@@ -188,6 +190,7 @@ namespace com.IvanMurzak.McpPlugin
             // Reject all pending RPC requests — the connection is going away
             _dispatcher.RejectAllPending(new InvalidOperationException("Connection closed."));
             _dispatcher.ClearDeferred();
+            _dispatcher.CancelAllInFlight();
 
             _wsLogger?.Dispose();
             _wsObservable?.Dispose();

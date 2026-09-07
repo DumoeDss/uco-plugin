@@ -265,11 +265,19 @@ namespace com.AtelierAI.Unity.Copilot
             return subscription;
         }
 
-        public static new Task<bool> ConnectIfNeeded() => ((UnityCopilotPlugin)Instance).ConnectIfNeeded();
+        public static new Task<bool> ConnectIfNeeded(CancellationToken cancellationToken = default)
+            => ((UnityCopilotPlugin)Instance).ConnectIfNeeded(cancellationToken);
 
-        public static new Task<bool> Connect() => ((UnityCopilotPlugin)Instance).Connect();
+        public static new Task<bool> Connect(CancellationToken cancellationToken = default)
+            => ((UnityCopilotPlugin)Instance).Connect(cancellationToken);
 
-        // Disconnect() and DisconnectImmediate() are inherited from UnityCopilotPlugin base.
+        public new void DisconnectImmediate()
+        {
+            Editor.Utils.EditorToolExecutionScheduler.Shared.InvalidateInstance();
+            Editor.Utils.EditorOperationOwnerRegistry.InvalidateGeneration();
+            Editor.Utils.UnityAuthoringSafetyReloadGuard.InvalidateConfirmationPlans();
+            base.DisconnectImmediate();
+        }
 
         public static void StaticDispose()
         {

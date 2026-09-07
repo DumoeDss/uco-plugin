@@ -58,6 +58,16 @@ namespace com.IvanMurzak.McpPlugin
         public bool? IdempotentHint => _inner.IdempotentHint;
         public bool? OpenWorldHint => _inner.OpenWorldHint;
         public AuthoringCapabilityDescriptor? AuthoringCapability => _inner.AuthoringCapability;
+        public ToolExecutionSchedulingMetadata? ExecutionScheduling
+            => _inner.ExecutionScheduling
+                ?? (_inner is IToolExecutionSchedulingMetadata metadata
+                    ? new ToolExecutionSchedulingMetadata
+                    {
+                        ExecutionAffinity = metadata.ExecutionAffinity,
+                        ThreadSafeRead = metadata.ThreadSafeRead
+                    }
+                    : null);
+        public bool ReturnsDurableOperationHandle => _inner.ReturnsDurableOperationHandle;
         public int TokenCount => _inner.TokenCount;
 
         public async Task<ResponseCallTool> Run(

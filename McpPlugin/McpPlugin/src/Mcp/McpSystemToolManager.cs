@@ -264,7 +264,10 @@ namespace com.IvanMurzak.McpPlugin
                             ReadOnlyHint = tool.ReadOnlyHint,
                             DestructiveHint = tool.DestructiveHint,
                             IdempotentHint = tool.IdempotentHint,
-                            OpenWorldHint = tool.OpenWorldHint
+                            OpenWorldHint = tool.OpenWorldHint,
+                            ExecutionAffinity = (tool.ExecutionScheduling?.ExecutionAffinity
+                                ?? ToolExecutionAffinity.MainThread).ToWireValue(),
+                            ThreadSafeRead = tool.ExecutionScheduling?.ThreadSafeRead == true
                         };
                         if (tool.OutputSchema == null)
                             return response;

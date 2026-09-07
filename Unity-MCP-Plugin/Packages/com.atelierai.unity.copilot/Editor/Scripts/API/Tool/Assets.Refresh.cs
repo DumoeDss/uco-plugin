@@ -10,6 +10,7 @@
 
 #nullable enable
 using System.ComponentModel;
+using System;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.McpPlugin.Common.Model;
@@ -22,11 +23,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsRefreshToolId = "assets-refresh";
+        internal const string PendingRefreshOperationKey = "UnityCopilot.PendingRefreshOperation";
         [McpPluginTool
         (
             AssetsRefreshToolId,
             Title = "Assets / Refresh",
-            IdempotentHint = true
+            IdempotentHint = true,
+            DurableOperationStart = true
         )]
         [McpPluginSkillDescription("Refresh the Unity AssetDatabase. " +
             "Use after files were added or updated outside of the Unity API, or to force script recompilation " +
@@ -35,9 +38,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "Use it if any file was added or updated in the project outside of Unity API. " +
             "Use it if need to force scripts recompilation when '.cs' file changed.\n\n" +
             "## Inputs\n\n" +
-            "- `options` — `ImportAssetOptions` flag (default `ForceSynchronousImport`).\n" +
-            "- `requestId` — required for processing-mode responses; the tool returns `Processing` immediately and " +
-            "delivers a follow-up completion when compilation finishes.\n\n" +
+            "- `options` — `ImportAssetOptions` flag (default `Default`; synchronous import is opt-in).\n" +
+            "- `requestId` — optional compatibility correlation ID. The durable operation ID is authoritative.\n\n" +
             "## Behavior\n\n" +
             "Runs `AssetDatabase.Refresh(options)`. If `EditorApplication.isCompiling` is true after the refresh, " +
             "schedules a post-compilation notification and returns a `Processing` response. If compilation already " +
@@ -46,35 +48,118 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         [Description("Refreshes the AssetDatabase. " +
             "Use it if any file was added or updated in the project outside of Unity API. " +
             "Use it if need to force scripts recompilation when '.cs' file changed.")]
-        public async Task<ResponseCallTool> Refresh
+        public async Task<EditorOperationInfo> Refresh
         (
             [Description("Asset import options.")]
-            ImportAssetOptions? options = ImportAssetOptions.ForceSynchronousImport,
+            ImportAssetOptions? options = ImportAssetOptions.Default,
             [RequestID]
             string? requestId = null
         )
         {
-            if (requestId == null || string.IsNullOrWhiteSpace(requestId))
-                return ResponseCallTool.Error("Original request with valid RequestID must be provided.");
-
-            return await MainThread.Instance.RunAsync<ResponseCallTool>(() =>
+            return await MainThread.Instance.RunAsync(() =>
             {
-                AssetDatabase.Refresh(options ?? ImportAssetOptions.ForceSynchronousImport);
+                var effectiveOptions = options ?? ImportAssetOptions.Default;
+                var operation = EditorOperationOwnerRegistry.Create(
+                    "assets-refresh", "scheduled",
+                    System.Text.Json.JsonSerializer.Serialize(new { options = effectiveOptions.ToString() }));
+                EditorOperationOwnerRegistry.ScheduleExecution(
+                    operation.OperationId, "asset-database-refresh",
+                    () => RunRefresh(operation.OperationId, effectiveOptions));
+                return operation;
+            });
+        }
+
+        internal static void RunRefresh(string operationId, ImportAssetOptions options)
+        {
+            var operation = EditorOperationRegistry.Get(operationId);
+            if (operation == null || operation.IsTerminal) return;
+            if (operation.CancellationRequested)
+            {
+                EditorOperationRegistry.CancelRunning(operationId, "cancelled-before-refresh");
+                return;
+            }
+
+            SessionState.SetString(PendingRefreshOperationKey, operationId);
+            try
+            {
+                AssetDatabase.Refresh(options);
 
                 if (EditorApplication.isCompiling)
                 {
-                    ScriptUtils.SchedulePostCompilationNotification(requestId, "AssetDatabase", "Assets refresh");
-                    return ResponseCallTool.Processing("AssetDatabase refreshed. Compilation in progress, waiting for completion...").SetRequestID(requestId);
+                    EditorOperationRegistry.Update(operationId, "waiting-for-compilation",
+                        cancellationPending: EditorOperationRegistry.IsCancellationRequested(operationId));
+                    // The exclusive section (the refresh itself) is over. Waiting for a
+                    // possibly deferred compilation is Editor pacing, not execution:
+                    // holding the serialized lane across it wedges every subsequent
+                    // tool call for the lifetime of the deferral (EditMode batch runs
+                    // defer compilation until exit). Recovery re-acquires on resume.
+                    EditorOperationOwnerRegistry.TryReleaseExecution(operationId);
+                    RefreshOperationReconciler.EnsureScheduled();
+                    return;
                 }
 
                 if (EditorUtility.scriptCompilationFailed)
                 {
                     var errorDetails = ScriptUtils.GetCompilationErrorDetails();
-                    return ResponseCallTool.Success($"[Warning] AssetDatabase refreshed, but compilation errors exist:\n\n{errorDetails}").SetRequestID(requestId);
+                    EditorOperationRegistry.Fail(operationId, "asset-refresh-compilation-failed",
+                        errorDetails, "compilation-failed");
+                    SessionState.EraseString(PendingRefreshOperationKey);
+                    return;
                 }
 
-                return ResponseCallTool.Success("AssetDatabase refreshed successfully.").SetRequestID(requestId);
-            });
+                if (EditorOperationRegistry.IsCancellationRequested(operationId))
+                    EditorOperationRegistry.CancelRunning(operationId, "cancelled-after-refresh");
+                else
+                    EditorOperationRegistry.Succeed(operationId,
+                        "{\"message\":\"AssetDatabase refreshed successfully.\"}");
+                SessionState.EraseString(PendingRefreshOperationKey);
+            }
+            catch (Exception ex)
+            {
+                EditorOperationRegistry.Fail(operationId, "asset-refresh-failed", ex.Message, "refresh-failed");
+                SessionState.EraseString(PendingRefreshOperationKey);
+            }
+        }
+    }
+
+    [InitializeOnLoad]
+    internal static class RefreshOperationReconciler
+    {
+        static bool s_scheduled;
+
+        static RefreshOperationReconciler()
+        {
+            // g-006 RefreshOwner validates and claims the persisted operation before
+            // scheduling this poller; InitializeOnLoad must never race owner registration.
+        }
+
+        internal static void EnsureScheduled()
+        {
+            if (s_scheduled) return;
+            s_scheduled = true;
+            EditorApplication.update += Poll;
+        }
+
+        static void Poll()
+        {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+            EditorApplication.update -= Poll;
+            s_scheduled = false;
+
+            var operationId = SessionState.GetString(Tool_Assets.PendingRefreshOperationKey, string.Empty);
+            SessionState.EraseString(Tool_Assets.PendingRefreshOperationKey);
+            if (string.IsNullOrEmpty(operationId)) return;
+            var operation = EditorOperationRegistry.Get(operationId);
+            if (operation == null || operation.IsTerminal) return;
+
+            if (EditorUtility.scriptCompilationFailed)
+                EditorOperationRegistry.Fail(operationId, "asset-refresh-compilation-failed",
+                    ScriptUtils.GetCompilationErrorDetails(), "compilation-failed");
+            else if (operation.CancellationRequested)
+                EditorOperationRegistry.CancelRunning(operationId, "cancelled-after-refresh");
+            else
+                EditorOperationRegistry.Succeed(operationId,
+                    "{\"message\":\"AssetDatabase refresh and compilation completed.\"}");
         }
     }
 }

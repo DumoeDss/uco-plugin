@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +29,44 @@ namespace com.IvanMurzak.McpPlugin
     internal sealed class NotificationEntry
     {
         public Func<JsonElement?, CancellationToken, Task> Invoker { get; set; } = null!;
+    }
+
+    internal sealed class InFlightCall : IDisposable
+    {
+        private readonly CancellationTokenSource _linkedCancellation;
+        private int _disposed;
+
+        public InFlightCall(
+            string identity,
+            string requestId,
+            string cancellationId,
+            int generation,
+            CancellationToken generationToken)
+        {
+            Identity = identity;
+            RequestId = requestId;
+            CancellationId = cancellationId;
+            Generation = generation;
+            _linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(generationToken);
+        }
+
+        public string Identity { get; }
+        public string RequestId { get; }
+        public string CancellationId { get; }
+        public int Generation { get; }
+        public CancellationToken Token => _linkedCancellation.Token;
+
+        public void Cancel()
+        {
+            try { _linkedCancellation.Cancel(throwOnFirstException: false); }
+            catch (ObjectDisposedException) { }
+        }
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+            _linkedCancellation.Dispose();
+        }
     }
 
     internal sealed class Registration : IDisposable
@@ -55,6 +95,12 @@ namespace com.IvanMurzak.McpPlugin
         private readonly ConcurrentDictionary<string, NotificationEntry> _notificationHandlers = new();
         private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _pending = new();
         private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _deferred = new();
+        private readonly object _inFlightGate = new();
+        private readonly Dictionary<string, InFlightCall> _inFlightByIdentity = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, InFlightCall> _inFlightByRequest = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, InFlightCall> _inFlightByCancellation = new(StringComparer.Ordinal);
+        private const int MaxInFlightCalls = 1024;
+        private const int MaxInFlightCallsPerGeneration = 256;
         private int _nextId;
         private int _disposed;
 
@@ -357,7 +403,6 @@ namespace com.IvanMurzak.McpPlugin
 
             if (!_handlers.TryGetValue(method, out var entry))
             {
-                // Method not found — send error response
                 await SendResponseAsync(message.Id,
                     result: null,
                     error: new WsError
@@ -368,12 +413,45 @@ namespace com.IvanMurzak.McpPlugin
                 return;
             }
 
+            InFlightCall? inFlight = null;
             try
             {
+                inFlight = TryRegisterInFlightToolCall(
+                    method,
+                    message.Params,
+                    requestCancellationToken);
+                var effectiveToken = inFlight?.Token ?? requestCancellationToken;
                 var (result, error) = await entry.Invoker(
                     message.Params,
-                    requestCancellationToken).ConfigureAwait(false);
+                    effectiveToken).ConfigureAwait(false);
                 await SendResponseAsync(message.Id, result, error).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                var identity = ExtractToolCallIdentity(message.Params);
+                await SendResponseAsync(message.Id,
+                    result: null,
+                    error: CreateStructuredError(
+                        WsErrorCodes.CallCancelled,
+                        new ToolCallError(
+                            ToolCallErrorCodes.Cancelled,
+                            "Tool call was cancelled.",
+                            callId: identity.CallId ?? identity.RequestId,
+                            correlationId: identity.CorrelationId
+                                ?? identity.CallId ?? identity.RequestId)))
+                    .ConfigureAwait(false);
+            }
+            catch (ToolCallControlException ex)
+            {
+                var error = ex.ToError();
+                AttachToolCallIdentity(error, message.Params);
+                await SendResponseAsync(message.Id,
+                    result: null,
+                    error: CreateStructuredError(
+                        ex.Code == ToolCallErrorCodes.OperationCapacityExceeded
+                            ? WsErrorCodes.PendingCapacityExceeded
+                            : WsErrorCodes.InvalidParams,
+                        error)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -385,7 +463,156 @@ namespace com.IvanMurzak.McpPlugin
                         Message = ex.Message
                     }).ConfigureAwait(false);
             }
+            finally
+            {
+                if (inFlight != null) RemoveInFlight(inFlight);
+            }
         }
+
+        private InFlightCall? TryRegisterInFlightToolCall(
+            string method,
+            JsonElement? paramsElement,
+            CancellationToken generationToken)
+        {
+            if (method != "RunCallTool" && method != "RunSystemTool") return null;
+            var identity = ExtractToolCallIdentity(paramsElement);
+            var requestId = BoundIdentity(identity.RequestId);
+            var callId = BoundIdentity(identity.CallId);
+            var cancellationId = BoundIdentity(ExtractCancellationId(paramsElement));
+            if (string.IsNullOrEmpty(requestId) && string.IsNullOrEmpty(callId)
+                && string.IsNullOrEmpty(cancellationId))
+                return null;
+
+            var primary = !string.IsNullOrEmpty(callId) ? callId
+                : !string.IsNullOrEmpty(requestId) ? requestId
+                : cancellationId;
+            lock (_inFlightGate)
+            {
+                if (_inFlightByIdentity.Count >= MaxInFlightCalls
+                    || _inFlightByIdentity.Values.Count(call => call.Generation == CurrentGeneration)
+                        >= MaxInFlightCallsPerGeneration)
+                {
+                    throw new ToolCallControlException(
+                        ToolCallErrorCodes.OperationCapacityExceeded,
+                        "In-flight tool call capacity is full.",
+                        retryable: true);
+                }
+                if (_inFlightByIdentity.ContainsKey(primary!)
+                    || (!string.IsNullOrEmpty(requestId) && _inFlightByRequest.ContainsKey(requestId))
+                    || (!string.IsNullOrEmpty(cancellationId)
+                        && _inFlightByCancellation.ContainsKey(cancellationId)))
+                {
+                    throw new ToolCallControlException(
+                        ToolCallErrorCodes.InvalidControl,
+                        "A tool call with this identity is already in flight.");
+                }
+                var call = new InFlightCall(
+                    primary!, requestId ?? string.Empty, cancellationId ?? string.Empty,
+                    CurrentGeneration, generationToken);
+                _inFlightByIdentity.Add(primary!, call);
+                if (!string.IsNullOrEmpty(requestId) && !_inFlightByRequest.ContainsKey(requestId))
+                    _inFlightByRequest.Add(requestId, call);
+                if (!string.IsNullOrEmpty(cancellationId)
+                    && !_inFlightByCancellation.ContainsKey(cancellationId))
+                    _inFlightByCancellation.Add(cancellationId, call);
+                return call;
+            }
+        }
+
+        public int CurrentGeneration { get; set; }
+
+        public ResponseCancelToolCall CancelToolCall(RequestCancelToolCall? request)
+        {
+            if (request == null)
+                return CancelResponse(false, "cancellation_unavailable", "Cancellation request is missing.");
+            if (request.Generation != CurrentGeneration)
+                return CancelResponse(false, "stale_generation", "Cancellation generation is stale.");
+
+            InFlightCall? call;
+            var callId = BoundIdentity(request.CallId);
+            var requestId = BoundIdentity(request.RequestID);
+            var cancellationId = BoundIdentity(request.CancellationId);
+            lock (_inFlightGate)
+            {
+                call = !string.IsNullOrEmpty(callId)
+                    && _inFlightByIdentity.TryGetValue(callId, out var byCall) ? byCall
+                    : !string.IsNullOrEmpty(requestId)
+                        && _inFlightByRequest.TryGetValue(requestId, out var byRequest) ? byRequest
+                        : !string.IsNullOrEmpty(cancellationId)
+                            && _inFlightByCancellation.TryGetValue(cancellationId, out var byCancellation)
+                                ? byCancellation
+                                : null;
+            }
+            if (call == null || call.Generation != request.Generation)
+                return CancelResponse(false, "operation_not_found", "No matching in-flight tool call exists.");
+
+            call.Cancel();
+            return CancelResponse(true, "cancelled", "Cancellation was delivered to the in-flight call.");
+        }
+
+        public void CancelAllInFlight()
+        {
+            InFlightCall[] calls;
+            lock (_inFlightGate)
+            {
+                calls = _inFlightByIdentity.Values.Distinct().ToArray();
+                _inFlightByIdentity.Clear();
+                _inFlightByRequest.Clear();
+                _inFlightByCancellation.Clear();
+            }
+            foreach (var call in calls)
+            {
+                call.Cancel();
+                call.Dispose();
+            }
+        }
+
+        private void RemoveInFlight(InFlightCall call)
+        {
+            lock (_inFlightGate)
+            {
+                if (_inFlightByIdentity.TryGetValue(call.Identity, out var current)
+                    && ReferenceEquals(current, call))
+                    _inFlightByIdentity.Remove(call.Identity);
+                if (!string.IsNullOrEmpty(call.RequestId)
+                    && _inFlightByRequest.TryGetValue(call.RequestId, out current)
+                    && ReferenceEquals(current, call))
+                    _inFlightByRequest.Remove(call.RequestId);
+                if (!string.IsNullOrEmpty(call.CancellationId)
+                    && _inFlightByCancellation.TryGetValue(call.CancellationId, out current)
+                    && ReferenceEquals(current, call))
+                    _inFlightByCancellation.Remove(call.CancellationId);
+            }
+            call.Dispose();
+        }
+
+        private static string? ExtractCancellationId(JsonElement? paramsElement)
+        {
+            if (!paramsElement.HasValue || paramsElement.Value.ValueKind != JsonValueKind.Object)
+                return null;
+            var control = TryGetProperty(paramsElement.Value, "control");
+            return control.HasValue && control.Value.ValueKind == JsonValueKind.Object
+                ? TryGetStringProperty(control.Value, "cancellationId")
+                : null;
+        }
+
+        private static string? BoundIdentity(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            var trimmed = value.Trim();
+            return trimmed.Length <= 160 ? trimmed : trimmed.Substring(0, 160);
+        }
+
+        private static ResponseCancelToolCall CancelResponse(
+            bool accepted,
+            string code,
+            string message)
+            => new ResponseCancelToolCall
+            {
+                Accepted = accepted,
+                Code = code,
+                Message = message
+            };
 
         private async Task HandleNotificationAsync(
             WsParsedMessage message,
@@ -647,6 +874,7 @@ namespace com.IvanMurzak.McpPlugin
             ClearAll();
             RejectAllPending(new ObjectDisposedException(nameof(WsRpcDispatcher)));
             ClearDeferred();
+            CancelAllInFlight();
             SendFunc = null;
         }
     }

@@ -10,9 +10,26 @@
 
 #nullable enable
 using AIGD;
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Utils;
+using UnityEditor;
+
+namespace AIGD
+{
+    [Description("Result of a safe, preflighted request to close the Unity Editor normally.")]
+    public sealed class EditorCloseRequestResult
+    {
+        public bool Ok { get; set; }
+        public bool Accepted { get; set; }
+        public int EditorPid { get; set; }
+        public string[] Blockers { get; set; } = Array.Empty<string>();
+        public EditorStatsData? State { get; set; }
+        public string? Error { get; set; }
+    }
+}
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -42,6 +59,43 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             return MainThread.Instance.Run(() =>
             {
                 return EditorStatsData.FromEditor();
+            });
+        }
+
+        [McpPluginTool(
+            "editor-application-request-close",
+            Title = "Editor / Application / Request Close",
+            DestructiveHint = true,
+            IdempotentHint = true)]
+        [Description("Preflight unsaved/busy Editor state and schedule a normal close only when the Editor is saved and idle.")]
+        public EditorCloseRequestResult RequestApplicationClose(string? nothing = null)
+        {
+            return MainThread.Instance.Run(() =>
+            {
+                var state = EditorStatsData.FromEditor();
+                var blockers = state.Blockers ?? Array.Empty<string>();
+                if (blockers.Length > 0)
+                {
+                    return new EditorCloseRequestResult
+                    {
+                        Ok = false,
+                        Accepted = false,
+                        EditorPid = Process.GetCurrentProcess().Id,
+                        Blockers = blockers,
+                        State = state,
+                        Error = "Editor close refused because the Editor is not saved and idle."
+                    };
+                }
+
+                var pid = Process.GetCurrentProcess().Id;
+                EditorApplication.Exit(0);
+                return new EditorCloseRequestResult
+                {
+                    Ok = true,
+                    Accepted = true,
+                    EditorPid = pid,
+                    State = state
+                };
             });
         }
     }

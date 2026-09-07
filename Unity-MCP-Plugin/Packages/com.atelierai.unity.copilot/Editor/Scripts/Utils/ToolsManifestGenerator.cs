@@ -48,6 +48,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     public static class ToolsManifestGenerator
     {
         public const string ManifestFileName = "tools-manifest.json";
+        static readonly HashSet<string> ExcludedSiblingReleaseTools = new(StringComparer.Ordinal)
+        {
+            "editor-application-request-close",
+            "type-list-members"
+        };
 
         [MenuItem(ProductInfo.ToolsMenuRoot + "/Generate Tools Manifest", priority = 2100)]
         public static void GenerateManifest()
@@ -98,10 +103,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             return UnityCopilotPluginEditor.HasInstance;
         }
 
-        internal static JsonArray BuildToolsArray(IEnumerable<IRunTool> tools)
+        internal static JsonArray BuildToolsArray(
+            IEnumerable<IRunTool> tools,
+            bool controlledRelease = false)
         {
             var toolsArray = new JsonArray();
-            foreach (var tool in tools.OrderBy(t => t.Name, StringComparer.Ordinal))
+            foreach (var tool in tools
+                         .Where(tool => !controlledRelease
+                             || !ExcludedSiblingReleaseTools.Contains(tool.Name))
+                         .OrderBy(t => t.Name, StringComparer.Ordinal))
             {
                 var entry = new JsonObject
                 {
@@ -111,6 +121,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     ["destructiveHint"] = JsonValue.Create(tool.DestructiveHint),
                     ["idempotentHint"] = JsonValue.Create(tool.IdempotentHint),
                     ["openWorldHint"] = JsonValue.Create(tool.OpenWorldHint),
+                    ["executionAffinity"] = (tool.ExecutionScheduling?.ExecutionAffinity
+                        ?? ToolExecutionAffinity.MainThread).ToWireValue(),
+                    ["threadSafeRead"] = tool.ExecutionScheduling?.ThreadSafeRead == true,
                 };
                 if (tool.Title != null)
                     entry["title"] = tool.Title;
@@ -128,7 +141,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         internal static int GenerateManifest(IEnumerable<IRunTool> tools, string manifestPath)
         {
-            var toolsArray = BuildToolsArray(tools);
+            var toolsArray = BuildToolsArray(tools, controlledRelease: true);
             var jsonOptions = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
             File.WriteAllText(
                 manifestPath,

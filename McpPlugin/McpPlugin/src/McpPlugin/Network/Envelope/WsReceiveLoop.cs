@@ -132,7 +132,16 @@ namespace com.IvanMurzak.McpPlugin
                     {
                         try
                         {
-                            await _dispatcher.HandleIncomingAsync(parsed, cancellationToken).ConfigureAwait(false);
+                            var dispatch = _dispatcher.HandleIncomingAsync(parsed, cancellationToken);
+                            if (parsed?.Type == WsMessageType.Request
+                                && (parsed.Method == "RunCallTool" || parsed.Method == "RunSystemTool"))
+                            {
+                                ObserveConcurrentToolDispatch(dispatch);
+                            }
+                            else
+                            {
+                                await dispatch.ConfigureAwait(false);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -164,6 +173,16 @@ namespace com.IvanMurzak.McpPlugin
             {
                 _isAlive = false;
             }
+        }
+
+        private void ObserveConcurrentToolDispatch(Task dispatch)
+        {
+            _ = dispatch.ContinueWith(
+                task => _logger.LogError(task.Exception,
+                    "WsReceiveLoop: concurrent tool dispatch failed."),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
         }
 
         public void Dispose()

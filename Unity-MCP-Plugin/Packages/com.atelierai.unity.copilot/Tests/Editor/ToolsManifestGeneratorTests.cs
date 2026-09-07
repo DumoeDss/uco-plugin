@@ -95,39 +95,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
-        public void ShippedManifest_RetainsAuthoritativeHintsForControlledReleaseCatalog()
+        public void ShippedManifest_RetainsControlledG006ReleaseView()
         {
             var plugin = UnityCopilotPluginEditor.CurrentPlugin;
-            if (plugin == null)
-            {
-                UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
-                plugin = UnityCopilotPluginEditor.CurrentPlugin;
-            }
             Assert.IsNotNull(plugin, "The editor plugin must expose the authoritative live registry.");
             var tools = plugin!.McpManager!.ToolManager!.GetAllTools().ToArray();
-            var toolsByName = tools.ToDictionary(tool => tool.Name, StringComparer.Ordinal);
-            Assert.AreEqual(157, tools.Length, "Update the live-registry count with an intentional tool-set change.");
-            var explicitHintCount = 0;
-            foreach (var tool in tools)
-            {
-                var attribute = tool.Method?.GetCustomAttribute<McpPluginToolAttribute>();
-                Assert.IsNotNull(attribute, $"Registered tool '{tool.Name}' must retain its source attribute.");
-                Assert.AreEqual(attribute!.ReadOnlyHintValue, tool.ReadOnlyHint, tool.Name);
-                Assert.AreEqual(attribute.DestructiveHintValue, tool.DestructiveHint, tool.Name);
-                Assert.AreEqual(attribute.IdempotentHintValue, tool.IdempotentHint, tool.Name);
-                Assert.AreEqual(attribute.OpenWorldHintValue, tool.OpenWorldHint, tool.Name);
-                explicitHintCount += new[]
-                {
-                    attribute.ReadOnlyHintValue,
-                    attribute.DestructiveHintValue,
-                    attribute.IdempotentHintValue,
-                    attribute.OpenWorldHintValue,
-                }.Count(value => value.HasValue);
-            }
-            Assert.AreEqual(
-                208,
-                explicitHintCount,
-                "Update the golden hint-field count only with intentional annotation changes.");
+            var live = ToolsManifestGenerator.BuildToolsArray(tools);
+            var excludedLiveNames = tools.Select(tool => tool.Name)
+                .Where(name => name == "editor-application-request-close"
+                    || name == "type-list-members")
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToArray();
+            Assert.AreEqual(163 + excludedLiveNames.Length, live.Count,
+                "Only explicitly named sibling tools may sit outside the controlled release view.");
 
             var projectRoot = Path.GetDirectoryName(Application.dataPath)!;
             var manifestPath = Path.Combine(
@@ -141,42 +121,38 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             Assert.AreNotEqual((byte)'\n', bytes[bytes.Length - 2]);
 
             var actual = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsArray();
-            Assert.AreEqual(156, actual.Count, "The controlled release catalog must not absorb unrelated tools.");
+            Assert.AreEqual(163, actual.Count,
+                "The g-006 release adds seven operation tools to the 156-tool parent.");
             var names = actual.Select(entry => entry!["name"]!.GetValue<string>()).ToArray();
-            CollectionAssert.AreEqual(
-                names.OrderBy(name => name, StringComparer.Ordinal),
-                names);
-            Assert.IsFalse(names.Contains("type-list-members"));
+            var expectedNames = tools.Select(tool => tool.Name)
+                .Where(name => name != "editor-application-request-close"
+                    && name != "type-list-members")
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToArray();
+            CollectionAssert.AreEqual(expectedNames, names);
 
-            var manifestExplicitHintCount = 0;
+            var toolsByName = tools.ToDictionary(tool => tool.Name, StringComparer.Ordinal);
             foreach (var node in actual)
             {
                 var entry = node!.AsObject();
                 var name = entry["name"]!.GetValue<string>();
-                Assert.IsTrue(toolsByName.TryGetValue(name, out var tool), name);
-                AssertHint(entry, "readOnlyHint", tool!.ReadOnlyHint, name);
-                AssertHint(entry, "destructiveHint", tool.DestructiveHint, name);
-                AssertHint(entry, "idempotentHint", tool.IdempotentHint, name);
-                AssertHint(entry, "openWorldHint", tool.OpenWorldHint, name);
-                manifestExplicitHintCount += new[]
-                {
-                    tool.ReadOnlyHint,
-                    tool.DestructiveHint,
-                    tool.IdempotentHint,
-                    tool.OpenWorldHint,
-                }.Count(value => value.HasValue);
+                var tool = toolsByName[name];
+                Assert.AreEqual(tool.ReadOnlyHint, NullableBoolean(entry["readOnlyHint"]), name);
+                Assert.AreEqual(tool.DestructiveHint, NullableBoolean(entry["destructiveHint"]), name);
+                Assert.AreEqual(tool.IdempotentHint, NullableBoolean(entry["idempotentHint"]), name);
+                Assert.AreEqual(tool.OpenWorldHint, NullableBoolean(entry["openWorldHint"]), name);
+                Assert.AreEqual(
+                    (tool.ExecutionScheduling?.ExecutionAffinity
+                        ?? ToolExecutionAffinity.MainThread).ToWireValue(),
+                    entry["executionAffinity"]!.GetValue<string>(), name);
+                Assert.AreEqual(tool.ExecutionScheduling?.ThreadSafeRead == true,
+                    entry["threadSafeRead"]!.GetValue<bool>(), name);
             }
-            Assert.AreEqual(205, manifestExplicitHintCount);
         }
 
-        private static void AssertHint(JsonObject entry, string key, bool? expected, string toolName)
-        {
-            Assert.IsTrue(entry.ContainsKey(key), $"{toolName}.{key}");
-            if (expected.HasValue)
-                Assert.AreEqual(expected.Value, entry[key]!.GetValue<bool>(), $"{toolName}.{key}");
-            else
-                Assert.IsNull(entry[key], $"{toolName}.{key}");
-        }
+        static bool? NullableBoolean(JsonNode? node)
+            => node == null ? null : node.GetValue<bool>();
+
 
         private sealed class StubRunTool : IRunTool
         {

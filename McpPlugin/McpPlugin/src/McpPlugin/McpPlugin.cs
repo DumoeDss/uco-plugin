@@ -68,22 +68,7 @@ namespace com.IvanMurzak.McpPlugin
             _connectionConfig = connectionConfig?.Value ?? new ConnectionConfig();
             _skillFileGenerator = skillFileGenerator ?? throw new ArgumentNullException(nameof(skillFileGenerator));
             _skillContentCollection = skillContentCollection ?? throw new ArgumentNullException(nameof(skillContentCollection));
-            _mcpManagerHub.ConnectionState
-                .Where(state => state == WsState.Connected)
-                .Where(state => !_cancellationTokenSource.Token.IsCancellationRequested)
-                .Subscribe(async state =>
-                {
-                    _logger.LogDebug("{method}, connection state: {state}",
-                        nameof(ConnectionState), state);
-
-                    var tasks = Enumerable.Empty<Task>();
-
-                    await _mcpManagerHub.NotifyAboutUpdatedTools(new Common.Model.RequestToolsUpdated());
-
-                    _logger.LogDebug("{method}, initial notifications sent.",
-                        nameof(ConnectionState));
-                })
-                .AddTo(_disposables);
+            _mcpManagerHub.SetCapabilityRegistrationHandler(RegisterCapabilitiesAsync);
 
             McpManager.OnForceDisconnect
                 .Subscribe(_ =>
@@ -182,6 +167,52 @@ namespace com.IvanMurzak.McpPlugin
                     await _mcpManagerHub.NotifyAboutUpdatedResources(new Common.Model.RequestResourcesUpdated());
                 })
                 .AddTo(_disposables);
+        }
+
+        private async Task RegisterCapabilitiesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // The Node bridge currently uses the tools update as the runner-eligibility
+            // signal. Advertise prompts and resources first, then tools last, so that signal
+            // cannot make the generation ready while another capability is still pending.
+            if (McpManager.PromptManager != null)
+            {
+                var prompts = await _mcpManagerHub.NotifyAboutUpdatedPrompts(
+                    new Common.Model.RequestPromptsUpdated(),
+                    cancellationToken);
+                EnsureCapabilityRegistrationSucceeded("prompts", prompts);
+            }
+
+            if (McpManager.ResourceManager != null)
+            {
+                var resources = await _mcpManagerHub.NotifyAboutUpdatedResources(
+                    new Common.Model.RequestResourcesUpdated(),
+                    cancellationToken);
+                EnsureCapabilityRegistrationSucceeded("resources", resources);
+            }
+
+            var tools = await _mcpManagerHub.NotifyAboutUpdatedTools(
+                new Common.Model.RequestToolsUpdated(),
+                cancellationToken);
+            EnsureCapabilityRegistrationSucceeded("tools", tools);
+
+            _logger.LogDebug(
+                "{method}, initial prompts/resources/tools registration completed.",
+                nameof(RegisterCapabilitiesAsync));
+        }
+
+        private static void EnsureCapabilityRegistrationSucceeded(
+            string capability,
+            ResponseData response)
+        {
+            if (response != null && response.Status == ResponseStatus.Success)
+                return;
+
+            var detail = response?.Message;
+            throw new InvalidOperationException(string.IsNullOrWhiteSpace(detail)
+                ? $"The server rejected {capability} capability registration."
+                : $"The server rejected {capability} capability registration: {detail}");
         }
 
         public bool GenerateSkillFilesIfNeeded(string? path = null)

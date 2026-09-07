@@ -105,6 +105,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             control.DryRun = null;
             control.Confirm = null;
             control.Confirmation = null;
+            // Bound every test-driven call so a WaitForTask abandonment (30 s) also
+            // un-queues its lane waiter via the g-004 deadline path instead of
+            // leaving it queued forever after the test fails.
+            control.DeadlineUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + 25_000;
 
             var controlled = new RequestCallTool(
                 request.RequestID,

@@ -28,11 +28,10 @@ namespace com.IvanMurzak.McpPlugin
         protected readonly IConnectionManager _connectionManager;
         protected readonly CancellationTokenSource _cancellationTokenSource = new();
 
-        private const int MaxHandshakeFailures = 3;
         private readonly ThreadSafeBool _isDisposed = new(false);
-        private readonly ThreadSafeBool _handshakeInFlight = new(false);
         private volatile VersionHandshakeResponse? lastHandshakeResponse = null;
-        private int _consecutiveHandshakeFailures;
+        private Func<CancellationToken, Task>? _capabilityRegistrationHandler;
+        private int _initializationStartedForGeneration = -1;
 
         /// <summary>
         /// Tracks which connection generation handlers were last registered for.
@@ -69,16 +68,9 @@ namespace com.IvanMurzak.McpPlugin
 
             var subscriptions = new CompositeDisposable();
 
-            // Register/clear server event handlers when the connection cycle starts.
-            // The "Connecting" state fires from AttemptConnection before ConnectAsync succeeds,
-            // so handlers are registered BEFORE the receive loop starts — the server's
-            // immediate post-connect messages have registered targets.
-            _connectionManager.ConnectionState
-                .Where(state => state == WsState.Connecting)
-                .Subscribe(_ => OnConnectionCycleStarted())
-                .AddTo(subscriptions);
-
-            // Perform version handshake when the WebSocket transport connects.
+            // The transport event starts the generation-owned initialization sequence.
+            // ConnectionManager does not complete its attempt until this sequence reports
+            // success or failure.
             _connectionManager.OnTransportConnected
                 .Subscribe(_ => OnConnectionEstablished())
                 .AddTo(subscriptions);
@@ -196,11 +188,21 @@ namespace com.IvanMurzak.McpPlugin
             }
         }
 
+        public void SetCapabilityRegistrationHandler(Func<CancellationToken, Task> handler)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+            if (_isDisposed.Value)
+                throw new ObjectDisposedException(GetType().Name);
+
+            _capabilityRegistrationHandler = handler;
+        }
+
         /// <summary>
-        /// Called when a new connection cycle starts (state → Connecting for a new generation).
-        /// Clears old handlers and registers new ones BEFORE the WebSocket finishes connecting.
+        /// Called when a transport generation starts its owned initialization.
+        /// Clears old handlers and registers the new generation before the version handshake.
         /// </summary>
-        private void OnConnectionCycleStarted()
+        private void OnConnectionCycleStarted(int generation)
         {
             if (_isDisposed.Value)
             {
@@ -208,17 +210,15 @@ namespace com.IvanMurzak.McpPlugin
                 return;
             }
 
-            var gen = _connectionManager.ConnectionGeneration;
-            if (gen == _handlersRegisteredForGeneration)
+            if (generation == _handlersRegisteredForGeneration)
                 return; // Already registered for this connection cycle
 
-            _handlersRegisteredForGeneration = gen;
+            _handlersRegisteredForGeneration = generation;
 
             _logger.LogTrace("{method} Clearing server events disposables and registering handlers for generation {gen}.",
-                nameof(OnConnectionCycleStarted), gen);
+                nameof(OnConnectionCycleStarted), generation);
 
             _serverEventsDisposables.Clear();
-            _consecutiveHandshakeFailures = 0;
 
             OnBeforeSubscribeToServerEvents();
             RegisterServerHandlers(_connectionManager, _serverEventsDisposables);
@@ -232,30 +232,50 @@ namespace com.IvanMurzak.McpPlugin
                 return;
             }
 
-            if (!_handshakeInFlight.TrySetTrue())
-            {
-                _logger.LogDebug("{method} Handshake already in flight. Skipping.", nameof(OnConnectionEstablished));
+            var generation = _connectionManager.ConnectionGeneration;
+            var previousGeneration = Interlocked.Exchange(
+                ref _initializationStartedForGeneration,
+                generation);
+            if (previousGeneration == generation)
                 return;
-            }
 
             try
             {
-                await OnConnectionEstablishedCore();
+                await OnConnectionEstablishedCore(generation);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{method} Unhandled exception during connection establishment.", nameof(OnConnectionEstablished));
-            }
-            finally
-            {
-                _handshakeInFlight.TrySetFalse();
+                _connectionManager.ReportConnectionInitializationFailure(
+                    generation,
+                    "registration-failed",
+                    ex.GetBaseException().Message);
             }
         }
 
-        private async Task OnConnectionEstablishedCore()
+        private async Task OnConnectionEstablishedCore(int generation)
         {
+            if (generation != _connectionManager.ConnectionGeneration) return;
+            try
+            {
+                OnConnectionCycleStarted(generation);
+            }
+            catch (Exception ex)
+            {
+                _connectionManager.ReportConnectionInitializationFailure(
+                    generation,
+                    "handler-registration-failed",
+                    ex.GetBaseException().Message);
+                return;
+            }
+
             var serverEventsCts = _serverEventsDisposables.ToCancellationTokenSource();
-            var cancellationToken = serverEventsCts.Token;
+            using var lifecycleCts = CancellationTokenSource.CreateLinkedTokenSource(
+                serverEventsCts.Token,
+                _connectionManager.ConnectionCancellationToken,
+                _cancellationTokenSource.Token);
+            var cancellationToken = lifecycleCts.Token;
+            _connectionManager.ReportAttemptStage("handshake");
 
             // Perform version handshake after handlers are registered
             var handshakeResponse = await PerformVersionHandshake(
@@ -264,28 +284,27 @@ namespace com.IvanMurzak.McpPlugin
                     RequestID = Guid.NewGuid().ToString(),
                     ApiVersion = _apiVersion.Api,
                     PluginVersion = _apiVersion.Plugin,
-                    Environment = _apiVersion.Environment
+                    Environment = _apiVersion.Environment,
+                    Capabilities = new[] { "cancel-tool-call-v1", "operation-identity-v1" },
+                    Generation = generation
                 },
                 cancellationToken: cancellationToken);
 
-            if (cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested ||
+                generation != _connectionManager.ConnectionGeneration)
                 return;
 
             lastHandshakeResponse = handshakeResponse;
 
             if (handshakeResponse == null || handshakeResponse.IsConnectionError)
             {
-                _consecutiveHandshakeFailures++;
                 var reason = handshakeResponse?.Message ?? "No response from server";
-                _logger.LogWarning("{class} Version handshake failed ({count}/{max}). Reason: {reason}",
-                    GetType().Name, _consecutiveHandshakeFailures, MaxHandshakeFailures, reason);
-
-                if (_consecutiveHandshakeFailures >= MaxHandshakeFailures)
-                {
-                    _logger.LogError("{class} Version handshake failed {count} times consecutively — disconnecting. Reason: {reason}",
-                        GetType().Name, _consecutiveHandshakeFailures, reason);
-                    _connectionManager.DisconnectImmediate();
-                }
+                _logger.LogWarning("{class} Version handshake failed. Reason: {reason}",
+                    GetType().Name, reason);
+                _connectionManager.ReportConnectionInitializationFailure(
+                    generation,
+                    "handshake-failed",
+                    reason);
                 return;
             }
 
@@ -294,13 +313,34 @@ namespace com.IvanMurzak.McpPlugin
                 LogVersionMismatchError(handshakeResponse);
                 _logger.LogError("{class} Version mismatch — disconnecting. Server: {serverVersion}, API: {apiVersion}, Message: {message}",
                     GetType().Name, handshakeResponse.ServerVersion, handshakeResponse.ApiVersion, handshakeResponse.Message);
-                _connectionManager.DisconnectImmediate();
+                _connectionManager.ReportConnectionInitializationFailure(
+                    generation,
+                    "rejected",
+                    handshakeResponse.Message);
                 return;
             }
 
-            _consecutiveHandshakeFailures = 0;
-            _connectionManager.SetConnected();
-            await OnConnectedAsync(cancellationToken);
+            try
+            {
+                _connectionManager.ReportAttemptStage("registering-capabilities");
+                await OnConnectedAsync(cancellationToken);
+                if (_capabilityRegistrationHandler != null)
+                    await _capabilityRegistrationHandler(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _connectionManager.ReportConnectionInitializationFailure(
+                    generation,
+                    "registration-failed",
+                    ex.GetBaseException().Message);
+                return;
+            }
+
+            if (cancellationToken.IsCancellationRequested ||
+                generation != _connectionManager.ConnectionGeneration)
+                return;
+
+            _connectionManager.TrySetConnected(generation);
         }
 
         private void LogVersionMismatchError(VersionHandshakeResponse handshakeResponse)

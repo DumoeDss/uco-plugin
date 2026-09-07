@@ -10,6 +10,7 @@
 
 #nullable enable
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.McpPlugin;
 using Microsoft.Extensions.Logging;
 using UnityEditor;
@@ -32,7 +33,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
         static void OnApplicationUnloading() => TryDisconnectAndCleanup(nameof(OnApplicationUnloading));
         static void OnApplicationQuitting() => TryDisconnectAndCleanup(nameof(OnApplicationQuitting));
-        static void OnBeforeAssemblyReload() => TryDisconnectAndCleanup(nameof(OnBeforeAssemblyReload), onlyIfConnected: true);
+        static void OnBeforeAssemblyReload()
+        {
+            EditorToolExecutionScheduler.Shared.InvalidateInstance();
+            EditorOperationOwnerRegistry.InvalidateGeneration();
+            UnityAuthoringSafetyReloadGuard.InvalidateConfirmationPlans();
+            TryDisconnectAndCleanup(nameof(OnBeforeAssemblyReload));
+        }
 
         /// <summary>
         /// Safely disconnects and cleans up the MCP plugin instance.

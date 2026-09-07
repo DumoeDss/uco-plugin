@@ -69,6 +69,27 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
         }
 
         [Fact]
+        public async Task ImmediateClose_TwentyCycles_TerminatesWithoutLeakingReconnectWork()
+        {
+            for (var cycle = 0; cycle < 20; cycle++)
+            {
+                await using var cm = new RejectingConnectionManager(
+                    _logger, _testVersion, _testEndpoint, _mockProvider.Object);
+                var rejected = false;
+                cm.OnAuthorizationRejected.Subscribe(_ => rejected = true);
+
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                var result = await cm.Connect(cts.Token);
+
+                result.ShouldBeFalse();
+                rejected.ShouldBeTrue();
+                cm.KeepConnected.CurrentValue.ShouldBeFalse();
+                cm.AttemptCount.ShouldBe(3);
+                cm.ActiveAttemptId.ShouldBe(0);
+            }
+        }
+
+        [Fact]
         public async Task Connect_FailedAttemptsResetRejectionCounter()
         {
             // Arrange: alternate between "rejected" (attempt succeeds, state stays Disconnected)

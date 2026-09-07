@@ -130,7 +130,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
         #region Multithreading & Concurrency Tests
 
         [Fact]
-        public async Task Connect_WhenMultipleThreadsCallSimultaneously_ProviderCalledOnlyOnce()
+        public async Task Connect_WhenMultipleThreadsCallSimultaneously_ElectsOneReplacement()
         {
             // Arrange
             var connectionCreationCount = 0;
@@ -146,8 +146,12 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
                     connectionCreated.TrySetResult(true);
                     // Block until test releases — ensures all concurrent callers see
                     // _ongoingConnectionTask before this attempt completes and clears it.
-                    await allowConnectionToComplete.Task;
-                    return CreateMockConnection();
+                    if (count == 1)
+                    {
+                        await allowConnectionToComplete.Task;
+                        return CreateMockConnection();
+                    }
+                    return (null!, new Uri("ws://localhost:9999/test"));
                 });
 
             await using var connectionManager = new ConnectionManager(
@@ -180,20 +184,24 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
 
             System.Diagnostics.Debug.WriteLine($"Before release. Creation count: {connectionCreationCount}");
 
-            // Assert before releasing — only ONE CreateConnectionAsync call should have been made
-            connectionCreationCount.ShouldBe(1, "only one connection should be created despite multiple concurrent calls");
+            // The stale provider does not observe cancellation. The elected replacement must
+            // nevertheless progress without waiting for that provider to return.
+            connectionCreationCount.ShouldBe(2,
+                "one stale creation and one elected replacement should be active");
 
-            // Release the connection so tasks can complete
+            // Release the abandoned provider result so its late socket can be disposed.
             allowConnectionToComplete.TrySetResult(true);
 
-            // Wait for all tasks to complete (they will fail due to invalid endpoint, but that's expected)
+            // Wait for the stale owner and its single elected replacement to complete.
             await EnsureTasksCompleteAsync(8000, tasks);
 
             System.Diagnostics.Debug.WriteLine($"Final connection creation count: {connectionCreationCount}");
+            connectionCreationCount.ShouldBe(2,
+                "concurrent followers must join the one elected replacement");
         }
 
         [Fact]
-        public async Task Connect_WhenCalledConcurrently_ReusesFirstConnectionAttempt()
+        public async Task Connect_WhenCalledConcurrently_ReplacesFirstConnectionAttempt()
         {
             // Arrange
             var connectionStarted = new TaskCompletionSource<bool>();
@@ -204,10 +212,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
                 .Setup(x => x.CreateConnectionAsync(_testEndpoint))
                 .Returns(async () =>
                 {
-                    Interlocked.Increment(ref providerCallCount);
+                    var count = Interlocked.Increment(ref providerCallCount);
                     connectionStarted.TrySetResult(true);
-                    await allowConnectionToComplete.Task;
-                    return CreateMockConnection();
+                    if (count == 1)
+                    {
+                        await allowConnectionToComplete.Task;
+                        return CreateMockConnection();
+                    }
+                    return (null!, new Uri("ws://localhost:9999/test"));
                 });
 
             await using var connectionManager = new ConnectionManager(
@@ -234,14 +246,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
 
             await Task.Delay(50);
 
-            // Assert - verify only one connection attempt while both tasks are running
-            providerCallCount.ShouldBe(1, "second call should reuse first connection attempt");
+            // The explicit second call replaces the stale provider wait immediately.
+            providerCallCount.ShouldBe(2,
+                "second call should start its replacement without waiting for stale provider return");
 
-            // Complete connection and wait for both tasks
+            // Complete the abandoned provider and wait for both callers.
             allowConnectionToComplete.SetResult(true);
             await EnsureTasksCompleteAsync(5000, firstTask, secondTask);
 
-            providerCallCount.ShouldBe(1, "provider should only be called once");
+            providerCallCount.ShouldBe(2, "the second call should own one replacement attempt");
         }
 
         [Fact]
@@ -286,17 +299,33 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
         {
             // Arrange
             var callCount = 0;
-            var connectionStarted = new TaskCompletionSource<bool>();
-            var allowConnectionToComplete = new TaskCompletionSource<bool>();
+            var connectionStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var replacementStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var allowConnectionToComplete = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var allowReplacementToComplete = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var startCallers = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var allCallersReady = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var allConnectCallsStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var readyCallers = 0;
+            var startedConnectCalls = 0;
 
             _mockWsProvider
                 .Setup(x => x.CreateConnectionAsync(_testEndpoint))
                 .Returns(async () =>
                 {
-                    Interlocked.Increment(ref callCount);
+                    var count = Interlocked.Increment(ref callCount);
                     connectionStarted.TrySetResult(true);
-                    await allowConnectionToComplete.Task; // Wait for signal to complete
-                    return CreateMockConnection();
+                    if (count == 1)
+                    {
+                        await allowConnectionToComplete.Task; // Wait for signal to complete
+                        return CreateMockConnection();
+                    }
+                    if (count == 2)
+                    {
+                        replacementStarted.TrySetResult(true);
+                        await allowReplacementToComplete.Task;
+                    }
+                    return (null!, new Uri("ws://localhost:9999/test"));
                 });
 
             await using var connectionManager = new ConnectionManager(
@@ -313,15 +342,28 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             {
                 tasks[i] = Task.Run(async () =>
                 {
+                    if (Interlocked.Increment(ref readyCallers) == tasks.Length)
+                        allCallersReady.TrySetResult(true);
+                    await startCallers.Task;
                     using var taskCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-                    return await connectionManager.Connect(taskCts.Token);
+                    var connect = connectionManager.Connect(taskCts.Token);
+                    if (Interlocked.Increment(ref startedConnectCalls) == tasks.Length)
+                        allConnectCallsStarted.TrySetResult(true);
+                    return await connect;
                 });
             }
 
-            // Wait for connection to start, then allow it to complete
+            // Release all callers together. Hold both the stale provider and the elected
+            // replacement until every Connect invocation has published its ownership choice;
+            // otherwise ThreadPool scheduling, rather than connection coordination, decides
+            // whether a late task belongs to this concurrent burst.
+            await EnsureConnectionStartedAsync(allCallersReady.Task);
+            startCallers.TrySetResult(true);
             await EnsureConnectionStartedAsync(connectionStarted.Task);
-            await Task.Delay(100); // Allow other tasks to queue
-            allowConnectionToComplete.SetResult(true);
+            await EnsureConnectionStartedAsync(replacementStarted.Task);
+            await EnsureConnectionStartedAsync(allConnectCallsStarted.Task);
+            allowConnectionToComplete.TrySetResult(true);
+            allowReplacementToComplete.TrySetResult(true);
 
             // This should not throw any exceptions or deadlock
             await EnsureTasksCompleteAsync(8000, tasks);
@@ -329,8 +371,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             // Assert - All tasks should complete without exceptions
             tasks.ShouldNotBeNull();
             tasks.Length.ShouldBe(20);
-            // Due to concurrency control, only one connection should be created
-            callCount.ShouldBe(1, "concurrent calls should reuse the same connection attempt");
+            // Due to replacement ownership, one stale owner and one replacement are created.
+            callCount.ShouldBe(2, "concurrent followers should join the same replacement attempt");
         }
 
         #endregion
@@ -559,7 +601,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             await EnsureConnectionStartedAsync(connectionStarted.Task);
             System.Diagnostics.Debug.WriteLine("First connection started");
 
-            // Start second connection attempt (should wait for first)
+            // Start second connection attempt (should replace the first)
             var secondConnectTask = Task.Run(async () =>
             {
                 System.Diagnostics.Debug.WriteLine("Second Connect call started");
@@ -569,7 +611,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
                 return result;
             });
 
-            // Give second connect time to start waiting
+            // Give second connect time to claim and start the replacement.
             await Task.Delay(100);
             System.Diagnostics.Debug.WriteLine("Second connection should be waiting now");
 
@@ -600,25 +642,18 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             firstResult.ShouldBeFalse("first connect should be canceled by Disconnect");
             secondResult.ShouldBeFalse("second connect should be canceled by Disconnect");
 
-            // Only one connection should have been attempted
-            providerCallCount.ShouldBe(1, "only one connection creation should occur despite multiple Connect calls");
+            // One stale owner plus one elected replacement should have started before disconnect.
+            providerCallCount.ShouldBe(2,
+                "concurrent explicit calls should elect exactly one replacement before disconnect");
 
             System.Diagnostics.Debug.WriteLine($"Test completed. Provider call count: {providerCallCount}");
         }
 
         [Fact]
-        public async Task Disconnect_WhenCalledAfterConcurrentConnects_PreventsQueuedConnectFromProceeding()
+        public async Task Disconnect_AfterConcurrentReplacement_PreventsFurtherConnectFromProceeding()
         {
-            // This test specifically addresses the bug where:
-            // 1. Connect #1 acquires gate, starts connection loop
-            // 2. Connect #2 waits for gate
-            // 3. Disconnect cancels token, waits for gate
-            // 4. Connect #1 releases gate
-            // 5. Connect #2 acquires gate, creates new token, starts new loop (BUG!)
-            // 6. Disconnect finally acquires gate but too late
-            //
-            // Expected behavior: Connect #2 should see ongoing task and wait for it,
-            // and when Disconnect clears the task, Connect #2 should return false
+            // Connect #2 is allowed to replace Connect #1, but a later Disconnect must
+            // cancel that replacement and prevent any third generation from starting.
 
             // Arrange
             var connectionStarted = new TaskCompletionSource<bool>();
@@ -654,7 +689,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             // Wait for first connection to start
             await EnsureConnectionStartedAsync(connectionStarted.Task);
 
-            // Start second Connect immediately (should wait for ongoing task, NOT queue for gate)
+            // Start second Connect immediately; it should own the replacement.
             var secondConnect = Task.Run(async () =>
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -682,9 +717,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             firstResult.ShouldBeFalse("first connect should fail due to disconnect");
             secondResult.ShouldBeFalse("second connect should fail because ongoing task was canceled and cleared");
 
-            // CRITICAL: Only ONE provider call should have been made
-            // If there are 2 calls, it means Connect #2 created a new connection after Disconnect (BUG!)
-            providerCallCount.ShouldBe(1, "second Connect should NOT create a new connection after Disconnect");
+            // The second explicit call starts its replacement before Disconnect. Disconnect
+            // must stop both generations and must not permit a third provider call afterward.
+            providerCallCount.ShouldBe(2,
+                "disconnect should prevent any provider call after the elected replacement");
         }
 
         [Fact]

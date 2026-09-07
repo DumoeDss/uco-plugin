@@ -21,6 +21,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         static MainWindowInitializer()
         {
+            if (!UnityProcessGuard.ShouldInitialize(AssetDatabase.IsAssetImportWorkerProcess()))
+                return;
+
             if (isInitialized.Value)
                 return;
 

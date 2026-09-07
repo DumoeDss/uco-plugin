@@ -33,6 +33,14 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public const string SafetyUnsupported = "safety_unsupported";
         public const string UndoUnavailable = "undo_unavailable";
         public const string AuthoringTransactionFailed = "authoring_transaction_failed";
+        public const string EditorNotReady = "editor_not_ready";
+        public const string EditorSettling = "editor_settling";
+        public const string OperationCapacityExceeded = "operation_capacity_exceeded";
+        public const string OperationNotFound = "operation_not_found";
+        public const string OperationOwnerMissing = "operation_owner_missing";
+        public const string OperationInterrupted = "operation_interrupted";
+        public const string CancellationUnavailable = "cancellation_unavailable";
+        public const string SchedulingMetadataInvalid = "scheduling_metadata_invalid";
     }
 
     /// <summary>Singular-name compatibility alias for the stable code constants.</summary>
@@ -53,6 +61,14 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
         public const string SafetyUnsupported = ToolCallErrorCodes.SafetyUnsupported;
         public const string UndoUnavailable = ToolCallErrorCodes.UndoUnavailable;
         public const string AuthoringTransactionFailed = ToolCallErrorCodes.AuthoringTransactionFailed;
+        public const string EditorNotReady = ToolCallErrorCodes.EditorNotReady;
+        public const string EditorSettling = ToolCallErrorCodes.EditorSettling;
+        public const string OperationCapacityExceeded = ToolCallErrorCodes.OperationCapacityExceeded;
+        public const string OperationNotFound = ToolCallErrorCodes.OperationNotFound;
+        public const string OperationOwnerMissing = ToolCallErrorCodes.OperationOwnerMissing;
+        public const string OperationInterrupted = ToolCallErrorCodes.OperationInterrupted;
+        public const string CancellationUnavailable = ToolCallErrorCodes.CancellationUnavailable;
+        public const string SchedulingMetadataInvalid = ToolCallErrorCodes.SchedulingMetadataInvalid;
     }
 
     /// <summary>

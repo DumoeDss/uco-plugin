@@ -67,6 +67,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor
 
         static CopilotServerManager()
         {
+            if (!UnityProcessGuard.ShouldInitialize(AssetDatabase.IsAssetImportWorkerProcess()))
+                return;
+
             // Register for editor quit to clean up the server process
             EditorApplication.quitting += OnEditorQuitting;
 

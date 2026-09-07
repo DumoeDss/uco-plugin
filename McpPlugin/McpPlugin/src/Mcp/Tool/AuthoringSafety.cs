@@ -1229,12 +1229,19 @@ namespace com.IvanMurzak.McpPlugin
     public sealed class AuthoringSafetyMiddleware : IToolExecutionMiddleware
     {
         public AuthoringSafetyPolicy Policy { get; }
+        public IToolExecutionScheduler Scheduler { get; }
 
-        public AuthoringSafetyMiddleware(AuthoringSafetyPolicy? policy = null)
-            => Policy = policy ?? new AuthoringSafetyPolicy();
+        public AuthoringSafetyMiddleware(
+            AuthoringSafetyPolicy? policy = null,
+            IToolExecutionScheduler? scheduler = null)
+        {
+            Policy = policy ?? new AuthoringSafetyPolicy();
+            Scheduler = scheduler ?? new InlineToolExecutionScheduler();
+        }
 
         public AuthoringSafetyMiddleware(ProjectPathPolicy pathPolicy)
-            : this(new AuthoringSafetyPolicy(pathPolicy ?? throw new ArgumentNullException(nameof(pathPolicy))))
+            : this(new AuthoringSafetyPolicy(
+                pathPolicy ?? throw new ArgumentNullException(nameof(pathPolicy))))
         {
         }
 
@@ -1312,9 +1319,57 @@ namespace com.IvanMurzak.McpPlugin
             if (!string.Equals(context.DryRun, "none", StringComparison.Ordinal))
                 return decision.ToDryRunResponse();
 
-            // Re-resolve write paths after all policy/confirmation checks and
-            // immediately before the continuation. This is the last managed
-            // check before the existing g-004 terminal guard.
+            // Preserve the existing final acceptance check before queue admission. A
+            // cancellation raised during target re-inspection must not be reclassified by
+            // the scheduler and must leave the one-shot confirmation unconsumed.
+            stopped = StoppedResponse(context, "before_transaction");
+            if (stopped != null)
+                return stopped;
+
+            // Scheduling is policy-adjacent rather than ordinary downstream middleware:
+            // wait before consuming one-shot confirmation authority or opening an authoring
+            // transaction. Missing metadata is conservatively main-thread serialized.
+            IToolExecutionLease executionLease;
+            try
+            {
+                executionLease = await Scheduler.AcquireAsync(
+                    new ToolExecutionSchedulingRequest(
+                        context,
+                        prepared.Name,
+                        prepared.Runner,
+                        decision.RiskLevel,
+                        decision.UndoLevel),
+                    context.CancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                var stoppedInQueue = StoppedResponse(context, "scheduler_queue");
+                if (stoppedInQueue != null) return stoppedInQueue;
+                throw;
+            }
+            using (executionLease)
+            {
+                stopped = StoppedResponse(context, "after_scheduler_admission");
+                if (stopped != null)
+                    return stopped;
+
+                // A real queue wait may outlive a plan fingerprint, target state, or
+                // token. Re-evaluate only then; immediate inline admission preserves the
+                // existing g-005 validation count and authority semantics.
+                if (executionLease.Waited)
+                {
+                    decision = Policy.EvaluatePreparedForMiddleware(prepared);
+                    if (!decision.Allowed)
+                        return decision.ToErrorResponse();
+
+                    stopped = StoppedResponse(context, "after_scheduler_validation");
+                    if (stopped != null)
+                        return stopped;
+                }
+
+            // Re-resolve write paths after admission and immediately before final
+            // confirmation/transaction authority. This is the last managed check
+            // before the existing g-004 terminal guard.
             if (prepared.Descriptor?.PathBindings != null
                 && prepared.Descriptor.PathBindings.Any(binding => binding != null && binding.Intent != AuthoringPathAccessIntent.Read))
             {
@@ -1593,6 +1648,7 @@ namespace com.IvanMurzak.McpPlugin
             {
                 transactionScope?.Dispose();
                 transaction?.Dispose();
+            }
             }
         }
 

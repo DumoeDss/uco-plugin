@@ -15,8 +15,10 @@
 #nullable enable
 using System;
 using System.ComponentModel;
+using System.Text.Json;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Utils;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
 
 namespace AIGD
@@ -48,7 +50,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             EditorExecuteMenuItemToolId,
             Title = "Editor / Execute Menu Item",
             DestructiveHint = true,
-            Enabled = false
+            Enabled = false,
+            DurableOperationStart = true
         )]
         [McpPluginSkillDescription("Invoke a Unity Editor menu item by its full menu path (e.g. " +
             "'GameObject/Create Empty', 'Assets/Refresh'). Use the 'editor://menu-items' resource to " +
@@ -66,7 +69,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "project so you can pick the exact canonical path before calling this tool.")]
         [Description("Execute a Unity Editor menu item by full path. " +
             "Use the 'editor://menu-items' resource to list available menu paths first.")]
-        public MenuItemExecuteResult ExecuteMenuItem
+        public EditorOperationInfo ExecuteMenuItem
         (
             [Description("Full menu path, e.g. 'GameObject/Create Empty', 'Assets/Refresh'. " +
                 "Get the canonical list from the 'editor://menu-items' resource.")]
@@ -78,14 +81,69 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
-                var ok = EditorApplication.ExecuteMenuItem(menuPath);
-                return new MenuItemExecuteResult
+                var operation = EditorOperationOwnerRegistry.Create(
+                    "editor-execute-menu-item", "scheduled",
+                    System.Text.Json.JsonSerializer.Serialize(new { menuPath }));
+                EditorOperationOwnerRegistry.ScheduleExecution(
+                    operation.OperationId, "executing-non-interruptible-menu-handler",
+                    () => RunMenuItem(operation.OperationId, menuPath));
+                return operation;
+            });
+        }
+
+        internal static void RunMenuItem(string operationId, string menuPath)
+            => RunMenuItem(operationId, menuPath, EditorApplication.ExecuteMenuItem);
+
+        internal static void RunMenuItem(
+            string operationId,
+            string menuPath,
+            Func<string, bool> executeMenuItem)
+        {
+            if (executeMenuItem == null) throw new ArgumentNullException(nameof(executeMenuItem));
+
+            var operation = EditorOperationRegistry.Get(operationId);
+            if (operation == null || operation.IsTerminal) return;
+            if (operation.CancellationRequested)
+            {
+                EditorOperationRegistry.CancelRunning(operationId, "cancelled-before-menu-handler");
+                return;
+            }
+
+            try
+            {
+                var ok = executeMenuItem(menuPath);
+                var result = new MenuItemExecuteResult
                 {
                     Ok = ok,
                     MenuPath = menuPath,
                     Error = ok ? null : $"Menu item not found or disabled: '{menuPath}'."
                 };
-            });
+                var resultJson = System.Text.Json.JsonSerializer.Serialize(result);
+                if (EditorOperationRegistry.IsCancellationRequested(operationId))
+                    EditorOperationRegistry.CancelRunning(operationId,
+                        "cancelled-after-non-interruptible-menu-handler", resultJson);
+                else if (ok)
+                    EditorOperationRegistry.Succeed(operationId, resultJson);
+                else
+                    EditorOperationRegistry.Fail(operationId, "menu-item-not-found-or-disabled",
+                        result.Error!, "menu-handler-refused", resultJson);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.GetBaseException().Message;
+                var resultJson = System.Text.Json.JsonSerializer.Serialize(new MenuItemExecuteResult
+                {
+                    Ok = false,
+                    MenuPath = menuPath,
+                    Error = message
+                });
+                if (EditorOperationRegistry.IsCancellationRequested(operationId))
+                    EditorOperationRegistry.CancelRunning(operationId,
+                        "cancelled-after-non-interruptible-menu-handler", resultJson);
+                else
+                    EditorOperationRegistry.Fail(operationId, "menu-item-execution-failed",
+                        message, "menu-handler-failed", resultJson);
+            }
         }
     }
 }
