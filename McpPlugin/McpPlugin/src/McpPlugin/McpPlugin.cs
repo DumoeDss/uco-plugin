@@ -109,7 +109,38 @@ namespace com.IvanMurzak.McpPlugin
                         return;
                     }
 
-                    await _mcpManagerHub.NotifyAboutUpdatedTools(new Common.Model.RequestToolsUpdated());
+                    // Fail-closed notify: ConnectionState reaches Connected only after
+                    // transport + version handshake + capability registration complete
+                    // (BaseHubConnector calls TrySetConnected last), so a notify while
+                    // any other state is dispatched onto a server that cannot answer it —
+                    // in a configless/fresh-install environment the RPC times out after
+                    // 10s and rethrows out of this async-void subscription as an
+                    // unhandled exception. Nothing is lost by skipping: every
+                    // (re)connection re-registers the full tool set as part of
+                    // initialization, which covers changes from the Connecting window.
+                    if (_mcpManagerHub.ConnectionState.CurrentValue is not WsState.Connected)
+                    {
+                        _logger.LogDebug(
+                            "{method}, connection state is {state}, not Connected; a pre-handshake tools update notification cannot be served. Skipping.",
+                            nameof(McpManager.ToolManager.OnToolsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                        return;
+                    }
+
+                    try
+                    {
+                        await _mcpManagerHub.NotifyAboutUpdatedTools(new Common.Model.RequestToolsUpdated());
+                    }
+                    catch (Exception ex)
+                    {
+                        // Contained dispatch: this subscription is async-void, so an
+                        // exception escaping the await would surface as an unhandled
+                        // exception (bypassing the logger diagnostics channel entirely).
+                        // Route it through the logger instead — the diagnostics channel
+                        // bounds the exception detail to type + message.
+                        _logger.LogError(ex,
+                            "{method}: dispatching the tools update notification failed: {exceptionType}: {message}.",
+                            nameof(McpManager.ToolManager.OnToolsUpdated), ex.GetType().Name, ex.Message);
+                    }
                 })
                 .AddTo(_disposables);
 
@@ -143,7 +174,26 @@ namespace com.IvanMurzak.McpPlugin
                         return;
                     }
 
-                    await _mcpManagerHub.NotifyAboutUpdatedPrompts(new Common.Model.RequestPromptsUpdated());
+                    // Fail-closed notify — see the tools-updated subscription above.
+                    if (_mcpManagerHub.ConnectionState.CurrentValue is not WsState.Connected)
+                    {
+                        _logger.LogDebug(
+                            "{method}, connection state is {state}, not Connected; a pre-handshake prompts update notification cannot be served. Skipping.",
+                            nameof(McpManager.PromptManager.OnPromptsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                        return;
+                    }
+
+                    try
+                    {
+                        await _mcpManagerHub.NotifyAboutUpdatedPrompts(new Common.Model.RequestPromptsUpdated());
+                    }
+                    catch (Exception ex)
+                    {
+                        // Contained dispatch — see the tools-updated subscription above.
+                        _logger.LogError(ex,
+                            "{method}: dispatching the prompts update notification failed: {exceptionType}: {message}.",
+                            nameof(McpManager.PromptManager.OnPromptsUpdated), ex.GetType().Name, ex.Message);
+                    }
                 })
                 .AddTo(_disposables);
 
@@ -164,7 +214,26 @@ namespace com.IvanMurzak.McpPlugin
                         return;
                     }
 
-                    await _mcpManagerHub.NotifyAboutUpdatedResources(new Common.Model.RequestResourcesUpdated());
+                    // Fail-closed notify — see the tools-updated subscription above.
+                    if (_mcpManagerHub.ConnectionState.CurrentValue is not WsState.Connected)
+                    {
+                        _logger.LogDebug(
+                            "{method}, connection state is {state}, not Connected; a pre-handshake resources update notification cannot be served. Skipping.",
+                            nameof(McpManager.ResourceManager.OnResourcesUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                        return;
+                    }
+
+                    try
+                    {
+                        await _mcpManagerHub.NotifyAboutUpdatedResources(new Common.Model.RequestResourcesUpdated());
+                    }
+                    catch (Exception ex)
+                    {
+                        // Contained dispatch — see the tools-updated subscription above.
+                        _logger.LogError(ex,
+                            "{method}: dispatching the resources update notification failed: {exceptionType}: {message}.",
+                            nameof(McpManager.ResourceManager.OnResourcesUpdated), ex.GetType().Name, ex.Message);
+                    }
                 })
                 .AddTo(_disposables);
         }

@@ -9,6 +9,7 @@
 */
 
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -24,5 +25,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
 
         [Description("Log entries captured during test execution.")]
         public List<TestLogEntry>? Logs { get; set; }
+
+        [Description("True when the run left any open scene dirty or changed the active scene or selection relative to the pre-run state. Computed from observed scene state after the run.")]
+        public bool Mutated { get; set; }
+
+        [Description("Paths (or 'Untitled') of scenes left dirty by the run; empty when Mutated is false.")]
+        public string[] MutatedScenes { get; set; } = Array.Empty<string>();
+
+        [Description("Whether the sandbox scene state was restored after a sandboxed run; null when the run was not sandboxed.")]
+        public bool? SandboxRestored { get; set; }
+
+        [Description("Cause reported when a sandboxed run could not fully restore the captured scene state.")]
+        public string? SandboxRestoreCause { get; set; }
     }
 }

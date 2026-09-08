@@ -30,6 +30,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
             var originalPlugin = originalInstance.McpPluginInstance;
+            // Console separation (COCli-07): the replacement singleton has no
+            // collector of its own; the still-installed diagnostics channel
+            // sink belongs to the original instance's collector.
+            var diagnostics = originalInstance.LogCollector;
+            Assert.IsNotNull(diagnostics,
+                "The plugin log collector must be installed to assert console-separated diagnostics.");
             var middleware = new RecordingMiddleware();
             var successfulRunner = new BatchTestRunner("batch-test-success", shouldFail: false, targetBound: false);
             var failingRunner = new BatchTestRunner("batch-test-failure", shouldFail: true, targetBound: true);
@@ -67,9 +73,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     PlanHash = plan["planHash"]!.GetValue<string>(),
                     ExpiresAtUnixMs = plan["expiresAtUnixMs"]!.GetValue<long>(),
                 });
-                LogAssert.Expect(
-                    UnityEngine.LogType.Error,
-                    new System.Text.RegularExpressions.Regex("Error Response to AI"));
                 var execution = manager!.RunCallTool(request);
                 yield return WaitForTask(execution);
 
@@ -122,6 +125,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 Assert.AreEqual(childRecords[1]!["expiresAtUnixMs"]!.GetValue<long>(), secondChild.Confirmation.ExpiresAtUnixMs);
                 Assert.AreEqual(1, successfulRunner.InvocationCount);
                 Assert.AreEqual(1, failingRunner.InvocationCount);
+
+                // Console separation (COCli-07): the failing child's
+                // "Error Response to AI" log lives in the plugin diagnostics
+                // channel, not the Unity Console — assert it there.
+                AssertDiagnosticsContains(
+                    UnityEngine.LogType.Error, "Intentional batch test failure", diagnostics);
             }
             finally
             {

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using com.IvanMurzak.McpPlugin.Skills;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using R3;
@@ -280,8 +281,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
                 () => registration!(CancellationToken.None));
 
             exception.Message.ShouldContain("resource registration rejected");
-            hub.Verify(x => x.NotifyAboutUpdatedTools(
-                It.IsAny<RequestToolsUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
+            hub.Verify(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()), Times.Never);
         }
 
         static FastConnectionManager CreateManager(
@@ -317,9 +317,12 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
         }
 
         static McpPlugin Plugin(IMcpManagerHub hub)
+            => Plugin(hub, toolsUpdated: null, logger: NullLogger<McpPlugin>.Instance);
+
+        static McpPlugin Plugin(IMcpManagerHub hub, Subject<Unit>? toolsUpdated, ILogger<McpPlugin> logger)
         {
             var tools = new Mock<IToolManager>();
-            tools.SetupGet(x => x.OnToolsUpdated).Returns(Observable.Empty<Unit>());
+            tools.SetupGet(x => x.OnToolsUpdated).Returns(toolsUpdated ?? new Subject<Unit>());
             var prompts = new Mock<IPromptManager>();
             prompts.SetupGet(x => x.OnPromptsUpdated).Returns(Observable.Empty<Unit>());
             var resources = new Mock<IResourceManager>();
@@ -332,7 +335,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
             manager.SetupGet(x => x.ResourceManager).Returns(resources.Object);
 
             return new McpPlugin(
-                NullLogger<McpPlugin>.Instance,
+                logger,
                 manager.Object,
                 hub,
                 TestVersion,
@@ -340,8 +343,103 @@ namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
                 new SkillContentCollection());
         }
 
+        // ── Phase-C defect: ctor OnToolsUpdated → NotifyAboutUpdatedTools fail-open ──
+
+        [Fact]
+        public async Task McpPlugin_ToolsUpdatedNotify_FailsClosedUntilConnectionEstablished()
+        {
+            // ConnectionState reaches Connected only after transport + version handshake +
+            // capability registration complete. A notify dispatched below that (e.g. a
+            // configless fresh install with the transport in Connecting) can never be
+            // answered and its 10s RPC timeout rethrows out of the async-void
+            // subscription as an unhandled exception. The subscription must skip it.
+            var updated = new Subject<Unit>();
+            var state = new ReactiveProperty<ConnectionState>(ConnectionState.Connecting);
+            var hub = Hub(_ => { });
+            hub.SetupGet(x => x.ConnectionState).Returns(state);
+            hub.Setup(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()))
+                .ReturnsAsync(Success());
+
+            using var plugin = Plugin(hub.Object, updated, NullLogger<McpPlugin>.Instance);
+            updated.OnNext(Unit.Default);
+            await Task.Delay(300);
+
+            hub.Verify(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task McpPlugin_ToolsUpdatedNotify_DispatchesWhenConnected()
+        {
+            var updated = new Subject<Unit>();
+            var state = new ReactiveProperty<ConnectionState>(ConnectionState.Connected);
+            var hub = Hub(_ => { });
+            hub.SetupGet(x => x.ConnectionState).Returns(state);
+            hub.Setup(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()))
+                .ReturnsAsync(Success());
+
+            using var plugin = Plugin(hub.Object, updated, NullLogger<McpPlugin>.Instance);
+            updated.OnNext(Unit.Default);
+            await Task.Delay(300);
+
+            hub.Verify(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task McpPlugin_ToolsUpdatedNotify_ContainedExceptionInsteadOfAsyncVoidRethrow()
+        {
+            // Even when the dispatch DOES go out and fails (here: a fault that lands
+            // AFTER OnNext returned — the async-void hazard window), the exception
+            // must be routed through the logger, never escape the subscription.
+            var updated = new Subject<Unit>();
+            var state = new ReactiveProperty<ConnectionState>(ConnectionState.Connected);
+            var logger = new RecordingLogger();
+            var hub = Hub(_ => { });
+            hub.SetupGet(x => x.ConnectionState).Returns(state);
+            hub.Setup(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()))
+                .Returns((RequestToolsUpdated _) => FaultedNotifyAfterDelay());
+
+            using var plugin = Plugin(hub.Object, updated, logger);
+            updated.OnNext(Unit.Default);
+
+            var deadline = Task.Delay(TimeSpan.FromSeconds(5));
+            while (!logger.Entries.Any(entry =>
+                entry.Message.Contains("dispatching the tools update notification failed")))
+            {
+                if (await Task.WhenAny(deadline, Task.Delay(50)) == deadline)
+                    break;
+            }
+
+            logger.Entries.ShouldContain(entry =>
+                entry.Level == LogLevel.Error &&
+                entry.Message.Contains(nameof(TaskCanceledException)),
+                "the dispatch failure must be routed through the logger (diagnostics channel), " +
+                "and reaching this assertion without an unhandled async-void exception is the " +
+                "containment contract itself");
+        }
+
+        sealed class RecordingLogger : ILogger<McpPlugin>
+        {
+            public ConcurrentQueue<(LogLevel Level, string Message)> Entries { get; } = new();
+
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+            public bool IsEnabled(LogLevel logLevel) => true;
+
+            public void Log<TState>(
+                LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+                Func<TState, Exception?, string> formatter)
+                => Entries.Enqueue((logLevel, $"{formatter(state, exception)}|{exception?.GetType().Name}"));
+        }
+
         static ResponseData Success()
             => new() { Status = ResponseStatus.Success };
+
+        /// <summary>Faults only after a delay, so the failure lands in the
+        /// async-void continuation window rather than synchronously in OnNext.</summary>
+        static async Task<ResponseData> FaultedNotifyAfterDelay()
+        {
+            await Task.Delay(50);
+            throw new TaskCanceledException("phase-c simulation: the dispatch timed out");
+        }
 
         static async Task AwaitWithin(Task task, TimeSpan timeout)
         {

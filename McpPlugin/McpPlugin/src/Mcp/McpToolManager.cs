@@ -259,7 +259,8 @@ namespace com.IvanMurzak.McpPlugin
                             ToolCallErrorCodes.ToolExecutionFailed,
                             $"Failed to run tool '{request.Name}'.",
                             callId: context.CallId,
-                            correlationId: context.CorrelationId),
+                            correlationId: context.CorrelationId,
+                            details: BoundedExceptionDetails(ex)),
                         context);
                     _logger.LogError(ex, "RunCallTool[{name}] failed.", request.Name);
                     return response;
@@ -268,6 +269,38 @@ namespace com.IvanMurzak.McpPlugin
                 return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Failed to run tool '{request.Name}'. Exception: {ex}")
                     .Log(_logger, $"RunCallTool[{request.Name}]", ex);
             }
+        }
+
+        /// <summary>
+        /// Bounded diagnostic detail for a controlled tool failure (COCli-04):
+        /// the envelope keeps the exception type, message, and stack so script
+        /// compile failures and inner exceptions stay diagnosable, without
+        /// leaking unbounded payloads onto the wire.
+        /// </summary>
+        private static System.Text.Json.Nodes.JsonObject? BoundedExceptionDetails(Exception ex)
+        {
+            try
+            {
+                var root = ex.GetBaseException();
+                return new System.Text.Json.Nodes.JsonObject
+                {
+                    ["exceptionType"] = BoundDetailText(root.GetType().FullName ?? root.GetType().Name, 160),
+                    ["exceptionMessage"] = BoundDetailText(root.Message, 1024),
+                    ["exceptionStackTrace"] = string.IsNullOrEmpty(root.StackTrace)
+                        ? null
+                        : BoundDetailText(root.StackTrace, 2048),
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static string BoundDetailText(string value, int maximum)
+        {
+            var flattened = value.Replace('\r', ' ').Replace('\n', ' ').Trim();
+            return flattened.Length <= maximum ? flattened : flattened.Substring(0, maximum);
         }
 
         private static ResponseData<ResponseCallTool> CreateControlledError(

@@ -54,8 +54,9 @@ namespace com.AtelierAI.Unity.Copilot
                 version: BuildVersion(),
                 reflector: CreateDefaultReflector(),
                 loggerProvider: loggerProvider,
-                configure: builder => builder.WithToolExecutionScheduler(
-                    EditorToolExecutionScheduler.Shared)
+                configure: builder => builder
+                    .WithToolExecutionScheduler(EditorToolExecutionScheduler.Shared)
+                    .WithHandshakeIdentity(new UnityBridgeHandshakeIdentity())
             ));
             stopwatch.Stop();
 

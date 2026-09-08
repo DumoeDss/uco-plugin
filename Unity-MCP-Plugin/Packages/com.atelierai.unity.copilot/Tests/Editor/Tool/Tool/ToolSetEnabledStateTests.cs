@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using NUnit.Framework;
@@ -260,13 +259,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var originalLogLevel = UnityCopilotPluginEditor.LogLevel;
             try
             {
-                // Ensure log level allows error logs so LogAssert.Expect works
+                // Error-level logging must stay enabled so the failure also
+                // reaches the console-separated diagnostics channel.
                 if (originalLogLevel == LogLevel.None)
                     UnityCopilotPluginEditor.LogLevel = LogLevel.Error;
-
-                LogAssert.Expect(LogType.Exception, new Regex("ArgumentException"));
-                LogAssert.Expect(LogType.Error, new Regex("Tool execution failed"));
-                LogAssert.Expect(LogType.Error, new Regex("Error Response to AI"));
 
                 var jsonResult = RunToolRaw(Tool_Tool.ToolSetEnabledStateId, @"{
                     ""tools"": [],
@@ -274,6 +270,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 }");
 
                 StringAssert.Contains("Tools array is null or empty", jsonResult);
+                // Console separation (COCli-07): the failure logs live in the
+                // plugin diagnostics channel, not the Unity Console.
+                AssertToolErrorDiagnostics("Tools array is null or empty");
             }
             finally
             {
@@ -289,13 +288,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var originalLogLevel = UnityCopilotPluginEditor.LogLevel;
             try
             {
-                // Ensure log level allows error logs so LogAssert.Expect works
+                // Error-level logging must stay enabled so the failure also
+                // reaches the console-separated diagnostics channel.
                 if (originalLogLevel == LogLevel.None)
                     UnityCopilotPluginEditor.LogLevel = LogLevel.Error;
-
-                LogAssert.Expect(LogType.Exception, new Regex("ArgumentException"));
-                LogAssert.Expect(LogType.Error, new Regex("Tool execution failed"));
-                LogAssert.Expect(LogType.Error, new Regex("Error Response to AI"));
 
                 var jsonResult = RunToolRaw(Tool_Tool.ToolSetEnabledStateId, @"{
                     ""tools"": null,
@@ -303,6 +299,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 }");
 
                 StringAssert.Contains("Tools array is null or empty", jsonResult);
+                AssertToolErrorDiagnostics("Tools array is null or empty");
             }
             finally
             {

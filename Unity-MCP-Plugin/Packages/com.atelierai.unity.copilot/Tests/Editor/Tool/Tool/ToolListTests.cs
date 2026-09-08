@@ -12,7 +12,6 @@
 using System.Collections;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using NUnit.Framework;
@@ -329,18 +328,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var originalLogLevel = UnityCopilotPluginEditor.LogLevel;
             try
             {
+                // Error-level logging must stay enabled so the failure also
+                // reaches the console-separated diagnostics channel.
                 if (originalLogLevel == LogLevel.None)
                     UnityCopilotPluginEditor.LogLevel = LogLevel.Error;
-
-                LogAssert.Expect(LogType.Exception, new Regex("ArgumentException"));
-                LogAssert.Expect(LogType.Error, new Regex("Tool execution failed"));
-                LogAssert.Expect(LogType.Error, new Regex("Error Response to AI"));
 
                 var json = RunToolRaw(Tool_Tool.ToolListId, @"{
                     ""regexSearch"": ""[invalid""
                 }");
 
                 StringAssert.Contains("Invalid regex pattern", json);
+                // Console separation (COCli-07): the failure logs live in the
+                // plugin diagnostics channel, not the Unity Console.
+                AssertToolErrorDiagnostics("Invalid regex pattern");
             }
             finally
             {

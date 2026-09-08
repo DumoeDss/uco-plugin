@@ -2,6 +2,48 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Bridge identity handshake (`bridge-identity-v1`, COCli-01)**: the version
+  handshake now advertises the Editor's `projectPath`, `editorPid`,
+  `unityVersion`, and `instanceId` under a `bridge-identity-v1` capability, so
+  the Node server can fail constrained calls closed (`identity_mismatch` /
+  `identity_unavailable`) instead of routing them to the wrong Editor. The
+  identity is supplied through `McpPluginBuilder.WithHandshakeIdentity(...)`
+  and is absent (legacy shape) when no host identity is registered.
+- **Test-operation provenance (COCli-03)**: durable operations expose a
+  `SourceRevision` compile epoch (`domainGeneration` + per-session compilation
+  counter, captured at run start), explicit `StartedAtUtc` alongside
+  `CreatedAtUtc`/`CompletedAtUtc`, an `Execution: "fresh"` guarantee (every run
+  executes its own runner execution; no result reuse exists), and a structured
+  `Blocked` cause (`compilation`, `previous-run-settling`,
+  `capacity-admission`, `cancellation-pending`) with `RetryAfterMs` — blocked
+  is never a failure.
+- **Scene hygiene (COCli-06)**: `script-execute` and `tests-run` accept
+  `sandboxScene` to run in a disposable untitled scene whose restoration
+  (setup, active scene, selection, dirty state) is reported as
+  `SandboxRestored` with a cause on failure. Both tools report
+  `Mutated`/`MutatedScenes` computed from observed scene state. The existing
+  dirty-user-scene blocker still applies in sandbox mode. **Wire-visible**:
+  `script-execute` results are now a `ScriptExecuteResult` wrapper
+  (`Value`, `Mutated`, `MutatedScenes`, `SandboxUsed`, `SandboxRestored`,
+  `SandboxRestoreCause`) instead of a bare serialized value.
+- **Console diagnostics (COCli-07)**: log entries carry `Source`
+  (`product`/`bridge`/`tool`/`unity`) and, when emitted on the main thread
+  inside an owned execution window, `CorrelationId`/`OperationId`.
+  `console-get-logs` accepts `correlationId`, `operationId`, `source`, and
+  `sinceUnixMs` filters and reports `DroppedEntries`/`TruncatedEntries`
+  (existing filter names unchanged). Plugin/bridge/tool logger diagnostics now
+  default to the collector-only channel — the Unity Editor Console stays
+  reserved for product and Unity output; mirroring is opt-in via the
+  `UnityCopilot.MirrorDiagnosticsToConsole` Editor pref. **Wire-visible**:
+  `console-get-logs` returns
+  `{ Entries, DroppedEntries, TruncatedEntries }` instead of a bare array.
+- **Controlled tool-failure diagnostics (COCli-04)**: a tool exception on a
+  controlled call keeps the bounded exception type, message, and stack in
+  `error.details` instead of dropping them server-side (script-execute Roslyn
+  diagnostics and `TargetInvocationException` details included).
+
 ### Fixed
 
 - **`EntityId` wire format moved from JSON number to JSON string of decimal digits**

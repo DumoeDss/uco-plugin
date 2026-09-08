@@ -66,12 +66,14 @@ namespace com.IvanMurzak.McpPlugin
             ILogger<McpManagerClientHub> logger,
             Version apiVersion,
             IWebSocketConnectionProvider wsProvider,
-            IClientMcpManager mcpManager)
+            IClientMcpManager mcpManager,
+            IHandshakeIdentity? handshakeIdentity = null)
             : base(
                 logger: logger,
                 apiVersion: apiVersion,
                 endpoint: Consts.Hub.RemoteApp,
-                wsProvider: wsProvider)
+                wsProvider: wsProvider,
+                handshakeIdentity: handshakeIdentity)
         {
             _mcpManager = mcpManager ?? throw new ArgumentNullException(nameof(mcpManager));
         }

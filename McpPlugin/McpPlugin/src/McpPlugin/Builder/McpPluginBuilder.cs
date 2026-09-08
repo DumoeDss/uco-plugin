@@ -198,6 +198,16 @@ namespace com.IvanMurzak.McpPlugin
             return this;
         }
 
+        public virtual IMcpPluginBuilder WithHandshakeIdentity(com.IvanMurzak.McpPlugin.Common.IHandshakeIdentity identity)
+        {
+            ThrowIfBuilt();
+            if (identity == null)
+                throw new ArgumentNullException(nameof(identity));
+
+            _services.AddSingleton(identity);
+            return this;
+        }
+
         public virtual IMcpPluginBuilder WithToolExecutionScheduler(IToolExecutionScheduler scheduler)
         {
             ThrowIfBuilt();

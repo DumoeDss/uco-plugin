@@ -40,6 +40,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             public string Filters = string.Empty;
             public int ExecutionTimeoutSeconds = DefaultExecutionTimeoutSeconds;
             public int WaitTimeoutSeconds = DefaultWaitTimeoutSeconds;
+            public bool SandboxScene;
         }
         [McpPluginTool
         (
@@ -109,6 +110,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             int executionTimeoutSeconds = DefaultExecutionTimeoutSeconds,
             [Description("Maximum discovery/initial wait in seconds before returning a failed operation. Default 10; valid range 1..300.")]
             int waitTimeoutSeconds = DefaultWaitTimeoutSeconds,
+            [Description("Run the tests inside a disposable sandbox scene: a new untitled scene is opened for the run " +
+                "and the previously active scene setup, selection, and dirty state are restored afterwards. " +
+                "User scenes that were dirty before the call still block the run exactly as without sandbox mode. Default false.")]
+            bool sandboxScene = false,
 
             [RequestID]
             string? requestId = null
@@ -138,10 +143,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 {
                     Filters = filterParams.ToString(),
                     ExecutionTimeoutSeconds = executionTimeoutSeconds,
-                    WaitTimeoutSeconds = waitTimeoutSeconds
+                    WaitTimeoutSeconds = waitTimeoutSeconds,
+                    SandboxScene = sandboxScene
                 });
                 var operation = EditorOperationOwnerRegistry.Create(
-                    "tests-run", "queued", metadata);
+                    "tests-run", "queued", metadata,
+                    sourceRevision: EditorOperationRegistry.CaptureSourceRevision());
+                // Console attribution (COCli-07): log entries emitted for the
+                // rest of this execution window carry the operation id.
+                LogCallScope.SetOperationOverlay(operation.OperationId);
 
                 // Reserve FIFO position while the initiating request still holds its
                 // own scheduler lease. The returned handle remains queued; PlayerPrefs,
@@ -164,7 +174,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         includeLogs,
                         logType,
                         includeLogsStacktrace,
-                        waitTimeoutSeconds));
+                        waitTimeoutSeconds,
+                        sandboxScene));
                 return operation;
             });
         }
@@ -184,7 +195,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             bool includeLogs,
             LogType logType,
             bool includeLogsStacktrace,
-            int waitTimeoutSeconds)
+            int waitTimeoutSeconds,
+            bool sandboxScene)
         {
             try
             {
@@ -254,7 +266,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         return;
                     }
 
-                    StartDiscoveredTests(operationId, testMode, filterParams, discovery);
+                    StartDiscoveredTests(operationId, testMode, filterParams, discovery, sandboxScene);
                 });
             }
             catch (Exception ex)
@@ -356,7 +368,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             string operationId,
             TestMode testMode,
             TestFilterParameters filterParams,
-            TestDiscovery discovery)
+            TestDiscovery discovery,
+            bool sandboxScene)
         {
             TestResultCollector.ExpectedDiscoveredTests.Value = discovery.DiscoveredCount;
             TestResultCollector.ExpectedMatchedTests.Value = discovery.MatchedNames.Length;
@@ -365,12 +378,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             EditorOperationOwnerRegistry.ScheduleExecution(
                 operationId, "scheduled",
-                () => ExecuteWhenPreviousRunnerSettles(operationId, settings));
+                () => ExecuteWhenPreviousRunnerSettles(operationId, settings, sandboxScene));
         }
 
         static void ExecuteWhenPreviousRunnerSettles(
             string operationId,
-            ExecutionSettings settings)
+            ExecutionSettings settings,
+            bool sandboxScene)
         {
             var operation = EditorOperationRegistry.Get(operationId);
             if (operation == null || operation.IsTerminal)
@@ -395,7 +409,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         "waiting-for-previous-test-run", cancellationPending: false);
                 }
                 EditorOperationRegistry.Schedule(() =>
-                    ExecuteWhenPreviousRunnerSettles(operationId, settings));
+                    ExecuteWhenPreviousRunnerSettles(operationId, settings, sandboxScene));
                 return;
             }
 
@@ -405,6 +419,22 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 // predecessor may have cleared its own persisted ownership while this job
                 // was waiting, but its late callbacks are bound to its captured context.
                 TestResultCollector.TestOperationId.Value = operationId;
+
+                // Scene hygiene (COCli-06): the mutation baseline is always
+                // captured (persisted so it survives reload-triggered runs);
+                // a sandboxed run additionally captures the restorable setup
+                // and opens the disposable scene the tests will execute in.
+                // The existing dirty-scene blocker already ran at the call,
+                // so only the sandbox scene is ever exempt — user scenes that
+                // were dirty still blocked the run before this point.
+                var baseline = EditorSceneSandbox.CaptureMutationBaseline();
+                TestRunSceneSandbox.PersistForOperation(
+                    operationId,
+                    sandboxScene ? EditorSceneSandbox.CaptureState() : null,
+                    baseline);
+                if (sandboxScene)
+                    _ = EditorSceneSandbox.OpenSandboxScene();
+
                 EditorOperationRegistry.Update(operationId, "executing", 0);
                 TestRunnerApi.Execute(settings);
             }

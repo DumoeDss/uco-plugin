@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
@@ -70,8 +71,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 return Task.FromResult<IToolExecutionLease>(
                     new ControlLease(instanceId, sequence));
             }
+            // Console attribution (COCli-07): only serialized-lane (main
+            // thread) executions publish their call identity; background read
+            // leases never attribute main-thread log emission.
             return request.UsesSerializedLane
-                ? lane.AcquireSerializedAsync(sequence, cancellationToken)
+                ? lane.AcquireSerializedAsync(sequence, cancellationToken, new LogCallScope.Frame
+                {
+                    CallId = request.Context.CallId,
+                    CorrelationId = request.Context.CorrelationId,
+                })
                 : lane.AcquireReadAsync(sequence, cancellationToken);
         }
 
@@ -253,7 +261,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
             public Task<IToolExecutionLease> AcquireSerializedAsync(
                 long sequence,
-                CancellationToken cancellationToken)
+                CancellationToken cancellationToken,
+                LogCallScope.Frame? scopeFrame)
             {
                 lock (_gate)
                 {
@@ -263,9 +272,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     {
                         _serializedRunning = true;
                         return Task.FromResult<IToolExecutionLease>(
-                            new Lease(this, sequence, serialized: true, waited: false));
+                            new Lease(this, sequence, serialized: true, waited: false, scopeFrame));
                     }
-                    var waiter = new Waiter(sequence, serialized: true);
+                    var waiter = new Waiter(sequence, serialized: true) { ScopeFrame = scopeFrame };
                     waiter.Node = _serialized.AddLast(waiter);
                     waiter.Register(cancellationToken, CancelWaiter);
                     return waiter.Completion.Task;
@@ -284,7 +293,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     {
                         _readsRunning++;
                         return Task.FromResult<IToolExecutionLease>(
-                            new Lease(this, sequence, serialized: false, waited: false));
+                            new Lease(this, sequence, serialized: false, waited: false, null));
                     }
                     var waiter = new Waiter(sequence, serialized: false);
                     waiter.Node = _reads.AddLast(waiter);
@@ -338,7 +347,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                         {
                             _serializedRunning = true;
                             admitted.Add((serializedWaiter,
-                                new Lease(this, serializedWaiter.Sequence, serialized: true, waited: true)));
+                                new Lease(this, serializedWaiter.Sequence, serialized: true, waited: true, serializedWaiter.ScopeFrame)));
                         }
                     }
 
@@ -348,7 +357,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                         if (waiter == null) break;
                         _readsRunning++;
                         admitted.Add((waiter,
-                            new Lease(this, waiter.Sequence, serialized: false, waited: true)));
+                            new Lease(this, waiter.Sequence, serialized: false, waited: true, null)));
                     }
                 }
                 foreach (var item in admitted)
@@ -440,6 +449,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
             public long Sequence { get; }
             public bool Serialized { get; }
+            public LogCallScope.Frame? ScopeFrame { get; set; }
             public TaskCompletionSource<IToolExecutionLease> Completion { get; }
                 = new(TaskCreationOptions.RunContinuationsAsynchronously);
             public LinkedListNode<Waiter>? Node { get; set; }
@@ -458,18 +468,23 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         sealed class Lease : IToolExecutionLease
         {
             InstanceLane? _lane;
+            readonly IDisposable? _scope;
 
             public Lease(
                 InstanceLane lane,
                 long sequence,
                 bool serialized,
-                bool waited)
+                bool waited,
+                LogCallScope.Frame? scopeFrame)
             {
                 _lane = lane;
                 InstanceId = lane.InstanceId;
                 Sequence = sequence;
                 Serialized = serialized;
                 Waited = waited;
+                // Serialized leases publish their call identity for the whole
+                // execution window; it is withdrawn before the lane is released.
+                _scope = serialized && scopeFrame != null ? LogCallScope.Push(scopeFrame) : null;
             }
 
             public string InstanceId { get; }
@@ -478,7 +493,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             public bool Waited { get; }
 
             public void Dispose()
-                => Interlocked.Exchange(ref _lane, null)?.Release(Serialized);
+            {
+                _scope?.Dispose();
+                if (Serialized)
+                    LogCallScope.SetOperationOverlay(null);
+                Interlocked.Exchange(ref _lane, null)?.Release(Serialized);
+            }
         }
 
         sealed class LaneSnapshot

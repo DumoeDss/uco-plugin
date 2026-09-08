@@ -55,16 +55,24 @@ namespace com.IvanMurzak.McpPlugin
         public VersionHandshakeResponse? VersionHandshakeStatus => lastHandshakeResponse;
 
         /// <summary>
+        /// Optional host identity advertised under the <c>bridge-identity-v1</c>
+        /// handshake capability. <c>null</c> keeps the legacy handshake shape.
+        /// </summary>
+        protected readonly IHandshakeIdentity? _handshakeIdentity;
+
+        /// <summary>
         /// Primary constructor. Accepts an already-constructed <see cref="IConnectionManager"/>,
         /// enabling injection of a mock or custom implementation in tests.
         /// </summary>
-        public BaseHubConnector(ILogger logger, Version apiVersion, IConnectionManager connectionManager)
+        public BaseHubConnector(ILogger logger, Version apiVersion, IConnectionManager connectionManager,
+            IHandshakeIdentity? handshakeIdentity = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{class} Ctor.", GetType().Name);
 
             _apiVersion = apiVersion ?? throw new ArgumentNullException(nameof(apiVersion));
             _connectionManager = connectionManager ?? throw new ArgumentNullException(nameof(connectionManager));
+            _handshakeIdentity = handshakeIdentity;
 
             var subscriptions = new CompositeDisposable();
 
@@ -81,12 +89,14 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>
         /// Convenience constructor that creates a <see cref="ConnectionManager"/> internally.
         /// </summary>
-        public BaseHubConnector(ILogger logger, Version apiVersion, string endpoint, IWebSocketConnectionProvider wsProvider)
+        public BaseHubConnector(ILogger logger, Version apiVersion, string endpoint, IWebSocketConnectionProvider wsProvider,
+            IHandshakeIdentity? handshakeIdentity = null)
             : this(logger, apiVersion, new ConnectionManager(
                 logger ?? throw new ArgumentNullException(nameof(logger)),
                 apiVersion ?? throw new ArgumentNullException(nameof(apiVersion)),
                 endpoint ?? throw new ArgumentNullException(nameof(endpoint)),
-                wsProvider ?? throw new ArgumentNullException(nameof(wsProvider))))
+                wsProvider ?? throw new ArgumentNullException(nameof(wsProvider))),
+                handshakeIdentity)
         {
         }
 
@@ -279,15 +289,7 @@ namespace com.IvanMurzak.McpPlugin
 
             // Perform version handshake after handlers are registered
             var handshakeResponse = await PerformVersionHandshake(
-                request: new RequestVersionHandshake
-                {
-                    RequestID = Guid.NewGuid().ToString(),
-                    ApiVersion = _apiVersion.Api,
-                    PluginVersion = _apiVersion.Plugin,
-                    Environment = _apiVersion.Environment,
-                    Capabilities = new[] { "cancel-tool-call-v1", "operation-identity-v1" },
-                    Generation = generation
-                },
+                request: CreateVersionHandshake(generation),
                 cancellationToken: cancellationToken);
 
             if (cancellationToken.IsCancellationRequested ||
@@ -341,6 +343,44 @@ namespace com.IvanMurzak.McpPlugin
                 return;
 
             _connectionManager.TrySetConnected(generation);
+        }
+
+        /// <summary>
+        /// Builds the per-generation handshake request. The base shape advertises the
+        /// wire capabilities this connector implements; when a host supplied an
+        /// <see cref="IHandshakeIdentity"/> the request additionally carries the
+        /// <c>bridge-identity-v1</c> capability and the Editor identity members so the
+        /// server can pin and verify routing against this specific Editor.
+        /// </summary>
+        protected virtual RequestVersionHandshake CreateVersionHandshake(int generation)
+        {
+            var identity = _handshakeIdentity;
+            if (identity == null)
+            {
+                return new RequestVersionHandshake
+                {
+                    RequestID = Guid.NewGuid().ToString(),
+                    ApiVersion = _apiVersion.Api,
+                    PluginVersion = _apiVersion.Plugin,
+                    Environment = _apiVersion.Environment,
+                    Capabilities = new[] { "cancel-tool-call-v1", "operation-identity-v1" },
+                    Generation = generation
+                };
+            }
+
+            return new RequestVersionHandshake
+            {
+                RequestID = Guid.NewGuid().ToString(),
+                ApiVersion = _apiVersion.Api,
+                PluginVersion = _apiVersion.Plugin,
+                Environment = _apiVersion.Environment,
+                Capabilities = new[] { "cancel-tool-call-v1", "operation-identity-v1", "bridge-identity-v1" },
+                Generation = generation,
+                ProjectPath = identity.ProjectPath,
+                EditorPid = identity.EditorPid,
+                UnityVersion = identity.UnityVersion,
+                InstanceId = identity.InstanceId
+            };
         }
 
         private void LogVersionMismatchError(VersionHandshakeResponse handshakeResponse)

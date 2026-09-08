@@ -76,24 +76,24 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // Assert - Check that our unique logs are captured
             Assert.IsNotNull(allLogsResult, "All logs result should not be null");
-            Assert.IsTrue(allLogsResult.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
+            Assert.IsTrue(allLogsResult.Entries.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
                 $"Should contain test log message.\nUnique ID: {uniqueId}\nResult: {allLogsResult}");
-            Assert.IsTrue(allLogsResult.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
+            Assert.IsTrue(allLogsResult.Entries.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
                 $"Should contain test warning message.\nResult: {allLogsResult}");
-            Assert.IsTrue(allLogsResult.Any(entry => entry.Message.Contains(testLogMessage2) && entry.LogType == LogType.Log),
+            Assert.IsTrue(allLogsResult.Entries.Any(entry => entry.Message.Contains(testLogMessage2) && entry.LogType == LogType.Log),
                 $"Should contain second test log message.\nResult: {allLogsResult}");
 
             // Assert - Check filtered results
-            Assert.IsTrue(logOnlyResult.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
+            Assert.IsTrue(logOnlyResult.Entries.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
                 $"Log filter should contain test log message.\nResult: {logOnlyResult}");
-            Assert.IsTrue(logOnlyResult.Any(entry => entry.Message.Contains(testLogMessage2) && entry.LogType == LogType.Log),
+            Assert.IsTrue(logOnlyResult.Entries.Any(entry => entry.Message.Contains(testLogMessage2) && entry.LogType == LogType.Log),
                 $"Log filter should contain second test log message.\nResult: {logOnlyResult}");
-            Assert.IsFalse(logOnlyResult.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
+            Assert.IsFalse(logOnlyResult.Entries.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
                 "Log filter should not contain warning in log entries");
 
-            Assert.IsTrue(warningOnlyResult.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
+            Assert.IsTrue(warningOnlyResult.Entries.Any(entry => entry.Message.Contains(testWarningMessage) && entry.LogType == LogType.Warning),
                 $"Warning filter should contain test warning message.\nResult: {warningOnlyResult}");
-            Assert.IsFalse(warningOnlyResult.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
+            Assert.IsFalse(warningOnlyResult.Entries.Any(entry => entry.Message.Contains(testLogMessage) && entry.LogType == LogType.Log),
                 "Warning filter should not contain regular log in log entries");
         }
 
@@ -131,9 +131,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // Assert
             Assert.IsNotNull(minuteLogsResult, "Minute logs result should not be null");
-            Assert.IsTrue(minuteLogsResult.Any(entry => entry.Message.Contains(oldLogMessage)),
+            Assert.IsTrue(minuteLogsResult.Entries.Any(entry => entry.Message.Contains(oldLogMessage)),
                 $"Should contain old log message when filtering by 1 minute.\nResult: {minuteLogsResult}");
-            Assert.IsTrue(minuteLogsResult.Any(entry => entry.Message.Contains(newLogMessage)),
+            Assert.IsTrue(minuteLogsResult.Entries.Any(entry => entry.Message.Contains(newLogMessage)),
                 $"Should contain new log message when filtering by 1 minute.\nResult: {minuteLogsResult}");
         }
 
@@ -144,7 +144,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             // Note: This is more of a stress test and may take some time
 
             var initialLogsResult = _tool.GetLogs(maxEntries: 100000);
-            var initialCount = CountLogEntries(initialLogsResult);
+            var initialCount = CountLogEntries(initialLogsResult.Entries);
 
             // Generate many logs to test memory management
             for (int i = 0; i < 50; i++)
@@ -160,7 +160,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             }
 
             var afterLogsResult = _tool.GetLogs(maxEntries: 100000);
-            var afterCount = CountLogEntries(afterLogsResult);
+            var afterCount = CountLogEntries(afterLogsResult.Entries);
 
             // Assert - Should have more logs now, but the system should handle memory correctly
             Assert.IsTrue(afterCount >= initialCount,
@@ -193,7 +193,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             // Test multiple sequential calls (simulating rapid successive calls)
             for (int i = 0; i < results.Length; i++)
             {
-                results[i] = _tool.GetLogs(maxEntries: 100);
+                results[i] = _tool.GetLogs(maxEntries: 100).Entries;
                 Assert.IsNotNull(results[i], $"Call {i} should have completed successfully");
             }
 
@@ -263,7 +263,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             UnityCopilotPluginEditor.Instance.LogCollector?.Save();
 
             // Step 3: Get logs - should only contain action logs
-            var result = _tool.GetLogs(maxEntries: 1000);
+            var result = _tool.GetLogs(maxEntries: 1000).Entries;
 
             Assert.IsTrue(result.Any(entry => entry.Message.Contains(actionLog)),
                 "Should contain action log.");

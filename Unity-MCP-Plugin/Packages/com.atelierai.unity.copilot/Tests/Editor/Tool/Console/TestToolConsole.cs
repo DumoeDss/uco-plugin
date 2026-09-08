@@ -39,26 +39,26 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             _logCollector?.Dispose();
         }
 
-        void ResultValidation(LogEntry[] result)
+        void ResultValidation(ConsoleLogsQueryResult result)
         {
             Debug.Log($"[{nameof(TestToolConsole)}] Result:\n{result}");
             Assert.IsNotNull(result, "Result should not be null.");
         }
 
-        void ResultValidationExpected(LogEntry[] result, params string[] expectedLines)
+        void ResultValidationExpected(ConsoleLogsQueryResult result, params string[] expectedLines)
         {
             Debug.Log($"[{nameof(TestToolConsole)}] Result:\n{result}");
             Assert.IsNotNull(result, "Result should not be null.");
-            Assert.IsNotEmpty(result, "Result should not be empty.");
+            Assert.IsNotEmpty(result.Entries, "Result should not be empty.");
 
             if (expectedLines != null)
             {
                 foreach (var line in expectedLines)
-                    Assert.IsTrue(result.Any(entry => entry.Message.Contains(line)), $"Should contain expected line: {line}");
+                    Assert.IsTrue(result.Entries.Any(entry => entry.Message.Contains(line)), $"Should contain expected line: {line}");
             }
         }
 
-        void ResultValidationUnexpected(LogEntry[] result, params string[] unexpectedLines)
+        void ResultValidationUnexpected(ConsoleLogsQueryResult result, params string[] unexpectedLines)
         {
             Debug.Log($"[{nameof(TestToolConsole)}] Result:\n{result}");
             Assert.IsNotNull(result, "Result should not be null.");
@@ -66,7 +66,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             if (unexpectedLines != null)
             {
                 foreach (var line in unexpectedLines)
-                    Assert.IsFalse(result.Any(entry => entry.Message.Contains(line)), $"Should not contain unexpected line: {line}");
+                    Assert.IsFalse(result.Entries.Any(entry => entry.Message.Contains(line)), $"Should not contain unexpected line: {line}");
             }
         }
 
@@ -119,7 +119,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             ResultValidation(result);
 
             // Count the number of log entries in the result
-            var lines = result
+            var lines = result.Entries
                 .Where(entry => entry.Message.Contains("Test log"))
                 .ToArray();
 
@@ -144,8 +144,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // Assert
             ResultValidation(result);
-            Assert.IsTrue(result.Any(entry => entry.LogType == LogType.Warning), "Should contain warning logs");
-            Assert.IsFalse(result.Any(entry => entry.LogType == LogType.Log), "Should NOT contain log logs");
+            Assert.IsTrue(result.Entries.Any(entry => entry.LogType == LogType.Warning), "Should contain warning logs");
+            Assert.IsFalse(result.Entries.Any(entry => entry.LogType == LogType.Log), "Should NOT contain log logs");
         }
 
         [UnityTest]
@@ -219,7 +219,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             ResultValidation(result);
 
             // Stack traces should be included for warnings
-            if (result.Any(entry => entry.LogType == LogType.Warning))
+            if (result.Entries.Any(entry => entry.LogType == LogType.Warning))
             {
                 // Note: In Unity editor, stack traces might not always be present for all log types
                 // This test verifies the parameter is handled correctly
@@ -283,10 +283,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ResultValidation(result);
 
                 if (logType == LogType.Log)
-                    Assert.IsTrue(result.Any(entry => entry.Message == regularLogMessage), $"Should contain regular log message for '{logType}' filter.");
+                    Assert.IsTrue(result.Entries.Any(entry => entry.Message == regularLogMessage), $"Should contain regular log message for '{logType}' filter.");
 
                 if (logType == LogType.Warning)
-                    Assert.IsTrue(result.Any(entry => entry.Message == warningLogMessage), $"Should contain warning log message for '{logType}' filter.");
+                    Assert.IsTrue(result.Entries.Any(entry => entry.Message == warningLogMessage), $"Should contain warning log message for '{logType}' filter.");
             }
         }
 
@@ -412,14 +412,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // Verify logs exist
             var logsBefore = _tool.GetLogs();
-            Assert.IsTrue(logsBefore.Length > 0, "Should have logs before clearing.");
+            Assert.IsTrue(logsBefore.Entries.Length > 0, "Should have logs before clearing.");
 
             // Act
             _tool.ClearLogs();
 
             // Assert
             var logsAfter = _tool.GetLogs();
-            Assert.AreEqual(0, logsAfter.Length, "Should have no logs after clearing.");
+            Assert.AreEqual(0, logsAfter.Entries.Length, "Should have no logs after clearing.");
         }
 
         [UnityTest]
@@ -447,9 +447,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // Assert: Only new logs should be present
             var result = _tool.GetLogs();
-            Assert.IsTrue(result.Any(entry => entry.Message.Contains(newLog)),
+            Assert.IsTrue(result.Entries.Any(entry => entry.Message.Contains(newLog)),
                 "Should contain the new log message.");
-            Assert.IsFalse(result.Any(entry => entry.Message.Contains(oldLog)),
+            Assert.IsFalse(result.Entries.Any(entry => entry.Message.Contains(oldLog)),
                 "Should NOT contain the old log message.");
         }
 

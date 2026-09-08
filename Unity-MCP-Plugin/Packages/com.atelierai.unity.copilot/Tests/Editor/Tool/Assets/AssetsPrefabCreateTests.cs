@@ -11,7 +11,6 @@
 #nullable enable
 #if UNITY_6000_5_OR_NEWER
 using System.Collections;
-using System.Text.RegularExpressions;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using NUnit.Framework;
 using UnityEditor;
@@ -271,13 +270,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         // ================================================================
         // Error cases
         // ================================================================
-
-        static void ExpectToolErrorLogs()
-        {
-            LogAssert.Expect(LogType.Exception, new Regex("ArgumentException"));
-            LogAssert.Expect(LogType.Error, new Regex("Tool execution failed"));
-            LogAssert.Expect(LogType.Error, new Regex("Error Response to AI"));
-        }
+        // Console separation (COCli-07): the runner/manager failure logs these
+        // tests used to pin with LogAssert no longer reach the Unity Console
+        // while the plugin diagnostics channel is installed. Each error test
+        // asserts the same evidence through the LogCollector API after the
+        // call (see BaseTest.AssertToolErrorDiagnostics).
 
         [UnityTest]
         public IEnumerator Prefab_Create_EmptyPath_ReturnsError()
@@ -285,12 +282,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var go = new GameObject("TestGO_EmptyPath");
             var id = go.GetEntityId();
 
-            ExpectToolErrorLogs();
-
             var jsonResult = RunToolRaw(Tool_Assets_Prefab.AssetsPrefabCreateToolId,
                 $@"{{""prefabAssetPath"":"""",""gameObjectRef"":{{""instanceID"":{id}}}}}");
 
             StringAssert.Contains("Prefab path is empty", jsonResult);
+            AssertToolErrorDiagnostics("Prefab path is empty");
             yield return null;
         }
 
@@ -301,12 +297,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var go = new GameObject("TestGO_InvalidExt");
             var id = go.GetEntityId();
 
-            ExpectToolErrorLogs();
-
             var jsonResult = RunToolRaw(Tool_Assets_Prefab.AssetsPrefabCreateToolId,
                 $@"{{""prefabAssetPath"":""{TestFolder}/NotAPrefab.txt"",""gameObjectRef"":{{""instanceID"":{id}}}}}");
 
             StringAssert.Contains("invalid", jsonResult);
+            AssertToolErrorDiagnostics("is invalid");
             yield return null;
         }
 
@@ -315,12 +310,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             EnsureTestFolder();
 
-            ExpectToolErrorLogs();
-
             var jsonResult = RunToolRaw(Tool_Assets_Prefab.AssetsPrefabCreateToolId,
                 $@"{{""prefabAssetPath"":""{TestFolder}/ShouldFail.prefab"",""gameObjectRef"":{{""instanceID"":-999999}}}}");
 
             StringAssert.Contains("Not found", jsonResult);
+            AssertToolErrorDiagnostics("Not found");
             yield return null;
         }
 
@@ -329,12 +323,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             EnsureTestFolder();
 
-            ExpectToolErrorLogs();
-
             var jsonResult = RunToolRaw(Tool_Assets_Prefab.AssetsPrefabCreateToolId,
                 $@"{{""prefabAssetPath"":""{TestFolder}/ShouldFail.prefab""}}");
 
             StringAssert.Contains("must be provided", jsonResult);
+            AssertToolErrorDiagnostics("must be provided");
             yield return null;
         }
 
@@ -343,12 +336,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             EnsureTestFolder();
 
-            ExpectToolErrorLogs();
-
             var jsonResult = RunToolRaw(Tool_Assets_Prefab.AssetsPrefabCreateToolId,
                 $@"{{""prefabAssetPath"":""{TestFolder}/ShouldFail.prefab"",""sourcePrefabAssetPath"":""{TestFolder}/NonExistent.prefab""}}");
 
             StringAssert.Contains("not found", jsonResult);
+            AssertToolErrorDiagnostics("not found");
             yield return null;
         }
     }

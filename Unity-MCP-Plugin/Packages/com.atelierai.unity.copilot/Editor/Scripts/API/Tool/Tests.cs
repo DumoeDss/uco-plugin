@@ -154,6 +154,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 return;
             }
 
+            // Safety net for abnormal terminations (timeout, interrupted reload)
+            // whose completion callback never runs: reclaim any persisted
+            // sandbox context so the Editor does not keep a sandbox scene open.
+            // Idempotent — the normal RunFinished path already consumed it.
+            _ = TestRunSceneSandbox.RestoreForOperation(operationId);
+
             if (string.Equals(SessionState.GetString(PendingTestOperationIdKey, string.Empty),
                     operationId, StringComparison.Ordinal))
             {
@@ -270,7 +276,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     return;
                 }
 
-                StartDiscoveredTests(operationId, testMode, filterParams, discovery);
+                StartDiscoveredTests(operationId, testMode, filterParams, discovery,
+                    metadata?.SandboxScene ?? false);
             }
             catch (Exception ex)
             {

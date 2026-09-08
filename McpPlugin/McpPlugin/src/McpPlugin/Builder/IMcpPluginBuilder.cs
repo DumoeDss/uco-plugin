@@ -39,6 +39,7 @@ namespace com.IvanMurzak.McpPlugin
             where T : class, IToolExecutionMiddleware;
         IMcpPluginBuilder AddToolExecutionMiddleware(IToolExecutionMiddleware middleware);
         IMcpPluginBuilder WithProjectPathPolicy(ProjectPathPolicy policy);
+        IMcpPluginBuilder WithHandshakeIdentity(com.IvanMurzak.McpPlugin.Common.IHandshakeIdentity identity);
         IMcpPluginBuilder WithToolExecutionScheduler(IToolExecutionScheduler scheduler);
 
         // Prompt methods

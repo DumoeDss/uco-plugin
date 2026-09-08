@@ -31,5 +31,20 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
 
         [JsonPropertyName("generation")]
         public int Generation { get; set; }
+
+        // ── bridge-identity-v1 members (additive, capability-gated) ─────────
+        // Populated only when the host supplies an IHandshakeIdentity; older
+        // servers ignore them and older peers of this client never set them.
+        [JsonPropertyName("projectPath")]
+        public string? ProjectPath { get; set; }
+
+        [JsonPropertyName("editorPid")]
+        public int? EditorPid { get; set; }
+
+        [JsonPropertyName("unityVersion")]
+        public string? UnityVersion { get; set; }
+
+        [JsonPropertyName("instanceId")]
+        public string? InstanceId { get; set; }
     }
 }

@@ -165,6 +165,77 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             => LogAssert.ignoreFailingMessages = true;
 
         /// <summary>
+        /// The plugin's log collector — the sink of the console-separated
+        /// diagnostics channel (COCli-07). Infrastructure failure logs from
+        /// the tool runner and the manager land here instead of the Unity
+        /// Console, so diagnostics assertions query this collector.
+        /// </summary>
+        protected static UnityLogCollector DiagnosticsCollector
+            => UnityCopilotPluginEditor.Instance.LogCollector
+               ?? throw new InvalidOperationException(
+                   "The plugin log collector must be installed (diagnostics channel sink) to assert console-separated diagnostics.");
+
+        /// <summary>
+        /// Console separation (COCli-07) moved logger-routed infrastructure
+        /// diagnostics out of the Unity Console and into the plugin log
+        /// collector, so <c>LogAssert</c> can no longer observe them. This
+        /// asserts through the LogCollector API that the channel received an
+        /// entry of <paramref name="logType"/> whose message contains every
+        /// given text. The window is bounded to recent entries so leftovers
+        /// from an earlier session's cache file cannot satisfy the assertion.
+        /// </summary>
+        protected static void AssertDiagnosticsContains(
+            LogType logType, string text, UnityLogCollector? collector = null)
+        {
+            var entries = (collector ?? DiagnosticsCollector).QueryDetailed(
+                maxEntries: 200, logTypeFilter: logType,
+                includeStackTrace: true, lastMinutes: 2).Entries;
+            var match = Array.Find(entries, entry => entry.Message.Contains(text));
+            Assert.IsNotNull(match,
+                $"Diagnostics channel should contain a {logType} entry mentioning '{text}' " +
+                $"(checked {entries.Length} recent {logType} entries).");
+        }
+
+        /// <summary>
+        /// Replacement for the former <c>LogAssert.Expect</c> trio
+        /// (Exception "ArgumentException" / Error "Tool execution failed" /
+        /// Error "Error Response to AI") around an erroring tool call: with
+        /// console separation the same evidence lives in the plugin
+        /// diagnostics channel — the runner logged the failure (carrying the
+        /// exception detail; the channel flattens wrapper exception types, so
+        /// the exact exception message is the distinguishing evidence) and
+        /// the manager logged the error response returned to the caller.
+        /// Call AFTER the tool call; <paramref name="errorText"/> is the
+        /// distinct error message the test asserts in the response.
+        /// </summary>
+        protected static void AssertToolErrorDiagnostics(
+            string errorText, UnityLogCollector? collector = null)
+        {
+            var errors = (collector ?? DiagnosticsCollector).QueryDetailed(
+                maxEntries: 200, logTypeFilter: LogType.Error,
+                includeStackTrace: true, lastMinutes: 2).Entries;
+
+            // The runner's failure log (ToolRunnerCollection). The manager's
+            // "Error Response to AI" line quotes the same "Tool execution
+            // failed for …" text, so exclude it here to grab the entry that
+            // actually carries the exception detail.
+            var failure = Array.Find(errors, entry =>
+                entry.Message.Contains("Tool execution failed")
+                && entry.Message.Contains(errorText)
+                && !entry.Message.Contains("Error Response to AI"));
+            Assert.IsNotNull(failure,
+                $"Diagnostics channel should contain the tool runner's failure log mentioning '{errorText}'.");
+
+            Assert.That(failure!.Message + failure.StackTrace, Does.Contain("Exception"),
+                "The runner's failure log should carry the exception detail.");
+
+            var response = Array.Find(errors, entry =>
+                entry.Message.Contains("Error Response to AI") && entry.Message.Contains(errorText));
+            Assert.IsNotNull(response,
+                $"Diagnostics channel should contain the manager's error-response log mentioning '{errorText}'.");
+        }
+
+        /// <summary>
         /// g-005 no-bypass: pilot Scene/GameObject/Component tool bodies refuse
         /// to mutate outside an authoring transaction. Tests that call a tool
         /// method directly (to assert reflected patch semantics, not policy)

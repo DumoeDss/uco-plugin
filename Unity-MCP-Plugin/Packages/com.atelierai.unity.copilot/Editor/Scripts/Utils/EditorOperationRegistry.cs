@@ -17,6 +17,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
@@ -34,8 +35,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         public string CreatedAtUtc = string.Empty;
         public string UpdatedAtUtc = string.Empty;
         public string? CompletedAtUtc;
+        public string? StartedAtUtc;
         public int EditorPid;
         public string DomainGeneration = string.Empty;
+        public string? SourceRevision;
         public double Progress = -1;
         public bool CancellationRequested;
         public string? CancellationRequestedAtUtc;
@@ -48,8 +51,30 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         public bool IsTerminal => EditorOperationRegistry.IsTerminalStatus(Status);
 
+        /// <summary>
+        /// Every durable operation is executed by its own owner pipeline; no
+        /// result reuse or filter-keyed cache exists. The envelope states this
+        /// so callers can stop hand-rolling cache avoidance (COCli-03).
+        /// </summary>
+        public string Execution => "fresh";
+
+        /// <summary>
+        /// Structured blocked cause for nonterminal operations waiting on an
+        /// external condition (compilation, a previous run settling, capacity
+        /// admission, cancellation pending). Null while running freely or
+        /// terminal — blocked is never a failure.
+        /// </summary>
+        public EditorOperationBlocked? Blocked => EditorOperationRegistry.BlockedCauseFor(this);
+
         internal EditorOperationInfo Clone()
             => (EditorOperationInfo)MemberwiseClone();
+    }
+
+    [Serializable]
+    public sealed class EditorOperationBlocked
+    {
+        public string Cause = string.Empty;
+        public int RetryAfterMs = 250;
     }
 
     [Serializable]
@@ -138,7 +163,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             string phase = "queued",
             string? metadataJson = null,
             string? ownerId = null,
-            string reloadBehavior = "interrupt")
+            string reloadBehavior = "interrupt",
+            string? sourceRevision = null)
         {
             var normalizedKind = BoundRequiredIdentifier(kind, nameof(kind));
             var normalizedOwner = BoundIdentifier(ownerId, 160, normalizedKind);
@@ -177,6 +203,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     UpdatedAtUtc = now,
                     EditorPid = EditorPid,
                     DomainGeneration = DomainGeneration,
+                    SourceRevision = string.IsNullOrWhiteSpace(sourceRevision)
+                        ? null
+                        : BoundIdentifier(sourceRevision, 200, null),
                     MetadataJson = BoundJson(metadataJson)
                 };
                 s_operations[operation.OperationId] = operation;
@@ -352,6 +381,100 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 || status == "cancelled" || status == "interrupted";
 
         /// <summary>
+        /// Project a structured blocked cause for a nonterminal operation from
+        /// its phase vocabulary. Blocked is waiting-on-an-external-condition —
+        /// never a failure — and carries a retry-after hint when a bound is
+        /// known (COCli-03).
+        /// </summary>
+        public static EditorOperationBlocked? BlockedCauseFor(EditorOperationInfo operation)
+        {
+            if (operation == null || operation.IsTerminal) return null;
+            var phase = operation.Phase ?? string.Empty;
+            if (phase.StartsWith("waiting-for-compilation", StringComparison.Ordinal))
+                return new EditorOperationBlocked { Cause = "compilation", RetryAfterMs = 500 };
+            if (phase.StartsWith("waiting-for-previous-test-run", StringComparison.Ordinal))
+                return new EditorOperationBlocked { Cause = "previous-run-settling", RetryAfterMs = 250 };
+            if (phase.StartsWith("cancellation-pending", StringComparison.Ordinal)
+                || phase.StartsWith("cancelling", StringComparison.Ordinal)
+                || phase.StartsWith("execution-timeout-cancellation-pending", StringComparison.Ordinal))
+                return new EditorOperationBlocked { Cause = "cancellation-pending", RetryAfterMs = 250 };
+            if (phase.StartsWith("executing", StringComparison.Ordinal)
+                || phase.StartsWith("awaiting", StringComparison.Ordinal)
+                || phase.StartsWith("running", StringComparison.Ordinal))
+                return null;
+            // queued / preparing / scheduled — admission and owner scheduling.
+            return new EditorOperationBlocked { Cause = "capacity-admission", RetryAfterMs = 250 };
+        }
+
+        // ── compile epoch (COCli-03 sourceRevision) ─────────────────────────
+        // Monotonic per-Editor-session compilation counter, persisted through
+        // SessionState so it survives the domain reloads it counts. The
+        // InitializeOnLoad hook below seeds it at 1 (the startup compile).
+        const string CompileEpochKey = "UnityCopilot.ScriptCompilationEpoch";
+
+        internal static int CompileEpoch
+        {
+            get
+            {
+                var value = SessionState.GetInt(CompileEpochKey, 0);
+                if (value <= 0)
+                {
+                    // Seed the startup compile so the epoch is observable from boot.
+                    value = 1;
+                    SessionState.SetInt(CompileEpochKey, value);
+                }
+                return value;
+            }
+        }
+
+        internal static void NoteCompilationFinished()
+            => SessionState.SetInt(CompileEpochKey, CompileEpoch + 1);
+
+        /// <summary>
+        /// Capture the compile epoch that produced the code an operation is
+        /// about to execute: the Editor's compilation counter when observable,
+        /// else the max write time of loaded non-dynamic assemblies.
+        /// </summary>
+        public static string CaptureSourceRevision()
+        {
+            var domain = DomainGeneration;
+            int epoch;
+            try
+            {
+                epoch = CompileEpoch;
+            }
+            catch
+            {
+                epoch = 0;
+            }
+            if (epoch > 0)
+                return $"compile:{domain}:{epoch}";
+            return $"compile:{domain}:asm-{MaxReferencedAssemblyWriteTicks().ToString(CultureInfo.InvariantCulture)}";
+        }
+
+        static long MaxReferencedAssemblyWriteTicks()
+        {
+            long max = 0;
+            try
+            {
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (assembly.IsDynamic) continue;
+                    var location = assembly.Location;
+                    if (string.IsNullOrEmpty(location)) continue;
+                    try
+                    {
+                        var ticks = File.GetLastWriteTimeUtc(location).Ticks;
+                        if (ticks > max) max = ticks;
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return max;
+        }
+
+        /// <summary>
         /// Compatibility entry point. Reconciliation is owner-routed and may only run after
         /// deterministic owner registration.
         /// </summary>
@@ -411,6 +534,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 operation.ResultJson = BoundJson(resultJson);
                 operation.ErrorCode = errorCode;
                 operation.ErrorMessage = BoundDiagnostic(errorMessage);
+                if (status == "running" && string.IsNullOrEmpty(operation.StartedAtUtc))
+                {
+                    operation.StartedAtUtc = operation.UpdatedAtUtc;
+                }
                 if (IsTerminalStatus(status))
                 {
                     operation.CompletedAtUtc = operation.UpdatedAtUtc;
@@ -493,6 +620,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     ? operation.Status
                     : "interrupted";
             operation.Phase = BoundPhase(operation.Phase, operation.Status);
+            operation.SourceRevision = string.IsNullOrWhiteSpace(operation.SourceRevision)
+                ? null
+                : BoundIdentifier(operation.SourceRevision, 200, null);
             operation.MetadataJson = BoundJson(operation.MetadataJson);
             operation.ResultJson = BoundJson(operation.ResultJson);
             operation.DiagnosticsJson = BoundJson(operation.DiagnosticsJson);
@@ -703,5 +833,22 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         }
 
         static string UtcNow() => DateTime.UtcNow.ToString("O");
+    }
+
+    /// <summary>
+    /// Maintains the per-session script-compilation epoch used by
+    /// <see cref="EditorOperationRegistry.CaptureSourceRevision"/>. The counter
+    /// survives domain reloads through SessionState; each finished compilation
+    /// (including the reload-triggering one) increments it.
+    /// </summary>
+    [InitializeOnLoad]
+    internal static class EditorCompileEpochCounter
+    {
+        static EditorCompileEpochCounter()
+        {
+            // Seed the startup compile so the epoch is observable from boot.
+            _ = EditorOperationRegistry.CompileEpoch;
+            CompilationPipeline.compilationFinished += _ => EditorOperationRegistry.NoteCompilationFinished();
+        }
     }
 }

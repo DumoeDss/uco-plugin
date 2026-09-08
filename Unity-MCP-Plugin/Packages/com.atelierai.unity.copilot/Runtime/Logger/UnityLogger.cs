@@ -110,6 +110,31 @@ namespace com.AtelierAI.Unity.Copilot.Utils
             var message = $"{logLevelShort} [{DateTime.Now:HH:mm:ss:ffff}] [AI] {_categoryName} {formatter(state, exception)}";
 #endif
 
+#if UNITY_EDITOR
+            // COCli-07: plugin/bridge/tool diagnostics go to the collector-only
+            // channel by default so the Editor Console stays reserved for
+            // product and Unity output. Without a sink (pre-initialization)
+            // the channel keeps the legacy console behavior.
+            if (PluginDiagnostics.HasSink)
+            {
+                var exceptionText = exception == null
+                    ? null
+                    : exception.GetType().Name + ": " + exception.Message;
+                PluginDiagnostics.Append(
+                    source: ClassifySource(_categoryName),
+                    logType: logLevel switch
+                    {
+                        LogLevelMicrosoft.Critical => UnityEngine.LogType.Exception,
+                        LogLevelMicrosoft.Error => UnityEngine.LogType.Error,
+                        LogLevelMicrosoft.Warning => UnityEngine.LogType.Warning,
+                        _ => UnityEngine.LogType.Log,
+                    },
+                    message: message,
+                    stackTrace: exceptionText);
+                return;
+            }
+#endif
+
             switch (logLevel)
             {
                 case LogLevelMicrosoft.Critical:
@@ -132,5 +157,15 @@ namespace com.AtelierAI.Unity.Copilot.Utils
                     break;
             }
         }
+
+        /// <summary>
+        /// Emission-site source classification: categories under a tool's
+        /// wrapper (e.g. <c>Tool_Script.Execute</c>) are tool diagnostics;
+        /// everything else the plugin emits is bridge infrastructure.
+        /// </summary>
+        static string ClassifySource(string categoryName)
+            => categoryName.StartsWith("Tool_", StringComparison.Ordinal)
+                ? LogEntry.SourceTool
+                : LogEntry.SourceBridge;
     }
 }

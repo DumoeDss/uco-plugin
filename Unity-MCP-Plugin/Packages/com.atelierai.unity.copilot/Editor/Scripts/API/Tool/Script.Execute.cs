@@ -19,6 +19,7 @@ using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
+using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Logging;
@@ -54,7 +55,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "while body-only mode (isMethodBody=true) auto-generates the boilerplate so you only " +
             "provide the method body. Unity objects (GameObject, Component, etc.) can be passed as " +
             "parameters using their Ref types (GameObjectRef, ComponentRef, etc.) or directly by type.")]
-        public static SerializedMember? Execute
+        public static ScriptExecuteResult Execute
         (
             [Description("C# code to compile and execute. " +
                 "In full code mode (default, isMethodBody=false): must define a complete class with a static method. " +
@@ -94,7 +95,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 "Set to a C# type name to return data: 'int', 'bool', 'string', 'UnityEngine.Vector3', 'System.Collections.Generic.List<string>', etc. " +
                 "When non-void, the body MUST end with a 'return <expr>;' statement; the returned value is serialized back to the caller. " +
                 "Full-code mode declares its own return type in the code; this is informational there.")]
-            string returnType = "void"
+            string returnType = "void",
+            [Description("Execute inside a disposable sandbox scene: a new untitled scene is opened for the work, " +
+                "and the previously active scene setup, selection, and dirty state are restored afterwards. " +
+                "The result reports whether restoration succeeded. Default false.")]
+            bool sandboxScene = false
         )
         {
             if (string.IsNullOrEmpty(csharpCode))
@@ -126,31 +131,81 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             {
                 var logger = UnityLoggerFactory.LoggerFactory.CreateLogger("Tool_Script.Execute");
 
-                // Compile C# code using Roslyn and execute it immediately
-                if (!ExecuteCSharpCode(
-                    className: className,
-                    methodName: methodName,
-                    code: codeToCompile,
-                    parameters: parameters,
-                    returnValue: out var result,
-                    error: out var error,
-                    logger: logger))
+                // Scene hygiene (COCli-06): the mutation baseline is captured
+                // before any scene-affecting work; a sandboxed run additionally
+                // captures the full restorable setup and opens a disposable
+                // untitled scene for the work.
+                var baseline = EditorSceneSandbox.CaptureMutationBaseline();
+                var stateCapture = sandboxScene ? EditorSceneSandbox.CaptureState() : null;
+                var sandboxSceneHandle = sandboxScene
+                    ? EditorSceneSandbox.OpenSandboxScene().handle
+                    : 0;
+
+                var outcome = new ScriptExecuteResult
                 {
-                    throw new Exception(error);
+                    SandboxUsed = sandboxScene ? true : null,
+                };
+                try
+                {
+                    // Compile C# code using Roslyn and execute it immediately
+                    if (!ExecuteCSharpCode(
+                        className: className,
+                        methodName: methodName,
+                        code: codeToCompile,
+                        parameters: parameters,
+                        returnValue: out var result,
+                        error: out var error,
+                        logger: logger))
+                    {
+                        throw new Exception(error);
+                    }
+
+                    if (result is not null)
+                    {
+                        if (result is SerializedMember serializedResult)
+                        {
+                            outcome.Value = serializedResult;
+                        }
+                        else
+                        {
+                            var reflector = UnityCopilotPluginEditor.Instance.Reflector ?? throw new Exception("Reflector is not available.");
+                            outcome.Value = reflector.Serialize(
+                                obj: result,
+                                logger: logger);
+                        }
+                    }
+                }
+                finally
+                {
+                    // Restore runs even when the script failed, so a throwing
+                    // probe still cannot leave the sandbox scene behind.
+                    if (stateCapture != null)
+                    {
+                        var sandbox = FindSceneByHandle(sandboxSceneHandle);
+                        var restore = EditorSceneSandbox.RestoreCapturedState(stateCapture, sandbox);
+                        outcome.SandboxRestored = restore.Restored;
+                        outcome.SandboxRestoreCause = restore.Cause;
+                    }
+
+                    // The mutation diff runs after restore so a fully restored
+                    // sandbox reports clean, while leaked dirt stays visible.
+                    var report = EditorSceneSandbox.DiffMutation(baseline);
+                    outcome.Mutated = report.Mutated;
+                    outcome.MutatedScenes = report.MutatedScenes;
                 }
 
-                if (result is null)
-                    return null;
-
-                if (result is SerializedMember serializedResult)
-                    return serializedResult;
-
-                var reflector = UnityCopilotPluginEditor.Instance.Reflector ?? throw new Exception("Reflector is not available.");
-
-                return reflector.Serialize(
-                    obj: result,
-                    logger: logger);
+                return outcome;
             });
+        }
+
+        static UnityEngine.SceneManagement.Scene FindSceneByHandle(int handle)
+        {
+            for (var i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+            {
+                var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+                if (scene.handle == handle) return scene;
+            }
+            return default;
         }
 
         static string GenerateFullCode(
@@ -320,13 +375,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 }
                 catch (TargetInvocationException ex)
                 {
-                    error = $"Execution failed. TargetInvocationException: {ex.InnerException?.Message ?? ex.Message}\n{ex.InnerException?.StackTrace ?? ex.StackTrace}";
+                    error = $"Execution failed. TargetInvocationException: {ex.InnerException?.GetType().FullName ?? ex.GetType().FullName}: {ex.InnerException?.Message ?? ex.Message}\n{ex.InnerException?.StackTrace ?? ex.StackTrace}";
                     returnValue = null;
                     return false;
                 }
                 catch (Exception ex)
                 {
-                    error = $"Execution failed: {ex.InnerException?.Message ?? ex.Message}\n{ex.InnerException?.StackTrace ?? ex.StackTrace}";
+                    error = $"Execution failed: {ex.GetType().FullName}: {ex.InnerException?.Message ?? ex.Message}\n{ex.InnerException?.StackTrace ?? ex.StackTrace}";
                     returnValue = null;
                     return false;
                 }

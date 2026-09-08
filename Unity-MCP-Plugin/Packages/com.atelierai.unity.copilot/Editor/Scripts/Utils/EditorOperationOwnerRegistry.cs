@@ -321,7 +321,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         public static EditorOperationInfo Create(
             string kind,
             string phase = "queued",
-            string? metadataJson = null)
+            string? metadataJson = null,
+            string? sourceRevision = null)
         {
             var owner = RequireOwner(kind);
             return EditorOperationRegistry.Create(
@@ -329,7 +330,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 phase,
                 metadataJson,
                 owner.OwnerId,
-                ToWire(owner.ReloadBehavior));
+                ToWire(owner.ReloadBehavior),
+                sourceRevision);
         }
 
         public static EditorOperationContext BeginExecution(

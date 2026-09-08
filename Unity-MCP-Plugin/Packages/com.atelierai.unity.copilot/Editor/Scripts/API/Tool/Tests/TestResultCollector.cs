@@ -302,6 +302,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
                 includeMessageStacktrace: ownership?.IncludeMessageStacktrace ?? IncludeMessageStacktrace.Value,
                 includeLogsStacktrace: ownership?.IncludeLogsStacktrace ?? IncludeLogsStacktrace.Value);
 
+            // Scene hygiene (COCli-06): restore a sandboxed run and report the
+            // observed mutation against the persisted pre-run baseline.
+            var sceneOutcome = TestRunSceneSandbox.RestoreForOperation(ownership?.OperationId);
+            structuredResponse.Mutated = sceneOutcome.Mutation.Mutated;
+            structuredResponse.MutatedScenes = sceneOutcome.Mutation.MutatedScenes;
+            structuredResponse.SandboxRestored = sceneOutcome.SandboxRestored;
+            structuredResponse.SandboxRestoreCause = sceneOutcome.SandboxRestoreCause;
+
             var resultJson = JsonSerializer.Serialize(structuredResponse);
             var completedOwnedOperation = _callbackOwnership.CompleteFromRunFinished(
                 ownership, _summary.FailedTests, _summary.ExecutedTests, resultJson);

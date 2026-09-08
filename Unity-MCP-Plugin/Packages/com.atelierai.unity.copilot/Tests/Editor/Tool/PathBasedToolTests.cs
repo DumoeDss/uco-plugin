@@ -255,11 +255,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var (go, solar, _, _) = BuildSolarFixture();
             var before = solar.globalOrbitSpeedMultiplier;
 
-            // Reflector surfaces the unknown-segment failure as a Unity LogError via the bound
-            // logger. Tell Unity's test framework we expect that error so it does not fail the test.
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
-                new Regex("thisFieldDoesNotExist", RegexOptions.IgnoreCase));
-
             // g-005: direct tool-method invocation requires an explicit authoring transaction.
             using var authoringTransaction = BeginTestAuthoringTransaction();
             var response = new Tool_GameObject().ModifyComponent(
@@ -281,6 +276,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var combined = string.Join("\n", response.Logs!);
             StringAssert.Contains("thisFieldDoesNotExist", combined,
                 "Diagnostic logs should name the failing path so the AI agent can correct itself.");
+            // Console separation (COCli-07): the bound Reflector logger routes
+            // this failure into the plugin diagnostics channel instead of the
+            // Unity Console, so assert it through the LogCollector API.
+            AssertDiagnosticsContains(UnityEngine.LogType.Error, "thisFieldDoesNotExist");
             Assert.AreEqual(before, solar.globalOrbitSpeedMultiplier,
                 "No untouched field should mutate when the only patch fails.");
             yield return null;
