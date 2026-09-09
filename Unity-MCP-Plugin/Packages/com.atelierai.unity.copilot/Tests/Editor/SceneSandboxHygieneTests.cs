@@ -50,7 +50,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void Sandbox_CreatesUntitledScene_AndRestoresSetupSelectionAndDirtyState()
         {
             var capture = EditorSceneSandbox.CaptureState();
+#if UNITY_6000_5_OR_NEWER
+            var baselineSelection = Selection.entityIds
+                .Select(e => UnityEngine.EntityId.ToULong(e)).ToArray();
+#else
             var baselineSelection = Selection.instanceIDs;
+#endif
             var sceneCountBefore = EditorSceneManager.sceneCount;
 
             var sandbox = EditorSceneSandbox.OpenSandboxScene();
@@ -71,7 +76,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             // compare equal to null through the overloaded == operator).
             Assert.That(probe == null, Is.True);
             // Active scene and selection are back to the captured state.
+#if UNITY_6000_5_OR_NEWER
+            Assert.That(Selection.entityIds
+                .Select(e => UnityEngine.EntityId.ToULong(e)).ToArray(),
+                Is.EqualTo(baselineSelection));
+#else
             Assert.That(Selection.instanceIDs, Is.EqualTo(baselineSelection));
+#endif
             var active = SceneManager.GetActiveScene();
             Assert.That(active.handle, Is.Not.EqualTo(sandbox.handle));
             // The user's scene was never dirtied by the sandboxed probe.

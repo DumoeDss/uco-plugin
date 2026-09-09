@@ -138,8 +138,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 var baseline = EditorSceneSandbox.CaptureMutationBaseline();
                 var stateCapture = sandboxScene ? EditorSceneSandbox.CaptureState() : null;
                 var sandboxSceneHandle = sandboxScene
-                    ? EditorSceneSandbox.OpenSandboxScene().handle
-                    : 0;
+                    ? EditorSceneSandbox.HandleOf(EditorSceneSandbox.OpenSandboxScene())
+                    : 0L;
 
                 var outcome = new ScriptExecuteResult
                 {
@@ -181,7 +181,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     // probe still cannot leave the sandbox scene behind.
                     if (stateCapture != null)
                     {
-                        var sandbox = FindSceneByHandle(sandboxSceneHandle);
+                        var sandbox = EditorSceneSandbox.FindOpenSceneByHandle(sandboxSceneHandle);
                         var restore = EditorSceneSandbox.RestoreCapturedState(stateCapture, sandbox);
                         outcome.SandboxRestored = restore.Restored;
                         outcome.SandboxRestoreCause = restore.Cause;
@@ -196,16 +196,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
                 return outcome;
             });
-        }
-
-        static UnityEngine.SceneManagement.Scene FindSceneByHandle(int handle)
-        {
-            for (var i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
-            {
-                var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
-                if (scene.handle == handle) return scene;
-            }
-            return default;
         }
 
         static string GenerateFullCode(

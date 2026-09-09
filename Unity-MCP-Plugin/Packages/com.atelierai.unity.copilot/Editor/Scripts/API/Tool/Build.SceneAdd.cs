@@ -63,7 +63,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(scenePath) == null)
                     throw new ArgumentException(Error.SceneNotFound(scenePath), nameof(scenePath));
 
-                var guid = AssetDatabase.AssetPathToGUID(scenePath);
+                var guid = AssetDatabase.GUIDFromAssetPath(scenePath);
                 var list = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
 
                 // Locate any existing entry by path.
@@ -87,8 +87,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 else
                 {
                     entry = new EditorBuildSettingsScene(scenePath, enabled);
-                    if (!string.IsNullOrEmpty(guid) && GUID.TryParse(guid, out var parsedGuid))
-                        entry.guid = parsedGuid;
+                    entry.guid = guid;
                 }
 
                 var targetIdx = insertAt ?? (existingIdx >= 0 ? existingIdx : list.Count);

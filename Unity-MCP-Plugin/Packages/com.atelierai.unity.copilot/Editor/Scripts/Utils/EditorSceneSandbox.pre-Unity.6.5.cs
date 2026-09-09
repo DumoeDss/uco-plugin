@@ -5,7 +5,7 @@
 */
 
 #nullable enable
-#if UNITY_6000_5_OR_NEWER
+#if !UNITY_6000_5_OR_NEWER
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +20,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// Observed open-scene state captured on the main thread: the manager
     /// setup (paths, loaded, active), the Editor selection, and per-scene
     /// dirty flags. Untitled scenes are identified by runtime handle because
-    /// their path is empty. On Unity 6.5+ selection and scene identities are
-    /// stored as the full 64-bit raw data of <c>EntityId</c>/<c>SceneHandle</c>
-    /// (their high bits carry Version/TypeId and must not be truncated).
+    /// their path is empty.
     /// </summary>
     internal sealed class SceneStateCapture
     {
         public SceneSetupEntry[] Setup = Array.Empty<SceneSetupEntry>();
-        public long[] SelectionInstanceIds = Array.Empty<long>();
-        public long[] DirtySceneHandles = Array.Empty<long>();
+        public int[] SelectionInstanceIds = Array.Empty<int>();
+        public int[] DirtySceneHandles = Array.Empty<int>();
 
         public sealed class SceneSetupEntry
         {
@@ -44,9 +42,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// </summary>
     internal sealed class SceneMutationBaseline
     {
-        public long ActiveSceneHandle;
-        public long[] SelectionInstanceIds = Array.Empty<long>();
-        public long[] DirtySceneHandles = Array.Empty<long>();
+        public int ActiveSceneHandle;
+        public int[] SelectionInstanceIds = Array.Empty<int>();
+        public int[] DirtySceneHandles = Array.Empty<int>();
     }
 
     internal readonly struct SceneMutationReport
@@ -85,11 +83,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                         IsLoaded = entry.isLoaded,
                         IsActive = entry.isActive,
                     }).ToArray(),
-                SelectionInstanceIds = Selection.entityIds
-                    .Select(e => (long)UnityEngine.EntityId.ToULong(e)).ToArray(),
+                SelectionInstanceIds = (int[])Selection.instanceIDs,
                 DirtySceneHandles = OpenScenes()
                     .Where(scene => scene.isDirty)
-                    .Select(scene => (long)scene.handle.GetRawData())
+                    .Select(scene => scene.handle)
                     .ToArray(),
             };
             return capture;
@@ -99,12 +96,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         public static SceneMutationBaseline CaptureMutationBaseline()
             => new()
             {
-                ActiveSceneHandle = (long)SceneManager.GetActiveScene().handle.GetRawData(),
-                SelectionInstanceIds = Selection.entityIds
-                    .Select(e => (long)UnityEngine.EntityId.ToULong(e)).ToArray(),
+                ActiveSceneHandle = SceneManager.GetActiveScene().handle,
+                SelectionInstanceIds = (int[])Selection.instanceIDs,
                 DirtySceneHandles = OpenScenes()
                     .Where(scene => scene.isDirty)
-                    .Select(scene => (long)scene.handle.GetRawData())
+                    .Select(scene => scene.handle)
                     .ToArray(),
             };
 
@@ -120,15 +116,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             var mutatedScenes = new List<string>();
             foreach (var scene in OpenScenes())
             {
-                if (scene.isDirty && !baseline.DirtySceneHandles.Contains((long)scene.handle.GetRawData()))
+                if (scene.isDirty && !baseline.DirtySceneHandles.Contains(scene.handle))
                 {
                     mutatedScenes.Add(scene.path.Length > 0 ? scene.path : "Untitled");
                 }
             }
-            var activeChanged = (long)SceneManager.GetActiveScene().handle.GetRawData() != baseline.ActiveSceneHandle;
-            var selectionChanged = !Selection.entityIds
-                .Select(e => (long)UnityEngine.EntityId.ToULong(e))
-                .SequenceEqual(baseline.SelectionInstanceIds);
+            var activeChanged = SceneManager.GetActiveScene().handle != baseline.ActiveSceneHandle;
+            var selectionChanged = !Selection.instanceIDs.SequenceEqual(baseline.SelectionInstanceIds);
 
             var mutated = mutatedScenes.Count > 0 || activeChanged || selectionChanged;
             return mutated
@@ -161,12 +155,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         }
 
         /// <summary>
-        /// Version-stable identity token for an open scene: the full raw data
-        /// of the Unity 6.5+ <see cref="SceneHandle"/>. Valid for equality
-        /// within one Editor session; pair with
-        /// <see cref="FindOpenSceneByHandle"/>.
+        /// Version-stable identity token for an open scene: the runtime scene
+        /// handle widened to long. Valid for equality within one Editor
+        /// session; pair with <see cref="FindOpenSceneByHandle"/>.
         /// </summary>
-        public static long HandleOf(Scene scene) => (long)scene.handle.GetRawData();
+        public static long HandleOf(Scene scene) => scene.handle;
 
         /// <summary>Find an open scene by a token from <see cref="HandleOf"/>.</summary>
         public static Scene FindOpenSceneByHandle(long handle)
@@ -174,7 +167,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             for (var i = 0; i < EditorSceneManager.sceneCount; i++)
             {
                 var scene = EditorSceneManager.GetSceneAt(i);
-                if ((long)scene.handle.GetRawData() == handle) return scene;
+                if (scene.handle == handle) return scene;
             }
             return default;
         }
@@ -209,11 +202,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
                 // Selection is restored only when it actually drifted, so a
                 // sandbox that never touched the selection is a no-op here.
-                var currentSelectionIds = Selection.entityIds
-                    .Select(e => (long)UnityEngine.EntityId.ToULong(e)).ToArray();
-                if (!currentSelectionIds.SequenceEqual(capture.SelectionInstanceIds))
-                    Selection.entityIds = capture.SelectionInstanceIds
-                        .Select(id => UnityEngine.EntityId.FromULong((ulong)id)).ToArray();
+                if (!Selection.instanceIDs.SequenceEqual(capture.SelectionInstanceIds))
+                    Selection.instanceIDs = (int[])capture.SelectionInstanceIds;
 
                 // Setup drift beyond the sandbox scene (scripts closing/opening
                 // user scenes) is restored from the capture.
@@ -291,8 +281,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 return new SceneStateCapture
                 {
                     Setup = state.Setup ?? Array.Empty<SceneStateCapture.SceneSetupEntry>(),
-                    SelectionInstanceIds = state.SelectionInstanceIds ?? Array.Empty<long>(),
-                    DirtySceneHandles = state.DirtySceneHandles ?? Array.Empty<long>(),
+                    SelectionInstanceIds = state.SelectionInstanceIds ?? Array.Empty<int>(),
+                    DirtySceneHandles = state.DirtySceneHandles ?? Array.Empty<int>(),
                 };
             }
             catch
@@ -305,8 +295,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         {
             public SceneStateCapture.SceneSetupEntry[] Setup { get; set; }
                 = Array.Empty<SceneStateCapture.SceneSetupEntry>();
-            public long[] SelectionInstanceIds { get; set; } = Array.Empty<long>();
-            public long[] DirtySceneHandles { get; set; } = Array.Empty<long>();
+            public int[] SelectionInstanceIds { get; set; } = Array.Empty<int>();
+            public int[] DirtySceneHandles { get; set; } = Array.Empty<int>();
         }
     }
 
@@ -457,21 +447,20 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 }
             }
             var activeChanged = SceneManager.GetActiveScene().path != context.BaselineActivePath;
-            var selectionChanged = !Selection.entityIds
-                .Select(e => (long)UnityEngine.EntityId.ToULong(e))
-                .SequenceEqual(context.BaselineSelectionInstanceIds);
+            var selectionChanged = !Selection.instanceIDs.SequenceEqual(
+                context.BaselineSelectionInstanceIds);
             var mutated = mutatedScenes.Count > 0 || activeChanged || selectionChanged;
             return mutated
                 ? new SceneMutationReport(true, mutatedScenes.ToArray())
                 : SceneMutationReport.None;
         }
 
-        static string[] OpenScenePaths(long[] handles)
+        static string[] OpenScenePaths(int[] handles)
         {
-            var handleSet = new HashSet<long>(handles);
+            var handleSet = new HashSet<int>(handles);
             return Enumerable.Range(0, EditorSceneManager.sceneCount)
                 .Select(EditorSceneManager.GetSceneAt)
-                .Where(scene => handleSet.Contains((long)scene.handle.GetRawData()))
+                .Where(scene => handleSet.Contains(scene.handle))
                 .Select(scene => scene.path)
                 .ToArray();
         }
@@ -480,7 +469,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         {
             public string? CaptureJson { get; set; }
             public string BaselineActivePath { get; set; } = string.Empty;
-            public long[] BaselineSelectionInstanceIds { get; set; } = Array.Empty<long>();
+            public int[] BaselineSelectionInstanceIds { get; set; } = Array.Empty<int>();
             public string[] BaselineDirtyPaths { get; set; } = Array.Empty<string>();
         }
     }
