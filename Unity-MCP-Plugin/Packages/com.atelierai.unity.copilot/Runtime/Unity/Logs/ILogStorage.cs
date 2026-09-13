@@ -14,6 +14,15 @@ using System.Threading.Tasks;
 
 namespace com.AtelierAI.Unity.Copilot
 {
+    public sealed class LogClearResult
+    {
+        public bool Ok { get; set; }
+        public string Strategy { get; set; } = string.Empty;
+        public string? Path { get; set; }
+        public string? RetainedPath { get; set; }
+        public string? Error { get; set; }
+    }
+
     public interface ILogStorage : IDisposable
     {
         Task AppendAsync(params LogEntry[] entries);
@@ -33,6 +42,6 @@ namespace com.AtelierAI.Unity.Copilot
             bool includeStackTrace = false,
             int lastMinutes = 0);
 
-        void Clear();
+        LogClearResult Clear();
     }
 }

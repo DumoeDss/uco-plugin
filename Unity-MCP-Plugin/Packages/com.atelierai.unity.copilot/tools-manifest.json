@@ -54,7 +54,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -74,6 +74,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets and Packages folders."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -292,7 +296,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -312,6 +316,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets and Packages folders."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -374,7 +382,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -394,6 +402,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets and Packages folders."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -439,6 +451,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -446,7 +462,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -592,6 +608,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -599,7 +619,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -658,6 +678,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -665,7 +689,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -870,6 +894,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -877,7 +905,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -936,6 +964,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -943,7 +975,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -986,6 +1018,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -993,7 +1029,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -1095,6 +1131,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -1102,7 +1142,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -1157,6 +1197,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -1164,7 +1208,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -1227,6 +1271,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -1234,7 +1282,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -1455,6 +1503,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -1462,7 +1514,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -1530,7 +1582,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -1550,6 +1602,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets and Packages folders."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -2071,6 +2127,10 @@
               "type": "string",
               "description": "Unique job ID for polling via build-job-get."
             },
+            "OperationId": {
+              "type": "string",
+              "description": "Durable operation id \u2014 same value as JobId; exposed so --wait and generic operation polling work for build-player."
+            },
             "Status": {
               "type": "string",
               "description": "\u0027queued\u0027 | \u0027running\u0027 | \u0027succeeded\u0027 | \u0027failed\u0027 | \u0027cancelled\u0027 | \u0027interrupted\u0027"
@@ -2078,6 +2138,14 @@
             "Phase": {
               "type": "string",
               "description": "Current durable operation phase."
+            },
+            "QueuedSeconds": {
+              "type": "number",
+              "description": "Seconds the job has been waiting before execution (since creation; -1 when unknown). Long-queued jobs with a stable value point at a scheduler that is not ticking."
+            },
+            "Blocked": {
+              "type": "string",
+              "description": "Why the job is not running yet (scheduler/busy cause, e.g. \u0027capacity-admission\u0027, \u0027compilation\u0027), empty when running or terminal."
             },
             "Progress": {
               "type": "number",
@@ -2141,6 +2209,7 @@
             }
           },
           "required": [
+            "QueuedSeconds",
             "Progress",
             "EditorPid",
             "CancellationRequested",
@@ -2191,6 +2260,10 @@
               "type": "string",
               "description": "Unique job ID for polling via build-job-get."
             },
+            "OperationId": {
+              "type": "string",
+              "description": "Durable operation id \u2014 same value as JobId; exposed so --wait and generic operation polling work for build-player."
+            },
             "Status": {
               "type": "string",
               "description": "\u0027queued\u0027 | \u0027running\u0027 | \u0027succeeded\u0027 | \u0027failed\u0027 | \u0027cancelled\u0027 | \u0027interrupted\u0027"
@@ -2198,6 +2271,14 @@
             "Phase": {
               "type": "string",
               "description": "Current durable operation phase."
+            },
+            "QueuedSeconds": {
+              "type": "number",
+              "description": "Seconds the job has been waiting before execution (since creation; -1 when unknown). Long-queued jobs with a stable value point at a scheduler that is not ticking."
+            },
+            "Blocked": {
+              "type": "string",
+              "description": "Why the job is not running yet (scheduler/busy cause, e.g. \u0027capacity-admission\u0027, \u0027compilation\u0027), empty when running or terminal."
             },
             "Progress": {
               "type": "number",
@@ -2261,6 +2342,7 @@
             }
           },
           "required": [
+            "QueuedSeconds",
             "Progress",
             "EditorPid",
             "CancellationRequested",
@@ -2308,6 +2390,10 @@
               "type": "string",
               "description": "Unique job ID for polling via build-job-get."
             },
+            "OperationId": {
+              "type": "string",
+              "description": "Durable operation id \u2014 same value as JobId; exposed so --wait and generic operation polling work for build-player."
+            },
             "Status": {
               "type": "string",
               "description": "\u0027queued\u0027 | \u0027running\u0027 | \u0027succeeded\u0027 | \u0027failed\u0027 | \u0027cancelled\u0027 | \u0027interrupted\u0027"
@@ -2315,6 +2401,14 @@
             "Phase": {
               "type": "string",
               "description": "Current durable operation phase."
+            },
+            "QueuedSeconds": {
+              "type": "number",
+              "description": "Seconds the job has been waiting before execution (since creation; -1 when unknown). Long-queued jobs with a stable value point at a scheduler that is not ticking."
+            },
+            "Blocked": {
+              "type": "string",
+              "description": "Why the job is not running yet (scheduler/busy cause, e.g. \u0027capacity-admission\u0027, \u0027compilation\u0027), empty when running or terminal."
             },
             "Progress": {
               "type": "number",
@@ -2378,6 +2472,7 @@
             }
           },
           "required": [
+            "QueuedSeconds",
             "Progress",
             "EditorPid",
             "CancellationRequested",
@@ -2454,6 +2549,10 @@
               "type": "string",
               "description": "Unique job ID for polling via build-job-get."
             },
+            "OperationId": {
+              "type": "string",
+              "description": "Durable operation id \u2014 same value as JobId; exposed so --wait and generic operation polling work for build-player."
+            },
             "Status": {
               "type": "string",
               "description": "\u0027queued\u0027 | \u0027running\u0027 | \u0027succeeded\u0027 | \u0027failed\u0027 | \u0027cancelled\u0027 | \u0027interrupted\u0027"
@@ -2461,6 +2560,14 @@
             "Phase": {
               "type": "string",
               "description": "Current durable operation phase."
+            },
+            "QueuedSeconds": {
+              "type": "number",
+              "description": "Seconds the job has been waiting before execution (since creation; -1 when unknown). Long-queued jobs with a stable value point at a scheduler that is not ticking."
+            },
+            "Blocked": {
+              "type": "string",
+              "description": "Why the job is not running yet (scheduler/busy cause, e.g. \u0027capacity-admission\u0027, \u0027compilation\u0027), empty when running or terminal."
             },
             "Progress": {
               "type": "number",
@@ -2524,6 +2631,7 @@
             }
           },
           "required": [
+            "QueuedSeconds",
             "Progress",
             "EditorPid",
             "CancellationRequested",
@@ -2990,6 +3098,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -2997,7 +3109,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -3186,6 +3298,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -3193,7 +3309,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -3409,6 +3525,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -3416,7 +3536,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -3628,6 +3748,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -3635,7 +3759,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -3954,6 +4078,59 @@
           "type": "string"
         }
       }
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/com.AtelierAI.Unity.Copilot.Editor.API.ConsoleClearLogsResult"
+        }
+      },
+      "$defs": {
+        "com.AtelierAI.Unity.Copilot.Editor.API.ConsoleClearTargetResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean"
+            },
+            "Strategy": {
+              "type": "string"
+            },
+            "Path": {
+              "type": "string"
+            },
+            "RetainedPath": {
+              "type": "string"
+            },
+            "Error": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        },
+        "com.AtelierAI.Unity.Copilot.Editor.API.ConsoleClearLogsResult": {
+          "type": "object",
+          "properties": {
+            "Ok": {
+              "type": "boolean"
+            },
+            "UnityConsole": {
+              "$ref": "#/$defs/com.AtelierAI.Unity.Copilot.Editor.API.ConsoleClearTargetResult"
+            },
+            "PersistedLog": {
+              "$ref": "#/$defs/com.AtelierAI.Unity.Copilot.Editor.API.ConsoleClearTargetResult"
+            }
+          },
+          "required": [
+            "Ok"
+          ]
+        }
+      },
+      "required": [
+        "result"
+      ]
     }
   },
   {
@@ -5473,7 +5650,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -5502,6 +5679,10 @@
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -5524,7 +5705,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -5534,10 +5715,10 @@
           ],
           "description": "Component reference. Used to find a Component at GameObject."
         },
-        "System.Int32[]": {
+        "UnityEngine.EntityId[]": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/$defs/UnityEngine.EntityId"
           }
         },
         "System.String[]": {
@@ -5550,7 +5731,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -5571,8 +5752,8 @@
               "description": "Returns the top level selection, excluding Prefabs."
             },
             "InstanceIDs": {
-              "$ref": "#/$defs/System.Int32%5B%5D",
-              "description": "The actual unfiltered selection from the Scene returned as instance ids instead of objects."
+              "$ref": "#/$defs/UnityEngine.EntityId%5B%5D",
+              "description": "The actual unfiltered selection from the Scene returned as entity IDs instead of objects."
             },
             "AssetGUIDs": {
               "$ref": "#/$defs/System.String%5B%5D",
@@ -5583,8 +5764,8 @@
               "description": "Returns the active game object. (The one shown in the inspector)."
             },
             "ActiveInstanceID": {
-              "type": "integer",
-              "description": "Returns the instanceID of the actual object selection. Includes Prefabs, non-modifiable objects"
+              "$ref": "#/$defs/UnityEngine.EntityId",
+              "description": "Returns the entity ID of the actual object selection. Includes Prefabs, non-modifiable objects"
             },
             "ActiveObject": {
               "$ref": "#/$defs/AIGD.ObjectRef",
@@ -5628,7 +5809,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -5636,6 +5817,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object instance. It could be GameObject, Component, Asset, etc. Anything extended from UnityEngine.Object."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "AIGD.ObjectRef[]": {
           "type": "array",
@@ -5668,7 +5853,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -5697,6 +5882,10 @@
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -5719,7 +5908,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -5729,10 +5918,10 @@
           ],
           "description": "Component reference. Used to find a Component at GameObject."
         },
-        "System.Int32[]": {
+        "UnityEngine.EntityId[]": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/$defs/UnityEngine.EntityId"
           }
         },
         "System.String[]": {
@@ -5745,7 +5934,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -5766,8 +5955,8 @@
               "description": "Returns the top level selection, excluding Prefabs."
             },
             "InstanceIDs": {
-              "$ref": "#/$defs/System.Int32%5B%5D",
-              "description": "The actual unfiltered selection from the Scene returned as instance ids instead of objects."
+              "$ref": "#/$defs/UnityEngine.EntityId%5B%5D",
+              "description": "The actual unfiltered selection from the Scene returned as entity IDs instead of objects."
             },
             "AssetGUIDs": {
               "$ref": "#/$defs/System.String%5B%5D",
@@ -5778,8 +5967,8 @@
               "description": "Returns the active game object. (The one shown in the inspector)."
             },
             "ActiveInstanceID": {
-              "type": "integer",
-              "description": "Returns the instanceID of the actual object selection. Includes Prefabs, non-modifiable objects"
+              "$ref": "#/$defs/UnityEngine.EntityId",
+              "description": "Returns the entity ID of the actual object selection. Includes Prefabs, non-modifiable objects"
             },
             "ActiveObject": {
               "$ref": "#/$defs/AIGD.ObjectRef",
@@ -6072,6 +6261,10 @@
             "type": "string"
           }
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -6079,7 +6272,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -6132,7 +6325,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "typeName": {
               "type": "string"
@@ -6150,6 +6343,10 @@
             "instanceID",
             "isEnabled"
           ]
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Collections.Generic.List\u003CSystem.String\u003E": {
           "type": "array",
@@ -6208,6 +6405,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -6215,7 +6416,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -6256,7 +6457,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6308,7 +6509,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6317,6 +6518,10 @@
             "instanceID"
           ],
           "description": "Component reference. Used to find a Component at GameObject."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "AIGD.DestroyComponentsResponse": {
           "type": "object",
@@ -6377,6 +6582,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -6384,7 +6593,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -6425,7 +6634,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6488,7 +6697,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6498,11 +6707,15 @@
           ],
           "description": "Component reference. Used to find a Component at GameObject."
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.ComponentDataShallow": {
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "typeName": {
               "type": "string"
@@ -6722,6 +6935,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -6729,7 +6946,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -6770,7 +6987,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6867,7 +7084,7 @@
               "description": "Component type full name. Sample \u0027UnityEngine.Transform\u0027. If the gameObject has two components of the same type, the output component is unpredictable. Priority: 3. Default value is null."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -6877,11 +7094,15 @@
           ],
           "description": "Component reference. Used to find a Component at GameObject."
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.ComponentDataShallow": {
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "typeName": {
               "type": "string"
@@ -6984,6 +7205,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -6991,7 +7216,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7065,6 +7290,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -7072,7 +7301,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7127,6 +7356,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -7134,7 +7367,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7176,6 +7409,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.DestroyGameObjectResult": {
           "type": "object",
           "properties": {
@@ -7188,7 +7425,7 @@
               "description": "Hierarchy path of the destroyed GameObject."
             },
             "DestroyedInstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the destroyed GameObject."
             }
           },
@@ -7226,7 +7463,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7254,6 +7491,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -7283,7 +7524,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7311,6 +7552,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -7376,6 +7621,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -7383,7 +7632,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7456,7 +7705,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7484,6 +7733,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -7582,7 +7835,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "path": {
               "type": "string"
@@ -7628,7 +7881,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "typeName": {
               "type": "string"
@@ -7714,7 +7967,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7742,6 +7995,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -7911,7 +8168,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -7939,6 +8196,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -8964,6 +9225,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -8971,7 +9236,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -9037,7 +9302,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -9065,6 +9330,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -9590,11 +9859,15 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.ObjectRef": {
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -9726,11 +9999,15 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.ObjectRef": {
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -9817,7 +10094,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -9825,6 +10102,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object instance. It could be GameObject, Component, Asset, etc. Anything extended from UnityEngine.Object."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "com.IvanMurzak.ReflectorNet.Model.SerializedMember": {
           "type": "object",
@@ -10480,6 +10761,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -10487,7 +10772,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -10631,6 +10916,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -10638,7 +10927,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -10894,6 +11183,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -10901,7 +11194,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -11040,6 +11333,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -11047,7 +11344,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -11212,6 +11509,10 @@
           ],
           "additionalProperties": false
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "com.AtelierAI.Unity.Copilot.Editor.API.Tool_Physics\u002BRaycastResult": {
           "type": "object",
           "properties": {
@@ -11236,7 +11537,7 @@
               "description": "Slash-separated hierarchy path of the hit collider\u0027s GameObject."
             },
             "ColliderInstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the hit collider\u0027s GameObject."
             },
             "Tag": {
@@ -11290,6 +11591,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -11297,7 +11602,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -11810,7 +12115,7 @@
               "description": "Slash-separated hierarchy path of the collider\u0027s GameObject."
             },
             "InstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the collider\u0027s GameObject."
             },
             "Tag": {
@@ -11830,6 +12135,10 @@
             "InstanceId",
             "Layer"
           ]
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "com.AtelierAI.Unity.Copilot.Editor.API.Tool_Physics\u002BOverlapResult[]": {
           "type": "array",
@@ -11943,6 +12252,10 @@
           ],
           "additionalProperties": false
         },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "com.AtelierAI.Unity.Copilot.Editor.API.Tool_Physics\u002BRaycastResult": {
           "type": "object",
           "properties": {
@@ -11967,7 +12280,7 @@
               "description": "Slash-separated hierarchy path of the hit collider\u0027s GameObject."
             },
             "ColliderInstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the hit collider\u0027s GameObject."
             },
             "Tag": {
@@ -12101,7 +12414,7 @@
               "description": "Slash-separated hierarchy path of the hit collider\u0027s GameObject."
             },
             "ColliderInstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the hit collider\u0027s GameObject."
             },
             "Tag": {
@@ -12144,6 +12457,10 @@
             "z"
           ],
           "additionalProperties": false
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "com.AtelierAI.Unity.Copilot.Editor.API.Tool_Physics\u002BRaycastResult[]": {
           "type": "array",
@@ -12225,6 +12542,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -12232,7 +12553,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -12390,6 +12711,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -12397,7 +12722,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -12993,7 +13318,7 @@
               "description": "Slash-separated hierarchy path of the hit collider\u0027s GameObject."
             },
             "ColliderInstanceId": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "Instance ID of the hit collider\u0027s GameObject."
             },
             "Tag": {
@@ -13036,6 +13361,10 @@
             "z"
           ],
           "additionalProperties": false
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "com.AtelierAI.Unity.Copilot.Editor.API.Tool_Physics\u002BRaycastResult[]": {
           "type": "array",
@@ -14441,6 +14770,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "AIGD.SceneDataShallow": {
           "type": "object",
           "properties": {
@@ -14472,7 +14805,7 @@
               "description": "Build index of the Scene in the Build Settings."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -14613,7 +14946,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -14641,6 +14974,10 @@
             "instanceID"
           ],
           "description": "Find GameObject in opened Prefab or in the active Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -14739,7 +15076,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "path": {
               "type": "string"
@@ -14785,7 +15122,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer"
+              "$ref": "#/$defs/UnityEngine.EntityId"
             },
             "typeName": {
               "type": "string"
@@ -14842,7 +15179,7 @@
               "description": "Build index of the Scene in the Build Settings."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -14921,7 +15258,7 @@
               "description": "Build index of the Scene in the Build Settings."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -14935,6 +15272,10 @@
             "instanceID"
           ],
           "description": "Scene reference. Used to find a Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "AIGD.SceneDataShallow[]": {
           "type": "array",
@@ -14978,6 +15319,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -14985,7 +15330,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -15050,7 +15395,7 @@
               "description": "Build index of the Scene in the Build Settings."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -15064,6 +15409,10 @@
             "instanceID"
           ],
           "description": "Scene reference. Used to find a Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "AIGD.SceneDataShallow[]": {
           "type": "array",
@@ -15123,6 +15472,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -15130,7 +15483,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -15195,7 +15548,7 @@
               "description": "Build index of the Scene in the Build Settings."
             },
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027, then it will be used as \u0027null\u0027."
             }
           },
@@ -15209,6 +15562,10 @@
             "instanceID"
           ],
           "description": "Scene reference. Used to find a Scene."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "AIGD.SceneDataShallow[]": {
           "type": "array",
@@ -15258,7 +15615,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If this is \u00270\u0027 and \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027."
             },
             "assetType": {
@@ -15278,6 +15635,10 @@
             "instanceID"
           ],
           "description": "Reference to UnityEngine.Object asset instance. It could be Material, ScriptableObject, Prefab, and any other Asset. Anything located in the Assets and Packages folders."
+        },
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
         },
         "System.Type": {
           "type": "string"
@@ -15326,9 +15687,25 @@
         "height": {
           "type": "integer",
           "description": "Height of the screenshot in pixels."
+        },
+        "outputFile": {
+          "type": "string",
+          "description": "Project-relative PNG output path. When set, returns metadata without base64."
+        },
+        "metadataOnly": {
+          "type": "boolean",
+          "description": "Return bounded metadata without inline base64. Default false."
+        },
+        "asynchronous": {
+          "type": "boolean",
+          "description": "Queue file/metadata capture as a durable operation. Inline image capture remains synchronous."
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -15336,7 +15713,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -15382,8 +15759,17 @@
     "inputSchema": {
       "type": "object",
       "properties": {
-        "nothing": {
-          "type": "string"
+        "outputFile": {
+          "type": "string",
+          "description": "Project-relative PNG output path. When set, returns metadata without base64."
+        },
+        "metadataOnly": {
+          "type": "boolean",
+          "description": "Return bounded metadata without inline base64. Default false."
+        },
+        "asynchronous": {
+          "type": "boolean",
+          "description": "Queue file/metadata capture as a durable operation. Inline image capture remains synchronous."
         }
       }
     }
@@ -15449,9 +15835,25 @@
         "resolution": {
           "$ref": "#/$defs/System.Int32",
           "description": "Output image resolution in pixels (width = height). Default: 512."
+        },
+        "outputFile": {
+          "type": "string",
+          "description": "Project-relative PNG output path. When set, returns metadata without base64."
+        },
+        "metadataOnly": {
+          "type": "boolean",
+          "description": "Return bounded metadata without inline base64. Default false."
+        },
+        "asynchronous": {
+          "type": "boolean",
+          "description": "Queue file/metadata capture as a durable operation. Inline image capture remains synchronous."
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -15459,7 +15861,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -15544,6 +15946,18 @@
         "height": {
           "type": "integer",
           "description": "Height of the screenshot in pixels."
+        },
+        "outputFile": {
+          "type": "string",
+          "description": "Project-relative PNG output path. When set, returns metadata without base64."
+        },
+        "metadataOnly": {
+          "type": "boolean",
+          "description": "Return bounded metadata without inline base64. Default false."
+        },
+        "asynchronous": {
+          "type": "boolean",
+          "description": "Queue file/metadata capture as a durable operation. Inline image capture remains synchronous."
         }
       }
     }
@@ -15786,6 +16200,10 @@
         "sandboxScene": {
           "type": "boolean",
           "description": "Execute inside a disposable sandbox scene: a new untitled scene is opened for the work, and the previously active scene setup, selection, and dirty state are restored afterwards. The result reports whether restoration succeeded. Default false."
+        },
+        "defines": {
+          "$ref": "#/$defs/System.String%5B%5D",
+          "description": "Optional preprocessor symbols for the Roslyn compilation (e.g. ENABLE_PROFILER). Max 16, each a C# identifier of at most 128 characters; duplicates are removed. The Editor assemblies\u0027 own defines are NOT inherited by default \u2014 APIs guarded with [Conditional(\u0022DEFINE\u0022)] or #if DEFINE are compiled out unless you pass the symbol here."
         }
       },
       "$defs": {
@@ -15830,6 +16248,12 @@
             "typeName"
           ],
           "additionalProperties": false
+        },
+        "System.String[]": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -17653,6 +18077,18 @@
               "type": "boolean",
               "description": "True when the group is currently enabled. Note: enforcement is currently a soft hint \u2014 disabled tools remain callable through the upstream request pipeline. Use \u0027tools-set-group-enabled\u0027 to flip state and persist it."
             },
+            "RequestedEnabled": {
+              "type": "boolean",
+              "description": "Requested group state persisted by the user. Same value as Enabled for compatibility."
+            },
+            "EffectiveEnabled": {
+              "type": "boolean",
+              "description": "Actual callability at the current tool boundary. This remains true for populated groups while enforcement is soft."
+            },
+            "Aliases": {
+              "$ref": "#/$defs/System.String%5B%5D",
+              "description": "Accepted aliases that resolve to this canonical group name."
+            },
             "DefaultEnabled": {
               "type": "boolean",
               "description": "Default-enabled flag declared by the attribute. EditorPrefs may override this; the diff between Enabled and DefaultEnabled tells you whether the user has customised the group."
@@ -17672,6 +18108,8 @@
           },
           "required": [
             "Enabled",
+            "RequestedEnabled",
+            "EffectiveEnabled",
             "DefaultEnabled",
             "ToolCount"
           ],
@@ -17733,6 +18171,12 @@
         }
       },
       "$defs": {
+        "System.String[]": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "AIGD.ToolGroupResult": {
           "type": "object",
           "properties": {
@@ -17743,6 +18187,18 @@
             "Enabled": {
               "type": "boolean",
               "description": "Group enabled state after the call."
+            },
+            "RequestedEnabled": {
+              "type": "boolean",
+              "description": "Requested state after the call."
+            },
+            "EffectiveEnabled": {
+              "type": "boolean",
+              "description": "Actual callability after the call."
+            },
+            "Aliases": {
+              "$ref": "#/$defs/System.String%5B%5D",
+              "description": "Accepted aliases for the canonical group."
             },
             "PreviousEnabled": {
               "type": "boolean",
@@ -17763,6 +18219,8 @@
           },
           "required": [
             "Enabled",
+            "RequestedEnabled",
+            "EffectiveEnabled",
             "PreviousEnabled",
             "Changed",
             "ToolCount"
@@ -17868,6 +18326,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -17875,7 +18337,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -17971,6 +18433,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -17978,7 +18444,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -18078,6 +18544,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -18085,7 +18555,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -18767,6 +19237,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -18774,7 +19248,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -18937,6 +19411,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -18944,7 +19422,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -19259,6 +19737,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -19266,7 +19748,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -19521,6 +20003,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -19528,7 +20014,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {
@@ -19814,6 +20300,10 @@
         }
       },
       "$defs": {
+        "UnityEngine.EntityId": {
+          "type": "string",
+          "pattern": "^[0-9]\u002B$"
+        },
         "System.Type": {
           "type": "string"
         },
@@ -19821,7 +20311,7 @@
           "type": "object",
           "properties": {
             "instanceID": {
-              "type": "integer",
+              "$ref": "#/$defs/UnityEngine.EntityId",
               "description": "instanceID of the UnityEngine.Object. If it is \u00270\u0027 and \u0027path\u0027, \u0027name\u0027, \u0027assetPath\u0027 and \u0027assetGuid\u0027 is not provided, empty or null, then it will be used as \u0027null\u0027. Priority: 1 (Recommended)"
             },
             "path": {

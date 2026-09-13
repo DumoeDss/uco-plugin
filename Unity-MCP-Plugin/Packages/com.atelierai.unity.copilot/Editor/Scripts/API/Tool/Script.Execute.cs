@@ -10,6 +10,7 @@
 
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -43,6 +44,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "- **Body-only mode** (`isMethodBody=true`): provide only the method body statements. The tool auto-generates the usings, class, and method header.\n\n" +
             "## Returning data (read Unity state)\n\n" +
             "By default body-only mode returns nothing (`returnType=void`, side-effect only). To **read a value back**, set `returnType` to a C# type and end the body with a `return` statement; the value is serialized back to you. Examples: `returnType='UnityEngine.Vector3'` body `return go.transform.position;`; `returnType='int'` body `return Selection.gameObjects.Length;`; `returnType='string'` body `return AssetDatabase.GetAssetPath(go);`. Forgetting the `return` yields a CS0161 compile error — just add it.\n\n" +
+            "## Preprocessor symbols (`defines`)\n\n" +
+            "The dynamic compilation does NOT inherit the Editor assemblies' preprocessor symbols. Unity APIs guarded with `[Conditional(\"ENABLE_PROFILER\")]` or `#if ENABLE_PROFILER` are silently compiled out unless you pass the symbol explicitly: `defines=[\"ENABLE_PROFILER\"]`. Up to 16 identifiers; malformed entries are dropped.\n\n" +
+            "## JSON in dynamic scripts\n\n" +
+            "`UnityEngine.JsonUtility` is unreliable for composite fields of types defined in the dynamic script assembly (arrays/lists of custom classes may deserialize as null and serialize as missing). For composite payloads prefer `System.Text.Json` (`JsonSerializer.Serialize/Deserialize`), which works normally.\n\n" +
             "## Passing Unity objects as parameters\n\n" +
             "Unity objects (`GameObject`, `Component`, etc.) can be passed as parameters using their `Ref` types (`GameObjectRef`, `ComponentRef`, etc.) or directly by type:\n\n" +
             "- `UnityEngine.GameObject` — resolves an actual GameObject from value `{\"instanceID\": N}`, `{\"name\": \"...\"}`, or `{\"path\": \"...\"}`.\n" +
@@ -99,7 +104,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [Description("Execute inside a disposable sandbox scene: a new untitled scene is opened for the work, " +
                 "and the previously active scene setup, selection, and dirty state are restored afterwards. " +
                 "The result reports whether restoration succeeded. Default false.")]
-            bool sandboxScene = false
+            bool sandboxScene = false,
+            [Description("Optional preprocessor symbols for the Roslyn compilation (e.g. ENABLE_PROFILER). " +
+                "Max 16, each a C# identifier of at most 128 characters; duplicates are removed. " +
+                "The Editor assemblies' own defines are NOT inherited by default — APIs guarded with " +
+                "[Conditional(\"DEFINE\")] or #if DEFINE are compiled out unless you pass the symbol here.")]
+            string[]? defines = null
         )
         {
             if (string.IsNullOrEmpty(csharpCode))
@@ -118,12 +128,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             }
             else
             {
-                if (csharpCode.Contains(className) == false)
-                    throw new Exception($"'{nameof(csharpCode)}' does not contain class '{className}'. Please ensure the class is defined in the provided code.");
-
-                if (csharpCode.Contains(methodName) == false)
-                    throw new Exception($"'{nameof(csharpCode)}' does not contain method '{methodName}'. Please ensure the method is defined in the provided code.");
-
                 codeToCompile = csharpCode;
             }
 
@@ -153,6 +157,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         methodName: methodName,
                         code: codeToCompile,
                         parameters: parameters,
+                        defines: SanitizeDefines(defines),
                         returnValue: out var result,
                         error: out var error,
                         logger: logger))
@@ -247,11 +252,43 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             => AssemblyUtils.AllAssemblies.Any(a =>
                 string.Equals(a.GetName().Name, assemblyName, StringComparison.Ordinal));
 
+        static readonly System.Text.RegularExpressions.Regex DefineSymbolPattern =
+            new("^[A-Za-z_][A-Za-z0-9_]*$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        /// <summary>
+        /// COCli-13: bound and validate caller-supplied preprocessor symbols.
+        /// Invalid entries are dropped (never fail the whole compilation on a
+        /// malformed symbol); the surviving set is de-duplicated, capped at 16
+        /// symbols of at most 128 characters each.
+        /// </summary>
+        static string[]? SanitizeDefines(string[]? defines)
+        {
+            if (defines == null || defines.Length == 0)
+                return null;
+            var accepted = new List<string>(defines.Length);
+            foreach (var raw in defines)
+            {
+                if (string.IsNullOrEmpty(raw))
+                    continue;
+                var symbol = raw.Trim();
+                if (symbol.Length == 0 || symbol.Length > 128)
+                    continue;
+                if (!DefineSymbolPattern.IsMatch(symbol))
+                    continue;
+                if (!accepted.Contains(symbol, StringComparer.Ordinal))
+                    accepted.Add(symbol);
+                if (accepted.Count >= 16)
+                    break;
+            }
+            return accepted.Count > 0 ? accepted.ToArray() : null;
+        }
+
         static bool ExecuteCSharpCode(
             string className,
             string methodName,
             string code,
             SerializedMemberList? parameters,
+            string[]? defines,
             out object? returnValue,
             out string? error,
             ILogger? logger = null)
@@ -277,9 +314,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     logger: logger))
                 ?.ToArray();
 
+            // COCli-13: the Editor assemblies' preprocessor symbols are not
+            // inherited automatically — the caller must pass them explicitly
+            // (e.g. ENABLE_PROFILER) so [Conditional]/#if-guarded Unity APIs
+            // are not silently compiled out of the dynamic script.
+            var parseOptions = defines is { Length: > 0 }
+                ? CSharpParseOptions.Default.WithPreprocessorSymbols(defines)
+                : CSharpParseOptions.Default;
             var compilation = CSharpCompilation.Create(
                 assemblyName: "DynamicAssembly",
-                syntaxTrees: new[] { CSharpSyntaxTree.ParseText(code) },
+                syntaxTrees: new[] { CSharpSyntaxTree.ParseText(code, options: parseOptions) },
                 references: AssemblyUtils.AllAssemblies
                     .Where(a => !a.IsDynamic) // Exclude dynamic assemblies
                     .Where(a => !string.IsNullOrEmpty(a.Location))
@@ -343,10 +387,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 }
                 ms.Seek(0, SeekOrigin.Begin);
                 var assembly = Assembly.Load(ms.ToArray());
-                var type = assembly.GetType(className);
+                var type = ResolveCompiledType(assembly, className, out var typeError);
                 if (type == null)
                 {
-                    error = $"Class '{className}' not found in the compiled assembly.";
+                    error = typeError;
                     returnValue = null;
                     return false;
                 }
@@ -376,6 +420,47 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     return false;
                 }
             }
+        }
+
+        internal static Type? ResolveCompiledType(Assembly assembly, string className, out string? error)
+        {
+            var exact = assembly.GetType(className, throwOnError: false, ignoreCase: false);
+            if (exact != null)
+            {
+                error = null;
+                return exact;
+            }
+
+            var simpleMatches = assembly.GetTypes()
+                .Where(type => string.Equals(type.Name, className, StringComparison.Ordinal))
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .ToArray();
+            if (simpleMatches.Length == 1)
+            {
+                error = null;
+                return simpleMatches[0];
+            }
+            if (simpleMatches.Length > 1)
+            {
+                const int maxCandidates = 8;
+                var candidates = simpleMatches.Take(maxCandidates)
+                    .Select(type => type.FullName ?? type.Name);
+                var suffix = simpleMatches.Length > maxCandidates
+                    ? $", ... ({simpleMatches.Length - maxCandidates} more)"
+                    : string.Empty;
+                error = $"Class name '{className}' is ambiguous. Use an exact fully qualified name. " +
+                    $"Candidates: {string.Join(", ", candidates)}{suffix}.";
+                return null;
+            }
+
+            var available = assembly.GetTypes()
+                .Where(type => type.IsClass)
+                .Select(type => type.FullName ?? type.Name)
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .Take(8);
+            error = $"Class '{className}' not found in the compiled assembly. " +
+                $"Available classes: {string.Join(", ", available)}.";
+            return null;
         }
     }
 }

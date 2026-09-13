@@ -186,13 +186,15 @@ namespace com.IvanMurzak.McpPlugin
             }
             catch (Exception exception) when (!invocationContext.Legacy)
             {
-                // Middleware and custom runners are allowed to throw.  Keep
-                // raw exception details out of the controlled wire contract.
+                // Middleware and custom runners are allowed to throw.  The
+                // controlled wire contract stays bounded (COCli-09): a short,
+                // single-line cause in the message plus type/message/stack in
+                // `details` — never raw unbounded exception dumps.
                 return ControlledError(
                     invocationContext,
                     ToolCallErrorCodes.ToolExecutionFailed,
-                    "Tool execution failed.",
-                    details: null,
+                    ExceptionDiagnostics.BoundedFailureMessage(exception, "Tool execution failed"),
+                    details: ExceptionDiagnostics.BoundedExceptionDetails(exception),
                     innerException: exception);
             }
         }

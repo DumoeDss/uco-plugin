@@ -65,12 +65,17 @@ namespace com.AtelierAI.Unity.Copilot
             PluginDiagnostics.Install(_channelSink);
         }
 
-        public void Clear()
+        public LogClearResult Clear()
         {
             if (_isDisposed.Value)
-                return;
+                return new LogClearResult
+                {
+                    Ok = false,
+                    Strategy = "collector-disposed",
+                    Error = "The Unity log collector is disposed."
+                };
 
-            _logStorage.Clear();
+            return _logStorage.Clear();
         }
 
         /// <summary>

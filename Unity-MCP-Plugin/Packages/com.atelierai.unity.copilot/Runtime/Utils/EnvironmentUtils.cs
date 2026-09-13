@@ -111,6 +111,21 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         }
 
         /// <summary>
+        /// Checks if the Editor was launched with -batchmode (COCli-13).
+        /// Batchmode launches without a configured server (offline builds,
+        /// command-line automation) must not run the connection retry loop —
+        /// its warnings would pollute BuildReport output.
+        /// </summary>
+        public static bool IsBatchMode()
+            => IsBatchMode(UnityEngine.Application.isBatchMode, ArgsUtils.ParseCommandLineArguments());
+
+        /// <summary>Test-friendly overload taking the parsed command-line args.</summary>
+        public static bool IsBatchMode(
+            bool applicationIsBatchMode,
+            IReadOnlyDictionary<string, string> commandLineArgs)
+            => applicationIsBatchMode || commandLineArgs.ContainsKey("batchmode");
+
+        /// <summary>
         /// Applies environment-variable and command-line-argument overrides to the given config.
         /// Args (highest priority) override env vars, env vars override the disk-baseline values
         /// already present on <paramref name="config"/>. Returns an <see cref="OverrideRecord"/>

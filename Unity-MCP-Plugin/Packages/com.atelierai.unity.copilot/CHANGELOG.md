@@ -1,5 +1,61 @@
 # Changelog
 
+## [0.75.0] - 2026-09-14
+
+Feedback-response release for the DSAnimStudioUnity production usage round
+(2026-09-10 to 09-14); ships together with cocli 0.2.0.
+
+### Added
+
+- **Test failure notifications (COCli-12)**: every terminal test-operation
+  failure path (compilation failed, `tests-no-match`, start failures, resume
+  failures, execution timeout after the cancellation grace) now delivers the
+  failure to the deferred caller via `NotifyToolRequestCompleted` — the
+  originating request no longer stays `processing` forever while the
+  operation record alone goes terminal.
+- **`script-execute` preprocessor symbols (COCli-13)**: a `defines` parameter
+  (up to 16 identifiers, sanitized and de-duplicated) feeds the Roslyn parse
+  options. The Editor assemblies' symbols are not inherited by default —
+  `[Conditional("ENABLE_PROFILER")]`-style APIs are no longer silently
+  compiled out when the symbol is passed explicitly. The skill body now
+  documents this and the JsonUtility dynamic-assembly limitation (composite
+  fields of script-defined types; prefer System.Text.Json).
+- **Build queue diagnostics (COCli-13)**: `BuildJobInfo` reports
+  `QueuedSeconds` (age while queued/scheduled) and `Blocked` (the scheduler's
+  current cause, e.g. `capacity-admission`), so a job stuck before execution
+  is distinguishable from a running build.
+- **Durable build handle (COCli-11)**: `BuildJobInfo` implements
+  `IDurableOperationHandle` and exposes `OperationId` (same value as
+  `JobId`), so `--wait` and generic operation polling work for
+  `build-player`; the immediate response is `processing` with an operation
+  status instead of a bare success.
+
+### Changed
+
+- **Test summary scope (COCli-12)**: `TotalTests` reports the filtered
+  execution scope. The fallback prefers the discovery-matched count, then the
+  `RunStarted` filtered count, then the executed count — counting the whole
+  Unity result tree happens only for runs that bypassed discovery entirely
+  (previously a stale persisted match count could report the whole-project
+  discovery total, e.g. "total=1319 while executed=487").
+- **Batchmode connection gate (COCli-13)**: batchmode launches (offline
+  builds, command-line automation) skip the bridge connection retry loop
+  unless `keepServerRunning` is configured, keeping connection warnings out
+  of BuildReport output. `EnvironmentUtils.IsBatchMode()` is public for
+  tests.
+- **Bounded failure diagnostics (COCli-09)**: the tool-execution pipeline and
+  tool manager put a bounded, single-line cause (base-exception type +
+  message) into the structured error message and the bounded
+  type/message/stack trio into `details`; legacy callers get a bounded
+  message instead of the full exception dump. The generic
+  "Tool execution failed." placeholder never shadows the tool's own failure
+  text.
+- Version bumped to 0.75.0 (`package.json`, `UnityCopilotPlugin.Version`);
+  the vendored copy shipped inside the cocli 0.2.0 bundle includes the Unity
+  6000.5 compatibility hotfix (`EditorSceneSandbox` split with
+  `UNITY_6000_5_OR_NEWER`, `pre-Unity.6.5` twin) that the vendored 0.74.0
+  copy lacked.
+
 ## [Unreleased]
 
 ### Added

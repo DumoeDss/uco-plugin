@@ -47,8 +47,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "Reads the Game View's own render texture directly via the Unity Editor API. " +
             "The image size matches the current Game View resolution. " +
             "Returns the image directly for visual inspection by the LLM.")]
-        public ResponseCallTool ScreenshotGameView(string? nothing = null)
+        public ResponseCallTool ScreenshotGameView(
+            [Description("Project-relative PNG output path. When set, returns metadata without base64.")]
+            string? outputFile = null,
+            [Description("Return bounded metadata without inline base64. Default false.")]
+            bool metadataOnly = false,
+            [Description("Queue file/metadata capture as a durable operation. Inline image capture remains synchronous.")]
+            bool asynchronous = true)
         {
+            if (asynchronous && (!string.IsNullOrWhiteSpace(outputFile) || metadataOnly))
+                return QueueScreenshot(ScreenshotGameViewToolId,
+                    () => ScreenshotGameView(outputFile, metadataOnly, asynchronous: false));
+
             return MainThread.Instance.Run(() =>
             {
                 var gameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
@@ -110,8 +120,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         UnityEngine.Object.DestroyImmediate(tex);
                 }
 
-                return ResponseCallTool.Image(pngBytes, com.IvanMurzak.McpPlugin.Common.Consts.MimeType.ImagePng,
-                    $"Screenshot from Game View ({width}x{height})");
+                return BuildScreenshotResponse(pngBytes, width, height,
+                    $"Screenshot from Game View ({width}x{height})", outputFile, metadataOnly);
             });
         }
     }

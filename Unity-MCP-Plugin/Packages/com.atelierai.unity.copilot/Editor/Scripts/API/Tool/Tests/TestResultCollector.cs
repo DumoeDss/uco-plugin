@@ -33,6 +33,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             public bool IncludeLogs;
             public int IncludeLogsMinLevel;
             public bool IncludeLogsStacktrace;
+            /// <summary>
+            /// Filtered leaf count reported by RunStarted for the owning run.
+            /// RunFinished prefers it over counting the whole Unity result
+            /// tree when the persisted ExpectedMatchedTests is stale/zero
+            /// (COCli-12: "total=1319 while executed=487").
+            /// </summary>
+            public int RunStartedTestCount;
         }
 
         readonly object _gate = new();
@@ -76,6 +83,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
                     return false;
                 _active = context;
                 return true;
+            }
+        }
+
+        internal void SetRunStartedTestCount(int count)
+        {
+            lock (_gate)
+            {
+                if (_active != null)
+                    _active.RunStartedTestCount = count;
             }
         }
 
@@ -238,6 +254,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
 
             startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
+            _callbackOwnership.SetRunStartedTestCount(testCount);
 
             lock (_logsMutex)
             {
@@ -264,12 +281,24 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             // Unsubscribe from log messages
             Application.logMessageReceivedThreaded -= OnLogMessageReceived;
 
+            // Release the ownership context up front: its captured members
+            // (including RunStartedTestCount) feed the summary fallback below
+            // and the structured response afterwards.
+            var ownership = _callbackOwnership.ReleaseForRunFinished();
+
             var duration = DateTime.Now - startTime;
             _summary.Duration = DateTime.Now - startTime;
             _summary.ExecutedTests = _results.Count;
+            // COCli-12: TotalTests reports the filtered execution scope, never
+            // the whole-project discovery count. Preference order: the
+            // discovery-matched count, the RunStarted filtered count, then
+            // (only for runs that bypassed discovery) the executed count
+            // before falling back to counting the Unity result tree.
             _summary.TotalTests = _summary.MatchedTests > 0
                 ? _summary.MatchedTests
-                : CountTests(result.Test);
+                : ownership is { RunStartedTestCount: > 0 }
+                    ? ownership.RunStartedTestCount
+                    : Math.Max(_summary.ExecutedTests, CountTests(result.Test));
             if (_summary.FailedTests > 0)
             {
                 _summary.Status = TestRunStatus.Failed;
@@ -290,10 +319,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
 
             UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
 
-            if (!EnvironmentUtils.IsCi())
+            if (!EnvironmentUtils.IsCi() && !EnvironmentUtils.IsBatchMode())
                 UnityCopilotPluginEditor.ConnectIfNeeded();
 
-            var ownership = _callbackOwnership.ReleaseForRunFinished();
             var structuredResponse = CreateStructuredResponse(
                 includePassingTests: ownership?.IncludePassingTests ?? IncludePassingTests.Value,
                 includeMessage: ownership?.IncludeMessage ?? IncludeMessage.Value,

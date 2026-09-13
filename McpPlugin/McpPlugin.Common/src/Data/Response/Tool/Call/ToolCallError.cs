@@ -73,7 +73,8 @@ namespace com.IvanMurzak.McpPlugin.Common.Model
 
     /// <summary>
     /// Additive structured error carried by controlled responses/RPC error data.
-    /// Messages are safe machine-contract text; raw exception details do not
+    /// Messages are safe machine-contract text: bounded, single-line causes
+    /// (see ExceptionDiagnostics); unbounded raw exception dumps do not
     /// belong here.
     /// </summary>
     public class ToolCallError

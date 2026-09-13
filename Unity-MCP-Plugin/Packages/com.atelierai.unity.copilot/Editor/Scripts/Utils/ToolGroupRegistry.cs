@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.AtelierAI.Unity.Copilot.Runtime.Attributes;
+using com.IvanMurzak.McpPlugin;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
@@ -72,6 +73,69 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         static readonly HashSet<string> s_knownGroups =
             new(StringComparer.Ordinal);
 
+        static readonly Dictionary<string, string[]> s_aliasesByCanonical =
+            new(StringComparer.Ordinal)
+            {
+                ["assets"] = new[] { "asset" },
+                ["automation"] = new[] { "batch" },
+                ["build"] = new[] { "builds" },
+                ["camera"] = new[] { "cameras", "cinemachine" },
+                ["diagnostics"] = new[] { "console", "logs" },
+                ["docs"] = new[] { "documentation" },
+                ["editor"] = new[] { "application" },
+                ["gameobject"] = new[] { "game-object", "gameobjects" },
+                ["graphics"] = new[] { "rendering", "frame-debugger" },
+                ["instances"] = new[] { "instance" },
+                ["objects"] = new[] { "object" },
+                ["operations"] = new[] { "jobs", "editor-operations" },
+                ["packages"] = new[] { "package" },
+                ["physics"] = Array.Empty<string>(),
+                ["profiler"] = new[] { "profiling" },
+                ["reflection"] = new[] { "reflect", "type", "types", "schema" },
+                ["scene"] = new[] { "scenes" },
+                ["screenshot"] = new[] { "screenshots", "capture" },
+                ["scripting"] = new[] { "script", "scripts" },
+                ["tests"] = new[] { "test", "testing" },
+                ["texture"] = new[] { "textures" },
+                ["tools"] = new[] { "tool", "core" },
+                ["ui"] = new[] { "user-interface" },
+                ["vfx"] = new[] { "visual-effects" }
+            };
+
+        static readonly Dictionary<string, string> s_aliasToCanonical = BuildAliasIndex();
+
+        static readonly Dictionary<string, string> s_prefixToCanonical =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["assets"] = "assets",
+                ["batch"] = "automation",
+                ["build"] = "build",
+                ["camera"] = "camera",
+                ["console"] = "diagnostics",
+                ["docs"] = "docs",
+                ["editor"] = "editor",
+                ["frame"] = "graphics",
+                ["gameobject"] = "gameobject",
+                ["graphics"] = "graphics",
+                ["instance"] = "instances",
+                ["object"] = "objects",
+                ["package"] = "packages",
+                ["physics"] = "physics",
+                ["profiler"] = "profiler",
+                ["reflection"] = "reflection",
+                ["scene"] = "scene",
+                ["screenshot"] = "screenshot",
+                ["script"] = "scripting",
+                ["tests"] = "tests",
+                ["texture"] = "texture",
+                ["tool"] = "tools",
+                ["tools"] = "tools",
+                ["type"] = "reflection",
+                ["ui"] = "ui",
+                ["unity"] = "tools",
+                ["vfx"] = "vfx"
+            };
+
         /// <summary>
         /// EditorPrefs key used to persist the per-group enabled flags.
         /// The stored value is a pipe-separated list of <c>group=0|group=1</c>
@@ -107,6 +171,24 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         public static IReadOnlyList<string> AllGroups()
             => s_knownGroups.OrderBy(s => s, StringComparer.Ordinal).ToList();
 
+        public static string? ResolveCanonicalGroup(string? group)
+        {
+            if (string.IsNullOrWhiteSpace(group)) return null;
+            var normalized = group.Trim();
+            if (s_aliasToCanonical.TryGetValue(normalized, out var canonical) &&
+                s_knownGroups.Contains(canonical))
+                return canonical;
+            return s_knownGroups.Contains(normalized) ? normalized : null;
+        }
+
+        public static IReadOnlyList<string> AliasesForGroup(string group)
+        {
+            var canonical = ResolveCanonicalGroup(group) ?? group;
+            return s_aliasesByCanonical.TryGetValue(canonical, out var aliases)
+                ? aliases.ToArray()
+                : Array.Empty<string>();
+        }
+
         /// <summary>
         /// True if the tool is in an enabled group, or is ungrouped (ungrouped
         /// tools are always considered enabled — they were not opted into the
@@ -123,7 +205,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         /// <summary>True if the group is currently enabled.</summary>
         public static bool IsGroupEnabled(string group)
-            => s_enabled.TryGetValue(group, out var enabled) ? enabled : true;
+        {
+            var canonical = ResolveCanonicalGroup(group) ?? group;
+            return s_enabled.TryGetValue(canonical, out var enabled) ? enabled : true;
+        }
+
+        /// <summary>
+        /// Actual callability at the current request boundary. Group state is still a
+        /// soft preference, so a populated group remains effectively callable even
+        /// when its requested state is disabled.
+        /// </summary>
+        public static bool IsGroupEffectivelyEnabled(string group)
+        {
+            var canonical = ResolveCanonicalGroup(group);
+            return canonical != null && s_groupToTools.TryGetValue(canonical, out var tools) && tools.Count > 0;
+        }
 
         /// <summary>
         /// Toggle a group's enabled state and persist the new state to
@@ -134,31 +230,32 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         {
             if (string.IsNullOrWhiteSpace(group))
                 throw new ArgumentException("Group name must be non-empty.", nameof(group));
-            if (!s_knownGroups.Contains(group))
+            var canonical = ResolveCanonicalGroup(group);
+            if (canonical == null)
                 throw new ArgumentException(
                     $"Unknown group '{group}'. Known: {string.Join(", ", s_knownGroups)}",
                     nameof(group));
 
-            s_enabled[group] = enabled;
+            s_enabled[canonical] = enabled;
             SaveEnabledToPrefs();
         }
 
         /// <summary>Tool ids that belong to <paramref name="group"/>, or empty when unknown.</summary>
         public static IReadOnlyList<string> ToolsInGroup(string group)
-            => s_groupToTools.TryGetValue(group, out var list)
+            => s_groupToTools.TryGetValue(ResolveCanonicalGroup(group) ?? group, out var list)
                 ? list.ToList()
                 : new List<string>();
 
         /// <summary>True when the group is known to the registry.</summary>
-        public static bool IsKnownGroup(string group) => s_knownGroups.Contains(group);
+        public static bool IsKnownGroup(string group) => ResolveCanonicalGroup(group) != null;
 
         /// <summary>The default-enabled flag declared by the attribute. Unknown groups → true.</summary>
         public static bool GetDefaultEnabled(string group)
-            => s_defaultEnabled.TryGetValue(group, out var v) ? v : true;
+            => s_defaultEnabled.TryGetValue(ResolveCanonicalGroup(group) ?? group, out var v) ? v : true;
 
         /// <summary>Optional human-readable description from the attribute, or null.</summary>
         public static string? GetDescription(string group)
-            => s_descriptions.TryGetValue(group, out var d) ? d : null;
+            => s_descriptions.TryGetValue(ResolveCanonicalGroup(group) ?? group, out var d) ? d : null;
 
         /// <summary>
         /// Force a re-scan of the loaded assemblies. Useful in tests; the
@@ -183,70 +280,82 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         static void Scan()
         {
-            // TypeCache walks all loaded assemblies cheaply and is refreshed
-            // on every domain reload, so we get an up-to-date picture without
-            // paying for a full AppDomain assembly enumeration.
-            var types = TypeCache.GetTypesWithAttribute<ToolGroupAttribute>();
-            foreach (var t in types)
+            // Production tool declarations predate ToolGroupAttribute, so discover the
+            // actual McpPluginTool methods and classify their stable tool IDs. An explicit
+            // ToolGroupAttribute on a declaring type remains the override seam.
+            var methods = TypeCache.GetMethodsWithAttribute<McpPluginToolAttribute>();
+            foreach (var method in methods)
             {
-                var groupAttr = t.GetCustomAttribute<ToolGroupAttribute>(inherit: false);
-                if (groupAttr == null) continue;
-                if (string.IsNullOrWhiteSpace(groupAttr.Group)) continue;
+                var toolName = ExtractToolName(method);
+                if (string.IsNullOrWhiteSpace(toolName)) continue;
 
-                var groupName = groupAttr.Group;
-                s_knownGroups.Add(groupName);
-
-                // Last-attribute-wins for default-enabled / description if
-                // multiple partial-class roots share the same group name
-                // (rare; partials usually only have one root with the marker).
-                s_defaultEnabled[groupName] = groupAttr.DefaultEnabled;
-                if (groupAttr.Description != null)
-                    s_descriptions[groupName] = groupAttr.Description;
-
-                if (!s_enabled.ContainsKey(groupName))
-                    s_enabled[groupName] = groupAttr.DefaultEnabled;
-
-                CollectToolMethodsInto(t, groupName);
+                var groupAttr = method.DeclaringType?.GetCustomAttribute<ToolGroupAttribute>(inherit: false);
+                var explicitGroup = groupAttr == null ? null : ResolveAliasWithoutKnownCheck(groupAttr.Group);
+                var groupName = !string.IsNullOrWhiteSpace(explicitGroup)
+                    ? explicitGroup!
+                    : ClassifyTool(toolName!);
+                RegisterGroup(groupName, groupAttr?.DefaultEnabled ?? true, groupAttr?.Description);
+                RegisterTool(toolName!, groupName);
             }
         }
 
-        static void CollectToolMethodsInto(Type t, string groupName)
+        static void RegisterGroup(string groupName, bool defaultEnabled, string? description)
         {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic
-                                     | BindingFlags.Instance | BindingFlags.Static
-                                     | BindingFlags.DeclaredOnly;
+            s_knownGroups.Add(groupName);
+            s_defaultEnabled[groupName] = defaultEnabled;
+            if (description != null) s_descriptions[groupName] = description;
+            else if (!s_descriptions.ContainsKey(groupName))
+                s_descriptions[groupName] = $"Production tools in the '{groupName}' capability group.";
+            if (!s_enabled.ContainsKey(groupName)) s_enabled[groupName] = defaultEnabled;
+        }
 
-            // Partial-class methods may live on the same Type across multiple
-            // files — Reflection sees them as one Type, so a single pass is
-            // sufficient. We use DeclaredOnly to avoid spilling into base
-            // System.Object methods.
-            var methods = t.GetMethods(flags);
-            foreach (var m in methods)
+        static void RegisterTool(string toolName, string groupName)
+        {
+            if (!s_groupToTools.TryGetValue(groupName, out var list))
             {
-                var toolName = ExtractToolName(m);
-                if (string.IsNullOrEmpty(toolName))
-                    continue;
-
-                if (!s_groupToTools.TryGetValue(groupName, out var list))
-                {
-                    list = new List<string>();
-                    s_groupToTools[groupName] = list;
-                }
-                if (!list.Contains(toolName!))
-                    list.Add(toolName!);
-
-                // First-write-wins: if a tool somehow appears in two groups
-                // via partial-class shenanigans, the first scan wins. This is
-                // logged so it can be debugged but does not throw.
-                if (s_toolToGroup.TryGetValue(toolName!, out var existing) && existing != groupName)
-                {
-                    UnityEngine.Debug.LogWarning(
-                        $"[ToolGroupRegistry] tool '{toolName}' already mapped to group " +
-                        $"'{existing}'; ignoring duplicate mapping to '{groupName}'.");
-                    continue;
-                }
-                s_toolToGroup[toolName!] = groupName;
+                list = new List<string>();
+                s_groupToTools[groupName] = list;
             }
+            if (!list.Contains(toolName)) list.Add(toolName);
+
+            if (s_toolToGroup.TryGetValue(toolName, out var existing) && existing != groupName)
+            {
+                UnityEngine.Debug.LogWarning(
+                    $"[ToolGroupRegistry] tool '{toolName}' already mapped to group " +
+                    $"'{existing}'; ignoring duplicate mapping to '{groupName}'.");
+                return;
+            }
+            s_toolToGroup[toolName] = groupName;
+        }
+
+        static string ClassifyTool(string toolName)
+        {
+            if (toolName.StartsWith("editor-operation-", StringComparison.OrdinalIgnoreCase))
+                return "operations";
+            var separator = toolName.IndexOf('-');
+            var prefix = separator < 0 ? toolName : toolName.Substring(0, separator);
+            return s_prefixToCanonical.TryGetValue(prefix, out var canonical)
+                ? canonical
+                : prefix.ToLowerInvariant();
+        }
+
+        static Dictionary<string, string> BuildAliasIndex()
+        {
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var pair in s_aliasesByCanonical)
+            {
+                result[pair.Key] = pair.Key;
+                foreach (var alias in pair.Value) result[alias] = pair.Key;
+            }
+            return result;
+        }
+
+        static string ResolveAliasWithoutKnownCheck(string group)
+        {
+            if (string.IsNullOrWhiteSpace(group)) return string.Empty;
+            return s_aliasToCanonical.TryGetValue(group.Trim(), out var canonical)
+                ? canonical
+                : group.Trim().ToLowerInvariant();
         }
 
         /// <summary>

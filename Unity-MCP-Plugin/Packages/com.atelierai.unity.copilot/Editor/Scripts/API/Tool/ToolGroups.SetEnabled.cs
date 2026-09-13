@@ -61,19 +61,26 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             return MainThread.Instance.Run(() =>
             {
-                if (!ToolGroupRegistry.IsKnownGroup(group))
+                var canonicalGroup = ToolGroupRegistry.ResolveCanonicalGroup(group);
+                if (canonicalGroup == null)
                     throw new ArgumentException(Error.UnknownGroup(group), nameof(group));
 
-                var previous = ToolGroupRegistry.IsGroupEnabled(group);
+                var previous = ToolGroupRegistry.IsGroupEnabled(canonicalGroup);
                 if (previous != enabled)
-                    ToolGroupRegistry.SetGroupEnabled(group, enabled);
+                    ToolGroupRegistry.SetGroupEnabled(canonicalGroup, enabled);
 
-                var tools = ToolGroupRegistry.ToolsInGroup(group);
+                var tools = ToolGroupRegistry.ToolsInGroup(canonicalGroup);
+                var aliases = ToolGroupRegistry.AliasesForGroup(canonicalGroup);
+                var aliasesArray = new string[aliases.Count];
+                for (var i = 0; i < aliases.Count; i++) aliasesArray[i] = aliases[i];
 
                 return new ToolGroupResult
                 {
-                    Group = group,
+                    Group = canonicalGroup,
                     Enabled = enabled,
+                    RequestedEnabled = enabled,
+                    EffectiveEnabled = ToolGroupRegistry.IsGroupEffectivelyEnabled(canonicalGroup),
+                    Aliases = aliasesArray,
                     PreviousEnabled = previous,
                     Changed = previous != enabled,
                     ToolCount = tools.Count,

@@ -113,7 +113,8 @@ namespace com.AtelierAI.Unity.Copilot
 
                     _logger.LogDebug("Creating log file stream: {file}", filePath);
 
-                    var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite, bufferSize: _fileBufferSize, useAsync: false)
+                    var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write,
+                        FileShare.ReadWrite | FileShare.Delete, bufferSize: _fileBufferSize, useAsync: false)
                         ?? throw new Exception("Failed to create file stream for log storage.");
 
                     resultFileName = currentFileName;
@@ -257,24 +258,119 @@ namespace com.AtelierAI.Unity.Copilot
         /// <summary>
         /// Closes and disposes the current file stream if open. Clears the log cache file.
         /// </summary>
-        public virtual void Clear()
+        public virtual LogClearResult Clear()
         {
             if (_isDisposed.Value)
             {
                 _logger.LogWarning("{method} called but already disposed, ignored.",
                     nameof(Clear));
-                return;
+                return new LogClearResult
+                {
+                    Ok = false,
+                    Strategy = "storage-disposed",
+                    Path = filePath,
+                    Error = "The log storage is disposed."
+                };
             }
             lock (_fileMutex)
             {
+                return ClearFileLocked();
+            }
+        }
+
+        /// <summary>
+        /// Clears the active persisted log while tolerating concurrent readers/writers.
+        /// The caller must hold <see cref="_fileMutex"/>.
+        /// </summary>
+        protected LogClearResult ClearFileLocked()
+        {
+            var originalPath = filePath;
+            var errors = new List<string>();
+            try
+            {
+                fileWriteStream?.Flush();
                 fileWriteStream?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                errors.Add("close: " + ex.GetBaseException().Message);
+            }
+            finally
+            {
                 fileWriteStream = null;
+            }
 
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
+            try
+            {
+                using (var stream = new FileStream(originalPath, FileMode.OpenOrCreate, FileAccess.Write,
+                    FileShare.ReadWrite | FileShare.Delete, _fileBufferSize, useAsync: false))
+                {
+                    stream.SetLength(0);
+                    stream.Flush();
+                }
+                fileWriteStream = CreateWriteStream(_requestedFileName, out fileName, out filePath);
+                return new LogClearResult
+                {
+                    Ok = true,
+                    Strategy = "truncate-and-reopen",
+                    Path = filePath,
+                    Error = errors.Count == 0 ? null : string.Join("; ", errors)
+                };
+            }
+            catch (Exception ex)
+            {
+                errors.Add("truncate: " + ex.GetBaseException().Message);
+            }
 
-                if (File.Exists(filePath))
-                    _logger.LogError("Failed to delete cache file: {file}", filePath);
+            string? rotatedPath = null;
+            try
+            {
+                if (File.Exists(originalPath))
+                {
+                    rotatedPath = originalPath + ".cleared-" + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+                    File.Move(originalPath, rotatedPath);
+                }
+                fileWriteStream = CreateWriteStream(_requestedFileName, out fileName, out filePath);
+                return new LogClearResult
+                {
+                    Ok = true,
+                    Strategy = "rotate-and-reopen",
+                    Path = filePath,
+                    RetainedPath = rotatedPath,
+                    Error = string.Join("; ", errors)
+                };
+            }
+            catch (Exception ex)
+            {
+                errors.Add("rotate: " + ex.GetBaseException().Message);
+            }
+
+            try
+            {
+                var extension = Path.GetExtension(_requestedFileName);
+                var baseName = Path.GetFileNameWithoutExtension(_requestedFileName);
+                var replacementName = baseName + "-cleared-" + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + extension;
+                fileWriteStream = CreateWriteStream(replacementName, out fileName, out filePath);
+                return new LogClearResult
+                {
+                    Ok = true,
+                    Strategy = "switch-to-new-file",
+                    Path = filePath,
+                    RetainedPath = File.Exists(originalPath) ? originalPath : null,
+                    Error = string.Join("; ", errors)
+                };
+            }
+            catch (Exception ex)
+            {
+                errors.Add("reopen: " + ex.GetBaseException().Message);
+                return new LogClearResult
+                {
+                    Ok = false,
+                    Strategy = "failed",
+                    Path = originalPath,
+                    RetainedPath = File.Exists(originalPath) ? originalPath : null,
+                    Error = string.Join("; ", errors)
+                };
             }
         }
 

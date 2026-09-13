@@ -118,26 +118,24 @@ namespace com.AtelierAI.Unity.Copilot
         /// <summary>
         /// Closes and disposes the current file stream if open. Clears the log cache file.
         /// </summary>
-        public override void Clear()
+        public override LogClearResult Clear()
         {
             if (_isDisposed.Value)
             {
                 _logger.LogWarning("{method} called but already disposed, ignored.",
                     nameof(Clear));
-                return;
+                return new LogClearResult
+                {
+                    Ok = false,
+                    Strategy = "storage-disposed",
+                    Path = filePath,
+                    Error = "The log storage is disposed."
+                };
             }
             lock (_fileMutex)
             {
-                fileWriteStream?.Close();
-                fileWriteStream?.Dispose();
-                fileWriteStream = null;
                 _logEntriesBufferLength = 0;
-
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
-
-                if (File.Exists(filePath))
-                    _logger.LogError("Failed to delete cache file: {file}", filePath);
+                return ClearFileLocked();
             }
         }
 

@@ -177,6 +177,27 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             TestResultCollector.ExpectedMatchedTests.Value = 0;
         }
 
+        /// <summary>
+        /// COCli-12: deliver a terminal test-operation failure to the deferred
+        /// caller. Registry-only failure left the originating request stuck at
+        /// `processing` forever; mirroring the success notification
+        /// (TestResultCollector.RunFinished) lets the waiting side resolve.
+        /// </summary>
+        internal static void NotifyTestOperationFailed(string operationId, string? requestId, string message)
+        {
+            if (string.IsNullOrEmpty(requestId))
+                return;
+            var response = ResponseCallValueTool<TestRunResponse>
+                .Error(message)
+                .SetRequestID(requestId);
+            _ = UnityCopilotPluginEditor.NotifyToolRequestCompleted(new RequestToolCompletedData
+            {
+                RequestId = requestId,
+                OperationId = string.IsNullOrEmpty(operationId) ? null : operationId,
+                Result = response
+            });
+        }
+
         internal static void ResumePendingTestRunOnce()
         {
             // If still compiling, wait for next update tick
@@ -271,6 +292,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 {
                     var message = Error.NoTestsFound(filterParams);
                     EditorOperationRegistry.Fail(operationId, "tests-no-match", message, "filter-validation");
+                    NotifyTestOperationFailed(operationId, requestId, message);
                     TestResultCollector.TestOperationId.Value = string.Empty;
                     TestResultCollector.TestCallRequestID.Value = string.Empty;
                     return;
@@ -283,7 +305,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             {
                 var operation = EditorOperationRegistry.Get(operationId);
                 if (operation != null && !operation.IsTerminal)
+                {
                     EditorOperationRegistry.Fail(operationId, "tests-resume-failed", ex.Message, "resume-failed");
+                    NotifyTestOperationFailed(operationId, requestId,
+                        Error.TestExecutionFailed(ex.GetBaseException().Message));
+                }
                 ClearTestRunOwnership(operationId);
             }
         }

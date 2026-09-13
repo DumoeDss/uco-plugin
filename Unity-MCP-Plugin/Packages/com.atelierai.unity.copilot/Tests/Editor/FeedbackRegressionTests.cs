@@ -7,6 +7,7 @@ using System.Linq;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Editor.API.TestRunner;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
+using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using com.IvanMurzak.McpPlugin.Common.Model;
 using NUnit.Framework;
 using UnityEditor;
@@ -403,6 +404,31 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
+        public void ToolGroups_ResolveEveryAliasAndReportRequestedVersusEffectiveState()
+        {
+            EditorPrefs.DeleteKey(ToolGroupRegistry.EditorPrefsKey);
+            ToolGroupRegistry.Rebuild();
+            var groups = ToolGroupRegistry.AllGroups();
+            Assert.That(groups.Count, Is.GreaterThan(10));
+            Assert.That(groups.Sum(group => ToolGroupRegistry.ToolsInGroup(group).Count), Is.GreaterThan(150));
+
+            foreach (var canonical in groups)
+            {
+                Assert.That(ToolGroupRegistry.ResolveCanonicalGroup(canonical), Is.EqualTo(canonical));
+                foreach (var alias in ToolGroupRegistry.AliasesForGroup(canonical))
+                    Assert.That(ToolGroupRegistry.ResolveCanonicalGroup(alias), Is.EqualTo(canonical));
+            }
+
+            ToolGroupRegistry.SetGroupEnabled("application", false);
+            var editor = new Tool_ToolGroups().ListGroups().Single(group => group.Name == "editor");
+            Assert.That(editor.RequestedEnabled, Is.False);
+            Assert.That(editor.EffectiveEnabled, Is.True,
+                "Soft group preferences must not be misreported as request-boundary enforcement.");
+            Assert.That(editor.ToolCount, Is.EqualTo(editor.Tools.Length));
+            CollectionAssert.Contains(editor.Aliases, "application");
+        }
+
+        [Test]
         public void TestFilters_UseExactMetadataAndLogicalAndIncludingDefaultNamespace()
         {
             var defaultNamespace = new Tool_Tests.DiscoveredTest
@@ -433,6 +459,252 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
+        public void ScreenshotMetadata_WritesBoundedFileIdentityAndRejectsEscapingPaths()
+        {
+            var bytes = new byte[] { 1, 2, 3, 4, 5 };
+            var relative = "Temp/feedback-screenshot.png";
+            var absolute = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(UnityEngine.Application.dataPath)!, relative));
+            try
+            {
+                var inline = Tool_Screenshot.BuildScreenshotResponse(bytes, 2, 3,
+                    "fixture", null, false);
+                Assert.That(inline.Status, Is.Not.EqualTo(ResponseStatus.Error));
+
+                var metadataOnly = Tool_Screenshot.BuildScreenshotResponse(bytes, 2, 3,
+                    "fixture", null, true);
+                Assert.That(metadataOnly.Status, Is.Not.EqualTo(ResponseStatus.Error));
+                Assert.That(metadataOnly.StructuredContent!.ToJsonString().Length, Is.LessThan(2048));
+
+                var response = Tool_Screenshot.BuildScreenshotResponse(bytes, 2, 3, "fixture", relative, false);
+                if (Path.DirectorySeparatorChar == '\\')
+                {
+                    Assert.That(response.Status, Is.Not.EqualTo(ResponseStatus.Error));
+                    var json = response.StructuredContent!.ToJsonString();
+                    Assert.That(json.Length, Is.LessThan(2048));
+                    Assert.That(json, Does.Not.Contain("base64"));
+                    Assert.That(File.ReadAllBytes(absolute), Is.EqualTo(bytes));
+                    Assert.That(json, Does.Contain("74f81fe167d99b4cb41d6d0ccda82278caee9f3e2f25d5e5a3936ff3dcec60d0"));
+                }
+                else
+                {
+                    Assert.That(response.Status, Is.EqualTo(ResponseStatus.Error));
+                    Assert.That(File.Exists(absolute), Is.False);
+                }
+
+                var escaped = Tool_Screenshot.BuildScreenshotResponse(bytes, 2, 3, "fixture", "../escape.png", false);
+                Assert.That(escaped.Status, Is.EqualTo(ResponseStatus.Error));
+            }
+            finally
+            {
+                if (File.Exists(absolute)) File.Delete(absolute);
+            }
+        }
+
+        [Test]
+        public void ScreenshotContainment_RejectsDifferentVolumeSiblingTraversalAndReparsePointsOnWindows()
+        {
+            if (Path.DirectorySeparatorChar != '\\')
+                Assert.Ignore("Windows path-containment regression.");
+
+            const string projectRoot = @"C:\Fixture\Project";
+            Assert.That(Tool_Screenshot.TryResolveContainedOutputPath(projectRoot,
+                @"D:\outside.png", out _, out _), Is.False, "different volume");
+            Assert.That(Tool_Screenshot.TryResolveContainedOutputPath(projectRoot,
+                @"C:\Fixture\ProjectSibling\outside.png", out _, out _), Is.False,
+                "separator-bounded sibling prefix");
+            Assert.That(Tool_Screenshot.TryResolveContainedOutputPath(projectRoot,
+                @"..\outside.png", out _, out _), Is.False, "parent traversal");
+
+            var junction = Path.Combine(projectRoot, "junction");
+            Assert.That(Tool_Screenshot.TryResolveContainedOutputPath(projectRoot,
+                @"junction\outside.png",
+                path => string.Equals(path, junction, StringComparison.OrdinalIgnoreCase)
+                    ? FileAttributes.Directory | FileAttributes.ReparsePoint
+                    : (FileAttributes?)null,
+                out _, out var reparseError), Is.False, "junction/reparse escape");
+            Assert.That(reparseError, Does.Contain("reparse point"));
+        }
+
+        [Test]
+        public void ScreenshotContainment_DoesNotCreateDirectoriesBeforeValidation()
+        {
+            var outsideDirectory = Path.Combine(_temporaryDirectory, "must-not-create");
+            var response = Tool_Screenshot.BuildScreenshotResponse(new byte[] { 1, 2, 3 },
+                1, 1, "fixture", Path.Combine(outsideDirectory, "escape.png"), false);
+
+            Assert.That(response.Status, Is.EqualTo(ResponseStatus.Error));
+            Assert.That(Directory.Exists(outsideDirectory), Is.False);
+        }
+
+        [Test]
+        public void ScreenshotContainment_BlocksAdversarialJunctionSwapDuringWriteOnWindows()
+        {
+            if (Path.DirectorySeparatorChar != '\\')
+                Assert.Ignore("Windows junction-swap regression.");
+
+            var projectRoot = Path.Combine(_temporaryDirectory, "project");
+            var outputDirectory = Path.Combine(projectRoot, "captures");
+            var outsideDirectory = Path.Combine(_temporaryDirectory, "outside");
+            var stagedJunction = Path.Combine(_temporaryDirectory, "staged-junction");
+            Directory.CreateDirectory(outputDirectory);
+            Directory.CreateDirectory(outsideDirectory);
+            Assert.That(TryCreateDirectoryJunction(stagedJunction, outsideDirectory,
+                    out var junctionDiagnostic), Is.True, junctionDiagnostic);
+
+            var deleteBlocked = false;
+            var replacementMoved = false;
+            try
+            {
+                var wrote = Tool_Screenshot.TryWriteContainedOutputFile(projectRoot,
+                    Path.Combine("captures", "swap.png"), new byte[] { 7, 8, 9 }, () =>
+                    {
+                        try
+                        {
+                            Directory.Delete(outputDirectory);
+                        }
+                        catch (IOException)
+                        {
+                            deleteBlocked = true;
+                            return;
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            deleteBlocked = true;
+                            return;
+                        }
+
+                        Directory.Move(stagedJunction, outputDirectory);
+                        replacementMoved = true;
+                    }, out var resolvedPath, out var error);
+
+                Assert.That(deleteBlocked || replacementMoved, Is.True,
+                    "The adversarial swap hook must either be blocked or install its real junction.");
+                if (replacementMoved)
+                {
+                    Assert.That(wrote, Is.False,
+                        "A successful directory-name swap must make the handle-relative write fail closed.");
+                    Assert.That(error, Does.Contain("securely written"));
+                }
+                else
+                {
+                    Assert.That(wrote, Is.True, error);
+                    Assert.That(File.ReadAllBytes(resolvedPath), Is.EqualTo(new byte[] { 7, 8, 9 }));
+                }
+                Assert.That(File.Exists(Path.Combine(outsideDirectory, "swap.png")), Is.False,
+                    "The adversarial junction target must remain untouched.");
+                var junctionFixture = replacementMoved ? outputDirectory : stagedJunction;
+                Assert.That((File.GetAttributes(junctionFixture) & FileAttributes.ReparsePoint) != 0,
+                    Is.True, "The swap fixture must be a real Windows reparse point.");
+            }
+            finally
+            {
+                if (Directory.Exists(stagedJunction))
+                    Directory.Delete(stagedJunction);
+                if (Directory.Exists(outputDirectory)
+                    && (File.GetAttributes(outputDirectory) & FileAttributes.ReparsePoint) != 0)
+                    Directory.Delete(outputDirectory);
+            }
+        }
+
+        [Test]
+        public void ScreenshotContainment_FailsClosedDuringDirectorySymlinkSwapOnUnix()
+        {
+            if (Path.DirectorySeparatorChar == '\\')
+                Assert.Ignore("Unix symbolic-link swap regression.");
+
+            var projectRoot = Path.Combine(_temporaryDirectory, "project-unix");
+            var outputDirectory = Path.Combine(projectRoot, "captures");
+            var outsideDirectory = Path.Combine(_temporaryDirectory, "outside-unix");
+            Directory.CreateDirectory(outputDirectory);
+            Directory.CreateDirectory(outsideDirectory);
+
+            var hookRan = false;
+            var symlinkCreated = false;
+            try
+            {
+                var wrote = Tool_Screenshot.TryWriteContainedOutputFile(projectRoot,
+                    Path.Combine("captures", "swap.png"), new byte[] { 7, 8, 9 }, () =>
+                    {
+                        hookRan = true;
+                        Directory.Delete(outputDirectory);
+                        symlinkCreated = TryCreateDirectorySymbolicLink(outputDirectory,
+                            outsideDirectory, out _);
+                    }, out _, out var error);
+
+                Assert.That(hookRan, Is.True,
+                    "The fixture must swap the checked directory at the pre-write seam.");
+                Assert.That(symlinkCreated, Is.True,
+                    "The fixture must install a real directory symbolic link.");
+                Assert.That((File.GetAttributes(outputDirectory) & FileAttributes.ReparsePoint) != 0,
+                    Is.True, "The swap fixture must be a real Unix symbolic link.");
+                Assert.That(wrote, Is.False);
+                Assert.That(error, Does.Contain("unavailable on this platform"));
+                Assert.That(File.Exists(Path.Combine(outsideDirectory, "swap.png")), Is.False,
+                    "Fail-closed output must leave the external symlink target untouched.");
+            }
+            finally
+            {
+                if (symlinkCreated && Directory.Exists(outputDirectory))
+                    Directory.Delete(outputDirectory);
+            }
+        }
+
+        [Test]
+        public void ScreenshotQueue_RecordsSuccessFailureAndPreStartCancellation()
+        {
+            var success = Tool_Screenshot.QueueScreenshot("screenshot-camera",
+                () => ResponseCallTool.Success("captured"));
+            var failure = Tool_Screenshot.QueueScreenshot("screenshot-camera",
+                () => ResponseCallTool.Error("failed"));
+            var cancelled = Tool_Screenshot.QueueScreenshot("screenshot-camera",
+                () => ResponseCallTool.Success("must not run"));
+
+            var successInfo = JsonUtility.FromJson<EditorOperationInfo>(success.StructuredContent!["result"]!.ToJsonString());
+            var failureInfo = JsonUtility.FromJson<EditorOperationInfo>(failure.StructuredContent!["result"]!.ToJsonString());
+            var cancelledInfo = JsonUtility.FromJson<EditorOperationInfo>(cancelled.StructuredContent!["result"]!.ToJsonString());
+            Assert.That(successInfo.OperationId, Is.Not.Empty, "Queued screenshot must return a durable handle.");
+            EditorOperationRegistry.RequestCancellation(cancelledInfo.OperationId);
+
+            Tool_Screenshot.RunQueuedScreenshot(successInfo.OperationId,
+                () => ResponseCallTool.Success("captured"));
+            Tool_Screenshot.RunQueuedScreenshot(failureInfo.OperationId,
+                () => ResponseCallTool.Error("failed"));
+            Tool_Screenshot.RunQueuedScreenshot(cancelledInfo.OperationId,
+                () => ResponseCallTool.Success("must not run"));
+
+            Assert.That(EditorOperationRegistry.Get(successInfo.OperationId)!.Status, Is.EqualTo("succeeded"));
+            Assert.That(EditorOperationRegistry.Get(failureInfo.OperationId)!.Status, Is.EqualTo("failed"));
+            Assert.That(EditorOperationRegistry.Get(cancelledInfo.OperationId)!.Status, Is.EqualTo("cancelled"));
+        }
+
+        [Test]
+        public void ConsoleStorage_ClearSucceedsWhileAnotherWriterKeepsTheFileOpen()
+        {
+            var storage = new FileLogStorage(directoryPath: _temporaryDirectory,
+                requestedFileName: "concurrent.log");
+            var path = Path.Combine(_temporaryDirectory, "concurrent.log");
+            try
+            {
+                using (var writer = new FileStream(path, FileMode.Open, FileAccess.Write,
+                    FileShare.ReadWrite | FileShare.Delete))
+                {
+                    writer.WriteByte(42);
+                    writer.Flush();
+                    var result = storage.Clear();
+                    Assert.That(result.Ok, Is.True, result.Error);
+                    CollectionAssert.Contains(new[]
+                    {
+                        "truncate-and-reopen", "rotate-and-reopen", "switch-to-new-file"
+                    }, result.Strategy);
+                }
+            }
+            finally
+            {
+                storage.Dispose();
+            }
+        }
+
+        [Test]
         public void EditorClose_RefusesDirtySceneWithBoundedBlockers()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -451,6 +723,36 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             }
         }
 
+        [Test]
+        public void ScriptClassSelection_PrefersExactThenUniqueAndRejectsMissingOrAmbiguousNames()
+        {
+            var assembly = typeof(FeedbackRegressionTests).Assembly;
+            var exact = Tool_Script.ResolveCompiledType(assembly,
+                typeof(global::FeedbackClassNameA.DuplicateClassNameFixture).FullName!, out var exactError);
+            Assert.That(exact, Is.EqualTo(typeof(global::FeedbackClassNameA.DuplicateClassNameFixture)));
+            Assert.That(exactError, Is.Null);
+
+            var unique = Tool_Script.ResolveCompiledType(assembly,
+                nameof(FeedbackUniqueClassNameFixture), out var uniqueError);
+            Assert.That(unique, Is.EqualTo(typeof(FeedbackUniqueClassNameFixture)));
+            Assert.That(uniqueError, Is.Null);
+
+            var missing = Tool_Script.ResolveCompiledType(assembly,
+                "DefinitelyMissingFeedbackClass", out var missingError);
+            Assert.That(missing, Is.Null);
+            Assert.That(missingError, Does.Contain("not found"));
+
+            var ambiguous = Tool_Script.ResolveCompiledType(assembly,
+                "DuplicateClassNameFixture", out var ambiguousError);
+            Assert.That(ambiguous, Is.Null);
+            Assert.That(ambiguousError, Does.Contain("ambiguous"));
+            Assert.That(ambiguousError, Does.Contain(
+                typeof(global::FeedbackClassNameA.DuplicateClassNameFixture).FullName!));
+            Assert.That(ambiguousError, Does.Contain(
+                typeof(global::FeedbackClassNameB.DuplicateClassNameFixture).FullName!));
+        }
+
+
         EditorOperationInfo CreateExpiredRunningTestOperation()
         {
             var metadata = JsonUtility.ToJson(new Tool_Tests.TestOperationMetadata
@@ -465,6 +767,142 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         static DateTime ParseUtc(string value)
             => DateTime.Parse(value, CultureInfo.InvariantCulture,
                 DateTimeStyles.RoundtripKind).ToUniversalTime();
+
+        static bool TryCreateDirectoryJunction(string junctionPath, string targetPath, out string diagnostic)
+        {
+            var command = Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe";
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = command,
+                Arguments = $"/d /c mklink /J \"{junctionPath}\" \"{targetPath}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+            using (var process = System.Diagnostics.Process.Start(startInfo))
+            {
+                if (process == null)
+                {
+                    diagnostic = "Could not start mklink junction fixture.";
+                    return false;
+                }
+                var stdout = process.StandardOutput.ReadToEnd();
+                var stderr = process.StandardError.ReadToEnd();
+                if (!process.WaitForExit(10000))
+                {
+                    process.Kill();
+                    diagnostic = "mklink junction fixture timed out.";
+                    return false;
+                }
+                diagnostic = string.IsNullOrWhiteSpace(stderr) ? stdout : stderr;
+                return process.ExitCode == 0
+                    && Directory.Exists(junctionPath)
+                    && (File.GetAttributes(junctionPath) & FileAttributes.ReparsePoint) != 0;
+            }
+        }
+
+        static bool TryCreateDirectorySymbolicLink(
+            string linkPath,
+            string targetPath,
+            out string diagnostic)
+        {
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "/bin/ln",
+                Arguments = $"-s \"{targetPath}\" \"{linkPath}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+            using (var process = System.Diagnostics.Process.Start(startInfo))
+            {
+                if (process == null)
+                {
+                    diagnostic = "Could not start the ln symbolic-link fixture.";
+                    return false;
+                }
+                var stdout = process.StandardOutput.ReadToEnd();
+                var stderr = process.StandardError.ReadToEnd();
+                if (!process.WaitForExit(10000))
+                {
+                    process.Kill();
+                    diagnostic = "The ln symbolic-link fixture timed out.";
+                    return false;
+                }
+                diagnostic = string.IsNullOrWhiteSpace(stderr) ? stdout : stderr;
+                return process.ExitCode == 0 && Directory.Exists(linkPath);
+            }
+        }
+
+        [Test]
+        public void TestSummary_TotalTestsPrefersRunStartedCountOverTheWholeResultTree()
+        {
+            // COCli-12 regression: when ExpectedMatchedTests is stale/zero at
+            // RunFinished, the summary previously fell back to counting the
+            // whole Unity result tree (the "total=1319 while executed=487"
+            // symptom). It must prefer the RunStarted filtered count.
+            var originalOperationId = Tool_Tests.CurrentTestOperationId;
+            var originalRequestId = Tool_Tests.CurrentTestRequestId;
+            var originalDiscovered = TestResultCollector.ExpectedDiscoveredTestCount;
+            var originalMatched = TestResultCollector.ExpectedMatchedTestCount;
+            var collector = TestResultCollector.CreateIsolatedForTests();
+            var leaf1 = new FakeTestAdaptor("Ns.Fixture.RunScoped.Test1", isSuite: false);
+            var leaf2 = new FakeTestAdaptor("Ns.Fixture.RunScoped.Test2", isSuite: false);
+            var runRoot = new FakeTestAdaptor("Ns.Fixture.RunScoped", isSuite: true, leaf1, leaf2);
+            var otherLeaf1 = new FakeTestAdaptor("Ns.Fixture.Unscoped.Test1", isSuite: false);
+            var otherLeaf2 = new FakeTestAdaptor("Ns.Fixture.Unscoped.Test2", isSuite: false);
+            var otherLeaf3 = new FakeTestAdaptor("Ns.Fixture.Unscoped.Test3", isSuite: false);
+            var wholeTree = new FakeTestResultAdaptor(
+                new FakeTestAdaptor("Ns.Fixture", isSuite: true, runRoot, otherLeaf1, otherLeaf2, otherLeaf3),
+                TestStatus.Passed);
+            try
+            {
+                Tool_Tests.CurrentTestOperationId = string.Empty;
+                Tool_Tests.CurrentTestRequestId = string.Empty;
+                TestResultCollector.ExpectedDiscoveredTestCount = 5;
+                TestResultCollector.ExpectedMatchedTestCount = 0; // stale / bypassed discovery
+
+                collector.RunStarted(runRoot);
+                collector.RunFinished(wholeTree);
+
+                var summary = collector.GetSummary();
+                Assert.That(summary.TotalTests, Is.EqualTo(2), "RunStarted filtered count must win over the whole-tree fallback");
+                Assert.That(summary.DiscoveredTests, Is.EqualTo(5));
+            }
+            finally
+            {
+                Tool_Tests.CurrentTestOperationId = originalOperationId;
+                Tool_Tests.CurrentTestRequestId = originalRequestId;
+                TestResultCollector.ExpectedDiscoveredTestCount = originalDiscovered;
+                TestResultCollector.ExpectedMatchedTestCount = originalMatched;
+            }
+        }
+
+        [Test]
+        public void EnvironmentUtils_BatchModeDetectionAcceptsFlagAndEditorState()
+        {
+            var empty = new Dictionary<string, string>();
+            var batchArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["batchmode"] = string.Empty };
+
+            Assert.That(EnvironmentUtils.IsBatchMode(false, empty), Is.False);
+            Assert.That(EnvironmentUtils.IsBatchMode(true, empty), Is.True, "Application.isBatchMode alone must count");
+            Assert.That(EnvironmentUtils.IsBatchMode(false, batchArgs), Is.True, "the -batchmode command-line flag must count");
+        }
+
+        [Test]
+        public void BuildJobInfo_IsADurableOperationHandleExposingOperationId()
+        {
+            // COCli-11: build-player must return a durable handle so `--wait`
+            // and generic operation polling work instead of failing with
+            // "did not return a durable operation handle".
+            var job = new Tool_Build.BuildJobInfo { JobId = "job-1" };
+            Assert.That(job, Is.InstanceOf<IDurableOperationHandle>());
+            Assert.That(job.OperationId, Is.EqualTo("job-1"));
+        }
 
         sealed class FakeTestAdaptor : ITestAdaptor
         {

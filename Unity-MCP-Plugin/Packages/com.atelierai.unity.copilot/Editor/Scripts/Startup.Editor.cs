@@ -112,11 +112,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         static void OnAfterAssemblyReload()
         {
             var isCi = EnvironmentUtils.IsCi();
+            var isBatchMode = EnvironmentUtils.IsBatchMode();
             var keepConnected = UnityCopilotPluginEditor.KeepConnected;
-            var connectionAllowed = !isCi || keepConnected;
+            // COCli-13: batchmode launches (offline builds, command-line
+            // automation) skip the connection retry loop unless the
+            // configuration explicitly keeps the server running — connection
+            // warnings would otherwise pollute BuildReport output.
+            var connectionAllowed = keepConnected || (!isCi && !isBatchMode);
 
-            _logger.LogInformation("{method} triggered - BuildAndStart with connectionAllowed: {connectionAllowed} (isCi: {isCi}, keepConnected: {keepConnected})",
-                nameof(OnAfterAssemblyReload), connectionAllowed, isCi, keepConnected);
+            _logger.LogInformation("{method} triggered - BuildAndStart with connectionAllowed: {connectionAllowed} (isCi: {isCi}, isBatchMode: {isBatchMode}, keepConnected: {keepConnected})",
+                nameof(OnAfterAssemblyReload), connectionAllowed, isCi, isBatchMode, keepConnected);
 
             UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
@@ -151,13 +156,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     // Unity has returned to Edit mode - ensure connection is re-established
                     // if the configuration expects it to be connected
                     var isCi = EnvironmentUtils.IsCi();
+                    var isBatchMode = EnvironmentUtils.IsBatchMode();
                     var keepConnected = UnityCopilotPluginEditor.KeepConnected;
-                    _logger.LogTrace("Entered Edit mode - KeepConnected: {keepConnected}, IsCi: {isCi}",
-                        keepConnected, isCi);
+                    _logger.LogTrace("Entered Edit mode - KeepConnected: {keepConnected}, IsCi: {isCi}, IsBatchMode: {isBatchMode}",
+                        keepConnected, isCi, isBatchMode);
 
-                    if (isCi && !keepConnected)
+                    if ((isCi || isBatchMode) && !keepConnected)
                     {
-                        _logger.LogTrace("Skipping reconnection in CI environment (KeepConnected is false)");
+                        _logger.LogTrace("Skipping reconnection in CI/batchmode environment (KeepConnected is false)");
                         break;
                     }
 

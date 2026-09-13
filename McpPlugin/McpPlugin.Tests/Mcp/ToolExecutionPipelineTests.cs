@@ -271,8 +271,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                     _ => Task.FromException<ResponseCallTool>(new InvalidOperationException("secret detail")));
 
             runnerResponse.StructuredError!.Code.ShouldBe(ToolCallErrorCodes.ToolExecutionFailed);
-            runnerResponse.StructuredError.Message.ShouldBe("Tool execution failed.");
-            runnerResponse.StructuredError.Message.ShouldNotContain("secret detail");
+            // COCli-09: the message carries a bounded, single-line cause (the
+            // base exception type + message) instead of a generic placeholder,
+            // and the full bounded diagnostics ride in `details`.
+            runnerResponse.StructuredError.Message.ShouldStartWith("Tool execution failed: InvalidOperationException");
+            runnerResponse.StructuredError.Message.ShouldContain("secret detail");
+            runnerResponse.StructuredError.Message.ShouldNotContain(Environment.NewLine);
+            var details = runnerResponse.StructuredError.Details!.AsObject();
+            details["exceptionType"]!.GetValue<string>().ShouldBe("System.InvalidOperationException");
+            details["exceptionMessage"]!.GetValue<string>().ShouldBe("secret detail");
             runnerResponse.StructuredError.CallId.ShouldBe("call-runner");
         }
 

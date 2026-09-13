@@ -47,13 +47,23 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [Description("Width of the screenshot in pixels.")]
             int width = 1920,
             [Description("Height of the screenshot in pixels.")]
-            int height = 1080
+            int height = 1080,
+            [Description("Project-relative PNG output path. When set, returns metadata without base64.")]
+            string? outputFile = null,
+            [Description("Return bounded metadata without inline base64. Default false.")]
+            bool metadataOnly = false,
+            [Description("Queue file/metadata capture as a durable operation. Inline image capture remains synchronous.")]
+            bool asynchronous = true
         )
         {
             if (width <= 0 || height <= 0)
                 return ResponseCallTool.Error($"Width and height must be greater than 0. Got {width}x{height}.");
             if (width > MaxDimension || height > MaxDimension)
                 return ResponseCallTool.Error($"Width and height must not exceed {MaxDimension} pixels. Got {width}x{height}.");
+
+            if (asynchronous && (!string.IsNullOrWhiteSpace(outputFile) || metadataOnly))
+                return QueueScreenshot(ScreenshotSceneViewToolId,
+                    () => ScreenshotSceneView(width, height, outputFile, metadataOnly, asynchronous: false));
 
             return MainThread.Instance.Run(() =>
             {
@@ -94,8 +104,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         Object.DestroyImmediate(tex);
                 }
 
-                return ResponseCallTool.Image(pngBytes, com.IvanMurzak.McpPlugin.Common.Consts.MimeType.ImagePng,
-                    $"Screenshot from Scene View ({width}x{height})");
+                return BuildScreenshotResponse(pngBytes, width, height,
+                    $"Screenshot from Scene View ({width}x{height})", outputFile, metadataOnly);
             });
         }
     }

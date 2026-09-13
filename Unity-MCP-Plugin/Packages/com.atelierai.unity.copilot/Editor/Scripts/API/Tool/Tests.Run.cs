@@ -226,11 +226,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
                 if (EditorUtility.scriptCompilationFailed)
                 {
+                    var compileMessage = "Cannot run tests because the Unity project has compilation errors.";
                     ClearTestRunOwnership(operationId);
                     EditorOperationRegistry.Fail(operationId,
                         "test-compilation-failed",
-                        "Cannot run tests because the Unity project has compilation errors.",
+                        compileMessage,
                         "compilation-failed");
+                    NotifyTestOperationFailed(operationId, requestId, compileMessage);
                     return;
                 }
 
@@ -255,6 +257,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         EditorOperationRegistry.CancelRunning(
                             operationId, "cancelled-after-discovery");
                         ClearTestRunOwnership(operationId);
+                        NotifyTestOperationFailed(operationId, requestId, "Test run was cancelled before execution.");
                         return;
                     }
                     if (discovery.MatchedNames.Length == 0)
@@ -263,6 +266,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         EditorOperationRegistry.Fail(operationId,
                             "tests-no-match", message, "filter-validation");
                         ClearTestRunOwnership(operationId);
+                        NotifyTestOperationFailed(operationId, requestId, message);
                         return;
                     }
 
@@ -275,15 +279,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 {
                     if (UnityCopilotPlugin.IsLogEnabled(LogLevel.Error))
                         Debug.LogError($"[TestRunner] Failed to prepare {testMode} operation.");
+                    var failureMessage = Error.TestExecutionFailed(ex.GetBaseException().Message);
                     var current = EditorOperationRegistry.Get(operationId);
                     if (current != null && !current.IsTerminal)
                     {
                         EditorOperationRegistry.Fail(operationId,
                             "test-execution-failed",
-                            Error.TestExecutionFailed(ex.GetBaseException().Message),
+                            failureMessage,
                             "start-failed");
                     }
                     ClearTestRunOwnership(operationId);
+                    NotifyTestOperationFailed(operationId, requestId, failureMessage);
                 });
             }
         }
@@ -440,9 +446,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             }
             catch (Exception ex)
             {
+                var failureMessage = Error.TestExecutionFailed(ex.GetBaseException().Message);
+                // Capture before ClearTestRunOwnership wipes the persisted ids.
+                var requestId = TestResultCollector.TestCallRequestID.Value;
                 EditorOperationRegistry.Fail(operationId, "test-execution-failed",
-                    Error.TestExecutionFailed(ex.GetBaseException().Message), "start-failed");
+                    failureMessage, "start-failed");
                 ClearTestRunOwnership(operationId);
+                NotifyTestOperationFailed(operationId, requestId, failureMessage);
             }
         }
 
@@ -615,7 +625,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     message += " Cancellation request diagnostic: " + diagnostic;
                 EditorOperationRegistry.Fail(operation.OperationId, "tests-execution-timeout",
                     message, "execution-timeout");
+                // Capture before ClearTestRunOwnership wipes the persisted ids.
+                var timeoutRequestId = TestResultCollector.TestCallRequestID.Value;
                 Tool_Tests.ClearTestRunOwnership(operation.OperationId);
+                Tool_Tests.NotifyTestOperationFailed(operation.OperationId, timeoutRequestId, message);
                 return;
             }
 

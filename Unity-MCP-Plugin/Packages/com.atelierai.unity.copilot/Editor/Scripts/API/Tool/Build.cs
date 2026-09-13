@@ -31,16 +31,25 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // DTOs
         // -----------------------------------------------------------------
 
-        public class BuildJobInfo
+        public class BuildJobInfo : com.IvanMurzak.McpPlugin.Common.Model.IDurableOperationHandle
         {
             [Description("Unique job ID for polling via build-job-get.")]
             public string JobId { get; set; } = "";
+
+            [Description("Durable operation id — same value as JobId; exposed so --wait and generic operation polling work for build-player.")]
+            public string OperationId => JobId;
 
             [Description("'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled' | 'interrupted'")]
             public string Status { get; set; } = "";
 
             [Description("Current durable operation phase.")]
             public string Phase { get; set; } = "";
+
+            [Description("Seconds the job has been waiting before execution (since creation; -1 when unknown). Long-queued jobs with a stable value point at a scheduler that is not ticking.")]
+            public double QueuedSeconds { get; set; } = -1;
+
+            [Description("Why the job is not running yet (scheduler/busy cause, e.g. 'capacity-admission', 'compilation'), empty when running or terminal.")]
+            public string Blocked { get; set; } = "";
 
             [Description("Operation progress in [0,1], or -1 when not reported.")]
             public double Progress { get; set; } = -1;
@@ -360,6 +369,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     JobId = operation.OperationId,
                     Status = operation.Status,
                     Phase = operation.Phase,
+                    QueuedSeconds = ProjectQueuedSeconds(operation),
+                    Blocked = ProjectBlocked(operation),
                     Progress = operation.Progress,
                     BuildTarget = metadata?.BuildTarget ?? string.Empty,
                     OutputPath = metadata?.OutputPath ?? string.Empty,
@@ -376,6 +387,28 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     TotalWarnings = completion?.TotalWarnings,
                     Error = operation.ErrorMessage
                 };
+            }
+
+            static double ProjectQueuedSeconds(EditorOperationInfo operation)
+            {
+                var waiting = string.Equals(operation.Status, "queued", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(operation.Status, "scheduled", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(operation.Phase, "queued", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(operation.Phase, "scheduled", StringComparison.OrdinalIgnoreCase);
+                if (!waiting)
+                    return -1;
+                if (DateTime.TryParse(operation.CreatedAtUtc, System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.RoundtripKind, out var created))
+                    return Math.Max(0d, (DateTime.UtcNow - created.ToUniversalTime()).TotalSeconds);
+                return -1;
+            }
+
+            static string ProjectBlocked(EditorOperationInfo operation)
+            {
+                if (operation.IsTerminal)
+                    return string.Empty;
+                var blocked = operation.Blocked;
+                return blocked == null ? string.Empty : blocked.Cause;
             }
         }
 

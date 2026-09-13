@@ -33,6 +33,15 @@ namespace AIGD
             "request pipeline. Use 'tools-set-group-enabled' to flip state and persist it.")]
         public bool Enabled { get; set; }
 
+        [Description("Requested group state persisted by the user. Same value as Enabled for compatibility.")]
+        public bool RequestedEnabled { get; set; }
+
+        [Description("Actual callability at the current tool boundary. This remains true for populated groups while enforcement is soft.")]
+        public bool EffectiveEnabled { get; set; }
+
+        [Description("Accepted aliases that resolve to this canonical group name.")]
+        public string[] Aliases { get; set; } = System.Array.Empty<string>();
+
         [Description("Default-enabled flag declared by the attribute. EditorPrefs may " +
             "override this; the diff between Enabled and DefaultEnabled tells you whether " +
             "the user has customised the group.")]
@@ -60,6 +69,15 @@ namespace AIGD
 
         [Description("Group enabled state after the call.")]
         public bool Enabled { get; set; }
+
+        [Description("Requested state after the call.")]
+        public bool RequestedEnabled { get; set; }
+
+        [Description("Actual callability after the call.")]
+        public bool EffectiveEnabled { get; set; }
+
+        [Description("Accepted aliases for the canonical group.")]
+        public string[] Aliases { get; set; } = System.Array.Empty<string>();
 
         [Description("Group enabled state before the call. When equal to Enabled the call " +
             "was a no-op and no EditorPrefs write happened.")]

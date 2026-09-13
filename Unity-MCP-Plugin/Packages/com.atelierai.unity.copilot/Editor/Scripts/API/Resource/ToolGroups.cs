@@ -85,15 +85,26 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                 if (i > 0) sb.Append(',');
                 var name = groups[i];
                 var enabled = ToolGroupRegistry.IsGroupEnabled(name);
+                var effectiveEnabled = ToolGroupRegistry.IsGroupEffectivelyEnabled(name);
                 var defaultEnabled = ToolGroupRegistry.GetDefaultEnabled(name);
                 var description = ToolGroupRegistry.GetDescription(name);
                 var tools = ToolGroupRegistry.ToolsInGroup(name);
+                var aliases = ToolGroupRegistry.AliasesForGroup(name);
 
                 sb.Append('{');
                 sb.Append("\"name\":"); AppendJsonString(sb, name);
                 sb.Append(",\"enabled\":").Append(enabled ? "true" : "false");
+                sb.Append(",\"requestedEnabled\":").Append(enabled ? "true" : "false");
+                sb.Append(",\"effectiveEnabled\":").Append(effectiveEnabled ? "true" : "false");
                 sb.Append(",\"defaultEnabled\":").Append(defaultEnabled ? "true" : "false");
                 sb.Append(",\"description\":"); AppendJsonStringOrNull(sb, description);
+                sb.Append(",\"aliases\":[");
+                for (var a = 0; a < aliases.Count; a++)
+                {
+                    if (a > 0) sb.Append(',');
+                    AppendJsonString(sb, aliases[a]);
+                }
+                sb.Append(']');
                 sb.Append(",\"toolCount\":").Append(tools.Count);
                 sb.Append(",\"tools\":[");
                 for (var t = 0; t < tools.Count; t++)

@@ -62,11 +62,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     var toolsArray = new string[tools.Count];
                     for (var i = 0; i < tools.Count; i++)
                         toolsArray[i] = tools[i];
+                    var aliases = ToolGroupRegistry.AliasesForGroup(name);
+                    var aliasesArray = new string[aliases.Count];
+                    for (var i = 0; i < aliases.Count; i++)
+                        aliasesArray[i] = aliases[i];
+                    var requestedEnabled = ToolGroupRegistry.IsGroupEnabled(name);
 
                     result.Add(new ToolGroupSnapshot
                     {
                         Name = name,
-                        Enabled = ToolGroupRegistry.IsGroupEnabled(name),
+                        Enabled = requestedEnabled,
+                        RequestedEnabled = requestedEnabled,
+                        EffectiveEnabled = ToolGroupRegistry.IsGroupEffectivelyEnabled(name),
+                        Aliases = aliasesArray,
                         DefaultEnabled = ToolGroupRegistry.GetDefaultEnabled(name),
                         Description = ToolGroupRegistry.GetDescription(name),
                         Tools = toolsArray,

@@ -224,11 +224,23 @@ namespace com.IvanMurzak.McpPlugin
 
                 if (!context.Legacy && result.Status == ResponseStatus.Error)
                 {
+                    // COCli-09: the tool put its actionable failure text (compile
+                    // errors, exception messages) into the first content block;
+                    // never let a generic placeholder shadow it in the structured
+                    // error the CLI actually surfaces.
+                    var diagnostic = result.GetMessage();
                     result.StructuredError ??= new ToolCallError(
                         ToolCallErrorCodes.ToolExecutionFailed,
-                        $"Failed to run tool '{request.Name}'.",
+                        string.IsNullOrEmpty(diagnostic)
+                            ? $"Failed to run tool '{request.Name}'."
+                            : ExceptionDiagnostics.BoundDetailText(diagnostic, 1024),
                         callId: context.CallId,
                         correlationId: context.CorrelationId);
+                    if (result.StructuredError.Message == "Tool execution failed."
+                        && !string.IsNullOrEmpty(diagnostic))
+                    {
+                        result.StructuredError.Message = ExceptionDiagnostics.BoundDetailText(diagnostic, 1024);
+                    }
                     EnsureErrorCorrelation(result.StructuredError, context);
                 }
 
@@ -266,7 +278,10 @@ namespace com.IvanMurzak.McpPlugin
                     return response;
                 }
 
-                return ResponseData<ResponseCallTool>.Error(request.RequestID, $"Failed to run tool '{request.Name}'. Exception: {ex}")
+                // COCli-09: legacy callers get a bounded, single-line cause
+                // instead of the full exception dump (which could be enormous).
+                return ResponseData<ResponseCallTool>.Error(request.RequestID,
+                        ExceptionDiagnostics.BoundedFailureMessage(ex, $"Failed to run tool '{request.Name}'"))
                     .Log(_logger, $"RunCallTool[{request.Name}]", ex);
             }
         }
@@ -278,30 +293,10 @@ namespace com.IvanMurzak.McpPlugin
         /// leaking unbounded payloads onto the wire.
         /// </summary>
         private static System.Text.Json.Nodes.JsonObject? BoundedExceptionDetails(Exception ex)
-        {
-            try
-            {
-                var root = ex.GetBaseException();
-                return new System.Text.Json.Nodes.JsonObject
-                {
-                    ["exceptionType"] = BoundDetailText(root.GetType().FullName ?? root.GetType().Name, 160),
-                    ["exceptionMessage"] = BoundDetailText(root.Message, 1024),
-                    ["exceptionStackTrace"] = string.IsNullOrEmpty(root.StackTrace)
-                        ? null
-                        : BoundDetailText(root.StackTrace, 2048),
-                };
-            }
-            catch
-            {
-                return null;
-            }
-        }
+            => ExceptionDiagnostics.BoundedExceptionDetails(ex);
 
         private static string BoundDetailText(string value, int maximum)
-        {
-            var flattened = value.Replace('\r', ' ').Replace('\n', ' ').Trim();
-            return flattened.Length <= maximum ? flattened : flattened.Substring(0, maximum);
-        }
+            => ExceptionDiagnostics.BoundDetailText(value, maximum);
 
         private static ResponseData<ResponseCallTool> CreateControlledError(
             RequestCallTool request,

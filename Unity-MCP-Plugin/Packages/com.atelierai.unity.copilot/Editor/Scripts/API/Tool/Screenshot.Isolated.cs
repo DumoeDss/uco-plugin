@@ -162,7 +162,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                        + "Example: [{\"type\":\"Directional\",\"color\":\"#FFF4E5\",\"intensity\":1.2,\"rotation\":[45,-45,0]}]")]
             string? lights = null,
             [Description("Output image resolution in pixels (width = height). Default: 512.")]
-            int? resolution = 512
+            int? resolution = 512,
+            [Description("Project-relative PNG output path. When set, returns metadata without base64.")]
+            string? outputFile = null,
+            [Description("Return bounded metadata without inline base64. Default false.")]
+            bool metadataOnly = false,
+            [Description("Queue file/metadata capture as a durable operation. Inline image capture remains synchronous.")]
+            bool asynchronous = true
         )
         {
             var resolvedResolution = resolution ?? 512;
@@ -211,6 +217,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             if (!ColorUtility.TryParseHtmlString(resolvedBackgroundColor, out var clearColor))
                 return ResponseCallTool.Error($"[Error] Invalid backgroundColor '{resolvedBackgroundColor}'. Expected '#RRGGBB', '#RRGGBBAA', or a Unity color name (e.g. 'red').");
+
+            if (asynchronous && (!string.IsNullOrWhiteSpace(outputFile) || metadataOnly))
+                return QueueScreenshot(ScreenshotIsolatedToolId, () => ScreenshotIsolated(
+                    gameObjectRef, includeChildren, isolated, backgroundMode, backgroundColor,
+                    cameraView, fieldOfView, nearClipPlane, farClipPlane, padding, lights,
+                    resolution, outputFile, metadataOnly, asynchronous: false));
 
             return MainThread.Instance.Run(() =>
             {
@@ -299,8 +311,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                             out readbackTexture);
                     }
 
-                    return ResponseCallTool.Image(pngBytes, com.IvanMurzak.McpPlugin.Common.Consts.MimeType.ImagePng,
-                        $"Isolated screenshot of '{target.name}' ({resolvedCameraView}, {resolvedResolution}x{resolvedResolution}, isolated={resolvedIsolated}, backgroundMode={resolvedBackgroundMode})");
+                    return BuildScreenshotResponse(pngBytes, resolvedResolution, resolvedResolution,
+                        $"Isolated screenshot of '{target.name}' ({resolvedCameraView}, {resolvedResolution}x{resolvedResolution}, isolated={resolvedIsolated}, backgroundMode={resolvedBackgroundMode})",
+                        outputFile, metadataOnly);
                 }
                 finally
                 {
