@@ -1,0 +1,30 @@
+/*
+┌────────────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)                   │
+│  Repository: GitHub (https://github.com/IvanMurzak/MCP-Plugin-dotnet)  │
+│  Copyright (c) 2025 Ivan Murzak                                        │
+│  Licensed under the Apache License, Version 2.0.                       │
+│  See the LICENSE file in the project root for more information.        │
+└────────────────────────────────────────────────────────────────────────┘
+*/
+
+using System;
+using System.Collections.Generic;
+using com.IvanMurzak.McpPlugin.Common.Hub.Client;
+using R3;
+
+namespace com.IvanMurzak.McpPlugin
+{
+    public interface IResourceManager : IClientResourceHub, IDisposable
+    {
+        Observable<Unit> OnResourcesUpdated { get; }
+        int EnabledResourcesCount { get; }
+        int TotalResourcesCount { get; }
+        IEnumerable<IRunResource> GetAllResources();
+        bool HasResource(string name);
+        bool AddResource(IRunResource resourceParams);
+        bool RemoveResource(string name);
+        bool IsResourceEnabled(string name);
+        bool SetResourceEnabled(string name, bool enabled);
+    }
+}

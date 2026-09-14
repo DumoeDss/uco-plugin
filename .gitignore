@@ -1,0 +1,28 @@
+# GitHub
+.secrets
+.unity-license
+*.ulf
+
+# AI configurations
+**/.claude/settings.local.json
+.gemini
+.aider*
+.roo
+
+# Commands and env files
+commands/TestResults
+commands/.env
+!commands/.env.example
+
+# Unity package lock files (auto-generated)
+**/Packages/packages-lock.json
+
+# Documentation
+.CONVENTIONS.md
+
+# Wiki project
+Unity-MCP.wiki
+
+# .NET build output (in-tree framework source under ReflectorNet/ + McpPlugin/)
+**/bin/
+**/obj/

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
+
+    <!-- NuGet Package Information -->
+    <PackageId>com.IvanMurzak.ReflectorNet</PackageId>
+    <Version>5.1.2</Version>
+    <Authors>Ivan Murzak</Authors>
+    <Copyright>Copyright © Ivan Murzak 2025</Copyright>
+    <Description>ReflectorNet is an advanced .NET reflection toolkit designed for AI-driven scenarios. Effortlessly search for C# methods using natural language queries, invoke any method by supplying arguments as JSON, and receive results as JSON. The library also provides a powerful API to inspect, modify, and manage in-memory object instances dynamically via JSON data. Ideal for automation, testing, and AI integration workflows.</Description>
+    <PackageTags>Reflection;AI;MCP</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/IvanMurzak/ReflectorNet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/IvanMurzak/ReflectorNet</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+</Project>

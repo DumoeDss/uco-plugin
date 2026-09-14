@@ -1,0 +1,139 @@
+# ┌──────────────────────────────────────────────────────────────────┐
+# │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
+# │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
+# │  Copyright (c) 2025 Ivan Murzak                                  │
+# │  Licensed under the Apache License, Version 2.0.                 │
+# │  See the LICENSE file in the project root for more information.  │
+# └──────────────────────────────────────────────────────────────────┘
+
+name: test-pull-request
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  save-event-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Save event file for publish workflow
+        uses: actions/upload-artifact@v6
+        with:
+          name: Event File
+          path: ${{ github.event_path }}
+
+  test-cli:
+    uses: ./.github/workflows/test_cli.yml
+
+  build-and-zip-mcp-server:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Make build script executable
+        run: chmod +x ./Unity-MCP-Server/build-all.sh
+
+      - name: Build executables for all platforms
+        shell: bash {0}
+        run: cd Unity-MCP-Server && ./build-all.sh Release
+
+  # --- UNITY TESTS ---
+  # -------------------
+
+  # --- EDIT MODE ---
+
+  test-unity-2022-3-62f3-editmode:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/2022.3.62f3"
+      unityVersion: "2022.3.62f3"
+      testMode: "editmode"
+    secrets: inherit
+
+  test-unity-2023-2-22f1-editmode:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/2023.2.22f1"
+      unityVersion: "2023.2.22f1"
+      testMode: "editmode"
+    secrets: inherit
+
+  test-unity-6000-3-1f1-editmode:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/6000.3.1f1"
+      unityVersion: "6000.3.1f1"
+      testMode: "editmode"
+    secrets: inherit
+
+  # --- PLAY MODE ---
+
+  # test-unity-2022-3-62f3-playmode:
+  #   needs: [build-and-zip-mcp-server]
+  #   uses: ./.github/workflows/test_unity_plugin.yml
+  #   with:
+  #     projectPath: './Unity-Tests/2022.3.62f3'
+  #     unityVersion: '2022.3.62f3'
+  #     testMode: 'playmode'
+  #   secrets: inherit
+
+  # test-unity-2023-2-22f1-playmode:
+  #   needs: [build-and-zip-mcp-server]
+  #   uses: ./.github/workflows/test_unity_plugin.yml
+  #   with:
+  #     projectPath: './Unity-Tests/2023.2.22f1'
+  #     unityVersion: '2023.2.22f1'
+  #     testMode: 'playmode'
+  #   secrets: inherit
+
+  # test-unity-6000-3-1f1-playmode:
+  #   needs: [build-and-zip-mcp-server]
+  #   uses: ./.github/workflows/test_unity_plugin.yml
+  #   with:
+  #     projectPath: './Unity-Tests/6000.3.1f1'
+  #     unityVersion: '6000.3.1f1'
+  #     testMode: 'playmode'
+  #   secrets: inherit
+
+  # --- STANDALONE ---
+
+  test-unity-2022-3-62f3-standalone:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/2022.3.62f3"
+      unityVersion: "2022.3.62f3"
+      testMode: "standalone"
+    secrets: inherit
+
+  test-unity-2023-2-22f1-standalone:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/2023.2.22f1"
+      unityVersion: "2023.2.22f1"
+      testMode: "standalone"
+    secrets: inherit
+
+  test-unity-6000-3-1f1-standalone:
+    needs: [build-and-zip-mcp-server]
+    uses: ./.github/workflows/test_unity_plugin.yml
+    with:
+      projectPath: "./Unity-Tests/6000.3.1f1"
+      unityVersion: "6000.3.1f1"
+      testMode: "standalone"
+    secrets: inherit
+
+  # -------------------

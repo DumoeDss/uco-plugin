@@ -1,0 +1,33 @@
+{
+    "name": "com.AtelierAI.Unity.Copilot.Editor",
+    "rootNamespace": "com.AtelierAI.Unity.Copilot.Editor",
+    "references": [
+        "com.AtelierAI.Unity.Copilot.Runtime",
+        "com.AtelierAI.Unity.Copilot.DependencyResolver",
+        "Extensions.Unity.PlayerPrefsEx"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "ReflectorNet.dll",
+        "McpPlugin.dll",
+        "McpPlugin.Common.dll",
+        "R3.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "Microsoft.Extensions.Logging.dll",
+        "Microsoft.CodeAnalysis.CSharp.dll",
+        "Microsoft.CodeAnalysis.dll",
+        "System.Collections.Immutable.dll",
+        "System.Text.Json.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

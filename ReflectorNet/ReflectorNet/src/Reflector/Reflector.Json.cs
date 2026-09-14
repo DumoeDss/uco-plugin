@@ -1,0 +1,140 @@
+using System;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using com.IvanMurzak.ReflectorNet.Utils;
+
+namespace com.IvanMurzak.ReflectorNet
+{
+    using JsonSerializer = com.IvanMurzak.ReflectorNet.Utils.JsonSerializer;
+
+    public partial class Reflector
+    {
+        readonly JsonSerializer jsonSerializer;
+        readonly JsonSchema jsonSchema = new();
+
+        public JsonSerializerOptions JsonSerializerOptions => jsonSerializer.JsonSerializerOptions;
+        public JsonSerializer JsonSerializer => jsonSerializer;
+        public JsonSchema JsonSchema => jsonSchema;
+
+        /// <summary>
+        /// Generates a JSON Schema representation for the specified generic type parameter.
+        /// This method provides comprehensive schema generation supporting both simple references
+        /// and full schema definitions with proper type metadata and documentation.
+        ///
+        /// Behavior:
+        /// - Type resolution: Automatically handles nullable types by unwrapping to underlying type
+        /// - Reference mode: When justRef=true, generates compact $ref schemas for non-primitive types
+        /// - Full schema mode: When justRef=false, generates complete schema definitions with properties
+        /// - Primitive optimization: Generates inline schemas for primitive types regardless of justRef setting
+        /// - Documentation extraction: Includes descriptions from DescriptionAttribute and XML documentation
+        /// - Recursive handling: Manages complex nested types and generic type parameters
+        /// - Error handling: Provides detailed error information for schema generation failures
+        /// </summary>
+        /// <typeparam name="T">The type for which to generate the JSON Schema.</typeparam>
+        /// <returns>A JsonNode containing the JSON Schema representation of the specified type.</returns>
+        public JsonNode GetSchema<T>()
+        {
+            return GetSchema(typeof(T));
+        }
+
+        /// <summary>
+        /// Generates a JSON Schema representation for the specified generic type parameter.
+        /// This method provides comprehensive schema generation supporting both simple references
+        /// and full schema definitions with proper type metadata and documentation.
+        ///
+        /// Behavior:
+        /// - Type resolution: Automatically handles nullable types by unwrapping to underlying type
+        /// - Reference mode: When justRef=true, generates compact $ref schemas for non-primitive types
+        /// - Full schema mode: When justRef=false, generates complete schema definitions with properties
+        /// - Primitive optimization: Generates inline schemas for primitive types regardless of justRef setting
+        /// - Documentation extraction: Includes descriptions from DescriptionAttribute and XML documentation
+        /// - Recursive handling: Manages complex nested types and generic type parameters
+        /// - Error handling: Provides detailed error information for schema generation failures
+        /// </summary>
+        /// <typeparam name="T">The type for which to generate the JSON Schema.</typeparam>
+        /// <returns>A JsonNode containing the JSON Schema representation of the specified type.</returns>
+        public JsonNode GetSchemaRef<T>()
+        {
+            return jsonSchema.GetSchemaRef<T>(this);
+        }
+
+        /// <summary>
+        /// Generates a JSON Schema representation for the specified type.
+        /// This method provides comprehensive schema generation supporting both simple references
+        /// and full schema definitions with proper type metadata and documentation.
+        ///
+        /// Behavior:
+        /// - Type resolution: Automatically handles nullable types by unwrapping to underlying type
+        /// - Reference mode: When justRef=true, generates compact $ref schemas for non-primitive types
+        /// - Full schema mode: When justRef=false, generates complete schema definitions with properties
+        /// - Primitive optimization: Generates inline schemas for primitive types regardless of justRef setting
+        /// - Documentation extraction: Includes descriptions from DescriptionAttribute and XML documentation
+        /// - Recursive handling: Manages complex nested types and generic type parameters
+        /// - Error handling: Provides detailed error information for schema generation failures
+        /// </summary>
+        /// <param name="type">The Type for which to generate the JSON Schema.</param>
+        /// <returns>A JsonNode containing the JSON Schema representation of the specified type.</returns>
+        public JsonNode GetSchema(Type type)
+        {
+            return jsonSchema.GetSchema(this, type);
+        }
+
+        /// <summary>
+        /// Generates a JSON Schema representation for the specified type.
+        /// This method provides comprehensive schema generation supporting both simple references
+        /// and full schema definitions with proper type metadata and documentation.
+        ///
+        /// Behavior:
+        /// - Type resolution: Automatically handles nullable types by unwrapping to underlying type
+        /// - Reference mode: When justRef=true, generates compact $ref schemas for non-primitive types
+        /// - Full schema mode: When justRef=false, generates complete schema definitions with properties
+        /// - Primitive optimization: Generates inline schemas for primitive types regardless of justRef setting
+        /// - Documentation extraction: Includes descriptions from DescriptionAttribute and XML documentation
+        /// - Recursive handling: Manages complex nested types and generic type parameters
+        /// - Error handling: Provides detailed error information for schema generation failures
+        /// </summary>
+        /// <param name="type">The Type for which to generate the JSON Schema.</param>
+        /// <returns>A JsonNode containing the JSON Schema representation of the specified type.</returns>
+        public JsonNode GetSchemaRef(Type type)
+            => jsonSchema.GetSchemaRef(this, type);
+
+        /// <summary>
+        /// Generates a comprehensive JSON Schema for method parameters, enabling dynamic method invocation
+        /// and parameter validation scenarios. This method creates schemas suitable for form generation,
+        /// API documentation, and parameter validation in dynamic execution environments.
+        ///
+        /// Behavior:
+        /// - Parameter analysis: Examines all method parameters including names, types, and default values
+        /// - Schema structure: Creates object schema with properties for each parameter
+        /// - Required fields: Automatically determines required vs optional parameters based on default values
+        /// - Type definitions: Includes $defs section for complex types to avoid duplication
+        /// - Documentation: Extracts parameter descriptions from DescriptionAttribute annotations
+        /// - Generic support: Handles generic method parameters and their type constraints
+        /// - Recursive schemas: Properly handles nested complex types and generic type arguments
+        /// - Validation support: Includes appropriate validation constraints for parameter types
+        ///
+        /// The generated schema follows JSON Schema Draft 2020-12 specification and includes:
+        /// - Object schema with properties for each parameter
+        /// - Required array listing mandatory parameters
+        /// - $defs section containing complex type definitions
+        /// - Description annotations from method parameter attributes
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for which to generate the parameter schema.</param>
+        /// <param name="justRef">Whether to use compact references for complex types. Default is false.</param>
+        /// <returns>A JsonNode containing the complete JSON Schema for the method's parameters.</returns>
+        public JsonNode GetArgumentsSchema(MethodInfo methodInfo, bool justRef = false, JsonObject? defines = null)
+            => jsonSchema.GetArgumentsSchema(this, methodInfo, justRef, defines);
+
+        /// <summary>
+        /// Generates a comprehensive JSON Schema for the return type of a method.
+        /// This schema can be used to describe the structure of the method's return value,
+        /// supporting dynamic method invocation and validation scenarios.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for which to generate the return type schema.</param>
+        /// <param name="justRef">Whether to use compact references for complex types. Default is false.</param>
+        /// <returns>A JsonNode containing the complete JSON Schema for the method's return type.</returns>
+        public JsonNode? GetReturnSchema(MethodInfo methodInfo, bool justRef = false, JsonObject? defines = null)
+            => jsonSchema.GetReturnSchema(this, methodInfo, justRef, defines);
+    }
+}

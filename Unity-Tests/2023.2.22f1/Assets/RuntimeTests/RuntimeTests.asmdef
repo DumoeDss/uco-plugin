@@ -1,0 +1,25 @@
+{
+    "name": "RuntimeTests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "com.AtelierAI.Unity.Copilot.Runtime",
+        "com.AtelierAI.Unity.Copilot.Tests",
+        "com.AtelierAI.Unity.Copilot.TestFiles",
+        "TestFiles"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

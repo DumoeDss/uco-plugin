@@ -1,0 +1,3 @@
+npx @modelcontextprotocol/inspector
+
+pause

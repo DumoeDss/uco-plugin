@@ -1,0 +1,27 @@
+{
+    "name": "EditorTests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "com.AtelierAI.Unity.Copilot.Runtime",
+        "com.AtelierAI.Unity.Copilot.Editor",
+        "com.AtelierAI.Unity.Copilot.Editor.Tests",
+        "com.AtelierAI.Unity.Copilot.TestFiles",
+        "TestFiles"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

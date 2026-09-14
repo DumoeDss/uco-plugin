@@ -1,0 +1,16 @@
+{
+    "name": "com.AtelierAI.Unity.Copilot.DependencyResolver",
+    "rootNamespace": "com.AtelierAI.Unity.Copilot.Editor.DependencyResolver",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "com.AtelierAI.Unity.Copilot.TestFiles",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

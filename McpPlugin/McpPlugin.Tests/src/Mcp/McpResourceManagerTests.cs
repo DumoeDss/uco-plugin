@@ -1,0 +1,195 @@
+/*
+┌────────────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)                   │
+│  Repository: GitHub (https://github.com/IvanMurzak/MCP-Plugin-dotnet)  │
+│  Copyright (c) 2025 Ivan Murzak                                        │
+│  Licensed under the Apache License, Version 2.0.                       │
+│  See the LICENSE file in the project root for more information.        │
+└────────────────────────────────────────────────────────────────────────┘
+*/
+using System;
+using System.Collections.Generic;
+using com.IvanMurzak.ReflectorNet;
+using Shouldly;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+{
+    public class McpResourceManagerTests : IDisposable
+    {
+        private readonly Mock<ILogger<McpResourceManager>> _mockLogger;
+        private readonly Mock<Reflector> _mockReflector;
+        private readonly ResourceRunnerCollection _resourceCollection;
+        private readonly McpResourceManager _manager;
+
+        public McpResourceManagerTests()
+        {
+            // Setup dependencies
+            _mockLogger = new Mock<ILogger<McpResourceManager>>();
+            _mockReflector = new Mock<Reflector>();
+            _resourceCollection = new ResourceRunnerCollection(_mockReflector.Object, null);
+
+            // Create the manager with proper dependencies
+            _manager = new McpResourceManager(
+                _mockLogger.Object,
+                _mockReflector.Object,
+                _resourceCollection
+            );
+        }
+
+        public void Dispose()
+        {
+            // Clean up resources after each test
+            _manager.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        [Fact]
+        public void IsMatch_ReturnsTrue_ForMatchingTemplate()
+        {
+            var result = _manager.IsMatch("/files/{id}/content", "/files/123/content");
+
+            result.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void IsMatch_ReturnsFalse_ForNonMatchingTemplate()
+        {
+            var result = _manager.IsMatch("/files/{id}/content", "/files/123/other");
+
+            result.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void ParseUriParameters_ParsesNamedParameter_IncludingTrailingSegments()
+        {
+            var dict = _manager.ParseUriParameters("/files/{id}", "/files/123/other");
+
+            dict.ShouldContainKey("uri");
+            dict["uri"].ShouldBe("/files/123/other");
+            dict.ShouldContainKey("id");
+            dict["id"].ShouldBe("123/other");
+        }
+
+        [Fact]
+        public void ParseUriParameters_ParsesMultipleParameters()
+        {
+            var dict = _manager.ParseUriParameters("/{a}/{b}", "/one/two");
+
+            dict["a"].ShouldBe("one");
+            dict["b"].ShouldBe("two");
+            dict["uri"].ShouldBe("/one/two");
+        }
+
+        [Fact]
+        public void GameObjectTemplate_ParsesPathParameter()
+        {
+            var template = "gameObject://currentScene/{path}";
+            var uri = "gameObject://currentScene/Player/Armature/Hand";
+
+            var isMatch = _manager.IsMatch(template, uri);
+            isMatch.ShouldBeTrue();
+
+            var dict = _manager.ParseUriParameters(template, uri);
+            dict.ShouldContainKey("path");
+            dict["path"].ShouldBe("Player/Armature/Hand");
+            dict["uri"].ShouldBe(uri);
+        }
+
+        [Fact]
+        public void FindResourceContentRunner_ReturnsMatchingResource()
+        {
+            var mockResource = new Mock<IRunResource>();
+            mockResource.Setup(r => r.Route).Returns("/files/{id}");
+            mockResource.Setup(r => r.Name).Returns("files-resource");
+
+            var resources = new Dictionary<string, IRunResource>
+            {
+                { "files-resource", mockResource.Object }
+            };
+
+            var result = _manager.FindResourceContentRunner("/files/123", resources, out var uriTemplate);
+
+            result.ShouldNotBeNull();
+            result.ShouldBeSameAs(mockResource.Object);
+            uriTemplate.ShouldBe("/files/{id}");
+        }
+
+        [Fact]
+        public void FindResourceContentRunner_ReturnsNull_WhenNoMatch()
+        {
+            var mockResource = new Mock<IRunResource>();
+            mockResource.Setup(r => r.Route).Returns("/files/{id}");
+            mockResource.Setup(r => r.Name).Returns("files-resource");
+
+            var resources = new Dictionary<string, IRunResource>
+            {
+                { "files-resource", mockResource.Object }
+            };
+
+            var result = _manager.FindResourceContentRunner("/users/123", resources, out var uriTemplate);
+
+            result.ShouldBeNull();
+            uriTemplate.ShouldBeNull();
+        }
+
+        [Fact]
+        public void FindResourceContentRunner_ReturnsNull_WhenResourcesEmpty()
+        {
+            var resources = new Dictionary<string, IRunResource>();
+
+            var result = _manager.FindResourceContentRunner("/files/123", resources, out var uriTemplate);
+
+            result.ShouldBeNull();
+            uriTemplate.ShouldBeNull();
+        }
+
+        [Fact]
+        public void FindResourceContentRunner_ReturnsFirstMatchingResource_WhenMultipleExist()
+        {
+            var mockResource1 = new Mock<IRunResource>();
+            mockResource1.Setup(r => r.Route).Returns("/files/{id}");
+            mockResource1.Setup(r => r.Name).Returns("files-resource");
+
+            var mockResource2 = new Mock<IRunResource>();
+            mockResource2.Setup(r => r.Route).Returns("/users/{id}");
+            mockResource2.Setup(r => r.Name).Returns("users-resource");
+
+            var resources = new Dictionary<string, IRunResource>
+            {
+                { "files-resource", mockResource1.Object },
+                { "users-resource", mockResource2.Object }
+            };
+
+            var result = _manager.FindResourceContentRunner("/users/456", resources, out var uriTemplate);
+
+            result.ShouldNotBeNull();
+            result.ShouldBeSameAs(mockResource2.Object);
+            uriTemplate.ShouldBe("/users/{id}");
+        }
+
+        [Fact]
+        public void FindResourceContentRunner_MatchesWithTrailingSegments()
+        {
+            var mockResource = new Mock<IRunResource>();
+            mockResource.Setup(r => r.Route).Returns("gameObject://currentScene/{path}");
+            mockResource.Setup(r => r.Name).Returns("gameobject-resource");
+
+            var resources = new Dictionary<string, IRunResource>
+            {
+                { "gameobject-resource", mockResource.Object }
+            };
+
+            var result = _manager.FindResourceContentRunner(
+                "gameObject://currentScene/Player/Armature/Hand",
+                resources,
+                out var uriTemplate);
+
+            result.ShouldNotBeNull();
+            result.ShouldBeSameAs(mockResource.Object);
+            uriTemplate.ShouldBe("gameObject://currentScene/{path}");
+        }
+    }
+}

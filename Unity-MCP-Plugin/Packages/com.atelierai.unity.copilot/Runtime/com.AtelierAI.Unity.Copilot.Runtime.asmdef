@@ -1,0 +1,27 @@
+{
+    "name": "com.AtelierAI.Unity.Copilot.Runtime",
+    "rootNamespace": "com.AtelierAI.Unity.Copilot.Runtime",
+    "references": [
+        "Extensions.Unity.PlayerPrefsEx"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "McpPlugin.dll",
+        "McpPlugin.Common.dll",
+        "ReflectorNet.dll",
+        "R3.dll",
+        "System.Text.Json.dll",
+        "Microsoft.Extensions.Logging.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

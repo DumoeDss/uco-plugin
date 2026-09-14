@@ -1,0 +1,175 @@
+<#
+.SYNOPSIS
+    Build the three internal framework projects (ReflectorNet, McpPlugin.Common,
+    McpPlugin) from source and deploy the netstandard2.1 DLLs as static plugin
+    assets.
+
+.DESCRIPTION
+    The Unity plugin consumes three internal framework DLLs at compile time via
+    asmdef precompiledReferences: ReflectorNet.dll, McpPlugin.Common.dll,
+    McpPlugin.dll.  These are now built from the local source repos and committed
+    as static assets rather than fetched from NuGet at runtime by the
+    DependencyResolver.
+
+    This script:
+      1. Builds ReflectorNet.csproj            -> ReflectorNet.dll
+      2. Builds McpPlugin.Common.csproj        -> McpPlugin.Common.dll
+      3. Builds McpPlugin.csproj               -> McpPlugin.dll
+         (all for netstandard2.1 / Release)
+      4. Copies the three DLLs to
+         Unity-MCP-Plugin/Assets/Plugins/NuGet/
+         preserving existing .meta files (Unity GUIDs / import settings).
+      5. Reports the deployed file size of each DLL.
+
+    External NuGet dependencies (SignalR.Client, Microsoft.Extensions.*, R3, etc.)
+    remain resolver-managed and are NOT touched by this script.
+
+.PARAMETER Configuration
+    Build configuration. Default 'Release'.
+
+.PARAMETER SkipBuild
+    Reuse existing build output instead of running 'dotnet build'.
+    Fails if the expected output DLLs are missing.
+
+.EXAMPLE
+    .\commands\build-framework-dlls.ps1
+
+.EXAMPLE
+    .\commands\build-framework-dlls.ps1 -Configuration Debug
+#>
+
+#Requires -Version 5.1
+[CmdletBinding()]
+param(
+    [ValidateSet('Debug', 'Release')]
+    [string]$Configuration = 'Release',
+
+    [switch]$SkipBuild
+)
+
+$ErrorActionPreference = 'Stop'
+
+# --- Path resolution ---------------------------------------------------------
+$scriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
+$unityMcpDir = Split-Path -Parent $scriptDir                              # ...\Unity-MCP
+$workspace   = Split-Path -Parent $unityMcpDir                            # ...\unity-copilot
+
+$reflectorNetDir     = Join-Path $unityMcpDir 'ReflectorNet'
+$mcpPluginDir        = Join-Path $unityMcpDir 'McpPlugin'
+
+# Source project files
+$srcProj = [ordered]@{
+    ReflectorNet      = Join-Path $reflectorNetDir 'ReflectorNet\ReflectorNet.csproj'
+    McpPluginCommon   = Join-Path $mcpPluginDir    'McpPlugin.Common\McpPlugin.Common.csproj'
+    McpPlugin         = Join-Path $mcpPluginDir    'McpPlugin\McpPlugin.csproj'
+}
+
+$framework = 'netstandard2.1'
+
+# Build output -> deployed DLL name mapping
+$srcDll = [ordered]@{
+    'ReflectorNet.dll'        = Join-Path $reflectorNetDir    "ReflectorNet\bin\$Configuration\$framework\ReflectorNet.dll"
+    'McpPlugin.Common.dll'    = Join-Path $mcpPluginDir       "McpPlugin.Common\bin\$Configuration\$framework\McpPlugin.Common.dll"
+    'McpPlugin.dll'           = Join-Path $mcpPluginDir       "McpPlugin\bin\$Configuration\$framework\McpPlugin.dll"
+}
+
+$dstDir = Join-Path $unityMcpDir 'Unity-MCP-Plugin\Assets\Plugins\NuGet'
+
+# --- Validate source paths ---------------------------------------------------
+if (-not (Test-Path $reflectorNetDir)) {
+    throw "ReflectorNet source not found at: $reflectorNetDir`nExpected as a subdirectory of Unity-MCP."
+}
+if (-not (Test-Path $mcpPluginDir)) {
+    throw "McpPlugin source not found at: $mcpPluginDir`nExpected as a subdirectory of Unity-MCP."
+}
+if (-not (Test-Path $dstDir)) {
+    throw "Destination not found: $dstDir`nIs Unity-MCP-Plugin checked out?"
+}
+
+# --- Locate dotnet -----------------------------------------------------------
+function Resolve-Dotnet {
+    $cmd = Get-Command dotnet -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+
+    $fallbacks = @(
+        "$env:ProgramFiles\dotnet\dotnet.exe",
+        "${env:ProgramFiles(x86)}\dotnet\dotnet.exe",
+        "$env:USERPROFILE\.dotnet\dotnet.exe"
+    )
+    foreach ($p in $fallbacks) {
+        if ($p -and (Test-Path $p)) { return $p }
+    }
+    throw "dotnet CLI not found on PATH or at common install locations."
+}
+
+# --- Build -------------------------------------------------------------------
+if (-not $SkipBuild) {
+    $dotnet = Resolve-Dotnet
+    Write-Host "dotnet: $dotnet" -ForegroundColor DarkGray
+    Write-Host "Configuration: $Configuration / $framework" -ForegroundColor DarkGray
+    Write-Host ""
+
+    # Build in dependency order: ReflectorNet -> McpPlugin.Common -> McpPlugin.
+    # McpPlugin has a ProjectReference to McpPlugin.Common, so building McpPlugin
+    # will also rebuild Common; building Common first ensures the output exists
+    # even if McpPlugin build is skipped partway.
+    foreach ($pair in $srcProj.GetEnumerator()) {
+        $label = $pair.Key
+        $proj  = $pair.Value
+
+        if (-not (Test-Path $proj)) {
+            throw "Project file missing: $proj"
+        }
+
+        Write-Host "==> Building $label" -ForegroundColor Cyan
+        Write-Host "    $proj"
+        & $dotnet build $proj `
+            -c $Configuration -f $framework `
+            -p:GeneratePackageOnBuild=false `
+            -p:TargetFrameworks=$framework `
+            -v minimal
+        if ($LASTEXITCODE -ne 0) {
+            throw "dotnet build FAILED for $label (exit code $LASTEXITCODE).`nNo DLLs were copied to the destination."
+        }
+        Write-Host "    OK" -ForegroundColor Green
+        Write-Host ""
+    }
+}
+
+# --- Verify build output exists ----------------------------------------------
+$missing = @()
+foreach ($pair in $srcDll.GetEnumerator()) {
+    if (-not (Test-Path $pair.Value)) {
+        $missing += $pair.Value
+    }
+}
+if ($missing.Count -gt 0) {
+    throw @"
+Expected build output missing:
+$($missing -join "`n")
+Run without -SkipBuild to compile the projects first.
+"@
+}
+
+# --- Copy DLLs (preserve .meta files) ----------------------------------------
+Write-Host "==> Deploying DLLs to $dstDir" -ForegroundColor Cyan
+foreach ($pair in $srcDll.GetEnumerator()) {
+    $dllName = $pair.Key
+    $src     = $pair.Value
+    $dst     = Join-Path $dstDir $dllName
+
+    Copy-Item -Path $src -Destination $dst -Force
+    $size = (Get-Item $dst).Length
+    Write-Host ("    {0,-25} {1,10:N0} bytes" -f $dllName, $size)
+
+    # Warn if .meta is missing — Unity requires it.
+    $metaPath = "$dst.meta"
+    if (-not (Test-Path $metaPath)) {
+        Write-Host "    WARNING: .meta file missing for $dllName" -ForegroundColor Yellow
+        Write-Host "             Unity will generate one on next import (GUID will change)." -ForegroundColor Yellow
+    }
+}
+
+Write-Host ""
+Write-Host "Done." -ForegroundColor Green
+Write-Host "Reopen Unity Editor (or trigger Reimport) to load the refreshed plugin DLLs."

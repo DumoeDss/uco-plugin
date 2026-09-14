@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <RootNamespace>com.IvanMurzak.McpPlugin.Common</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+
+    <!-- NuGet Package Information -->
+    <IsPackable>true</IsPackable>
+    <PackageId>com.IvanMurzak.McpPlugin.Common</PackageId>
+    <Version>6.3.2</Version>
+    <Authors>Ivan Murzak</Authors>
+    <Company>Ivan Murzak</Company>
+    <Copyright>Copyright © Ivan Murzak 2025</Copyright>
+    <Description>McpPlugin common code for McpPlugin and McpPlugin.Server projects. It is .NET Library project for integration MCP server features into any dotnet application. It connects automatically with MCP server and exposes it's API over TCP connection in runtime. When MCP server interacts with AI.</Description>
+    <PackageTags>AI;MCP;Plugin;Networking</PackageTags>
+    <RepositoryUrl>https://github.com/IvanMurzak/MCP-Plugin-dotnet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/IvanMurzak/MCP-Plugin-dotnet</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../ReflectorNet/ReflectorNet/ReflectorNet.csproj" />
+    <PackageReference Include="R3" Version="1.3.0" />
+  </ItemGroup>
+
+  <!-- Include package files -->
+  <ItemGroup>
+    <None Include="./../LICENSE" Pack="true" PackagePath="" />
+    <None Include="./../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <!-- Exclude the local publish output folder so successive publishes don't recursively include previous outputs -->
+  <ItemGroup>
+    <None Remove="publish/**" />
+    <Content Remove="publish/**" />
+    <EmbeddedResource Remove="publish/**" />
+  </ItemGroup>
+
+</Project>

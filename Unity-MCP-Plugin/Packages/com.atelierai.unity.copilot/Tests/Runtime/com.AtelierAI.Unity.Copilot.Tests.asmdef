@@ -1,0 +1,31 @@
+{
+    "name": "com.AtelierAI.Unity.Copilot.Tests",
+    "rootNamespace": "",
+    "references": [
+        "com.AtelierAI.Unity.Copilot.Runtime",
+        "com.AtelierAI.Unity.Copilot.TestFiles"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Text.Json.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "ReflectorNet.dll",
+        "McpPlugin.dll",
+        "McpPlugin.Common.dll",
+        "R3.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "UNITY_COPILOT_READY"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,383 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using com.IvanMurzak.ReflectorNet.Converter;
+using com.IvanMurzak.ReflectorNet.Utils;
+
+namespace com.IvanMurzak.ReflectorNet
+{
+    public partial class Reflector
+    {
+        /// <summary>
+        /// Manages the converter registry for the Reflector instance, implementing a priority-based
+        /// Chain of Responsibility pattern for type conversion operations. This registry maintains
+        /// a collection of reflection converters and provides efficient converter selection based
+        /// on type compatibility and priority scoring.
+        ///
+        /// Core Functionality:
+        /// - Converter Management: Add, remove, and enumerate registered converters
+        /// - Priority-Based Selection: Automatically selects the best converter based on priority scores
+        /// - Thread Safety: Uses ConcurrentBag for safe multi-threaded access
+        /// - Default Converters: Pre-registers essential converters for common .NET types
+        /// - Extensibility: Supports registration of custom converters for specialized types
+        ///
+        /// Selection Algorithm:
+        /// 1. Queries all registered converters for their priority score with the target type
+        /// 2. Filters converters with priority > 0 (indicating they can handle the type)
+        /// 3. Orders converters by priority score in descending order
+        /// 4. Returns the highest priority converter that can handle the type
+        ///
+        /// Default Converters:
+        /// - PrimitiveReflectionConverter: Handles built-in .NET types (int, string, DateTime, etc.)
+        /// - GenericReflectionConverter<object>: Handles custom classes and structs
+        /// - ArrayReflectionConverter: Specialized handling for arrays and collections
+        ///
+        /// This architecture ensures that the most appropriate converter is always selected
+        /// while maintaining flexibility for custom type handling through converter registration.
+        /// </summary>
+        public class Registry
+        {
+            const int MaxBlacklistCacheSize = 1000;
+
+            ConcurrentBag<IReflectionConverter> _serializers = new();
+            readonly ConcurrentDictionary<Type, byte> _blacklistedTypes = new();
+
+            // Not readonly: intentionally replaced (not cleared) for thread-safe cache invalidation
+            ConcurrentDictionary<Type, bool> _blacklistCache = new();
+
+            // Cache for converter lookups: Type -> best converter for that type
+            // Not readonly: intentionally replaced when converters are added/removed for thread-safe cache invalidation
+            ConcurrentDictionary<Type, IReflectionConverter?> _converterCache = new();
+
+            /// <summary>
+            /// Initializes a new Registry instance with default converters for common .NET types.
+            /// The default converters are registered in order of increasing specificity to ensure
+            /// proper priority-based selection.
+            /// </summary>
+            public Registry()
+            {
+                // Basics
+                Add(new PrimitiveReflectionConverter());
+                Add(new ArrayReflectionConverter());
+                Add(new GenericReflectionConverter<object>());
+
+                // Specialized converters for read-only system types
+                Add(new TypeReflectionConverter());
+                Add(new AssemblyReflectionConverter());
+            }
+
+            /// <summary>
+            /// Adds a new converter to the registry. The converter will be included in future
+            /// converter selection operations based on its priority scoring for specific types.
+            /// </summary>
+            /// <param name="serializer">The converter to add to the registry. Null values are ignored.</param>
+            public void Add(IReflectionConverter serializer)
+            {
+                if (serializer == null)
+                    return;
+
+                _serializers.Add(serializer);
+                // Invalidate converter cache when a new converter is added
+                _converterCache = new ConcurrentDictionary<Type, IReflectionConverter?>();
+            }
+
+            /// <summary>
+            /// Removes the first converter of the specified type from the registry.
+            /// This operation creates a new ConcurrentBag excluding the removed converter.
+            /// </summary>
+            /// <typeparam name="T">The type of converter to remove.</typeparam>
+            public void Remove<T>() where T : IReflectionConverter
+            {
+                var serializer = _serializers.FirstOrDefault(s => s is T);
+                if (serializer == null)
+                    return;
+
+                _serializers = new ConcurrentBag<IReflectionConverter>(_serializers.Where(s => s != serializer));
+                // Invalidate converter cache when a converter is removed
+                _converterCache = new ConcurrentDictionary<Type, IReflectionConverter?>();
+            }
+
+            /// <summary>
+            /// Returns a read-only list of all registered converters.
+            /// This method creates a snapshot of the current converter collection.
+            /// </summary>
+            /// <returns>A read-only list containing all registered converters.</returns>
+            public IReadOnlyList<IReflectionConverter> GetAllSerializers() => _serializers.ToList();
+
+            /// <summary>
+            /// Adds a type to the blacklist, preventing it from being processed by any converter.
+            /// </summary>
+            /// <param name="type">The type to add to the blacklist.</param>
+            /// <returns>True if the type was added; false if it was null or already blacklisted.</returns>
+            public bool BlacklistType(Type type)
+            {
+                if (type == null)
+                    return false;
+
+                if (_blacklistedTypes.TryAdd(type, 0))
+                {
+                    _blacklistCache = new ConcurrentDictionary<Type, bool>(); // Invalidate cache when blacklist changes
+                    return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// Adds multiple types to the blacklist, preventing them from being processed by any converter.
+            /// The blacklist cache is only invalidated if at least one new type was added.
+            /// </summary>
+            /// <param name="types">The types to add to the blacklist. Null values are ignored.</param>
+            /// <returns>True if at least one type was added; false if all types were null or already blacklisted.</returns>
+            public bool BlacklistTypes(params Type[] types)
+            {
+                var changed = false;
+                foreach (var type in types)
+                {
+                    if (type != null && _blacklistedTypes.TryAdd(type, 0))
+                        changed = true;
+                }
+                if (changed)
+                    _blacklistCache = new ConcurrentDictionary<Type, bool>(); // Invalidate cache when blacklist changes
+                return changed;
+            }
+
+            /// <summary>
+            /// Adds a type to the blacklist by its full name, preventing it from being processed by any converter.
+            /// The type is resolved using <see cref="TypeUtils.GetType(string)"/>.
+            /// </summary>
+            /// <param name="typeFullName">The full name of the type to blacklist (e.g., "System.String").</param>
+            /// <returns>True if the type was resolved and added; false if the type could not be resolved or was already blacklisted.</returns>
+            public bool BlacklistType(string typeFullName)
+            {
+                var type = TypeUtils.GetType(typeFullName);
+                if (type != null)
+                    return BlacklistType(type);
+                return false;
+            }
+
+            /// <summary>
+            /// Adds a type to the blacklist by its full name, searching only in assemblies whose name starts with the specified prefix.
+            /// This allows for more targeted type resolution when the same type name might exist in multiple assemblies.
+            /// </summary>
+            /// <param name="assemblyNamePrefix">The prefix that assembly names must start with (e.g., "MyCompany.MyProduct").</param>
+            /// <param name="typeFullName">The full name of the type to blacklist (e.g., "MyCompany.MyProduct.SomeClass").</param>
+            /// <returns>True if the type was resolved and added; false if the type could not be resolved or was already blacklisted.</returns>
+            public bool BlacklistTypeInAssembly(string assemblyNamePrefix, string typeFullName)
+            {
+                if (string.IsNullOrEmpty(assemblyNamePrefix) || string.IsNullOrEmpty(typeFullName))
+                    return false;
+
+                var type = TypeUtils.GetType(assemblyNamePrefix, typeFullName);
+                if (type != null)
+                    return BlacklistType(type);
+                return false;
+            }
+
+
+            /// <summary>
+            /// Adds multiple types to the blacklist by their full names, preventing them from being processed by any converter.
+            /// Types are resolved using <see cref="TypeUtils.GetType(string)"/>. The blacklist cache is only invalidated
+            /// if at least one new type was successfully resolved and added.
+            /// </summary>
+            /// <param name="typeFullNames">The full names of the types to blacklist (e.g., "System.String", "System.Int32").</param>
+            /// <returns>True if at least one type was resolved and added; false if all types could not be resolved or were already blacklisted.</returns>
+            public bool BlacklistTypes(params string[] typeFullNames)
+            {
+                var changed = false;
+                foreach (var typeFullName in typeFullNames)
+                {
+                    var type = TypeUtils.GetType(typeFullName);
+                    if (type != null && _blacklistedTypes.TryAdd(type, 0))
+                        changed = true;
+                }
+                if (changed)
+                    _blacklistCache = new ConcurrentDictionary<Type, bool>(); // Invalidate cache when blacklist changes
+                return changed;
+            }
+
+            /// <summary>
+            /// Adds multiple types to the blacklist by their full names, searching only in assemblies whose name starts with the specified prefix.
+            /// This allows for more targeted type resolution when the same type name might exist in multiple assemblies.
+            /// The blacklist cache is only invalidated if at least one new type was successfully resolved and added.
+            /// </summary>
+            /// <param name="assemblyNamePrefix">The prefix that assembly names must start with (e.g., "MyCompany.MyProduct").</param>
+            /// <param name="typeFullNames">The full names of the types to blacklist.</param>
+            /// <returns>True if at least one type was resolved and added; false if all types could not be resolved or were already blacklisted.</returns>
+            public bool BlacklistTypesInAssembly(string assemblyNamePrefix, params string[] typeFullNames)
+            {
+                if (string.IsNullOrEmpty(assemblyNamePrefix))
+                    return false;
+
+                var changed = false;
+
+                // Collect matching assemblies and their types once
+                foreach (var assembly in AssemblyUtils.GetAssembliesStartingWith(assemblyNamePrefix))
+                {
+                    foreach (var typeFullName in typeFullNames)
+                    {
+                        var type = TypeUtils.GetType(assembly, typeFullName);
+                        if (type != null && _blacklistedTypes.TryAdd(type, 0))
+                            changed = true;
+                    }
+                }
+                if (changed)
+                    _blacklistCache = new ConcurrentDictionary<Type, bool>(); // Invalidate cache when blacklist changes
+                return changed;
+            }
+
+            /// <summary>
+            /// Checks if a type is blacklisted. This includes:
+            /// - The type itself being blacklisted
+            /// - The type extending from a blacklisted type
+            /// - Types implementing blacklisted interfaces
+            /// - Types implementing generic interfaces with blacklisted type arguments
+            /// - Arrays of blacklisted types (or types extending from blacklisted types)
+            /// - Generics containing blacklisted type arguments (or types extending from blacklisted types)
+            /// </summary>
+            /// <param name="type">The type to check.</param>
+            /// <returns>True if the type is blacklisted; otherwise, false.</returns>
+            public bool IsTypeBlacklisted(Type type)
+            {
+                if (type == null)
+                    return false;
+
+                // Fast path: if no types are blacklisted, return false immediately
+                if (_blacklistedTypes.IsEmpty)
+                    return false;
+
+                while (true)
+                {
+                    // Capture current cache reference for invalidation detection
+                    var cache = _blacklistCache;
+
+                    // Check cache first
+                    if (cache.TryGetValue(type, out var cached))
+                        return cached;
+
+                    // Compute the result (pass cache reference to avoid stale reads during computation)
+                    var result = IsTypeBlacklistedInternal(type, new HashSet<Type>(), cache);
+
+                    // If cache was invalidated during computation, retry with fresh data
+                    if (!ReferenceEquals(_blacklistCache, cache))
+                        continue;
+
+                    // Handle size limit - replace cache if too large
+                    if (cache.Count >= MaxBlacklistCacheSize)
+                        _blacklistCache = new ConcurrentDictionary<Type, bool>();
+
+                    // Cache the result (safe even if cache was just replaced)
+                    _blacklistCache.TryAdd(type, result);
+                    return result;
+                }
+            }
+
+            private bool IsTypeBlacklistedInternal(Type? type, HashSet<Type> visited, ConcurrentDictionary<Type, bool> cache)
+            {
+                if (type == null)
+                    return false;
+
+                // Check cache first for recursive calls (uses captured reference for consistency)
+                if (cache.TryGetValue(type, out var cached))
+                    return cached;
+
+                // Prevent infinite recursion by tracking visited types
+                if (!visited.Add(type))
+                    return false;
+
+                // Check if the exact type is blacklisted
+                if (_blacklistedTypes.ContainsKey(type))
+                    return true;
+
+                // Check if base type is blacklisted (recursive call walks the full inheritance chain)
+                if (type.BaseType != null && IsTypeBlacklistedInternal(type.BaseType, visited, cache))
+                    return true;
+
+                // Check if any implemented interface is blacklisted
+                var interfaces = type.GetInterfaces();
+                for (int i = 0; i < interfaces.Length; i++)
+                {
+                    if (IsTypeBlacklistedInternal(interfaces[i], visited, cache))
+                        return true;
+                }
+
+                // Check if it's an array and the element type is blacklisted
+                if (type.IsArray)
+                {
+                    var elementType = type.GetElementType();
+                    if (elementType != null && IsTypeBlacklistedInternal(elementType, visited, cache))
+                        return true;
+                }
+
+                // Check if it's a generic type
+                if (type.IsGenericType)
+                {
+                    // Check if the generic type definition is blacklisted (e.g., List<> blacklisted means List<int> is also blacklisted)
+                    if (!type.IsGenericTypeDefinition)
+                    {
+                        var genericDefinition = type.GetGenericTypeDefinition();
+                        if (_blacklistedTypes.ContainsKey(genericDefinition))
+                            return true;
+                    }
+
+                    // Check if any type argument is blacklisted
+                    var genericArgs = type.GetGenericArguments();
+                    for (int i = 0; i < genericArgs.Length; i++)
+                    {
+                        if (IsTypeBlacklistedInternal(genericArgs[i], visited, cache))
+                            return true;
+                    }
+                }
+
+                return false;
+            }
+
+            /// <summary>
+            /// Removes a type from the blacklist.
+            /// </summary>
+            /// <param name="type"></param>
+            /// <returns></returns>
+            public bool RemoveBlacklistedType(Type type)
+            {
+                if (_blacklistedTypes.TryRemove(type, out _))
+                {
+                    _blacklistCache = new ConcurrentDictionary<Type, bool>(); // Invalidate cache when blacklist changes without racing on Clear()
+                    return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// Returns a read-only list of all blacklisted types.
+            /// </summary>
+            /// <returns>A read-only list containing all blacklisted types.</returns>
+            public IReadOnlyList<Type> GetAllBlacklistedTypes() => _blacklistedTypes.Keys.ToList();
+
+            /// <summary>
+            /// Finds all converters that can handle the specified type, ordered by priority.
+            /// This method implements the core converter selection algorithm by querying
+            /// each registered converter for its priority score and filtering/ordering the results.
+            /// </summary>
+            /// <param name="type">The type to find converters for.</param>
+            /// <returns>An enumerable of converters ordered by descending priority score.</returns>
+            IEnumerable<IReflectionConverter> FindRelevantConverters(Type type) => _serializers
+                .Select(s => (s, s.SerializationPriority(type)))
+                .Where(s => s.Item2 > 0)
+                .OrderByDescending(s => s.Item2)
+                .Select(s => s.s);
+
+            /// <summary>
+            /// Gets the highest priority converter that can handle the specified type.
+            /// This method returns the most appropriate converter based on the priority
+            /// scoring system implemented by each registered converter.
+            /// Results are cached for performance - cache is invalidated when converters are added/removed.
+            /// </summary>
+            /// <param name="type">The type to find a converter for.</param>
+            /// <returns>The highest priority converter that can handle the type, or null if no suitable converter is found.</returns>
+            public IReflectionConverter? GetConverter(Type type)
+            {
+                return _converterCache.GetOrAdd(type, t => FindRelevantConverters(t).FirstOrDefault());
+            }
+        }
+    }
+}
