@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -25,7 +25,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectCreateToolId = "gameobject-create";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectCreateToolId,
             Title = "GameObject / Create"
@@ -38,10 +38,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Create a new GameObject in the currently opened Prefab or active Scene, optionally " +
+        [UcoSkillDescription("Create a new GameObject in the currently opened Prefab or active Scene, optionally " +
             "parented under another GameObject and pre-positioned. Pass `primitiveType` to spawn a Unity primitive " +
             "(Cube, Sphere, etc.) instead of an empty GameObject.")]
-        [McpPluginSkillBody("Create a new GameObject in opened Prefab or in a Scene. " +
+        [UcoSkillBody("Create a new GameObject in opened Prefab or in a Scene. " +
             "If needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.\n\n" +
             "## Inputs\n\n" +
             "- `name` — required non-empty name.\n" +

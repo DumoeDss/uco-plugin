@@ -6,7 +6,7 @@ Unity-MCP Plugin — Unity Editor/Runtime side of the MCP bridge. Attribute-base
 
 ## Build / run
 
-- **Open**: `Unity-MCP-Plugin` folder in Unity Editor (compiles automatically)
+- **Open**: `uco-unity-project` folder in Unity Editor (compiles automatically)
 - **Tests**: Unity Test Runner (`Window > General > Test Runner`) — EditMode in `Packages/com.atelierai.unity.copilot/Tests/Editor`, PlayMode in `Packages/com.atelierai.unity.copilot/Tests/Runtime`
 - **MCP Inspector**: `Commands/start_mcp_inspector.bat` (requires Node.js)
 

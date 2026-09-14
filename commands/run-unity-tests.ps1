@@ -11,7 +11,7 @@
 .PARAMETER UnityPath
     Path to Unity.exe (required)
 .PARAMETER ProjectPath
-    Path to Unity project (default: ./Unity-MCP-Plugin)
+    Path to Unity project (default: ./uco-unity-project)
 .PARAMETER OutputDir
     Directory for test results and logs (default: ./TestResults)
 .EXAMPLE
@@ -26,7 +26,7 @@ param(
     [string]$TestMode = "all",
     [Parameter(Mandatory = $true)]
     [string]$UnityPath,
-    [string]$ProjectPath = "./Unity-MCP-Plugin",
+    [string]$ProjectPath = "./uco-unity-project",
     [string]$OutputDir = "./commands/TestResults"
 )
 

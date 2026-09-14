@@ -12,8 +12,8 @@
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -23,27 +23,27 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Skills
     {
         public const string SkillsCreateToolId = "unity-skill-create";
-        [McpPluginTool
+        [UcoTool
         (
             SkillsCreateToolId,
             Title = "Skill (Tool) / Create",
             DestructiveHint = false,
             Enabled = false,
-            ToolType = McpToolType.System
+            ToolType = UcoToolType.System
         )]
-        [McpPluginSkillDescription("Create a new skill (tool) for the Unity Editor by writing a C# (.cs) file " +
+        [UcoSkillDescription("Create a new skill (tool) for the Unity Editor by writing a C# (.cs) file " +
             "that Unity compiles into the project. After compilation the new tool becomes callable through the plugin. " +
-            "The file must be a partial class decorated with [McpPluginToolType], each tool method must be " +
-            "decorated with [McpPluginTool], the class name should match the file name, all Unity API calls must " +
+            "The file must be a partial class decorated with [UcoToolType], each tool method must be " +
+            "decorated with [UcoTool], the class name should match the file name, all Unity API calls must " +
             "run via com.IvanMurzak.ReflectorNet.Utils.MainThread.Instance.Run(), and the method should either " +
             "return a structured data model (for parseable output) or void (for side-effect-only operations). " +
             "See the body of this skill for a full sample and best-practice notes.")]
-        [McpPluginSkillBody(SkillsCreateSkillBody)]
+        [UcoSkillBody(SkillsCreateSkillBody)]
         [Description("Create a new skill using C# code. " +
             "It will be added into the project as a .cs file and compiled by Unity. " +
             "The skill will be available for use after compilation.\n" +
             "\n" +
-            "It must be a partial class decorated with [McpPluginToolType]. Each tool method must be decorated with [McpPluginTool]. " +
+            "It must be a partial class decorated with [UcoToolType]. Each tool method must be decorated with [UcoTool]. " +
             "The class name should match the file name. " +
             "All Unity API calls must use com.IvanMurzak.ReflectorNet.Utils.MainThread.Instance.Run(). " +
             "Return a data model for structured output, or void for side-effect-only operations. " +
@@ -52,7 +52,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "#nullable enable\n" +
             "using System;\n" +
             "using System.ComponentModel;\n" +
-            "using com.IvanMurzak.McpPlugin;\n" +
+            "using com.AtelierAI.Uco.Framework;\n" +
             "using com.IvanMurzak.ReflectorNet.Utils;\n" +
             "using com.AtelierAI.Unity.Copilot.Editor.Utils;\n" +
             "using AIGD;\n" +
@@ -61,10 +61,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "\n" +
             "namespace com.AtelierAI.Unity.Copilot.Editor.API\n" +
             "{\n" +
-            "    [McpPluginToolType]\n" +
+            "    [UcoToolType]\n" +
             "    public partial class Tool_Sample\n" +
             "    {\n" +
-            "        [McpPluginTool(\"sample-get\", Title = \"Sample / Get\")]\n" +
+            "        [UcoTool(\"sample-get\", Title = \"Sample / Get\")]\n" +
             "        [Description(\"Finds a GameObject and returns its ref data.\")]\n" +
             "        public GameObjectRef Get\n" +
             "        (\n" +
@@ -81,7 +81,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "            });\n" +
             "        }\n" +
             "\n" +
-            "        [McpPluginTool(\"sample-rename\", Title = \"Sample / Rename\")]\n" +
+            "        [UcoTool(\"sample-rename\", Title = \"Sample / Rename\")]\n" +
             "        [Description(\"Renames a GameObject.\")]\n" +
             "        public void Rename\n" +
             "        (\n" +
@@ -160,7 +160,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "\n" +
             "namespace com.AtelierAI.Unity.Copilot.Editor.API\n" +
             "{\n" +
-            "    [McpPluginToolType]\n" +
+            "    [UcoToolType]\n" +
             "    public partial class Tool_Sample\n" +
             "    {\n" +
             "        public ResponseCallValueTool<MyResult> MyTool(...)\n" +
@@ -209,7 +209,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [Description("Path for the C# (.cs) file to be created. Sample: \"Assets/Skills/MySkill.cs\".\n" +
                 "CRITICAL — Assembly Definition placement: If the project uses Assembly Definition files (.asmdef), " +
                 "you MUST place the script inside a folder that belongs to an assembly definition which already references " +
-                "all required dependencies (e.g. com.IvanMurzak.McpPlugin, UnityEditor, UnityEngine). " +
+                "all required dependencies (e.g. com.AtelierAI.Uco.Framework, UnityEditor, UnityEngine). " +
                 "Placing the file in the wrong assembly will cause compile errors due to missing type references. " +
                 "Before choosing a path, inspect existing .asmdef files with the assets-find tool to identify the correct assembly folder.")]
             string path,

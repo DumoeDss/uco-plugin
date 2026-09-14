@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.atelierai.unity.copilot": "file:./../../../Unity-MCP-Plugin/Packages/com.atelierai.unity.copilot",
+    "com.atelierai.unity.copilot": "file:./../../../uco-unity-project/Packages/com.atelierai.unity.copilot",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.inputsystem": "1.19.0",
     "com.unity.timeline": "1.8.12",

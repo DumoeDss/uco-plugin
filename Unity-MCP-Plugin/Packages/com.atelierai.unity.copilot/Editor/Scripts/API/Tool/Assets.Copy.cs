@@ -11,7 +11,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -22,16 +22,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsCopyToolId = "assets-copy";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsCopyToolId,
             Title = "Assets / Copy",
             Enabled = false
         )]
-        [McpPluginSkillDescription("Copy assets at given paths and store them at new paths. " +
+        [UcoSkillDescription("Copy assets at given paths and store them at new paths. " +
             "Refreshes the AssetDatabase at the end. " +
             "Use '" + AssetsFindToolId + "' to locate the source assets first.")]
-        [McpPluginSkillBody("Copy assets at given paths and store them at new paths. " +
+        [UcoSkillBody("Copy assets at given paths and store them at new paths. " +
             "Does AssetDatabase.Refresh() at the end. " +
             "Use '" + AssetsFindToolId + "' tool to find assets before copying.\n\n" +
             "## Inputs\n\n" +

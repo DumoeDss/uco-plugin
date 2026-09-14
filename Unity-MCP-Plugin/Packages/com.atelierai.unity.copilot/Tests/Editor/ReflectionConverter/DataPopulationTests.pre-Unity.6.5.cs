@@ -91,9 +91,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
                     Debug.Log($"[DataPopulationTests] Plugin: {plugin?.GetType().GetTypeShortName() ?? "null"}");
-                    var mcpInstance = plugin?.McpPluginInstance;
-                    Debug.Log($"[DataPopulationTests] McpInstance: {mcpInstance?.GetType().GetTypeShortName() ?? "null"}");
-                    var manager = mcpInstance?.McpManager;
+                    var mcpInstance = plugin?.UcoPluginInstance;
+                    Debug.Log($"[DataPopulationTests] UcoInstance: {mcpInstance?.GetType().GetTypeShortName() ?? "null"}");
+                    var manager = mcpInstance?.UcoManager;
                     Debug.Log($"[DataPopulationTests] Manager: {manager?.GetType().GetTypeShortName() ?? "null"}");
                     var reflector = manager?.Reflector;
                     Debug.Log($"[DataPopulationTests] Reflector: {reflector?.GetType().GetTypeShortName() ?? "null"}");

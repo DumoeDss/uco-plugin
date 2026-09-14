@@ -8,12 +8,12 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Specifies the type of an MCP tool.
     /// </summary>
-    public enum McpToolType
+    public enum UcoToolType
     {
         /// <summary>
         /// Standard tool — exposed to MCP clients and AI agents via the MCP protocol.

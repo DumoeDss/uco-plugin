@@ -9,8 +9,8 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using com.AtelierAI.Unity.Copilot.Editor.API;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -29,7 +29,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
-            var originalPlugin = originalInstance.McpPluginInstance;
+            var originalPlugin = originalInstance.UcoPluginInstance;
             // Console separation (COCli-07): the replacement singleton has no
             // collector of its own; the still-installed diagnostics channel
             // sink belongs to the original instance's collector.
@@ -143,7 +143,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
-            var originalPlugin = originalInstance.McpPluginInstance;
+            var originalPlugin = originalInstance.UcoPluginInstance;
             var middleware = new RecordingMiddleware { TamperApprovedChild = true };
             var first = new BatchTestRunner("batch-test-success", shouldFail: false, targetBound: false);
             var second = new BatchTestRunner("batch-test-failure", shouldFail: true, targetBound: true);
@@ -247,7 +247,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
         private static void RestoreEditorSingleton(
             UnityCopilotPluginEditor original,
-            IMcpPlugin? originalPlugin,
+            IUcoPlugin? originalPlugin,
             TestUnityCopilotPluginEditor replacement)
         {
             replacement.DisposeMcpPluginInstance();
@@ -278,8 +278,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ConnectionConfigForTests.KeepConnected = false;
             }
 
-            protected override IMcpPlugin BuildMcpPlugin(
-                com.IvanMurzak.McpPlugin.Common.Version version,
+            protected override IUcoPlugin BuildMcpPlugin(
+                com.AtelierAI.Uco.Framework.Common.Version version,
                 Reflector reflector,
                 ILoggerProvider? loggerProvider = null,
                 Action<IMcpPluginBuilder>? configure = null)
@@ -351,7 +351,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             public string? SkillBody => null;
             public JsonNode? InputSchema => new JsonObject();
             public JsonNode? OutputSchema => null;
-            public McpToolType ToolType => McpToolType.Standard;
+            public UcoToolType ToolType => UcoToolType.Standard;
             public bool? ReadOnlyHint => null;
             public bool? DestructiveHint => AuthoringCapability == null ? (bool?)null : true;
             public bool? IdempotentHint => null;

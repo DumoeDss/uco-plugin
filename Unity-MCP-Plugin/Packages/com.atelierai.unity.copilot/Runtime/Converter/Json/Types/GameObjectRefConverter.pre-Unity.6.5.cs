@@ -13,7 +13,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;

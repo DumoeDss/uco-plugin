@@ -15,9 +15,9 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Registration-owned execution guard for every reflected and custom tool.
@@ -52,7 +52,7 @@ namespace com.IvanMurzak.McpPlugin
         public string? SkillBody => _inner.SkillBody;
         public JsonNode? InputSchema => _inner.InputSchema;
         public JsonNode? OutputSchema => _inner.OutputSchema;
-        public McpToolType ToolType => _inner.ToolType;
+        public UcoToolType ToolType => _inner.ToolType;
         public bool? ReadOnlyHint => _inner.ReadOnlyHint;
         public bool? DestructiveHint => _inner.DestructiveHint;
         public bool? IdempotentHint => _inner.IdempotentHint;

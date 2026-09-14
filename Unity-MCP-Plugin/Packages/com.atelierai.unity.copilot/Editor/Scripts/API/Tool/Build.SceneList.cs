@@ -15,7 +15,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -24,16 +24,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildSceneListToolId = "build-scene-list";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildSceneListToolId,
             Title = "Build / List Scenes",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List scenes currently registered in `EditorBuildSettings.scenes`, " +
+        [UcoSkillDescription("List scenes currently registered in `EditorBuildSettings.scenes`, " +
             "preserving build-order. Each entry reports path, enabled flag, and asset GUID.")]
-        [McpPluginSkillBody("Return the current `EditorBuildSettings.scenes` array as a list of " +
+        [UcoSkillBody("Return the current `EditorBuildSettings.scenes` array as a list of " +
             "`BuildSceneEntry` records. The order matches Unity's build settings list (scene 0 is the " +
             "first scene loaded by a built player). Empty `Guid` indicates the asset could not be resolved " +
             "(e.g. the scene file was deleted but the entry was not removed). " +

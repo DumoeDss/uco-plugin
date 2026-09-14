@@ -12,13 +12,13 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class ToolCallCountTests
@@ -30,13 +30,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.TestMethod));
             
             mcpPluginBuilder.WithTool("testTool", "Test Tool", typeof(TestToolClass), method!);
             
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Verify initial state
             toolManager.ToolCallsCount.ShouldBe(0UL);
@@ -56,13 +56,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.TestMethod));
             
             mcpPluginBuilder.WithTool("testTool", "Test Tool", typeof(TestToolClass), method!);
             
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act
             var request = new RequestCallTool("testTool", new Dictionary<string, JsonElement>());
@@ -81,7 +81,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method1 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.TestMethod));
             var method2 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.AnotherTestMethod));
             
@@ -89,7 +89,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("tool2", "Tool 2", typeof(TestToolClass), method2!);
             
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act
             var request1 = new RequestCallTool("tool1", new Dictionary<string, JsonElement>());
@@ -109,10 +109,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act - call non-existent tool
             var request = new RequestCallTool("nonExistentTool", new Dictionary<string, JsonElement>());
@@ -128,13 +128,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.TestMethod));
             
             mcpPluginBuilder.WithTool("testTool", "Test Tool", typeof(TestToolClass), method!);
             
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act - simulate concurrent calls
             var tasks = new List<Task>();

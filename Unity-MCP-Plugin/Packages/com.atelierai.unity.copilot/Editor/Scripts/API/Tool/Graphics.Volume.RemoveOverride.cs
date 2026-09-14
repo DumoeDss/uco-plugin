@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -26,17 +26,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string GraphicsVolumeRemoveOverrideToolId = "graphics-volume-remove-override";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsVolumeRemoveOverrideToolId,
             Title = "Graphics / Volume / Remove Override",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Remove a `VolumeComponent` override from a `VolumeProfile`. " +
+        [UcoSkillDescription("Remove a `VolumeComponent` override from a `VolumeProfile`. " +
             "`componentTypeName` accepts the full name or short class name. Returns Ok=false with a structured " +
             "error when SRP Core is missing, the type cannot be resolved, the profile cannot be loaded, or the " +
             "override is not currently present on the profile.")]
-        [McpPluginSkillBody("Calls `VolumeProfile.Remove(Type)` via reflection.\n\n" +
+        [UcoSkillBody("Calls `VolumeProfile.Remove(Type)` via reflection.\n\n" +
             "## Inputs\n\n" +
             "- `profileOrVolumePath` — asset path of a VolumeProfile or scene hierarchy path of a Volume.\n" +
             "- `componentTypeName` — full or short type name of the VolumeComponent to remove.\n\n" +

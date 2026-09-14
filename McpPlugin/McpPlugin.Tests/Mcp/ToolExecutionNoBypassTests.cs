@@ -9,13 +9,13 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     /// <summary>
     /// Cross-entry regression guards for the single execution seam. The test
@@ -45,13 +45,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 });
             var systemTools = new SystemToolRunnerCollection(reflector, null)
                 .Add(new Dictionary<string, IRunTool> { [systemRunner.Name] = systemRunner });
-            var toolManager = new McpToolManager(
-                NullLogger<McpToolManager>.Instance,
+            var toolManager = new UcoToolManager(
+                NullLogger<UcoToolManager>.Instance,
                 reflector,
                 regularTools,
                 pipeline);
-            var systemManager = new McpSystemToolManager(
-                NullLogger<McpSystemToolManager>.Instance,
+            var systemManager = new UcoSystemToolManager(
+                NullLogger<UcoSystemToolManager>.Instance,
                 systemTools,
                 pipeline);
 
@@ -131,17 +131,17 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             AssertSupportedDictionaryContract(
                 system,
                 system,
-                new FakeRunTool("system-interface-tool") { ToolType = McpToolType.System });
+                new FakeRunTool("system-interface-tool") { ToolType = UcoToolType.System });
         }
 
         [Fact]
         public void BuilderAndTypedCollections_GuardCustomRunnersImmediately()
         {
             var reflector = new Reflector();
-            var collectionRunner = MutatingRunner("collection-tool", McpToolType.Standard);
-            var systemCollectionRunner = MutatingRunner("system-collection-tool", McpToolType.System);
-            var managerRunner = MutatingRunner("manager-tool", McpToolType.Standard);
-            var builderRunner = MutatingRunner("builder-tool", McpToolType.Standard);
+            var collectionRunner = MutatingRunner("collection-tool", UcoToolType.Standard);
+            var systemCollectionRunner = MutatingRunner("system-collection-tool", UcoToolType.System);
+            var managerRunner = MutatingRunner("manager-tool", UcoToolType.Standard);
+            var builderRunner = MutatingRunner("builder-tool", UcoToolType.Standard);
             var collection = new ToolRunnerCollection(reflector, null)
                 .Add(new Dictionary<string, IRunTool>
                 {
@@ -152,19 +152,19 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 {
                     [systemCollectionRunner.Name] = systemCollectionRunner,
                 });
-            var manager = new McpToolManager(
-                NullLogger<McpToolManager>.Instance,
+            var manager = new UcoToolManager(
+                NullLogger<UcoToolManager>.Instance,
                 reflector,
                 new ToolRunnerCollection(reflector, null));
             manager.AddTool(managerRunner.Name, managerRunner).ShouldBeTrue();
-            var builder = new McpPluginBuilder(new com.IvanMurzak.McpPlugin.Common.Version());
+            var builder = new UcoBuilder(new com.AtelierAI.Uco.Framework.Common.Version());
             builder.AddTool(builderRunner.Name, builderRunner);
             var plugin = builder.Build(reflector);
 
             collection[collectionRunner.Name].ShouldNotBeSameAs(collectionRunner);
             systemCollection[systemCollectionRunner.Name].ShouldNotBeSameAs(systemCollectionRunner);
             manager.GetAllTools().Single().ShouldNotBeSameAs(managerRunner);
-            plugin.McpManager.ToolManager!.GetAllTools().Single().ShouldNotBeSameAs(builderRunner);
+            plugin.UcoManager.ToolManager!.GetAllTools().Single().ShouldNotBeSameAs(builderRunner);
         }
 
         [Theory]
@@ -177,7 +177,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 ? new SystemToolRunnerCollection(reflector, null)
                 : new ToolRunnerCollection(reflector, null);
             var dictionary = (IDictionary<string, IRunTool>)concreteCollection;
-            var toolType = systemTool ? McpToolType.System : McpToolType.Standard;
+            var toolType = systemTool ? UcoToolType.System : UcoToolType.Standard;
             var indexerRunner = MutatingRunner("indexer-tool", toolType);
             var addRunner = MutatingRunner("add-tool", toolType);
             var collectionAddRunner = MutatingRunner("collection-add-tool", toolType);
@@ -257,7 +257,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var outputSchema = new JsonObject { ["type"] = "object" };
             var rawRunner = new FakeRunTool("declared-runner-name")
             {
-                ToolType = systemTool ? McpToolType.System : McpToolType.Standard,
+                ToolType = systemTool ? UcoToolType.System : UcoToolType.Standard,
                 Title = "Metadata title",
                 Description = "Metadata description",
                 Method = typeof(ToolExecutionNoBypassTests).GetMethod(
@@ -289,8 +289,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             {
                 var tools = new SystemToolRunnerCollection(reflector, null);
                 tools[registrationKey] = rawRunner;
-                var manager = new McpSystemToolManager(
-                    NullLogger<McpSystemToolManager>.Instance,
+                var manager = new UcoSystemToolManager(
+                    NullLogger<UcoSystemToolManager>.Instance,
                     tools,
                     pipeline);
                 getAllTools = manager.GetAllTools;
@@ -302,8 +302,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             {
                 var tools = new ToolRunnerCollection(reflector, null);
                 tools[registrationKey] = rawRunner;
-                var manager = new McpToolManager(
-                    NullLogger<McpToolManager>.Instance,
+                var manager = new UcoToolManager(
+                    NullLogger<UcoToolManager>.Instance,
                     reflector,
                     tools,
                     pipeline);
@@ -409,13 +409,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 .Add(new Dictionary<string, IRunTool> { [regularRunner.Name] = regularRunner });
             var systemTools = new SystemToolRunnerCollection(reflector, null)
                 .Add(new Dictionary<string, IRunTool> { [systemRunner.Name] = systemRunner });
-            var toolManager = new McpToolManager(
-                NullLogger<McpToolManager>.Instance,
+            var toolManager = new UcoToolManager(
+                NullLogger<UcoToolManager>.Instance,
                 reflector,
                 regularTools,
                 pipeline);
-            var systemManager = new McpSystemToolManager(
-                NullLogger<McpSystemToolManager>.Instance,
+            var systemManager = new UcoSystemToolManager(
+                NullLogger<UcoSystemToolManager>.Instance,
                 systemTools,
                 pipeline);
             var dispatcher = new WsRpcDispatcher(WireOptions);
@@ -546,7 +546,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             return options;
         }
 
-        private static FakeRunTool MutatingRunner(string name, McpToolType toolType)
+        private static FakeRunTool MutatingRunner(string name, UcoToolType toolType)
             => new FakeRunTool(name)
             {
                 ToolType = toolType,
@@ -604,7 +604,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             public string? SkillBody { get; set; }
             public JsonNode? InputSchema { get; set; } = new JsonObject();
             public JsonNode? OutputSchema { get; set; }
-            public McpToolType ToolType { get; set; } = McpToolType.Standard;
+            public UcoToolType ToolType { get; set; } = UcoToolType.Standard;
             public bool? ReadOnlyHint { get; set; } = true;
             public bool? DestructiveHint { get; set; }
             public bool? IdempotentHint { get; set; }

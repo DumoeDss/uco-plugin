@@ -10,7 +10,7 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Provides long-form markdown that is injected into the SKILL.md body, between the description
@@ -23,11 +23,11 @@ namespace com.IvanMurzak.McpPlugin
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class McpPluginSkillBodyAttribute : Attribute
+    public sealed class UcoSkillBodyAttribute : Attribute
     {
         public string Body { get; }
 
-        public McpPluginSkillBodyAttribute(string body)
+        public UcoSkillBodyAttribute(string body)
         {
             Body = body ?? string.Empty;
         }

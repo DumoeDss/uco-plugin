@@ -9,11 +9,11 @@
 */
 
 #nullable enable
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Assets
     {
         public static class Error

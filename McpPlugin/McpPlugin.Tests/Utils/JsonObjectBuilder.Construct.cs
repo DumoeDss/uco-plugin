@@ -9,10 +9,10 @@
 */
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin.Tests.Data.Other;
+using com.AtelierAI.Uco.Framework.Tests.Data.Other;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
+namespace com.AtelierAI.Uco.Framework.Common.Tests.Utils
 {
     internal static class JsonObjectBuilderConstructExtensions
     {
@@ -22,7 +22,7 @@ namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
 
                 // Address definition
                 .AddDefinition(
-                    name: "com.IvanMurzak.McpPlugin.Tests.Data.Other.Address",
+                    name: "com.AtelierAI.Uco.Framework.Tests.Data.Other.Address",
                     definition: new JsonObjectBuilder()
                         .SetTypeObject()
                         .AddSimpleProperty(nameof(Address.Street), JsonSchema.String, required: false)
@@ -33,12 +33,12 @@ namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
 
                 // List<Person> array definition
                 .AddArrayDefinitionRef(
-                    name: "System.Collections.Generic.List<com.IvanMurzak.McpPlugin.Tests.Data.Other.Person>",
-                    itemType: "com.IvanMurzak.McpPlugin.Tests.Data.Other.Person")
+                    name: "System.Collections.Generic.List<com.AtelierAI.Uco.Framework.Tests.Data.Other.Person>",
+                    itemType: "com.AtelierAI.Uco.Framework.Tests.Data.Other.Person")
 
                 // Person definition
                 .AddDefinition(
-                    name: "com.IvanMurzak.McpPlugin.Tests.Data.Other.Person",
+                    name: "com.AtelierAI.Uco.Framework.Tests.Data.Other.Person",
                     definition: new JsonObjectBuilder()
                         .SetTypeObject()
                         .AddSimpleProperty(nameof(Person.FirstName), JsonSchema.String, required: false)
@@ -102,7 +102,7 @@ namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
 
                 // Dictionary<string, List<Person>> definition
                 .AddDefinition(
-                    name: "System.Collections.Generic.Dictionary<System.String,System.Collections.Generic.List<com.IvanMurzak.McpPlugin.Tests.Data.Other.Person>>",
+                    name: "System.Collections.Generic.Dictionary<System.String,System.Collections.Generic.List<com.AtelierAI.Uco.Framework.Tests.Data.Other.Person>>",
                     definition: new JsonObject
                     {
                         [JsonSchema.Type] = JsonSchema.Object,
@@ -118,7 +118,7 @@ namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
 
                 // Dictionary<string, Dictionary<string, Person>> definition
                 .AddDefinition(
-                    name: "System.Collections.Generic.Dictionary<System.String,System.Collections.Generic.Dictionary<System.String,com.IvanMurzak.McpPlugin.Tests.Data.Other.Person>>",
+                    name: "System.Collections.Generic.Dictionary<System.String,System.Collections.Generic.Dictionary<System.String,com.AtelierAI.Uco.Framework.Tests.Data.Other.Person>>",
                     definition: new JsonObject
                     {
                         [JsonSchema.Type] = JsonSchema.Object,
@@ -142,7 +142,7 @@ namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
 
                 // Dictionary<string, Person> definition
                 .AddDefinition(
-                    name: "System.Collections.Generic.Dictionary<System.String,com.IvanMurzak.McpPlugin.Tests.Data.Other.Person>",
+                    name: "System.Collections.Generic.Dictionary<System.String,com.AtelierAI.Uco.Framework.Tests.Data.Other.Person>",
                     definition: new JsonObject
                     {
                         [JsonSchema.Type] = JsonSchema.Object,

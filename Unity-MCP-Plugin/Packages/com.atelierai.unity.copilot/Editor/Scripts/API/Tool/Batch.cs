@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// server round-trip. Reduces LLM-to-Unity latency by amortizing transport
     /// overhead across many tool calls.
     /// </summary>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Batch
     {
         /// <summary>

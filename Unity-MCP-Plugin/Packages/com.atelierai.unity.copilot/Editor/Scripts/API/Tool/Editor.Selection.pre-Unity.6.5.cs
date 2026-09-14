@@ -12,13 +12,13 @@
 #if !UNITY_6000_5_OR_NEWER
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using AIGD;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Editor_Selection
     {
         public static class Error

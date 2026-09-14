@@ -10,7 +10,7 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Bounded exception diagnostics shared by the tool manager and the

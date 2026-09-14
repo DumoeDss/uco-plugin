@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -73,17 +73,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsLightBakeStartToolId = "graphics-lightbake-start";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsLightBakeStartToolId,
             Title = "Graphics / Lightmap Bake / Start",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Start an asynchronous lightmap bake via `Lightmapping.BakeAsync`. " +
+        [UcoSkillDescription("Start an asynchronous lightmap bake via `Lightmapping.BakeAsync`. " +
             "Selects between BakedGI / RealtimeGI / BakedAndRealtimeGI by adjusting " +
             "`LightmapEditorSettings`-equivalent fields on the active `LightingSettings`. " +
             "Use 'graphics-lightbake-status' to monitor progress and 'graphics-lightbake-cancel' to abort.")]
-        [McpPluginSkillBody("Kicks off a lightmap bake asynchronously.\n\n" +
+        [UcoSkillBody("Kicks off a lightmap bake asynchronously.\n\n" +
             "## Inputs\n\n" +
             "- `bakeMode` — `BakedGI` (default) | `RealtimeGI` | `BakedAndRealtimeGI`. " +
             "Maps to the active `LightingSettings.bakedGI` / `realtimeGI` flags before the bake.\n" +
@@ -166,15 +166,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsLightBakeCancelToolId = "graphics-lightbake-cancel";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsLightBakeCancelToolId,
             Title = "Graphics / Lightmap Bake / Cancel",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Cancel the in-progress lightmap bake via `Lightmapping.Cancel()`. " +
+        [UcoSkillDescription("Cancel the in-progress lightmap bake via `Lightmapping.Cancel()`. " +
             "Idempotent — returns Ok=true with Status='no-op' when no bake is running.")]
-        [McpPluginSkillBody("Cancels the active bake. Safe to call when no bake is in progress. " +
+        [UcoSkillBody("Cancels the active bake. Safe to call when no bake is in progress. " +
             "Pass failIfNotRunning=true in unattended flows to distinguish 'cancelled something' from 'nothing happened'.")]
         [Description("Cancel the in-progress lightmap bake (Lightmapping.Cancel).")]
         public LightBakeResult CancelBake(
@@ -209,15 +209,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsLightBakeClearToolId = "graphics-lightbake-clear";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsLightBakeClearToolId,
             Title = "Graphics / Lightmap Bake / Clear",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Clear baked lightmaps for the open scenes via `Lightmapping.Clear()`. " +
+        [UcoSkillDescription("Clear baked lightmaps for the open scenes via `Lightmapping.Clear()`. " +
             "Refuses to run while a bake is in progress unless cancelRunningBake=true.")]
-        [McpPluginSkillBody("Wipes lightmap data from the open scenes. Throws no exception when no data " +
+        [UcoSkillBody("Wipes lightmap data from the open scenes. Throws no exception when no data " +
             "exists — Unity simply does nothing. By default a running bake blocks the clear; pass " +
             "cancelRunningBake=true to cancel it first and then clear.")]
         [Description("Clear baked lightmaps for the open scenes (Lightmapping.Clear).")]
@@ -259,15 +259,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsLightBakeStatusToolId = "graphics-lightbake-status";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsLightBakeStatusToolId,
             Title = "Graphics / Lightmap Bake / Status",
             ReadOnlyHint = true
         )]
-        [McpPluginSkillDescription("Report the live bake status (`Lightmapping.isRunning`, " +
+        [UcoSkillDescription("Report the live bake status (`Lightmapping.isRunning`, " +
             "`Lightmapping.buildProgress`) plus the count and approximate disk size of generated lightmap textures.")]
-        [McpPluginSkillBody("Returns a `LightBakeStatus` describing the live bake pipeline. " +
+        [UcoSkillBody("Returns a `LightBakeStatus` describing the live bake pipeline. " +
             "`LightmapCount` comes from `LightmapSettings.lightmaps`. `TotalSizeBytes` is computed by " +
             "summing the file sizes of the lightmap texture assets on disk; failures collapse to null. " +
             "Pass includeDiskSize=false for a cheap is-baking/progress probe that skips the disk walk.")]

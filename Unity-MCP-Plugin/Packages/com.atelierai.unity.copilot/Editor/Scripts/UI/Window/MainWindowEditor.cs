@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -29,13 +29,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         AlertPanel? _connectionAuthAlert;
         AlertPanel? _connectionConnectAlert;
 
-        protected override string WindowTitle => "Game Developer";
+        protected override string WindowTitle => "Unity Co-Pilot";
         protected override string[] WindowUxmlPaths => _windowUxmlPaths;
         protected override string[] WindowUssPaths => _windowUssPaths;
 
         public static MainWindowEditor ShowWindow()
         {
-            var window = GetWindow<MainWindowEditor>("Game Developer");
+            var window = GetWindow<MainWindowEditor>("Unity Co-Pilot");
             window.SetupWindowWithIcon();
             window.Focus();
 

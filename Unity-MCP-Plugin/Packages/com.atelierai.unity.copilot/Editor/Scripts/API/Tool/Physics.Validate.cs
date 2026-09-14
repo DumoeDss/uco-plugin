@@ -15,7 +15,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -77,18 +77,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         private const string Code_SelfLayerCollisionDisabled = "self_layer_collision_disabled";
         private const string Code_MissingPhysicsMaterial = "missing_physics_material";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsValidateToolId,
             Title = "Physics / Validate",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Scan all loaded scenes for common physics misconfigurations: " +
+        [UcoSkillDescription("Scan all loaded scenes for common physics misconfigurations: " +
             "colliders without rigidbodies, non-convex MeshColliders on dynamic bodies, zero-mass rigidbodies, " +
             "non-uniform scale on collider hosts, mixed 2D/3D physics on the same GameObject, layers configured " +
             "to not collide with themselves, and colliders without a physics material.")]
-        [McpPluginSkillBody("Walks the root GameObjects of every loaded `UnityEngine.SceneManagement.Scene` and " +
+        [UcoSkillBody("Walks the root GameObjects of every loaded `UnityEngine.SceneManagement.Scene` and " +
             "applies a fixed set of checks. Returns a `ValidationResult` listing each finding with a stable " +
             "`Code` (so test harnesses can match on it) plus a `Summary` histogram.\n\n" +
             "## Inputs\n\n" +

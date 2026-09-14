@@ -10,7 +10,7 @@
 // Cases: value tuples and nullable reference types
 using System;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class TupleAndNullable
     {

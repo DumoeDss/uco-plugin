@@ -16,11 +16,11 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Docs
     {
         public static class Error

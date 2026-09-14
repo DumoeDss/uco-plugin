@@ -16,13 +16,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Skills;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Skills;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Skills
+namespace com.AtelierAI.Uco.Framework.Tests.Skills
 {
     public class SkillFileGeneratorTests : IDisposable
     {

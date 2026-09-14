@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Background task that loops on <see cref="ClientWebSocket.ReceiveAsync"/>.

@@ -13,7 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Utils;
@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_GameObject
     {
         public static class Error

@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -23,15 +23,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets_Prefab
     {
         public const string AssetsPrefabSaveToolId = "assets-prefab-save";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsPrefabSaveToolId,
             Title = "Assets / Prefab / Save",
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Save the currently opened prefab edit stage back to its prefab asset without exiting the stage. " +
+        [UcoSkillDescription("Save the currently opened prefab edit stage back to its prefab asset without exiting the stage. " +
             "Pair with '" + AssetsPrefabOpenToolId + "' to enter the edit mode first.")]
-        [McpPluginSkillBody("Save a prefab. " +
+        [UcoSkillBody("Save a prefab. " +
             "Use it when you are in prefab editing mode in Unity Editor. " +
             "Use '" + AssetsPrefabOpenToolId + "' tool to open a prefab first.\n\n" +
             "## Behavior\n\n" +

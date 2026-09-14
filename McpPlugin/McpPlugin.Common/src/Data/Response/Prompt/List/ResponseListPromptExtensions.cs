@@ -9,10 +9,10 @@
 */
 
 using System;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     public static class ResponseListPromptExtensions
     {

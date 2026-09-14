@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AIGD;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using UnityEngine.UIElements;
@@ -29,18 +29,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string ElementQueryToolId = "ui-element-query";
 
-        [McpPluginTool
+        [UcoTool
         (
             ElementQueryToolId,
             Title = "UI / Element / Query",
             ReadOnlyHint = true
         )]
-        [McpPluginSkillDescription("Query the live `VisualElement` tree of a UIDocument on the target GameObject " +
+        [UcoSkillDescription("Query the live `VisualElement` tree of a UIDocument on the target GameObject " +
             "using a small subset of UQuery: by name (`#myButton`), by USS class (`.button-primary`), or by type " +
             "(`Label`, `Button`, ...). Selectors can be combined: `Label.warning` returns Label elements with the " +
             "'warning' class. Returns a shallow snapshot (type / name / classes / text / resolved layout) for the " +
             "first `maxResults` matches.")]
-        [McpPluginSkillBody("Query VisualElements under a UIDocument's rootVisualElement.\n\n" +
+        [UcoSkillBody("Query VisualElements under a UIDocument's rootVisualElement.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject with a UIDocument. Required.\n" +
             "- `selector` — UQuery-style selector. Supported forms:\n" +

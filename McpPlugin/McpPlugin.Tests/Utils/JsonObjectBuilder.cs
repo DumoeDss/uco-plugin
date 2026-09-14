@@ -13,7 +13,7 @@ using System.Text.Json.Nodes;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin.Common.Tests.Utils
+namespace com.AtelierAI.Uco.Framework.Common.Tests.Utils
 {
     internal class JsonObjectBuilder
     {

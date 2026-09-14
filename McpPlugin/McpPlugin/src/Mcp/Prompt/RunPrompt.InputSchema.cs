@@ -10,10 +10,10 @@
 
 using System.Reflection;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin.Utils;
+using com.AtelierAI.Uco.Framework.Utils;
 using com.IvanMurzak.ReflectorNet;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public partial class RunPrompt
     {

@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
-using com.IvanMurzak.McpPlugin.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Utils;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     public enum TestEnum
     {
@@ -57,21 +57,21 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _loggerProvider = new XunitTestOutputLoggerProvider(output);
         }
 
-        private IMcpPlugin BuildMcpPluginWithTool(Type classType, string methodName)
+        private IUcoPlugin BuildMcpPluginWithTool(Type classType, string methodName)
         {
             var method = classType.GetMethod(methodName)!;
             var toolName = classType.GetTypeShortName();
             var toolTitle = $"Title of {toolName}";
 
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
             // g-005: these helper methods are pure parameter-binding fixtures.
             // Register them as read-only so the authoring safety policy does
             // not fail them closed as `unknown` mutations.
             mcpPluginBuilder.WithTool(
-                new McpPluginToolAttribute(toolName, toolTitle) { ReadOnlyHint = true },
+                new UcoToolAttribute(toolName, toolTitle) { ReadOnlyHint = true },
                 classType: classType,
                 methodInfo: method);
 
@@ -98,7 +98,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - calling without arguments, expecting default value TestEnum.Value2
             var request = new RequestCallTool(toolName, new Dictionary<string, JsonElement>());
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -121,7 +121,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - calling with only 'count', expecting default value TestEnum.Value2 for 'options'
             var request = new RequestCallTool(toolName, CreateArguments(("count", 42)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();

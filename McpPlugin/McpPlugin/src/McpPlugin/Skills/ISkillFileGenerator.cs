@@ -10,7 +10,7 @@
 
 using System.Collections.Generic;
 
-namespace com.IvanMurzak.McpPlugin.Skills
+namespace com.AtelierAI.Uco.Framework.Skills
 {
     /// <summary>
     /// Defines the contract for generating and deleting AI skill markdown files

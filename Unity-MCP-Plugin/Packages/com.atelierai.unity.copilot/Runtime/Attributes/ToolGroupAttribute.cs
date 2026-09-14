@@ -27,14 +27,14 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Attributes
     /// <remarks>
     /// <para>
     /// Place this attribute on the partial-class root file (the same file that
-    /// carries <c>[McpPluginToolType]</c>). It is read once at Editor startup by
+    /// carries <c>[UcoToolType]</c>). It is read once at Editor startup by
     /// <c>ToolGroupRegistry</c> via reflection / <c>TypeCache</c>; the registry
-    /// then walks every <c>[McpPluginTool]</c>-decorated method on the class and
+    /// then walks every <c>[UcoTool]</c>-decorated method on the class and
     /// indexes <c>toolName → groupName</c>.
     /// </para>
     /// <para>
     /// The attribute is deliberately decoupled from the external NuGet
-    /// <c>com.IvanMurzak.McpPlugin</c> attributes — it does not derive from or
+    /// <c>com.AtelierAI.Uco.Framework</c> attributes — it does not derive from or
     /// reference any external type, so it can be added/removed without touching
     /// the upstream package.
     /// </para>

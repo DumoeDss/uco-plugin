@@ -7,8 +7,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "McpPlugin.dll",
-        "McpPlugin.Common.dll",
+        "Uco.Framework.dll",
+        "Uco.Framework.Common.dll",
         "ReflectorNet.dll",
         "R3.dll",
         "System.Text.Json.dll",

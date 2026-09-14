@@ -12,11 +12,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
 
 namespace com.AtelierAI.Unity.Copilot
 {

@@ -13,7 +13,7 @@ using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Creates configured <see cref="ClientWebSocket"/> instances for the WebSocket transport.

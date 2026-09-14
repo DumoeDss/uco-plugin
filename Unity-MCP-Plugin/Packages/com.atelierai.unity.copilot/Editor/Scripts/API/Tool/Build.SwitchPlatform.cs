@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using UnityEditor;
@@ -27,17 +27,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildSwitchPlatformToolId = "build-switch-platform";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildSwitchPlatformToolId,
             Title = "Build / Switch Platform",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Switch the active editor build target via " +
+        [UcoSkillDescription("Switch the active editor build target via " +
             "`EditorUserBuildSettings.SwitchActiveBuildTarget`. This call is synchronous and may block " +
             "the editor for several minutes while assets are re-imported for the new platform — be " +
             "deliberate about when this is invoked.")]
-        [McpPluginSkillBody("Switch the editor's active build target. " +
+        [UcoSkillBody("Switch the editor's active build target. " +
             "Unity will re-import every asset that depends on platform-specific settings, which can take " +
             "minutes on large projects. The call blocks until Unity returns control, so polling is not " +
             "required.\n\n" +

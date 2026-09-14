@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using UnityEditor;
 

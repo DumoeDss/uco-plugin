@@ -9,16 +9,16 @@
 */
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Data.Annotations;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests_EnabledAttribute
@@ -33,28 +33,28 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _loggerProvider = new XunitTestOutputLoggerProvider(output);
         }
 
-        private IMcpPlugin BuildWithTools()
+        private IUcoPlugin BuildWithTools()
         {
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithTools(typeof(AnnotatedToolClass));
             return builder.Build(reflector);
         }
 
-        private IMcpPlugin BuildWithPrompts()
+        private IUcoPlugin BuildWithPrompts()
         {
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithPrompts(typeof(AnnotatedPromptClass));
             return builder.Build(reflector);
         }
 
-        private IMcpPlugin BuildWithResources()
+        private IUcoPlugin BuildWithResources()
         {
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithResources(typeof(AnnotatedResourceClass));
             return builder.Build(reflector);
@@ -66,7 +66,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task Tool_DefaultEnabled_ShouldBeTrue()
         {
             var plugin = BuildWithTools();
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             response.ShouldNotBeNull();
             response.Status.ShouldBe(ResponseStatus.Success);
@@ -79,7 +79,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task Tool_EnabledTrue_ShouldBeTrue()
         {
             var plugin = BuildWithTools();
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             response.ShouldNotBeNull();
             response.Status.ShouldBe(ResponseStatus.Success);
@@ -92,7 +92,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task Tool_EnabledFalse_ShouldBeFalse()
         {
             var plugin = BuildWithTools();
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             response.ShouldNotBeNull();
             response.Status.ShouldBe(ResponseStatus.Success);
@@ -105,7 +105,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Tool_EnabledFalse_ShouldBeExcludedFromEnabledCount()
         {
             var plugin = BuildWithTools();
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var allTools = toolManager.GetAllTools().ToList();
 
             var disabledTool = allTools.First(t => t.Name == "tool-enabled-false");
@@ -118,7 +118,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Tool_RunnerEnabled_ShouldMatchAttribute()
         {
             var plugin = BuildWithTools();
-            var tools = plugin.McpManager.ToolManager!.GetAllTools().ToList();
+            var tools = plugin.UcoManager.ToolManager!.GetAllTools().ToList();
 
             var defaultTool = tools.First(t => t.Name == "tool-enabled-default");
             var enabledTool = tools.First(t => t.Name == "tool-enabled-true");
@@ -135,7 +135,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Prompt_DefaultEnabled_ShouldBeTrue()
         {
             var plugin = BuildWithPrompts();
-            var prompts = plugin.McpManager.PromptManager!.GetAllPrompts().ToList();
+            var prompts = plugin.UcoManager.PromptManager!.GetAllPrompts().ToList();
 
             var prompt = prompts.First(p => p.Name == "prompt-enabled-default");
             prompt.Enabled.ShouldBeTrue();
@@ -145,7 +145,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Prompt_EnabledTrue_ShouldBeTrue()
         {
             var plugin = BuildWithPrompts();
-            var prompts = plugin.McpManager.PromptManager!.GetAllPrompts().ToList();
+            var prompts = plugin.UcoManager.PromptManager!.GetAllPrompts().ToList();
 
             var prompt = prompts.First(p => p.Name == "prompt-enabled-true");
             prompt.Enabled.ShouldBeTrue();
@@ -155,7 +155,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Prompt_EnabledFalse_ShouldBeFalse()
         {
             var plugin = BuildWithPrompts();
-            var prompts = plugin.McpManager.PromptManager!.GetAllPrompts().ToList();
+            var prompts = plugin.UcoManager.PromptManager!.GetAllPrompts().ToList();
 
             var prompt = prompts.First(p => p.Name == "prompt-enabled-false");
             prompt.Enabled.ShouldBeFalse();
@@ -165,7 +165,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Prompt_EnabledFalse_ShouldBeExcludedFromEnabledCount()
         {
             var plugin = BuildWithPrompts();
-            var promptManager = plugin.McpManager.PromptManager!;
+            var promptManager = plugin.UcoManager.PromptManager!;
             var allPrompts = promptManager.GetAllPrompts().ToList();
 
             promptManager.EnabledPromptsCount.ShouldBe(allPrompts.Count - 1);
@@ -176,49 +176,49 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void ToolAttribute_EnabledNotSet_EnabledValueShouldBeNull()
         {
-            var attr = new McpPluginToolAttribute("test");
+            var attr = new UcoToolAttribute("test");
             attr.EnabledValue.ShouldBeNull();
         }
 
         [Fact]
         public void ToolAttribute_EnabledSetTrue_EnabledValueShouldBeTrue()
         {
-            var attr = new McpPluginToolAttribute("test") { Enabled = true };
+            var attr = new UcoToolAttribute("test") { Enabled = true };
             attr.EnabledValue.ShouldBe(true);
         }
 
         [Fact]
         public void ToolAttribute_EnabledSetFalse_EnabledValueShouldBeFalse()
         {
-            var attr = new McpPluginToolAttribute("test") { Enabled = false };
+            var attr = new UcoToolAttribute("test") { Enabled = false };
             attr.EnabledValue.ShouldBe(false);
         }
 
         [Fact]
         public void PromptAttribute_EnabledNotSet_EnabledValueShouldBeNull()
         {
-            var attr = new McpPluginPromptAttribute();
+            var attr = new UcoPromptAttribute();
             attr.EnabledValue.ShouldBeNull();
         }
 
         [Fact]
         public void PromptAttribute_EnabledSetFalse_EnabledValueShouldBeFalse()
         {
-            var attr = new McpPluginPromptAttribute { Enabled = false };
+            var attr = new UcoPromptAttribute { Enabled = false };
             attr.EnabledValue.ShouldBe(false);
         }
 
         [Fact]
         public void ResourceAttribute_EnabledNotSet_EnabledValueShouldBeNull()
         {
-            var attr = new McpPluginResourceAttribute();
+            var attr = new UcoResourceAttribute();
             attr.EnabledValue.ShouldBeNull();
         }
 
         [Fact]
         public void ResourceAttribute_EnabledSetFalse_EnabledValueShouldBeFalse()
         {
-            var attr = new McpPluginResourceAttribute { Enabled = false };
+            var attr = new UcoResourceAttribute { Enabled = false };
             attr.EnabledValue.ShouldBe(false);
         }
 
@@ -228,7 +228,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Resource_DefaultEnabled_ShouldBeTrue()
         {
             var plugin = BuildWithResources();
-            var resources = plugin.McpManager.ResourceManager!.GetAllResources().ToList();
+            var resources = plugin.UcoManager.ResourceManager!.GetAllResources().ToList();
 
             var resource = resources.First(r => r.Name == "resource-enabled-default");
             resource.Enabled.ShouldBeTrue();
@@ -238,7 +238,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Resource_EnabledTrue_ShouldBeTrue()
         {
             var plugin = BuildWithResources();
-            var resources = plugin.McpManager.ResourceManager!.GetAllResources().ToList();
+            var resources = plugin.UcoManager.ResourceManager!.GetAllResources().ToList();
 
             var resource = resources.First(r => r.Name == "resource-enabled-true");
             resource.Enabled.ShouldBeTrue();
@@ -248,7 +248,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Resource_EnabledFalse_ShouldBeFalse()
         {
             var plugin = BuildWithResources();
-            var resources = plugin.McpManager.ResourceManager!.GetAllResources().ToList();
+            var resources = plugin.UcoManager.ResourceManager!.GetAllResources().ToList();
 
             var resource = resources.First(r => r.Name == "resource-enabled-false");
             resource.Enabled.ShouldBeFalse();
@@ -258,7 +258,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Resource_EnabledFalse_ShouldBeExcludedFromEnabledCount()
         {
             var plugin = BuildWithResources();
-            var resourceManager = plugin.McpManager.ResourceManager!;
+            var resourceManager = plugin.UcoManager.ResourceManager!;
             var allResources = resourceManager.GetAllResources().ToList();
 
             resourceManager.EnabledResourcesCount.ShouldBe(allResources.Count - 1);
@@ -268,7 +268,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task Resource_RunListResources_ShouldExcludeDisabledResources()
         {
             var plugin = BuildWithResources();
-            var resourceManager = plugin.McpManager.ResourceManager!;
+            var resourceManager = plugin.UcoManager.ResourceManager!;
 
             var response = await resourceManager.RunListResources(new RequestListResources());
 
@@ -285,7 +285,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Resource_RunnerEnabled_ShouldMatchAttribute()
         {
             var plugin = BuildWithResources();
-            var resources = plugin.McpManager.ResourceManager!.GetAllResources().ToList();
+            var resources = plugin.UcoManager.ResourceManager!.GetAllResources().ToList();
 
             var defaultResource = resources.First(r => r.Name == "resource-enabled-default");
             var enabledResource = resources.First(r => r.Name == "resource-enabled-true");

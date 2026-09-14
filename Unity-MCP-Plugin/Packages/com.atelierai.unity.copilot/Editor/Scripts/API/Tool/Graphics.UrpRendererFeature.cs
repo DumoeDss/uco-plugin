@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using UnityEditor;
@@ -81,15 +81,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpRendererFeatureListToolId = "graphics-urp-renderer-feature-list";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpRendererFeatureListToolId,
             Title = "Graphics / URP Renderer Feature / List",
             ReadOnlyHint = true
         )]
-        [McpPluginSkillDescription("Enumerate renderer features attached to a `ScriptableRendererData` asset " +
+        [UcoSkillDescription("Enumerate renderer features attached to a `ScriptableRendererData` asset " +
             "(URP). When `rendererDataPath` is omitted, the first renderer of the default URP asset is used.")]
-        [McpPluginSkillBody("Loads a `ScriptableRendererData` (URP) and reads its `rendererFeatures` list via " +
+        [UcoSkillBody("Loads a `ScriptableRendererData` (URP) and reads its `rendererFeatures` list via " +
             "reflection. Each entry exposes type name, asset name, active flag and 0-based index.")]
         [Description("Enumerate URP renderer features on a ScriptableRendererData asset.")]
         public RendererFeatureListResult ListRendererFeatures
@@ -133,16 +133,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpRendererFeatureAddToolId = "graphics-urp-renderer-feature-add";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpRendererFeatureAddToolId,
             Title = "Graphics / URP Renderer Feature / Add",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Add a new `ScriptableRendererFeature` to a URP `ScriptableRendererData` asset. " +
+        [UcoSkillDescription("Add a new `ScriptableRendererFeature` to a URP `ScriptableRendererData` asset. " +
             "The feature instance is created via `ScriptableObject.CreateInstance(featureType)` and attached " +
             "as a sub-asset via `AssetDatabase.AddObjectToAsset`.")]
-        [McpPluginSkillBody("Resolves the renderer data asset, creates the feature, adds it both as a sub-asset " +
+        [UcoSkillBody("Resolves the renderer data asset, creates the feature, adds it both as a sub-asset " +
             "and as an entry in `rendererFeatures`, then marks the asset dirty and saves.\n\n" +
             "## Notes\n\n" +
             "- `featureTypeName` may be a fully-qualified type name (e.g. " +
@@ -254,15 +254,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpRendererFeatureRemoveToolId = "graphics-urp-renderer-feature-remove";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpRendererFeatureRemoveToolId,
             Title = "Graphics / URP Renderer Feature / Remove",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Remove a renderer feature from a URP `ScriptableRendererData`. " +
+        [UcoSkillDescription("Remove a renderer feature from a URP `ScriptableRendererData`. " +
             "Selectable by 0-based index or by type-name match.")]
-        [McpPluginSkillBody("Resolves the renderer feature, removes it from the list, then destroys the " +
+        [UcoSkillBody("Resolves the renderer feature, removes it from the list, then destroys the " +
             "sub-asset via `AssetDatabase.RemoveObjectFromAsset`. Marks the renderer data dirty and saves.")]
         [Description("Remove a URP renderer feature by 0-based index or type-name match.")]
         public RendererFeatureResult RemoveRendererFeature
@@ -354,15 +354,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpRendererFeatureConfigureToolId = "graphics-urp-renderer-feature-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpRendererFeatureConfigureToolId,
             Title = "Graphics / URP Renderer Feature / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Set a single field/property on a URP renderer feature by name. " +
+        [UcoSkillDescription("Set a single field/property on a URP renderer feature by name. " +
             "Value is JSON-decoded then assigned via reflection.")]
-        [McpPluginSkillBody("Resolves the renderer feature, JSON-decodes `valueJson`, then writes the value " +
+        [UcoSkillBody("Resolves the renderer feature, JSON-decodes `valueJson`, then writes the value " +
             "to the named field/property via reflection. Supports common primitive types (bool/int/float/string) " +
             "plus arrays and `LayerMask`-like int representations.")]
         [Description("Set a single field on a URP renderer feature (JSON-encoded value).")]

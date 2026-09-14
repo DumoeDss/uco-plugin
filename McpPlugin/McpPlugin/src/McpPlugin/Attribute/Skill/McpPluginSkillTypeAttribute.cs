@@ -10,11 +10,11 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class McpPluginSkillTypeAttribute : Attribute
+    public sealed class UcoSkillTypeAttribute : Attribute
     {
-        public McpPluginSkillTypeAttribute() { }
+        public UcoSkillTypeAttribute() { }
     }
 }

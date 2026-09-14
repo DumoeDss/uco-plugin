@@ -1,9 +1,8 @@
 {
   "name": "com.atelierai.unity.copilot",
-  "displayName": "Unity Copilot",
+  "displayName": "Unity Co-Pilot",
   "author": {
-    "name": "Ivan Murzak",
-    "url": "https://github.com/IvanMurzak"
+    "name": "AtelierAI"
   },
   "keywords": [
     "AI",
@@ -13,13 +12,14 @@
     "Skills",
     "Copilot",
     "Unity Copilot",
-    "Unity Skills"
+    "Unity Skills",
+    "uco"
   ],
-  "version": "0.75.1",
+  "version": "0.76.0",
   "unity": "2022.3",
-  "description": "AI Skills, Tools, and CLI for Unity Engine. Full AI develop and test loop. Use cli for quick setup. Efficient token usage, advanced tools. Any C# method may be turned into a tool by a single line. Driven over plain REST + WebSocket (MCP protocol layer stripped — see Phase B notes).",
-  "documentationUrl": "https://github.com/IvanMurzak/Unity-MCP/blob/main/README.md",
-  "changelogUrl": "https://github.com/IvanMurzak/Unity-MCP/blob/main/Unity-MCP-Plugin/Packages/com.atelierai.unity.copilot/CHANGELOG.md",
+  "description": "uco — Unity Co-Pilot: AI Skills, Tools, and CLI for the Unity Engine, driven over plain REST + WebSocket. Any C# method may be turned into a tool by a single line. Fork of IvanMurzak/Unity-MCP (MIT).",
+  "documentationUrl": "https://github.com/atelierai/uco (placeholder)",
+  "changelogUrl": "https://github.com/atelierai/uco (placeholder)",
   "dependencies": {
     "com.unity.test-framework": "1.1.33",
     "com.unity.modules.uielements": "1.0.0"

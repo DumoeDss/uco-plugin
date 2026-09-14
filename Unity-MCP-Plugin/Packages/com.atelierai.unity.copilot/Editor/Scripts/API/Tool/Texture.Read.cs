@@ -16,7 +16,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -27,17 +27,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string TextureReadToolId = "texture-read";
 
-        [McpPluginTool
+        [UcoTool
         (
             TextureReadToolId,
             Title = "Texture / Read Metadata",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read metadata of an existing texture asset (`.png` / `.jpg` / `.jpeg`) under " +
+        [UcoSkillDescription("Read metadata of an existing texture asset (`.png` / `.jpg` / `.jpeg`) under " +
             "'Assets/' — dimensions, format, mipmap state, filter / wrap mode, anisotropy, readability and the " +
             "TextureImporter `textureType`. Does not mutate the asset.")]
-        [McpPluginSkillBody("Inspect a texture asset and return its runtime + import properties.\n\n" +
+        [UcoSkillBody("Inspect a texture asset and return its runtime + import properties.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must start with `Assets/` and end with `.png`, `.jpg`, or `.jpeg`.\n\n" +
             "## Returns\n\n" +

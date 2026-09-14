@@ -13,14 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Reflection
     {
         static IEnumerable<Type> AllTypes => TypeUtils.AllTypes;

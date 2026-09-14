@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -221,17 +221,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         public const string PhysicsRaycastToolId = "physics-raycast";
         public const string PhysicsRaycastAllToolId = "physics-raycast-all";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsRaycastToolId,
             Title = "Physics / Raycast",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Cast a ray from `origin` along `direction` and return the FIRST collider hit. " +
+        [UcoSkillDescription("Cast a ray from `origin` along `direction` and return the FIRST collider hit. " +
             "Supports 3D (`UnityEngine.Physics.Raycast`) and 2D (`UnityEngine.Physics2D.Raycast`) physics — " +
             "select via `dimension`. Layer mask defaults to all layers; trigger interaction defaults to global.")]
-        [McpPluginSkillBody("Cast a ray and return the first hit.\n\n" +
+        [UcoSkillBody("Cast a ray and return the first hit.\n\n" +
             "## Inputs\n\n" +
             "- `origin` / `direction` — ray in world space. `direction` is normalized internally.\n" +
             "- `maxDistance` — optional cap; defaults to `Mathf.Infinity`.\n" +
@@ -291,17 +291,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             });
         }
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsRaycastAllToolId,
             Title = "Physics / Raycast / All",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Cast a ray from `origin` along `direction` and return ALL colliders hit " +
+        [UcoSkillDescription("Cast a ray from `origin` along `direction` and return ALL colliders hit " +
             "(`Physics.RaycastAll` / `Physics2D.RaycastAll`). Same parameter semantics as 'physics-raycast', " +
             "but returns an array; empty when nothing was hit.")]
-        [McpPluginSkillBody("Cast a ray and return every hit along the ray (not just the first).\n\n" +
+        [UcoSkillBody("Cast a ray and return every hit along the ray (not just the first).\n\n" +
             "Same inputs as 'physics-raycast'. Each entry in the returned array is a `RaycastResult` with " +
             "`Hit = true`. Order is provider-defined — Unity does not document a sort order.")]
         [Description("Cast a ray and return every collider it hits (3D or 2D).")]

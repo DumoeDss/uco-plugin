@@ -1,23 +1,23 @@
 <#
 .SYNOPSIS
-    Build the three internal framework projects (ReflectorNet, McpPlugin.Common,
-    McpPlugin) from source and deploy the netstandard2.1 DLLs as static plugin
+    Build the three internal framework projects (ReflectorNet, Uco.Framework.Common,
+    Uco.Framework) from source and deploy the netstandard2.1 DLLs as static plugin
     assets.
 
 .DESCRIPTION
     The Unity plugin consumes three internal framework DLLs at compile time via
-    asmdef precompiledReferences: ReflectorNet.dll, McpPlugin.Common.dll,
-    McpPlugin.dll.  These are now built from the local source repos and committed
+    asmdef precompiledReferences: ReflectorNet.dll, Uco.Framework.Common.dll,
+    Uco.Framework.dll.  These are now built from the local source repos and committed
     as static assets rather than fetched from NuGet at runtime by the
     DependencyResolver.
 
     This script:
       1. Builds ReflectorNet.csproj            -> ReflectorNet.dll
-      2. Builds McpPlugin.Common.csproj        -> McpPlugin.Common.dll
-      3. Builds McpPlugin.csproj               -> McpPlugin.dll
+      2. Builds Uco.Framework.Common.csproj    -> Uco.Framework.Common.dll
+      3. Builds Uco.Framework.csproj           -> Uco.Framework.dll
          (all for netstandard2.1 / Release)
       4. Copies the three DLLs to
-         Unity-MCP-Plugin/Assets/Plugins/NuGet/
+         uco-unity-project/Assets/Plugins/NuGet/
          preserving existing .meta files (Unity GUIDs / import settings).
       5. Reports the deployed file size of each DLL.
 
@@ -51,17 +51,17 @@ $ErrorActionPreference = 'Stop'
 
 # --- Path resolution ---------------------------------------------------------
 $scriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
-$unityMcpDir = Split-Path -Parent $scriptDir                              # ...\Unity-MCP
-$workspace   = Split-Path -Parent $unityMcpDir                            # ...\unity-copilot
+$ucoPluginDir = Split-Path -Parent $scriptDir                              # ...\Unity-MCP
+$workspace   = Split-Path -Parent $ucoPluginDir                            # ...\unity-copilot
 
-$reflectorNetDir     = Join-Path $unityMcpDir 'ReflectorNet'
-$mcpPluginDir        = Join-Path $unityMcpDir 'McpPlugin'
+$reflectorNetDir     = Join-Path $ucoPluginDir 'ReflectorNet'
+$mcpPluginDir        = Join-Path $ucoPluginDir 'McpPlugin'
 
 # Source project files
 $srcProj = [ordered]@{
     ReflectorNet      = Join-Path $reflectorNetDir 'ReflectorNet\ReflectorNet.csproj'
-    McpPluginCommon   = Join-Path $mcpPluginDir    'McpPlugin.Common\McpPlugin.Common.csproj'
-    McpPlugin         = Join-Path $mcpPluginDir    'McpPlugin\McpPlugin.csproj'
+    UcoFrameworkCommon   = Join-Path $mcpPluginDir    'McpPlugin.Common\Uco.Framework.Common.csproj'
+    McpPlugin         = Join-Path $mcpPluginDir    'McpPlugin\Uco.Framework.csproj'
 }
 
 $framework = 'netstandard2.1'
@@ -69,21 +69,21 @@ $framework = 'netstandard2.1'
 # Build output -> deployed DLL name mapping
 $srcDll = [ordered]@{
     'ReflectorNet.dll'        = Join-Path $reflectorNetDir    "ReflectorNet\bin\$Configuration\$framework\ReflectorNet.dll"
-    'McpPlugin.Common.dll'    = Join-Path $mcpPluginDir       "McpPlugin.Common\bin\$Configuration\$framework\McpPlugin.Common.dll"
-    'McpPlugin.dll'           = Join-Path $mcpPluginDir       "McpPlugin\bin\$Configuration\$framework\McpPlugin.dll"
+    'Uco.Framework.Common.dll' = Join-Path $mcpPluginDir       "McpPlugin.Common\bin\$Configuration\$framework\Uco.Framework.Common.dll"
+    'Uco.Framework.dll'        = Join-Path $mcpPluginDir       "McpPlugin\bin\$Configuration\$framework\Uco.Framework.dll"
 }
 
-$dstDir = Join-Path $unityMcpDir 'Unity-MCP-Plugin\Assets\Plugins\NuGet'
+$dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Assets\Plugins\NuGet'
 
 # --- Validate source paths ---------------------------------------------------
 if (-not (Test-Path $reflectorNetDir)) {
-    throw "ReflectorNet source not found at: $reflectorNetDir`nExpected as a subdirectory of Unity-MCP."
+    throw "ReflectorNet source not found at: $reflectorNetDir`nExpected as a subdirectory of uco-plugin."
 }
 if (-not (Test-Path $mcpPluginDir)) {
-    throw "McpPlugin source not found at: $mcpPluginDir`nExpected as a subdirectory of Unity-MCP."
+    throw "McpPlugin source not found at: $mcpPluginDir`nExpected as a subdirectory of uco-plugin."
 }
 if (-not (Test-Path $dstDir)) {
-    throw "Destination not found: $dstDir`nIs Unity-MCP-Plugin checked out?"
+    throw "Destination not found: $dstDir`nIs uco-unity-project checked out?"
 }
 
 # --- Locate dotnet -----------------------------------------------------------

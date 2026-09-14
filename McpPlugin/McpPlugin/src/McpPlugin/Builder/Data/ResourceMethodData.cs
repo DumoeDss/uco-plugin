@@ -11,16 +11,16 @@
 using System;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public class ResourceMethodData
     {
         public Type ClassType { get; set; }
         public MethodInfo GetContentMethod { get; set; }
         public MethodInfo ListResourcesMethod { get; set; }
-        public McpPluginResourceAttribute Attribute { get; set; }
+        public UcoResourceAttribute Attribute { get; set; }
 
-        public ResourceMethodData(Type classType, MethodInfo getContentMethod, MethodInfo listResourcesMethod, McpPluginResourceAttribute attribute)
+        public ResourceMethodData(Type classType, MethodInfo getContentMethod, MethodInfo listResourcesMethod, UcoResourceAttribute attribute)
         {
             ClassType = classType;
             GetContentMethod = getContentMethod;

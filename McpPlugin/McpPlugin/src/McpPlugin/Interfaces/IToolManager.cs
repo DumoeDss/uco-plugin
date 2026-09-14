@@ -10,10 +10,10 @@
 
 using System;
 using System.Collections.Generic;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public interface IToolManager : IClientToolHub, IDisposable
     {

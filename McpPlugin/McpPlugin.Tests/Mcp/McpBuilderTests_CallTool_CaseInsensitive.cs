@@ -11,17 +11,17 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Data.Other;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
-using com.IvanMurzak.McpPlugin.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Data.Other;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Utils;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     #region Test Data Classes for Case-Insensitive Tests
 
@@ -122,21 +122,21 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _loggerProvider = new XunitTestOutputLoggerProvider(output);
         }
 
-        private IMcpPlugin BuildMcpPluginWithTool(Type classType, string methodName)
+        private IUcoPlugin BuildMcpPluginWithTool(Type classType, string methodName)
         {
             var method = classType.GetMethod(methodName)!;
             var toolName = classType.GetTypeShortName();
             var toolTitle = $"Title of {toolName}";
 
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
             // g-005: these helper methods are pure parameter-binding fixtures.
             // Register them as read-only so the authoring safety policy does
             // not fail them closed as `unknown` mutations.
             mcpPluginBuilder.WithTool(
-                new McpPluginToolAttribute(toolName, toolTitle) { ReadOnlyHint = true },
+                new UcoToolAttribute(toolName, toolTitle) { ReadOnlyHint = true },
                 classType: classType,
                 methodInfo: method);
 
@@ -165,7 +165,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using exact case "value" (method parameter is "value")
             var request = new RequestCallTool(toolName, CreateArguments(("value", 5)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -184,7 +184,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using uppercase "VALUE" (method parameter is "value")
             var request = new RequestCallTool(toolName, CreateArguments(("VALUE", 10)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -203,7 +203,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using PascalCase "Value" (method parameter is "value")
             var request = new RequestCallTool(toolName, CreateArguments(("Value", 20)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -222,7 +222,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using mixed case "LEFT" and "Right" (method parameters are "left" and "right")
             var request = new RequestCallTool(toolName, CreateArguments(("LEFT", "Hello"), ("Right", "World")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -241,7 +241,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using random case "vALUE" (method parameter is "value")
             var request = new RequestCallTool(toolName, CreateArguments(("vALUE", 30)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -264,7 +264,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Empty arguments
             var request = new RequestCallTool(toolName, CreateArguments());
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -283,7 +283,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using "value" (correct) plus an unknown parameter "unknown"
             var request = new RequestCallTool(toolName, CreateArguments(("value", 40), ("unknown", 99)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed (unknown parameters are typically ignored)
             response.ShouldNotBeNull();
@@ -302,7 +302,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using "USER_NAME" (method parameter is "user_name")
             var request = new RequestCallTool(toolName, CreateArguments(("USER_NAME", "John")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -321,7 +321,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using "VALUE1" (method parameter is "value1")
             var request = new RequestCallTool(toolName, CreateArguments(("VALUE1", 100)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -347,7 +347,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 ("FIRST", "A"),
                 ("Second", "B"),
                 ("tHiRd", "C")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -369,7 +369,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 ("CAMELCASE", "a"),
                 ("PASCALCASE", "b"),
                 ("SNAKE_CASE", "c")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -392,7 +392,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using lowercase "inputvalue"
             var request = new RequestCallTool(toolName, CreateArguments(("inputvalue", "test")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -411,7 +411,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - using camelCase "inputValue"
             var request = new RequestCallTool(toolName, CreateArguments(("inputValue", "hello")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -434,7 +434,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Only provide "REQUIRED" (method param is "required"), omit optional
             var request = new RequestCallTool(toolName, CreateArguments(("REQUIRED", 5)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should use default value 10 for optional parameter
             response.ShouldNotBeNull();
@@ -453,7 +453,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Provide both "Required" and "OPTIONAL" with different casing
             var request = new RequestCallTool(toolName, CreateArguments(("Required", 7), ("OPTIONAL", 3)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -480,7 +480,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act
             var request = new RequestCallTool(toolName, CreateArguments((paramName, inputValue)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -503,7 +503,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act
             var request = new RequestCallTool(toolName, CreateArguments((leftParam, "A"), (rightParam, "B")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert
             response.ShouldNotBeNull();
@@ -534,7 +534,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act
             var request = new RequestCallTool(toolName, arguments);
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should return an error about duplicate parameters
             response.ShouldNotBeNull();
@@ -557,7 +557,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act
             var request = new RequestCallTool(toolName, arguments);
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should return an error about duplicate parameters
             response.ShouldNotBeNull();
@@ -595,7 +595,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Use exact case match
             var request = new RequestCallTool(toolName, CreateArguments(("value", "test")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed with exact case match
             response.ShouldNotBeNull();
@@ -614,7 +614,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Use different case (VALUE instead of value)
             var request = new RequestCallTool(toolName, CreateArguments(("VALUE", "hello")));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed because case-insensitive matching works when no conflict
             response.ShouldNotBeNull();
@@ -652,7 +652,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - Provide exact parameter names (case-sensitive match required due to conflicts)
             var request = new RequestCallTool(toolName, CreateArguments(("value", 1), ("vAlue", 2), ("vaLue", 3)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed with exact matches
             response.ShouldNotBeNull();
@@ -673,7 +673,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Since there are conflicts, no case-insensitive normalization happens
             // "VALUE" won't match "value" exactly, so "value" gets default value (0)
             var request = new RequestCallTool(toolName, CreateArguments(("VALUE", 1), ("vAlue", 2), ("vaLue", 3)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed but with default value for unmatched parameter
             // "value" = 0 (default), "vAlue" = 2, "vaLue" = 3 → 0 + 2 + 3 = 5
@@ -699,7 +699,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Adding another "value" would throw in Dictionary, so we can only add one
 
             var request = new RequestCallTool(toolName, arguments);
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - Should succeed but with default values for missing params
             // Only "value" = 1 is provided, "vAlue" = 0, "vaLue" = 0 → 1 + 0 + 0 = 1
@@ -720,7 +720,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Act - Provide two exact matches but one wrong case
             // "value" = 1 (exact), "vAlue" = 2 (exact), "VALUE" = 3 (doesn't match "vaLue")
             var request = new RequestCallTool(toolName, CreateArguments(("value", 1), ("vAlue", 2), ("VALUE", 3)));
-            var response = await mcpPlugin.McpManager.ToolManager!.RunCallTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunCallTool(request);
 
             // Assert - "vaLue" gets default value (0) since "VALUE" doesn't match exactly
             // "value" = 1, "vAlue" = 2, "vaLue" = 0 → 1 + 2 + 0 = 3

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using NUnit.Framework;
 using UnityEditor;
 
@@ -126,7 +126,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var missing = Assert.Throws<ToolCallControlException>(
                 () => tool.Cancel("missing-operation"));
             Assert.That(missing!.Code, Is.EqualTo(
-                com.IvanMurzak.McpPlugin.Common.Model.ToolCallErrorCodes.OperationNotFound));
+                com.AtelierAI.Uco.Framework.Common.Model.ToolCallErrorCodes.OperationNotFound));
         }
     }
 }

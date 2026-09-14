@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 #if UNITY_EDITOR
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public static partial class Consts
     {

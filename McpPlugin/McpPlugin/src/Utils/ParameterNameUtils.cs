@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin.Utils
+namespace com.AtelierAI.Uco.Framework.Utils
 {
     /// <summary>
     /// Provides utility methods for case-insensitive parameter name normalization.

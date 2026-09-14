@@ -10,7 +10,7 @@
 
 #nullable enable
 using System;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using NUnit.Framework;
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.Utils
         public ValidateToolResultExecutor(Reflector? reflector = null) : base()
         {
             reflector ??= UnityCopilotPluginEditor.Instance.Reflector ??
-                throw new ArgumentNullException(nameof(reflector), "Reflector cannot be null. Ensure McpPlugin is initialized before using this executor.");
+                throw new ArgumentNullException(nameof(reflector), "Reflector cannot be null. Ensure uco framework is initialized before using this executor.");
 
             SetAction<ResponseData<ResponseCallTool>, ResponseData<ResponseCallTool>>(result =>
             {

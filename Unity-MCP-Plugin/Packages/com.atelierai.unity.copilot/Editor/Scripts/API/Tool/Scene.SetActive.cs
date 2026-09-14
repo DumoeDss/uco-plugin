@@ -11,7 +11,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Scene
     {
         public const string SceneSetActiveToolId = "scene-set-active";
-        [McpPluginTool
+        [UcoTool
         (
             SceneSetActiveToolId,
             Title = "Scene / Set Active",
@@ -35,10 +35,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SupportsPlanning = true,
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner))]
-        [McpPluginSkillDescription("Mark an opened scene as the Editor's active scene (the one new GameObjects are " +
+        [UcoSkillDescription("Mark an opened scene as the Editor's active scene (the one new GameObjects are " +
             "added to and that's used as the default for many operations). " +
             "Use '" + SceneListOpenedToolId + "' to enumerate opened scenes first.")]
-        [McpPluginSkillBody("Set the specified opened scene as the active scene. " +
+        [UcoSkillBody("Set the specified opened scene as the active scene. " +
             "Use '" + SceneListOpenedToolId + "' tool to get the list of all opened scenes.\n\n" +
             "## Inputs\n\n" +
             "- `sceneRef` — `AssetObjectRef` pointing at a `SceneAsset`. The scene must already be opened.\n\n" +

@@ -9,7 +9,7 @@
 */
 // Private field
 #pragma warning disable CS0169 // field is never used
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Field_Private
     {

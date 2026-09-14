@@ -9,9 +9,9 @@
 */
 
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin.Common.Hub.Client
+namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
 {
     public interface IClientMcpRpc : IClientDisconnectable
     {
@@ -22,18 +22,18 @@ namespace com.IvanMurzak.McpPlugin.Common.Hub.Client
         /// MCP clients that are already active at the time of connection, covering the race
         /// condition where clients connected before the plugin joined.
         /// </summary>
-        Task OnInitialClientData(McpClientData[] allActiveClients);
+        Task OnInitialClientData(UcoClientData[] allActiveClients);
 
         /// <summary>
         /// Fired when an MCP client connects. Carries the newly connected client's data and
         /// the complete list of all currently active clients (including the new one).
         /// </summary>
-        Task OnMcpClientConnected(McpClientData connectedClient, McpClientData[] allActiveClients);
+        Task OnMcpClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients);
 
         /// <summary>
         /// Fired when an MCP client disconnects. Carries the disconnected client's data and
         /// the complete list of clients still active after the disconnection.
         /// </summary>
-        Task OnMcpClientDisconnected(McpClientData disconnectedClient, McpClientData[] remainingClients);
+        Task OnMcpClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients);
     }
 }

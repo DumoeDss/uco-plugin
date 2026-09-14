@@ -16,7 +16,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -25,17 +25,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UxmlCreateToolId = "ui-uxml-create";
 
-        [McpPluginTool
+        [UcoTool
         (
             UxmlCreateToolId,
             Title = "UI / UXML / Create",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Write a new UXML file under 'Assets/'. Validates that 'content' is well-formed XML " +
+        [UcoSkillDescription("Write a new UXML file under 'Assets/'. Validates that 'content' is well-formed XML " +
             "via 'XDocument.Parse' before touching disk — invalid UXML is rejected with details. " +
             "Refuses to overwrite an existing asset unless 'overwrite=true' is provided. " +
             "Pair with '" + UxmlReadToolId + "' to inspect existing files and '" + UxmlModifyToolId + "' for structural edits.")]
-        [McpPluginSkillBody("Create a new UXML (UI Toolkit visual tree) asset.\n\n" +
+        [UcoSkillBody("Create a new UXML (UI Toolkit visual tree) asset.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path under 'Assets/' ending in '.uxml'. Intermediate folders are created.\n" +
             "- `content` — full UXML document as a string. Must be parseable by `System.Xml.Linq.XDocument.Parse`.\n" +

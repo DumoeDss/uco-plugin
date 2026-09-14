@@ -9,14 +9,14 @@
 */
 
 using System;
-using com.IvanMurzak.McpPlugin.Skills;
+using com.AtelierAI.Uco.Framework.Skills;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests_SkillFileGenerator
@@ -29,7 +29,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Generic_FirstCall_DoesNotThrow()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
 
             Action act = () => builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
 
@@ -39,7 +39,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Generic_CalledTwice_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
 
             Action act = () => builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
@@ -54,7 +54,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_FirstCall_DoesNotThrow()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             var instance = new CustomSkillFileGenerator();
 
             Action act = () => builder.WithSkillFileGenerator(instance);
@@ -65,7 +65,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_CalledTwice_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.WithSkillFileGenerator(new CustomSkillFileGenerator());
 
             Action act = () => builder.WithSkillFileGenerator(new CustomSkillFileGenerator());
@@ -78,7 +78,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_NullArgument_ThrowsArgumentNullException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
 
             Action act = () => builder.WithSkillFileGenerator(null!);
 
@@ -90,7 +90,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Generic_ThenInstance_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
 
             Action act = () => builder.WithSkillFileGenerator(new CustomSkillFileGenerator());
@@ -103,7 +103,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_ThenGeneric_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.WithSkillFileGenerator(new CustomSkillFileGenerator());
 
             Action act = () => builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
@@ -118,7 +118,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Generic_AfterBuild_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.Build(_reflector);
 
             Action act = () => builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
@@ -130,7 +130,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_AfterBuild_ThrowsInvalidOperationException()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.Build(_reflector);
 
             Action act = () => builder.WithSkillFileGenerator(new CustomSkillFileGenerator());
@@ -144,7 +144,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Generic_Build_ResolvesCustomType()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.WithSkillFileGenerator<CustomSkillFileGenerator>();
             builder.Build(_reflector);
 
@@ -156,7 +156,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillFileGenerator_Instance_Build_ResolvesProvidedInstance()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             var instance = new CustomSkillFileGenerator();
             builder.WithSkillFileGenerator(instance);
             builder.Build(_reflector);
@@ -169,7 +169,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithoutWithSkillFileGenerator_Build_ResolvesDefaultType()
         {
-            var builder = new McpPluginBuilder(_version);
+            var builder = new UcoBuilder(_version);
             builder.Build(_reflector);
 
             var resolved = builder.ServiceProvider!.GetRequiredService<ISkillFileGenerator>();

@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     [Description("Describes a single Unity Editor instance discovered via the on-disk registry.")]
     public class UnityInstanceEntry
     {
-        [Description("MCP server port. SHA256 hash of project path -> 20000-29999 range.")]
+        [Description("Bridge server port. SHA256 hash of project path -> 20000-29999 range.")]
         public int Port { get; set; }
 
         [Description("Absolute project root path.")]
@@ -91,7 +91,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// <para>
     /// <b>Scope.</b> This is a "soft" discovery layer — it only reports who
     /// is alive. Actual cross-instance tool routing requires server-side
-    /// support (in the external NuGet <c>com.IvanMurzak.McpPlugin</c>) and
+    /// support (in the external NuGet <c>com.AtelierAI.Uco.Framework</c>) and
     /// is NOT implemented here.
     /// </para>
     /// </remarks>

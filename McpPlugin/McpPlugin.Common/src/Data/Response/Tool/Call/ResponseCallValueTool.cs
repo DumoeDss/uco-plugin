@@ -11,7 +11,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     public partial class ResponseCallValueTool<T> : ResponseCallTool
     {

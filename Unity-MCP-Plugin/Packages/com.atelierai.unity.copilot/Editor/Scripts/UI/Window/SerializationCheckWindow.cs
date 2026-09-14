@@ -13,7 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;

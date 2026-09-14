@@ -15,7 +15,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using NUnit.Framework;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {

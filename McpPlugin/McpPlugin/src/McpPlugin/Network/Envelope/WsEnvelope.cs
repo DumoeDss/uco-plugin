@@ -12,7 +12,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     // ── Envelope types (match child 1 design.md D2 exactly) ──────────────
     // NOTE: the envelope keys are lower-case on the wire ("id", "method",

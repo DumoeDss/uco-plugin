@@ -12,8 +12,8 @@
 using System.ComponentModel;
 using System;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -24,17 +24,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string AssetsRefreshToolId = "assets-refresh";
         internal const string PendingRefreshOperationKey = "UnityCopilot.PendingRefreshOperation";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsRefreshToolId,
             Title = "Assets / Refresh",
             IdempotentHint = true,
             DurableOperationStart = true
         )]
-        [McpPluginSkillDescription("Refresh the Unity AssetDatabase. " +
+        [UcoSkillDescription("Refresh the Unity AssetDatabase. " +
             "Use after files were added or updated outside of the Unity API, or to force script recompilation " +
             "when a '.cs' file changed. Returns a processing/success response and waits for compilation when triggered.")]
-        [McpPluginSkillBody("Refreshes the AssetDatabase. " +
+        [UcoSkillBody("Refreshes the AssetDatabase. " +
             "Use it if any file was added or updated in the project outside of Unity API. " +
             "Use it if need to force scripts recompilation when '.cs' file changed.\n\n" +
             "## Inputs\n\n" +

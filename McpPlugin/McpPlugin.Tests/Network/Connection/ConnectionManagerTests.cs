@@ -12,7 +12,7 @@ using System.Threading;
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using Shouldly;
 
 
@@ -21,7 +21,7 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
+namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
 {
     /// <summary>
     /// Unit tests for ConnectionManager.Connect method.

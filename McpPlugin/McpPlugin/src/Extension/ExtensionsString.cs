@@ -11,7 +11,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public static class ExtensionsString
     {

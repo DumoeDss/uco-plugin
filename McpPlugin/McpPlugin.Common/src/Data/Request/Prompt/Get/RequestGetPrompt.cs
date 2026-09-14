@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     public class RequestGetPrompt : IRequestID, IDisposable
     {

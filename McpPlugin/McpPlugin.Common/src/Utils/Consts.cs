@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.        │
 └────────────────────────────────────────────────────────────────────────┘
 */
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public static partial class Consts
     {

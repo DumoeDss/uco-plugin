@@ -11,7 +11,7 @@
 #nullable enable
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using Microsoft.Extensions.Logging;
 using UnityEditor;
 using UnityEngine;

@@ -10,9 +10,9 @@
 
 using System;
 using System.Threading;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Async-flowing invocation state used by reflected parameter injection.

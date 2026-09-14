@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -78,16 +78,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpAssetGetToolId = "graphics-urp-asset-get";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpAssetGetToolId,
             Title = "Graphics / URP Asset / Get",
             ReadOnlyHint = true
         )]
-        [McpPluginSkillDescription("Read a `UniversalRenderPipelineAsset` and return its core knobs: HDR, " +
+        [UcoSkillDescription("Read a `UniversalRenderPipelineAsset` and return its core knobs: HDR, " +
             "render scale, depth/opaque texture toggles, MSAA, main-light & additional-lights modes, additional-lights " +
             "per-object limit. Returns Ok=false with 'URP package not installed.' when URP is missing.")]
-        [McpPluginSkillBody("Loads the URP asset at `assetPath` (defaulting to `QualitySettings.renderPipeline` " +
+        [UcoSkillBody("Loads the URP asset at `assetPath` (defaulting to `QualitySettings.renderPipeline` " +
             "when omitted) and pulls each settable knob via reflection. Returns Ok=false when URP is not installed " +
             "or the asset is not a URP asset — never throws.")]
         [Description("Read URP UniversalRenderPipelineAsset settings.")]
@@ -118,16 +118,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsUrpAssetSetToolId = "graphics-urp-asset-set";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsUrpAssetSetToolId,
             Title = "Graphics / URP Asset / Set",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Mutate `UniversalRenderPipelineAsset` settings. Pass only the fields you want " +
+        [UcoSkillDescription("Mutate `UniversalRenderPipelineAsset` settings. Pass only the fields you want " +
             "to change — null fields are left untouched. Writes are reflection-only so this is safe to call when URP " +
             "is absent (returns Ok=false instead of throwing).")]
-        [McpPluginSkillBody("Loads the URP asset and writes each non-null parameter via reflection.\n\n" +
+        [UcoSkillBody("Loads the URP asset and writes each non-null parameter via reflection.\n\n" +
             "## Notes\n\n" +
             "- `msaaSampleCount` accepts `'Disabled' | '_2x' | '_4x' | '_8x'` (case-insensitive).\n" +
             "- `mainLightRenderingMode` / `additionalLightsRenderingMode` accept the enum-name strings of " +

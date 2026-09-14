@@ -11,26 +11,26 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public class McpManager : IMcpManager, IClientMcpManager
+    public class UcoManager : IMcpManager, IClientMcpManager
     {
         protected readonly ILogger _logger;
         protected readonly Reflector _reflector;
         // Volatile ensures the reference write is visible to all threads without CPU/JIT caching.
         // Thread-safety contract: arrays are never mutated after assignment — only replaced atomically.
         // Readers always observe either the previous or next snapshot, never a torn state.
-        private volatile IReadOnlyList<McpClientData> _activeClients = Array.Empty<McpClientData>();
+        private volatile IReadOnlyList<UcoClientData> _activeClients = Array.Empty<UcoClientData>();
         private readonly Subject<Unit> _onForceDisconnect = new();
-        private readonly Subject<McpClientData> _onClientConnected = new();
-        private readonly Subject<McpClientData> _onClientDisconnected = new();
-        private readonly Subject<IReadOnlyList<McpClientData>> _onClientsChanged = new();
+        private readonly Subject<UcoClientData> _onClientConnected = new();
+        private readonly Subject<UcoClientData> _onClientDisconnected = new();
+        private readonly Subject<IReadOnlyList<UcoClientData>> _onClientsChanged = new();
 
         readonly IToolManager? _tools;
         readonly IPromptManager? _prompts;
@@ -48,14 +48,14 @@ namespace com.IvanMurzak.McpPlugin
         public IClientResourceHub? ResourceHub => _resources;
         public IClientSystemToolHub? SystemToolHub => _systemTools;
 
-        public IReadOnlyList<McpClientData> ActiveClients => _activeClients;
+        public IReadOnlyList<UcoClientData> ActiveClients => _activeClients;
         public Observable<Unit> OnForceDisconnect => _onForceDisconnect.AsObservable();
-        public Observable<McpClientData> OnClientConnected => _onClientConnected.AsObservable();
-        public Observable<McpClientData> OnClientDisconnected => _onClientDisconnected.AsObservable();
-        public Observable<IReadOnlyList<McpClientData>> OnClientsChanged => _onClientsChanged.AsObservable();
+        public Observable<UcoClientData> OnClientConnected => _onClientConnected.AsObservable();
+        public Observable<UcoClientData> OnClientDisconnected => _onClientDisconnected.AsObservable();
+        public Observable<IReadOnlyList<UcoClientData>> OnClientsChanged => _onClientsChanged.AsObservable();
 
-        public McpManager(
-            ILogger<McpManager> logger,
+        public UcoManager(
+            ILogger<UcoManager> logger,
             Reflector reflector,
             IToolManager? tools = null,
             IPromptManager? prompts = null,
@@ -73,7 +73,7 @@ namespace com.IvanMurzak.McpPlugin
             _systemTools = systemTools;
         }
 
-        public Task OnMcpClientConnected(McpClientData connectedClient, McpClientData[] allActiveClients)
+        public Task OnMcpClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients)
         {
             _activeClients = allActiveClients;
             _onClientConnected.OnNext(connectedClient);
@@ -81,7 +81,7 @@ namespace com.IvanMurzak.McpPlugin
             return Task.CompletedTask;
         }
 
-        public Task OnMcpClientDisconnected(McpClientData disconnectedClient, McpClientData[] remainingClients)
+        public Task OnMcpClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients)
         {
             _activeClients = remainingClients;
             _onClientDisconnected.OnNext(disconnectedClient);
@@ -89,7 +89,7 @@ namespace com.IvanMurzak.McpPlugin
             return Task.CompletedTask;
         }
 
-        public Task OnInitialClientData(McpClientData[] allActiveClients)
+        public Task OnInitialClientData(UcoClientData[] allActiveClients)
         {
             _activeClients = allActiveClients;
             _onClientsChanged.OnNext(allActiveClients);

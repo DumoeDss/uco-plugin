@@ -7,13 +7,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     public sealed class AuthoringSafetyPolicyTests
     {
@@ -245,7 +245,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             public string? SkillBody => null;
             public JsonNode? InputSchema => new JsonObject();
             public JsonNode? OutputSchema => null;
-            public McpToolType ToolType => McpToolType.Standard;
+            public UcoToolType ToolType => UcoToolType.Standard;
             public bool? ReadOnlyHint { get; set; }
             public bool? DestructiveHint { get; set; }
             public bool? IdempotentHint { get; set; }

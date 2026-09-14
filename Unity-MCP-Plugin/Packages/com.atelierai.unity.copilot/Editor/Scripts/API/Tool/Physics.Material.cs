@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using UnityEditor;
@@ -86,16 +86,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Create
         // -----------------------------------------------------------------
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsMaterialCreateToolId,
             Title = "Physics / Material / Create",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Create a new physics material asset (3D or 2D). The path must be under " +
+        [UcoSkillDescription("Create a new physics material asset (3D or 2D). The path must be under " +
             "'Assets/' and use the correct extension for the dimension ('.physicMaterial' for 3D, " +
             "'.physicsMaterial2D' for 2D). Use 'overwrite: true' to replace an existing asset.")]
-        [McpPluginSkillBody("Creates a `PhysicsMaterial` (3D) or `PhysicsMaterial2D` asset.\n\n" +
+        [UcoSkillBody("Creates a `PhysicsMaterial` (3D) or `PhysicsMaterial2D` asset.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path under `Assets/` ending in `.physicMaterial` (3D) or `.physicsMaterial2D` (2D).\n" +
             "- `dimension` (default `'3d'`) — `'2d'` or `'3d'`.\n" +
@@ -176,15 +176,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Configure
         // -----------------------------------------------------------------
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsMaterialConfigureToolId,
             Title = "Physics / Material / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Mutate properties of an existing physics material asset. Any argument left " +
+        [UcoSkillDescription("Mutate properties of an existing physics material asset. Any argument left " +
             "null is ignored; only the non-null arguments are applied.")]
-        [McpPluginSkillBody("Loads the material at `path` and writes the supplied fields. The dimension is " +
+        [UcoSkillBody("Loads the material at `path` and writes the supplied fields. The dimension is " +
             "inferred from the file extension when not provided explicitly.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path.\n" +
@@ -249,16 +249,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Assign
         // -----------------------------------------------------------------
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsMaterialAssignToolId,
             Title = "Physics / Material / Assign",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Assign a physics material asset to the first matching collider on a " +
+        [UcoSkillDescription("Assign a physics material asset to the first matching collider on a " +
             "GameObject. The dimension of the material (3D vs 2D) is inferred from the asset type and used " +
             "to pick the matching collider component.")]
-        [McpPluginSkillBody("Loads the material at `materialPath`, finds a compatible collider on the target " +
+        [UcoSkillBody("Loads the material at `materialPath`, finds a compatible collider on the target " +
             "GameObject, and assigns it via `Collider.sharedMaterial` (3D) or `Collider2D.sharedMaterial` (2D).\n\n" +
             "## Inputs\n\n" +
             "- `target` — GameObjectRef of the host GameObject (path, name, or instance ID).\n" +

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEngine;
 using Component = UnityEngine.Component;
 
@@ -38,7 +38,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// the plugin from compiling in projects that do not have those packages installed.
     /// </para>
     /// </summary>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Graphics
     {
         // ---------------------------------------------------------------

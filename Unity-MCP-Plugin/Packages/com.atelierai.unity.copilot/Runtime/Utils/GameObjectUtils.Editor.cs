@@ -10,7 +10,7 @@
 
 #nullable enable
 #if UNITY_EDITOR && UNITY_6000_5_OR_NEWER
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using UnityEngine.SceneManagement;
 
 namespace com.AtelierAI.Unity.Copilot.Runtime.Utils

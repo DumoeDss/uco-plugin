@@ -13,9 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public partial class McpPluginBuilder
+    public partial class UcoBuilder
     {
         public virtual IMcpPluginBuilder WithResources(params Type[] targetTypes)
             => WithResources(targetTypes.AsEnumerable());

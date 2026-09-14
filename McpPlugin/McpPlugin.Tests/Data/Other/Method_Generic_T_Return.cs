@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 // Generic method that echoes input of type T
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Method_Generic_T_Return<T>
     {

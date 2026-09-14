@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -28,15 +28,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectComponentGetToolId = "gameobject-component-get";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectComponentGetToolId,
             Title = "GameObject / Component / Get",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription(ComponentGetSkill.Description)]
-        [McpPluginSkillBody(ComponentGetSkill.Body)]
+        [UcoSkillDescription(ComponentGetSkill.Description)]
+        [UcoSkillBody(ComponentGetSkill.Body)]
         [Description("Get detailed information about a specific Component on a GameObject. " +
             "Returns component type, enabled state, and optionally serialized fields and properties. " +
             "Use this to inspect component data before modifying it. " +

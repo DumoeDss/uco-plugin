@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
@@ -26,15 +26,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildSceneRemoveToolId = "build-scene-remove";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildSceneRemoveToolId,
             Title = "Build / Remove Scene",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Remove a scene from `EditorBuildSettings.scenes` by path. " +
+        [UcoSkillDescription("Remove a scene from `EditorBuildSettings.scenes` by path. " +
             "No-op (and returns the unchanged list) when the scene is not registered.")]
-        [McpPluginSkillBody("Remove a scene from `EditorBuildSettings.scenes`. " +
+        [UcoSkillBody("Remove a scene from `EditorBuildSettings.scenes`. " +
             "Matches on path (case-insensitive). When the scene is not present in the current list the " +
             "tool returns the unchanged snapshot — it does not throw — so callers can treat the call as " +
             "idempotent.\n\n" +

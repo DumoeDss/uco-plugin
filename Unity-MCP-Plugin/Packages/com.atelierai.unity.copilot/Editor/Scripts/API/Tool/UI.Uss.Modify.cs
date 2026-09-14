@@ -19,7 +19,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -28,17 +28,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UssModifyToolId = "ui-uss-modify";
 
-        [McpPluginTool
+        [UcoTool
         (
             UssModifyToolId,
             Title = "UI / USS / Modify",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Modify a USS file via simple text operations: append text, replace the whole " +
+        [UcoSkillDescription("Modify a USS file via simple text operations: append text, replace the whole " +
             "file, append a new rule, or remove an existing rule by selector. USS is treated as opaque text — no CSS " +
             "AST is built. The 'remove-rule' op uses a flat regex which is correct for simple rules but cannot " +
             "handle nested or pseudo-selector overlaps; see body for limits.")]
-        [McpPluginSkillBody("Modify a USS file via text operations.\n\n" +
+        [UcoSkillBody("Modify a USS file via text operations.\n\n" +
             "## Operations\n\n" +
             "- `append` — appends `content` (plus a trailing newline) to the end of the file.\n" +
             "- `replace-all` — overwrites the entire file with `content`.\n" +

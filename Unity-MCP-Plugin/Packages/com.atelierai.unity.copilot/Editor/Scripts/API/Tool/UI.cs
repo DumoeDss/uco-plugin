@@ -18,7 +18,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Xml.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// GameObject. Heavy lifting (XDocument parsing, AssetDatabase, UIDocument) runs
     /// on the Unity main thread.
     /// </summary>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_UI
     {
         // ----- Shared constants -----

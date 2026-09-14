@@ -13,14 +13,14 @@ using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Microsoft.Extensions.Logging;
 using R3;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public sealed class ConnectionAttemptDiagnostics
     {

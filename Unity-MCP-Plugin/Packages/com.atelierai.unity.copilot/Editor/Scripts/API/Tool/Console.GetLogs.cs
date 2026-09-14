@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -19,17 +19,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Console
     {
         public const string ConsoleGetLogsToolId = "console-get-logs";
-        [McpPluginTool
+        [UcoTool
         (
             ConsoleGetLogsToolId,
             Title = "Console / Get Logs",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Retrieve Unity Editor logs from the MCP plugin's `LogCollector`, " +
+        [UcoSkillDescription("Retrieve Unity Editor logs from the MCP plugin's `LogCollector`, " +
             "optionally filtered by log type, time window, operation/correlation identity, or source " +
             "(product / bridge / tool / unity). Useful for debugging and monitoring Editor activity.")]
-        [McpPluginSkillBody("Retrieves Unity Editor logs with attribution and loss accounting.\n\n" +
+        [UcoSkillBody("Retrieves Unity Editor logs with attribution and loss accounting.\n\n" +
             "## Inputs\n\n" +
             "- `maxEntries` (default 100, minimum 1) — caps the size of the returned array.\n" +
             "- `logTypeFilter` — Unity `LogType` filter; `null` returns all severities.\n" +

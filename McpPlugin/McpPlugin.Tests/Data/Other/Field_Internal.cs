@@ -9,7 +9,7 @@
 */
 // Internal field
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     internal class Field_Internal
     {

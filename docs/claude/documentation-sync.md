@@ -2,7 +2,7 @@
 
 ```
 README.md                                                        ← Root project documentation
-Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/README.md                           ← Copy of root README.md *
+uco-unity-project/Packages/com.ivanmurzak.unity.mcp/README.md                           ← Copy of root README.md *
 Installer/Assets/com.IvanMurzak/AI Game Dev Installer/README.md  ← Copy of root README.md *
 docs/
 ├── README.es.md                                                 ← Spanish translation of root README *

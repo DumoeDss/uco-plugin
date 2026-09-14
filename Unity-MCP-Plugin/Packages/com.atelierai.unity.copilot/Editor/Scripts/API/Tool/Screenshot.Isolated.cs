@@ -15,8 +15,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -89,7 +89,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             [JsonPropertyName("renderMode")] public string? RenderMode { get; set; }
         }
 
-        [McpPluginTool
+        [UcoTool
         (
             ScreenshotIsolatedToolId,
             Title = "Screenshot / Isolated GameObject",
@@ -97,11 +97,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = true
         )]
-        [McpPluginSkillDescription("Render a target GameObject from a chosen camera angle with optional layer-based " +
+        [UcoSkillDescription("Render a target GameObject from a chosen camera angle with optional layer-based " +
             "isolation, configurable background (solid/skybox/transparent), multi-light setup via JSON, and Composite " +
             "(2x2 Front/Right/Back/Top) mode. Returns a PNG image. When isolated=true, inactive children may briefly " +
             "fire OnEnable — see the body for side-effect notes.")]
-        [McpPluginSkillBody("Renders a screenshot of a target GameObject with configurable isolation, background, "
+        [UcoSkillBody("Renders a screenshot of a target GameObject with configurable isolation, background, "
                    + "camera angle, and lighting. When isolated=true (default), only the target object is "
                    + "visible via layer-based culling and inactive children of the target are temporarily "
                    + "activated for the render (their OnEnable callbacks may fire — restored in finally, but "

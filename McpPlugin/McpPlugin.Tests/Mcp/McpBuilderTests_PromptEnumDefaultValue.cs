@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
-using com.IvanMurzak.McpPlugin.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Utils;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     public enum PromptTestEnum
     {
@@ -30,7 +30,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
     public class PromptMethod_EnumDefaultValue
     {
-        [McpPluginPrompt(Name = "test_prompt")]
+        [UcoPrompt(Name = "test_prompt")]
         public string GetPrompt(PromptTestEnum? options = PromptTestEnum.OptionB)
         {
             return options?.ToString() ?? "null";
@@ -50,13 +50,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _loggerProvider = new XunitTestOutputLoggerProvider(output);
         }
 
-        private IMcpPlugin BuildMcpPluginWithPrompt(Type classType, string methodName)
+        private IUcoPlugin BuildMcpPluginWithPrompt(Type classType, string methodName)
         {
             var method = classType.GetMethod(methodName)!;
             var promptName = "test_prompt";
 
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
             mcpPluginBuilder.WithPrompt(
@@ -76,7 +76,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act - calling without arguments, expecting default value PromptTestEnum.OptionB
             var request = new RequestGetPrompt(promptName, new Dictionary<string, JsonElement>());
-            var response = await mcpPlugin.McpManager.PromptManager!.RunGetPrompt(request);
+            var response = await mcpPlugin.UcoManager.PromptManager!.RunGetPrompt(request);
 
             // Assert
             response.ShouldNotBeNull();

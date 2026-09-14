@@ -1,17 +1,17 @@
 <linker>
   <!-- Dependency DLLs without namespace -->
   <assembly fullname="ReflectorNet" preserve="all"/>
-  <assembly fullname="McpPlugin" preserve="all"/>
-  <assembly fullname="McpPlugin.Common" preserve="all"/>
+  <assembly fullname="Uco.Framework" preserve="all"/>
+  <assembly fullname="Uco.Framework.Common" preserve="all"/>
 
   <!-- Dependency DLLs with namespace -->
-  <assembly fullname="com.IvanMurzak.McpPlugin" preserve="all"/>
-  <assembly fullname="com.IvanMurzak.McpPlugin.Common" preserve="all"/>
+  <assembly fullname="com.AtelierAI.Uco.Framework" preserve="all"/>
+  <assembly fullname="com.AtelierAI.Uco.Framework.Common" preserve="all"/>
   <assembly fullname="com.IvanMurzak.ReflectorNet" preserve="all"/>
 
   <!-- Dependency assemblies in Unity Project -->
-  <assembly fullname="com.IvanMurzak.Unity.MCP.Runtime" preserve="all"/>
-  <assembly fullname="com.IvanMurzak.Unity.MCP.Tests" preserve="all"/>
+  <assembly fullname="com.AtelierAI.Unity.Copilot.Runtime" preserve="all"/>
+  <assembly fullname="com.AtelierAI.Unity.Copilot.Tests" preserve="all"/>
 
   <!-- Keep Microsoft.Extensions -->
   <assembly fullname="Microsoft.Extensions.DependencyInjection" preserve="all"/>

@@ -10,10 +10,10 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class McpPluginSkillAttribute : Attribute
+    public sealed class UcoSkillAttribute : Attribute
     {
         public string Name { get; set; }
         public string? Description { get; set; }
@@ -41,7 +41,7 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>Gets the Enabled value, or null if it was not explicitly set.</summary>
         public bool? EnabledValue => _enabledSet ? _enabled : null;
 
-        public McpPluginSkillAttribute(string name, string? description = null)
+        public UcoSkillAttribute(string name, string? description = null)
         {
             Name = name;
             Description = description;

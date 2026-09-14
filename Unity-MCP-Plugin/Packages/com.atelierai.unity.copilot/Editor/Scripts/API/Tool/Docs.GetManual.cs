@@ -18,7 +18,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocsGetManualToolId = "docs-get-manual";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocsGetManualToolId,
             Title = "Docs / Get Manual",
@@ -34,10 +34,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             OpenWorldHint = true
         )]
-        [McpPluginSkillDescription("Fetch a Unity Manual page (https://docs.unity3d.com/Manual/<slug>.html) " +
+        [UcoSkillDescription("Fetch a Unity Manual page (https://docs.unity3d.com/Manual/<slug>.html) " +
             "and parse it into title + sections + code examples. Use it to look up architectural docs, workflow guides " +
             "and feature references that don't live in the ScriptReference.")]
-        [McpPluginSkillBody("Fetches a Unity **Manual** page by slug and returns the parsed structure.\n\n" +
+        [UcoSkillBody("Fetches a Unity **Manual** page by slug and returns the parsed structure.\n\n" +
             "## Inputs\n\n" +
             "- `slug` *(required)* — the Manual page slug, e.g. `execution-order`, `urp/urp-introduction`, " +
             "`UIE-USS-Properties-Reference`. Case matches the URL.\n" +

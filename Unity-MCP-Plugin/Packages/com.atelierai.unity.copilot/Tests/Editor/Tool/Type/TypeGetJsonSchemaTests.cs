@@ -12,7 +12,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using AIGD;

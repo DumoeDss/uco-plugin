@@ -11,7 +11,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public interface IDisposableAsync : IDisposable
     {

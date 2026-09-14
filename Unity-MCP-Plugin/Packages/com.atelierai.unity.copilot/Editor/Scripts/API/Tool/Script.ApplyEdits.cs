@@ -20,7 +20,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -102,7 +102,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // sane C# file would need; keeps us out of accidental OOM on bad client input.
         private const int MaxApplyEditsFileBytes = 8 * 1024 * 1024;
 
-        [McpPluginTool
+        [UcoTool
         (
             ScriptApplyEditsToolId,
             Title = "Script / Apply Edits",
@@ -110,12 +110,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             OpenWorldHint = false,
             Enabled = false
         )]
-        [McpPluginSkillDescription("LSP-style line/column ranged edits to a `.cs` file. Send only the diff " +
+        [UcoSkillDescription("LSP-style line/column ranged edits to a `.cs` file. Send only the diff " +
             "(an array of `{ Range, NewText }`) instead of re-uploading the entire file. " +
             "Optional `expectedSha` provides optimistic concurrency control — the edit is rejected with `STALE_SHA` " +
             "if the file changed between read and write. Use '" + ScriptGetShaToolId + "' to capture the SHA " +
             "and '" + ScriptReadToolId + "' to inspect content. Validates the post-edit text with Roslyn before writing.")]
-        [McpPluginSkillBody("Applies a batch of LSP-style ranged text edits to a `.cs` script. " +
+        [UcoSkillBody("Applies a batch of LSP-style ranged text edits to a `.cs` script. " +
             "Designed for diff-only updates so an LLM doesn't have to round-trip the whole file.\n\n" +
             "## Inputs\n\n" +
             "- `filePath` — required project-relative `.cs` path. Must exist; must start with `Assets/` or `Packages/`.\n" +

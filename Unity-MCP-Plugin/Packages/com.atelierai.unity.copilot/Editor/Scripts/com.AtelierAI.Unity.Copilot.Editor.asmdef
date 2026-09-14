@@ -13,8 +13,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "ReflectorNet.dll",
-        "McpPlugin.dll",
-        "McpPlugin.Common.dll",
+        "Uco.Framework.dll",
+        "Uco.Framework.Common.dll",
         "R3.dll",
         "Microsoft.Extensions.Logging.Abstractions.dll",
         "Microsoft.Extensions.Logging.dll",

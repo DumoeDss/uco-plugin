@@ -12,7 +12,7 @@ using System.Text.Json;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Extensions
+namespace com.AtelierAI.Uco.Framework.Tests.Extensions
 {
     public class ExtensionsJsonElementTests
     {

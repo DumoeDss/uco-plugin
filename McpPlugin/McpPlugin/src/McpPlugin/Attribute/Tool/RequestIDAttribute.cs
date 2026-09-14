@@ -10,7 +10,7 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class RequestIDAttribute : Attribute

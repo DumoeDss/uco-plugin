@@ -15,7 +15,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -27,18 +27,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string GraphicsVolumeAddOverrideToolId = "graphics-volume-add-override";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsVolumeAddOverrideToolId,
             Title = "Graphics / Volume / Add Override",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Add a `VolumeComponent` override to a `VolumeProfile`. The profile can be " +
+        [UcoSkillDescription("Add a `VolumeComponent` override to a `VolumeProfile`. The profile can be " +
             "addressed either by asset path (e.g. `Assets/Volumes/MyProfile.asset`) or by the scene hierarchy " +
             "path of a Volume GameObject (in which case its `sharedProfile` is used). " +
             "`componentTypeName` accepts the full name (`UnityEngine.Rendering.Universal.Bloom`) or the short " +
             "class name (`Bloom`); URP / HDRP types resolve only when the corresponding package is installed.")]
-        [McpPluginSkillBody("Calls `VolumeProfile.Add(Type, bool)` via reflection to keep the editor assembly " +
+        [UcoSkillBody("Calls `VolumeProfile.Add(Type, bool)` via reflection to keep the editor assembly " +
             "free of compile-time references to URP / HDRP.\n\n" +
             "## Inputs\n\n" +
             "- `profileOrVolumePath` — asset path of a `*.asset` profile, OR scene hierarchy path of a Volume.\n" +

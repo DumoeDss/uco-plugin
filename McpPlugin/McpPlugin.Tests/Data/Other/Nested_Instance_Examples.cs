@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 // Cases: properties/fields as instances of another class (including generics and self-reference)
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Node
     {

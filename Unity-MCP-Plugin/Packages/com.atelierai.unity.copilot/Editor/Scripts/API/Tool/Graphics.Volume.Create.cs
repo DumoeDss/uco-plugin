@@ -15,7 +15,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -29,18 +29,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string GraphicsVolumeCreateToolId = "graphics-volume-create";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsVolumeCreateToolId,
             Title = "Graphics / Volume / Create",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Create a `UnityEngine.Rendering.Volume` GameObject in the active scene with a " +
+        [UcoSkillDescription("Create a `UnityEngine.Rendering.Volume` GameObject in the active scene with a " +
             "`VolumeProfile` assigned. Either reuses an existing profile (`profileAssetPath`) or creates a fresh " +
             "blank profile at `newProfileAssetPath` (default: `Assets/Volumes/{name}_Profile.asset`). The volume's " +
             "`isGlobal`, `priority` and `weight` knobs are configurable. Returns the new GameObject reference and " +
             "the resolved profile asset path. Requires SRP Core.")]
-        [McpPluginSkillBody("Creates a Volume GameObject + VolumeProfile in one call.\n\n" +
+        [UcoSkillBody("Creates a Volume GameObject + VolumeProfile in one call.\n\n" +
             "## Inputs\n\n" +
             "- `name` — required non-empty GameObject name.\n" +
             "- `parent` (optional) — when provided, the new GameObject is parented under this one.\n" +

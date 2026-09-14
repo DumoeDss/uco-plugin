@@ -16,7 +16,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -26,15 +26,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string TextureCreateGradientToolId = "texture-create-gradient";
 
-        [McpPluginTool
+        [UcoTool
         (
             TextureCreateGradientToolId,
             Title = "Texture / Create Gradient"
         )]
-        [McpPluginSkillDescription("Generate a Texture2D containing a linear-interpolated gradient from " +
+        [UcoSkillDescription("Generate a Texture2D containing a linear-interpolated gradient from " +
             "`startColor` to `endColor` along the chosen `direction` (Horizontal/Vertical/Diagonal/Radial), " +
             "and save it as a PNG asset under 'Assets/'.")]
-        [McpPluginSkillBody("Generate a gradient Texture2D and import it into the Unity project.\n\n" +
+        [UcoSkillBody("Generate a gradient Texture2D and import it into the Unity project.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must start with `Assets/` and end with `.png`.\n" +
             "- `width`, `height` — pixel dimensions in [1, 4096]; total pixel count capped at 16,777,216.\n" +

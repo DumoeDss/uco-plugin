@@ -15,12 +15,12 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Utils;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Provides functionality to execute methods dynamically, supporting both static and instance methods.
@@ -30,7 +30,7 @@ namespace com.IvanMurzak.McpPlugin
     {
         public string Name { get; private set; }
         public bool Enabled { get; set; } = true;
-        public McpToolType ToolType { get; protected set; } = McpToolType.Standard;
+        public UcoToolType ToolType { get; protected set; } = UcoToolType.Standard;
         public string? Title { get; protected set; }
         public bool? ReadOnlyHint { get; protected set; }
         public bool? DestructiveHint { get; protected set; }
@@ -41,20 +41,20 @@ namespace com.IvanMurzak.McpPlugin
         public bool ReturnsDurableOperationHandle { get; protected set; }
 
         /// <summary>
-        /// Reads <see cref="McpPluginSkillDescriptionAttribute"/> from the underlying method, if present.
+        /// Reads <see cref="UcoSkillDescriptionAttribute"/> from the underlying method, if present.
         /// Used by <see cref="Skills.SkillFileGenerator"/> in place of <see cref="MethodWrapper.Description"/>
         /// when building the SKILL.md YAML <c>description:</c> field.
         /// </summary>
         public string? SkillDescription
-            => Method?.GetCustomAttribute<McpPluginSkillDescriptionAttribute>()?.Description;
+            => Method?.GetCustomAttribute<UcoSkillDescriptionAttribute>()?.Description;
 
         /// <summary>
-        /// Reads <see cref="McpPluginSkillBodyAttribute"/> from the underlying method, if present.
+        /// Reads <see cref="UcoSkillBodyAttribute"/> from the underlying method, if present.
         /// Used by <see cref="Skills.SkillFileGenerator"/> to inject long-form markdown into the SKILL.md body
         /// between the description paragraph and the <c>## How to Call</c> section.
         /// </summary>
         public string? SkillBody
-            => Method?.GetCustomAttribute<McpPluginSkillBodyAttribute>()?.Body;
+            => Method?.GetCustomAttribute<UcoSkillBodyAttribute>()?.Body;
 
         public MethodInfo Method => _methodInfo;
 

@@ -13,13 +13,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using AIGD;
 
 namespace AIGD
 {
-    [Description("MCP tool information.")]
+    [Description("uco tool information.")]
     public class ToolInfoData
     {
         [JsonInclude, JsonPropertyName("name")]

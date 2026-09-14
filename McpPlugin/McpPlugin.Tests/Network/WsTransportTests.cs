@@ -12,12 +12,12 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Network
+namespace com.AtelierAI.Uco.Framework.Tests.Network
 {
     /// <summary>
     /// Unit tests for the WebSocket envelope transport layer:

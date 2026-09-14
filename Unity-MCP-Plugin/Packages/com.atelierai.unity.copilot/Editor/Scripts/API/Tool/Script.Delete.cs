@@ -13,8 +13,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -24,17 +24,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public static partial class Tool_Script
     {
         public const string ScriptDeleteToolId = "script-delete";
-        [McpPluginTool
+        [UcoTool
         (
             ScriptDeleteToolId,
             Title = "Script / Delete",
             DestructiveHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Delete one or more `.cs` script files from disk, refresh the AssetDatabase, and " +
+        [UcoSkillDescription("Delete one or more `.cs` script files from disk, refresh the AssetDatabase, and " +
             "wait for Unity compilation to settle before delivering the final result via the request's `requestId`. " +
             "Pair with '" + ScriptReadToolId + "' to inspect files before deletion.")]
-        [McpPluginSkillBody("Delete the script file(s). " +
+        [UcoSkillBody("Delete the script file(s). " +
             "Does AssetDatabase.Refresh() and waits for Unity compilation to complete before reporting results. " +
             "Use '" + ScriptReadToolId + "' tool to read existing script files first.\n\n" +
             "## Inputs\n\n" +

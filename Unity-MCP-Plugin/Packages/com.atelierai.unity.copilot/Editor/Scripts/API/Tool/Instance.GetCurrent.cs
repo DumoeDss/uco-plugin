@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
@@ -25,7 +25,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string InstanceGetCurrentToolId = "instance-get-current";
 
-        [McpPluginTool
+        [UcoTool
         (
             InstanceGetCurrentToolId,
             Title = "Instance / Get Current",
@@ -33,10 +33,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Return identity metadata of the calling Unity Editor: port, project path, " +
+        [UcoSkillDescription("Return identity metadata of the calling Unity Editor: port, project path, " +
             "project name, Unity version, process id, and stable instance id. Useful when multiple Editors are " +
             "running on the same machine and the LLM needs to know which one it just connected to.")]
-        [McpPluginSkillBody("Return identity metadata of the calling Unity Editor. " +
+        [UcoSkillBody("Return identity metadata of the calling Unity Editor. " +
             "Multi-instance discovery is soft: this tool reports who 'I' am — pair with 'instance-list-all' " +
             "to see the sibling Editors.\n\n" +
             "## Behavior\n\n" +

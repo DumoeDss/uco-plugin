@@ -13,7 +13,7 @@
 */
 
 #nullable enable
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         TwoD = 1
     }
 
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Physics
     {
         // -----------------------------------------------------------------

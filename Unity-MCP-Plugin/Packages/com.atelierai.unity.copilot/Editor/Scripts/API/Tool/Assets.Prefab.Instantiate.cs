@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -24,15 +24,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets_Prefab
     {
         public const string AssetsPrefabInstantiateToolId = "assets-prefab-instantiate";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsPrefabInstantiateToolId,
             Title = "Assets / Prefab / Instantiate"
         )]
-        [McpPluginSkillDescription("Instantiate a prefab into the currently active scene at an optional position/rotation/scale, " +
+        [UcoSkillDescription("Instantiate a prefab into the currently active scene at an optional position/rotation/scale, " +
             "parented under an optional scene GameObject path. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' to locate the prefab asset first.")]
-        [McpPluginSkillBody("Instantiates prefab in the current active scene. " +
+        [UcoSkillBody("Instantiates prefab in the current active scene. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' tool to find prefab assets in the project.\n\n" +
             "## Inputs\n\n" +
             "- `prefabAssetPath` — project asset path of the prefab to instantiate.\n" +

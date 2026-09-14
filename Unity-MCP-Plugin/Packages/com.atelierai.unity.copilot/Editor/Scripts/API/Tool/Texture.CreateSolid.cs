@@ -15,7 +15,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -25,14 +25,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string TextureCreateSolidToolId = "texture-create-solid";
 
-        [McpPluginTool
+        [UcoTool
         (
             TextureCreateSolidToolId,
             Title = "Texture / Create Solid Color"
         )]
-        [McpPluginSkillDescription("Generate a Texture2D filled with a single RGBA color and save it as a PNG asset " +
+        [UcoSkillDescription("Generate a Texture2D filled with a single RGBA color and save it as a PNG asset " +
             "under 'Assets/'. Width and height must be in [1, 4096], total pixels capped at 16M.")]
-        [McpPluginSkillBody("Generate a solid-color Texture2D, encode it as PNG, and import it into the Unity project.\n\n" +
+        [UcoSkillBody("Generate a solid-color Texture2D, encode it as PNG, and import it into the Unity project.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must start with `Assets/` and end with `.png`. Intermediate folders are created automatically.\n" +
             "- `width`, `height` — pixel dimensions in [1, 4096]; total pixel count capped at 16,777,216.\n" +

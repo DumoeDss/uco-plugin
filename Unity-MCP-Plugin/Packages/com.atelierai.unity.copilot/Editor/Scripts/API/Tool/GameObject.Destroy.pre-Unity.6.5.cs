@@ -12,7 +12,7 @@
 #if !UNITY_6000_5_OR_NEWER
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectDestroyToolId = "gameobject-destroy";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectDestroyToolId,
             Title = "GameObject / Destroy",
@@ -40,8 +40,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription(DestroySkill.Description)]
-        [McpPluginSkillBody(DestroySkill.Body)]
+        [UcoSkillDescription(DestroySkill.Description)]
+        [UcoSkillBody(DestroySkill.Body)]
         [Description("Destroy GameObject and all nested GameObjects recursively in opened Prefab or in a Scene. " +
             "Use '" + GameObjectFindToolId + "' tool to find the target GameObject first.")]
         public DestroyGameObjectResult Destroy(GameObjectRef gameObjectRef)

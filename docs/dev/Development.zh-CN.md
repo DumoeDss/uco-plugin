@@ -6,14 +6,14 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editor supported')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtime supported')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-Join-7289da?logo=discord&logoColor=white&labelColor=333A41 'Join')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=Downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md) | [Español](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.es.md) | [日本語](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.ja.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md) | [Español](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.es.md) | [日本語](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.ja.md)</b>
 
 </div>
 
@@ -30,7 +30,7 @@
 - [项目结构](#项目结构)
   - [🔹Unity-MCP-Server](#unity-mcp-server)
     - [Docker 镜像](#docker-镜像)
-  - [🔸Unity-MCP-Plugin](#unity-mcp-plugin)
+  - [🔸uco-unity-project](#unity-mcp-plugin)
     - [UPM 包](#upm-包)
     - [编辑器](#编辑器)
     - [运行时](#运行时)
@@ -58,7 +58,7 @@
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 愿景与目标
 
@@ -73,7 +73,7 @@
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 前置条件
 
@@ -91,7 +91,7 @@
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 本地开发环境搭建
 
@@ -102,7 +102,7 @@
    ```
 
 2. **在 Unity 中打开插件**
-   - 打开 Unity Hub → 添加项目 → 选择 `Unity-MCP-Plugin/` 文件夹
+   - 打开 Unity Hub → 添加项目 → 选择 `uco-unity-project/` 文件夹
    - Unity 将在首次打开时自动编译所有程序集
 
 3. **在 IDE 中打开 Server**
@@ -122,24 +122,24 @@
 
 6. **使用 MCP Inspector 进行调试** *（可选）*
    ```bash
-   Unity-MCP-Plugin/Commands/start_mcp_inspector.bat   # Windows (.bat)
+   uco-unity-project/Commands/start_mcp_inspector.bat   # Windows (.bat)
    Unity-MCP-Server/commands/start-mcp-inspector.ps1   # PowerShell（跨平台）
    ```
    需要 Node.js。在 `http://localhost:5173` 打开浏览器 UI，用于实时检查 MCP 协议消息。
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 贡献
 
 让我们共同构建光明的游戏开发未来，为项目做出贡献。请使用本文档了解项目结构及其工作原理。
 
-1. [Fork 项目](https://github.com/IvanMurzak/Unity-MCP/fork)
+1. [Fork 项目](https://github.com/IvanMurzak/uco-plugin/fork)
 2. 进行改进，遵循代码风格
-3. [创建 Pull Request](https://github.com/IvanMurzak/Unity-MCP/compare)
+3. [创建 Pull Request](https://github.com/IvanMurzak/uco-plugin/compare)
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 项目结构
 
@@ -147,7 +147,7 @@
 graph LR
   A(◽AI 代理)
   B(🔹Unity-MCP-Server)
-  C(🔸Unity-MCP-Plugin)
+  C(🔸uco-unity-project)
   D(🎮Unity)
 
   %% 关系
@@ -158,9 +158,9 @@ graph LR
 
 ◽**AI 代理** - 任何 AI 界面，如：*Claude*、*Copilot*、*Cursor* 或其他，它不属于这些项目，但是架构中的重要组成部分。
 
-🔹**Unity-MCP-Server** - 连接到 `AI 代理` 并与其交互的 `MCP Server`。同时，`Unity-MCP-Server` 通过 SignalR 与 `Unity-MCP-Plugin` 通信。可在本地或云端以 HTTP 传输方式运行。技术栈：`C#`、`ASP.NET Core`、`SignalR`
+🔹**Unity-MCP-Server** - 连接到 `AI 代理` 并与其交互的 `MCP Server`。同时，`Unity-MCP-Server` 通过 SignalR 与 `uco-unity-project` 通信。可在本地或云端以 HTTP 传输方式运行。技术栈：`C#`、`ASP.NET Core`、`SignalR`
 
-🔸**Unity-MCP-Plugin** - 集成到 Unity 项目中的 `Unity 插件`，可访问 Unity 的 API。与 `Unity-MCP-Server` 通信并执行来自服务器的命令。技术栈：`C#`、`Unity`、`SignalR`
+🔸**uco-unity-project** - 集成到 Unity 项目中的 `Unity 插件`，可访问 Unity 的 API。与 `Unity-MCP-Server` 通信并执行来自服务器的命令。技术栈：`C#`、`Unity`、`SignalR`
 
 🎮**Unity** - Unity 引擎，游戏引擎。
 
@@ -181,19 +181,19 @@ graph LR
    - 当功能发生变化时（工具/提示列表更新）向 AI 代理发送通知
 
 2. **SignalR Hub 通信** ([RemoteApp.cs](Unity-MCP-Server/src/Hub/RemoteApp.cs)、[BaseHub.cs](Unity-MCP-Server/src/Hub/BaseHub.cs))
-   - 通过 SignalR 管理与 Unity-MCP-Plugin 的实时双向通信
+   - 通过 SignalR 管理与 uco-unity-project 的实时双向通信
    - 处理版本握手以确保服务器与插件之间的 API 兼容性
    - 跟踪客户端连接并管理断开连接
    - 将工具/提示/资源更新通知从 Unity 路由到 AI 代理
 
 3. **请求路由与执行** ([ToolRouter.Call.cs](Unity-MCP-Server/src/Routing/Tool/ToolRouter.Call.cs)、[PromptRouter.Get.cs](Unity-MCP-Server/src/Routing/Prompt/PromptRouter.Get.cs)、[ResourceRouter.ReadResource.cs](Unity-MCP-Server/src/Routing/Resource/ResourceRouter.ReadResource.cs))
-   - 将 AI 代理请求路由到适当的 Unity-MCP-Plugin 实例
+   - 将 AI 代理请求路由到适当的 uco-unity-project 实例
    - 处理 Tool 调用、Prompt 请求和 Resource 读取
    - 执行错误处理和验证
    - 在 MCP 协议格式与内部数据模型之间进行转换
 
 4. **远程执行服务** ([RemoteToolRunner.cs](Unity-MCP-Server/src/Client/RemoteToolRunner.cs)、[RemotePromptRunner.cs](Unity-MCP-Server/src/Client/RemotePromptRunner.cs)、[RemoteResourceRunner.cs](Unity-MCP-Server/src/Client/RemoteResourceRunner.cs))
-   - 通过 SignalR 在 Unity-MCP-Plugin 上调用远程过程
+   - 通过 SignalR 在 uco-unity-project 上调用远程过程
    - 跟踪异步请求并管理超时
    - 实现带取消支持的请求/响应模式
    - 处理来自 Unity 实例的请求完成回调
@@ -211,45 +211,45 @@ graph LR
 
 ---
 
-## 🔸Unity-MCP-Plugin
+## 🔸uco-unity-project
 
 集成到 Unity 环境中。使用 `Unity-MCP-Common` 通过反射在本地代码库中搜索 MCP *Tool*、*Resource* 和 *Prompt*。与 `Unity-MCP-Server` 通信以发送 MCP *Tool*、*Resource* 和 *Prompt* 的更新信息。接收来自 `Unity-MCP-Server` 的命令并执行。
 
-> 项目位置：`Unity-MCP-Plugin`
+> 项目位置：`uco-unity-project`
 
 ### UPM 包
 
-`Unity-MCP-Plugin` 是一个 UPM 包，包的根目录位于 `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp`。它包含 `package.json`，用于将包直接从 GitHub 发布版上传到 [OpenUPM](https://openupm.com/)。
+`uco-unity-project` 是一个 UPM 包，包的根目录位于 `uco-unity-project/Packages/com.ivanmurzak.unity.mcp`。它包含 `package.json`，用于将包直接从 GitHub 发布版上传到 [OpenUPM](https://openupm.com/)。
 
-> 位置：`Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp`
+> 位置：`uco-unity-project/Packages/com.ivanmurzak.unity.mcp`
 
 ### 编辑器
 
 编辑器组件提供 Unity 编辑器集成，实现 MCP 功能（Tools、Prompts、Resources）并管理 `Unity-MCP-Server` 的生命周期。
 
-> 位置：`Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor`
+> 位置：`uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor`
 
 **主要职责：**
 
-1. **插件生命周期管理** ([Startup.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
+1. **插件生命周期管理** ([Startup.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
    - 通过 `[InitializeOnLoad]` 在 Unity 编辑器加载时自动初始化
    - 在编辑器生命周期事件（程序集重载、播放模式转换）期间管理连接持久性
    - 域重载或退出播放模式后自动重新连接
 
-2. **MCP Server 二进制文件管理** ([McpServerManager.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
+2. **MCP Server 二进制文件管理** ([McpServerManager.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
    - 从 GitHub 发布版下载和管理 `Unity-MCP-Server` 可执行文件
    - 跨平台二进制文件选择（Windows/macOS/Linux，x86/x64/ARM/ARM64）
    - 强制执行服务器与插件之间的版本兼容性
    - 为 AI 代理生成配置（包含可执行文件路径和连接设置的 JSON）
 
-3. **MCP API 实现** ([Scripts/API/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
+3. **MCP API 实现** ([Scripts/API/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
    - **Tools**（50+个）：GameObject、Scene、Assets、Prefabs、Scripts、Components、Editor Control、Test Runner、Console、Reflection
    - **Prompts**：用于常见 Unity 开发任务的预构建模板
    - **Resources**：通过 URI 访问 Unity 编辑器数据，支持 JSON 序列化
    - 所有操作在 Unity 主线程上执行以确保线程安全
    - 使用 `[McpPluginTool]`、`[McpPluginPrompt]`、`[McpPluginResource]` 进行基于特性的发现
 
-4. **编辑器 UI** ([Scripts/UI/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
+4. **编辑器 UI** ([Scripts/UI/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
    - 用于连接管理的配置窗口（`Window > AI Game Developer`）
    - 通过 Unity 菜单项进行服务器二进制文件管理和日志访问
 
@@ -257,28 +257,28 @@ graph LR
 
 运行时组件提供编辑器和运行时模式之间共享的核心基础设施，负责处理 SignalR 通信、序列化以及线程安全的 Unity API 访问。
 
-> 位置：`Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime`
+> 位置：`uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime`
 
 **主要职责：**
 
-1. **插件核心与 SignalR 连接** ([UnityMcpPlugin.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
+1. **插件核心与 SignalR 连接** ([UnityMcpPlugin.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
    - 通过 `BuildAndStart()` 管理插件生命周期的线程安全单例
    - 使用反射从程序集中发现 MCP Tools/Prompts/Resources
    - 使用响应式状态监控（R3 库）建立与 Unity-MCP-Server 的 SignalR 连接
    - 配置管理：主机、端口、超时、版本兼容性
 
-2. **主线程调度器** ([MainThreadDispatcher.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
+2. **主线程调度器** ([MainThreadDispatcher.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
    - 将 SignalR 后台线程中的 Unity API 调用编组到 Unity 主线程
    - 基于队列在 Unity 的 Update 循环中执行
    - 对于线程安全的 MCP 操作执行至关重要
 
-3. **Unity 类型序列化** ([ReflectionConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/)、[JsonConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
+3. **Unity 类型序列化** ([ReflectionConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/)、[JsonConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
    - Unity 类型的自定义 JSON 序列化（GameObject、Component、Transform、Vector3、Quaternion 等）
    - 将 Unity 对象转换为引用格式（`GameObjectRef`、`ComponentRef`），并跟踪 instanceID
    - 与 ReflectorNet 集成，用于对象自省和组件序列化
    - 为 MCP 协议类型定义提供 JSON Schema
 
-4. **日志与诊断** ([Logger/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/)、[Unity/Logs/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
+4. **日志与诊断** ([Logger/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/)、[Unity/Logs/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
    - 将 Microsoft.Extensions.Logging 桥接到带有颜色编码级别的 Unity 控制台
    - 收集 Unity 控制台日志，供 AI 通过 MCP Tools 获取上下文
 
@@ -340,7 +340,7 @@ graph LR
   A(◾Installer)
   subgraph Installation
     B(🎮Unity)
-    C(🔸Unity-MCP-Plugin)
+    C(🔸uco-unity-project)
   end
 
   %% 关系
@@ -348,13 +348,13 @@ graph LR
   B -.- C
 ```
 
-**Installer** 将 `Unity-MCP-Plugin` 及其依赖项作为 NPM 包安装到 Unity 项目中。
+**Installer** 将 `uco-unity-project` 及其依赖项作为 NPM 包安装到 Unity 项目中。
 
 > 项目位置：`Installer`
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 代码风格
 
@@ -513,7 +513,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 运行测试
 
@@ -522,7 +522,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 ## 本地运行
 
 **Unity Test Runner（图形界面）**
-1. 在 Unity 中打开 `Unity-MCP-Plugin/` 项目
+1. 在 Unity 中打开 `uco-unity-project/` 项目
 2. 前往 `Window > General > Test Runner`
 3. 选择 **EditMode** 或 **PlayMode** 标签
 4. 点击 **Run All** 或选择特定测试后点击 **Run Selected**
@@ -570,7 +570,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # CI/CD
 
@@ -597,7 +597,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 **流程：**
 
-1. **版本检查** - 从 [package.json](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/package.json) 提取版本并检查发布标签是否已存在
+1. **版本检查** - 从 [package.json](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json) 提取版本并检查发布标签是否已存在
 2. **构建 Unity Installer** - 测试并导出 Unity 包安装程序（`AI-Game-Dev-Installer.unitypackage`）
 3. **构建 MCP Server** - 使用 [build-all.sh](../../Unity-MCP-Server/build-all.sh) 编译跨平台可执行文件（Windows、macOS、Linux）
 4. **Unity 插件测试** - 跨以下组合运行全面测试：
@@ -692,4 +692,4 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 3. **Docker Hub** - 用于云部署的容器化 MCP Server
 4. **OpenUPM** - Unity 插件包（从 GitHub Releases 自动同步）
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

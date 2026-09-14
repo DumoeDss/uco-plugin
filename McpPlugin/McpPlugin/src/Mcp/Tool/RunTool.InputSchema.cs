@@ -12,12 +12,12 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin.Utils;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public partial class RunTool
     {

@@ -16,7 +16,7 @@ using System.ComponentModel;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
 
@@ -41,17 +41,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             InputsWithDescription = 2
         }
 
-        [McpPluginTool
+        [UcoTool
         (
             ToolListId,
             Title = "Tool / List",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List all Unity-MCP tools registered in the connected Unity Editor instance. " +
+        [UcoSkillDescription("List all uco tools registered in the connected Unity Editor instance. " +
             "Optional regex filter matches against tool name, description, and argument names/descriptions. " +
             "Use the `includeDescription` / `includeInputs` toggles to control the response size.")]
-        [McpPluginSkillBody("List all Unity-MCP tools registered in the connected Unity Editor instance. " +
+        [UcoSkillBody("List all uco tools registered in the connected Unity Editor instance. " +
             "Optionally filter by regex across tool names, descriptions, and arguments.\n\n" +
             "## Inputs\n\n" +
             "- `regexSearch` (optional) — case-insensitive regex with a 200ms execution-timeout guard. " +
@@ -61,7 +61,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "## Behavior\n\n" +
             "Iterates `UnityCopilotPluginEditor.Instance.Tools.GetAllTools()`, evaluates the filter (if any), and projects " +
             "each surviving tool into a `ToolInfoData` honoring the verbosity toggles.")]
-        [Description("List all Unity-MCP tools registered in the connected Unity Editor instance. " +
+        [Description("List all uco tools registered in the connected Unity Editor instance. " +
             "Optionally filter by regex across tool names, descriptions, and arguments.")]
         public ToolInfoData[] List
         (

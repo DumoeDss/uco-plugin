@@ -7,7 +7,7 @@
 │  See the LICENSE file in the project root for more information.        │
 └────────────────────────────────────────────────────────────────────────┘
 */
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Unity
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Unity
 {
     [System.Serializable]
     public class ComponentDataLight

@@ -6,14 +6,14 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editor supported')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtime supported')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-Join-7289da?logo=discord&logoColor=white&labelColor=333A41 'Join')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=Downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md) | [Español](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.es.md) | [中文](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.zh-CN.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md) | [Español](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.es.md) | [中文](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.zh-CN.md)</b>
 
 </div>
 
@@ -30,7 +30,7 @@
 - [プロジェクト構造](#プロジェクト構造)
   - [🔹Unity-MCP-Server](#unity-mcp-server)
     - [Docker イメージ](#docker-イメージ)
-  - [🔸Unity-MCP-Plugin](#unity-mcp-plugin)
+  - [🔸uco-unity-project](#unity-mcp-plugin)
     - [UPM パッケージ](#upm-パッケージ)
     - [エディター](#エディター)
     - [ランタイム](#ランタイム)
@@ -58,7 +58,7 @@
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # ビジョン & ゴール
 
@@ -73,7 +73,7 @@ AI はゲーム開発において重要な役割を果たしている（もし�
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 前提条件
 
@@ -91,7 +91,7 @@ AI はゲーム開発において重要な役割を果たしている（もし�
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # ローカル開発環境のセットアップ
 
@@ -102,7 +102,7 @@ AI はゲーム開発において重要な役割を果たしている（もし�
    ```
 
 2. **Unity でプラグインを開く**
-   - Unity Hub を開く → プロジェクトを追加 → `Unity-MCP-Plugin/` フォルダを選択
+   - Unity Hub を開く → プロジェクトを追加 → `uco-unity-project/` フォルダを選択
    - Unity は初回起動時にすべてのアセンブリを自動でコンパイルします
 
 3. **IDE でサーバーを開く**
@@ -128,17 +128,17 @@ AI はゲーム開発において重要な役割を果たしている（もし�
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # コントリビュート
 
 一緒に輝かしいゲーム開発の未来を作りましょう。プロジェクトにコントリビュートしてください。このドキュメントを参考にプロジェクトの構造と仕組みを理解してください。
 
-1. [プロジェクトをフォークする](https://github.com/IvanMurzak/Unity-MCP/fork)
+1. [プロジェクトをフォークする](https://github.com/IvanMurzak/uco-plugin/fork)
 2. 改善を加え、コードスタイルに従う
-3. [プルリクエストを作成する](https://github.com/IvanMurzak/Unity-MCP/compare)
+3. [プルリクエストを作成する](https://github.com/IvanMurzak/uco-plugin/compare)
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # プロジェクト構造
 
@@ -146,7 +146,7 @@ AI はゲーム開発において重要な役割を果たしている（もし�
 graph LR
   A(◽AI エージェント)
   B(🔹Unity-MCP-Server)
-  C(🔸Unity-MCP-Plugin)
+  C(🔸uco-unity-project)
   D(🎮Unity)
 
   %% Relationships
@@ -157,9 +157,9 @@ graph LR
 
 ◽**AI エージェント** - *Claude*、*Copilot*、*Cursor* などの任意の AI インターフェースです。このプロジェクトの一部ではありませんが、アーキテクチャの重要な要素です。
 
-🔹**Unity-MCP-Server** - `AI エージェント`に接続し、連携する `MCP Server` です。同時に `Unity-MCP-Plugin` と SignalR を通じて通信します。ローカルまたは HTTP トランスポートを使用したクラウド上で動作可能です。技術スタック: `C#`、`ASP.NET Core`、`SignalR`
+🔹**Unity-MCP-Server** - `AI エージェント`に接続し、連携する `MCP Server` です。同時に `uco-unity-project` と SignalR を通じて通信します。ローカルまたは HTTP トランスポートを使用したクラウド上で動作可能です。技術スタック: `C#`、`ASP.NET Core`、`SignalR`
 
-🔸**Unity-MCP-Plugin** - Unity プロジェクトに統合される `Unity Plugin` で、Unity の API にアクセスできます。`Unity-MCP-Server` と通信し、サーバーからのコマンドを実行します。技術スタック: `C#`、`Unity`、`SignalR`
+🔸**uco-unity-project** - Unity プロジェクトに統合される `Unity Plugin` で、Unity の API にアクセスできます。`Unity-MCP-Server` と通信し、サーバーからのコマンドを実行します。技術スタック: `C#`、`Unity`、`SignalR`
 
 🎮**Unity** - Unity Engine、ゲームエンジン。
 
@@ -180,19 +180,19 @@ AI エージェント（Claude、Cursor などの AI インターフェース）
    - 機能が変更された際（ツール/プロンプトリストの更新）に AI エージェントへ通知を送信
 
 2. **SignalR ハブ通信** ([RemoteApp.cs](Unity-MCP-Server/src/Hub/RemoteApp.cs)、[BaseHub.cs](Unity-MCP-Server/src/Hub/BaseHub.cs))
-   - SignalR を通じた Unity-MCP-Plugin とのリアルタイム双方向通信を管理
+   - SignalR を通じた uco-unity-project とのリアルタイム双方向通信を管理
    - サーバーとプラグイン間の API 互換性を確保するバージョンハンドシェイクを処理
    - クライアント接続を追跡し、切断を管理
    - Unity から AI エージェントへのツール/プロンプト/リソース更新通知をルーティング
 
 3. **リクエストルーティングと実行** ([ToolRouter.Call.cs](Unity-MCP-Server/src/Routing/Tool/ToolRouter.Call.cs)、[PromptRouter.Get.cs](Unity-MCP-Server/src/Routing/Prompt/PromptRouter.Get.cs)、[ResourceRouter.ReadResource.cs](Unity-MCP-Server/src/Routing/Resource/ResourceRouter.ReadResource.cs))
-   - AI エージェントのリクエストを適切な Unity-MCP-Plugin インスタンスにルーティング
+   - AI エージェントのリクエストを適切な uco-unity-project インスタンスにルーティング
    - ツール呼び出し、プロンプトリクエスト、リソース読み取りを処理
    - エラーハンドリングとバリデーションを実行
    - MCP プロトコル形式と内部データモデル間の変換
 
 4. **リモート実行サービス** ([RemoteToolRunner.cs](Unity-MCP-Server/src/Client/RemoteToolRunner.cs)、[RemotePromptRunner.cs](Unity-MCP-Server/src/Client/RemotePromptRunner.cs)、[RemoteResourceRunner.cs](Unity-MCP-Server/src/Client/RemoteResourceRunner.cs))
-   - SignalR を通じて Unity-MCP-Plugin 上でリモートプロシージャを呼び出す
+   - SignalR を通じて uco-unity-project 上でリモートプロシージャを呼び出す
    - 非同期リクエストを追跡し、タイムアウトを管理
    - キャンセルサポート付きのリクエスト/レスポンスパターンを実装
    - Unity インスタンスからのリクエスト完了コールバックを処理
@@ -210,45 +210,45 @@ AI エージェント（Claude、Cursor などの AI インターフェース）
 
 ---
 
-## 🔸Unity-MCP-Plugin
+## 🔸uco-unity-project
 
 Unity 環境に統合されます。`Unity-MCP-Common` を使用して、リフレクションによりローカルコードベースの MCP *Tool*、*Resource*、*Prompt* を検索します。MCP *Tool*、*Resource*、*Prompt* の更新情報を `Unity-MCP-Server` に送信するために通信します。`Unity-MCP-Server` からコマンドを受け取り実行します。
 
-> プロジェクトの場所: `Unity-MCP-Plugin`
+> プロジェクトの場所: `uco-unity-project`
 
 ### UPM パッケージ
 
-`Unity-MCP-Plugin` は UPM パッケージです。パッケージのルートフォルダは . にあり、`package.json` が含まれています。これは GitHub リリースから直接 [OpenUPM](https://openupm.com/) にパッケージをアップロードするために使用されます。
+`uco-unity-project` は UPM パッケージです。パッケージのルートフォルダは . にあり、`package.json` が含まれています。これは GitHub リリースから直接 [OpenUPM](https://openupm.com/) にパッケージをアップロードするために使用されます。
 
-> 場所: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp`
+> 場所: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp`
 
 ### エディター
 
 エディターコンポーネントは Unity Editor との統合を提供し、MCP 機能（Tools、Prompts、Resources）を実装し、`Unity-MCP-Server` のライフサイクルを管理します。
 
-> 場所: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor`
+> 場所: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor`
 
 **主な責務:**
 
-1. **プラグインライフサイクル管理** ([Startup.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
+1. **プラグインライフサイクル管理** ([Startup.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
    - `[InitializeOnLoad]` を通じて Unity Editor の読み込み時に自動初期化
    - エディターライフサイクルイベント（アセンブリリロード、Play モード切り替え）全体での接続持続性を管理
    - ドメインリロードまたは Play モード終了後の自動再接続
 
-2. **MCP Server バイナリ管理** ([McpServerManager.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
+2. **MCP Server バイナリ管理** ([McpServerManager.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
    - GitHub リリースから `Unity-MCP-Server` 実行ファイルをダウンロードして管理
    - クロスプラットフォームバイナリ選択（Windows/macOS/Linux、x86/x64/ARM/ARM64）
    - サーバーとプラグイン間のバージョン互換性の適用
    - AI エージェント用の設定生成（実行ファイルパスと接続設定を含む JSON）
 
-3. **MCP API の実装** ([Scripts/API/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
+3. **MCP API の実装** ([Scripts/API/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
    - **Tools**（50以上）: GameObject、Scene、Assets、Prefabs、Scripts、Components、エディター制御、Test Runner、Console、リフレクション
    - **Prompts**: 一般的な Unity 開発タスク用のあらかじめ構築されたテンプレート
    - **Resources**: JSON シリアライゼーションによる Unity Editor データへの URI ベースアクセス
    - スレッドセーフのため、すべての操作は Unity のメインスレッドで実行
    - `[McpPluginTool]`、`[McpPluginPrompt]`、`[McpPluginResource]` を使用した属性ベースの検出
 
-4. **エディター UI** ([Scripts/UI/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
+4. **エディター UI** ([Scripts/UI/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
    - 接続管理のための設定ウィンドウ（`Window > AI Game Developer`）
    - Unity メニュー項目を通じたサーバーバイナリ管理とログアクセス
 
@@ -256,28 +256,28 @@ Unity 環境に統合されます。`Unity-MCP-Common` を使用して、リフ�
 
 ランタイムコンポーネントは、エディターとランタイムモード間で共有されるコアインフラを提供し、SignalR 通信、シリアライゼーション、スレッドセーフな Unity API アクセスを処理します。
 
-> 場所: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime`
+> 場所: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime`
 
 **主な責務:**
 
-1. **プラグインコア & SignalR 接続** ([UnityMcpPlugin.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
+1. **プラグインコア & SignalR 接続** ([UnityMcpPlugin.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
    - `BuildAndStart()` を通じてプラグインライフサイクルを管理するスレッドセーフなシングルトン
    - リフレクションを使用してアセンブリから MCP Tools/Prompts/Resources を検出
    - リアクティブ状態モニタリング (R3 ライブラリ) を使用して Unity-MCP-Server への SignalR 接続を確立
    - 設定管理: ホスト、ポート、タイムアウト、バージョン互換性
 
-2. **メインスレッドディスパッチャー** ([MainThreadDispatcher.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
+2. **メインスレッドディスパッチャー** ([MainThreadDispatcher.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
    - SignalR バックグラウンドスレッドから Unity のメインスレッドへ Unity API 呼び出しをマーシャリング
    - Unity の Update ループでのキューベース実行
    - スレッドセーフな MCP 操作実行のための重要なコンポーネント
 
-3. **Unity 型のシリアライゼーション** ([ReflectionConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/)、[JsonConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
+3. **Unity 型のシリアライゼーション** ([ReflectionConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/)、[JsonConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
    - Unity 型（GameObject、Component、Transform、Vector3、Quaternion など）のカスタム JSON シリアライゼーション
    - instanceID トラッキングによる Unity オブジェクトの参照形式（`GameObjectRef`、`ComponentRef`）への変換
    - オブジェクト内省とコンポーネントシリアライゼーションのための ReflectorNet との統合
    - MCP プロトコル型定義のための JSON スキーマを提供
 
-4. **ロギング & 診断** ([Logger/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/)、[Unity/Logs/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
+4. **ロギング & 診断** ([Logger/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/)、[Unity/Logs/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
    - Microsoft.Extensions.Logging を色分けされたレベルで Unity Console にブリッジ
    - MCP Tools を通じた AI コンテキスト取得のための Unity Console ログを収集
 
@@ -339,7 +339,7 @@ graph LR
   A(◾Installer)
   subgraph Installation
     B(🎮Unity)
-    C(🔸Unity-MCP-Plugin)
+    C(🔸uco-unity-project)
   end
 
   %% Relationships
@@ -347,13 +347,13 @@ graph LR
   B -.- C
 ```
 
-**Installer** は `Unity-MCP-Plugin` と依存関係を NPM パッケージとして Unity プロジェクトにインストールします。
+**Installer** は `uco-unity-project` と依存関係を NPM パッケージとして Unity プロジェクトにインストールします。
 
 > プロジェクトの場所: `Installer`
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # コードスタイル
 
@@ -512,7 +512,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # テストの実行
 
@@ -521,7 +521,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 ## ローカルでの実行
 
 **Unity Test Runner（GUI）**
-1. `Unity-MCP-Plugin/` プロジェクトを Unity で開く
+1. `uco-unity-project/` プロジェクトを Unity で開く
 2. `Window > General > Test Runner` に移動
 3. **EditMode** または **PlayMode** タブを選択
 4. **Run All** をクリックするか、特定のテストを選択して **Run Selected** をクリック
@@ -569,7 +569,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # CI/CD
 
@@ -596,7 +596,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 **プロセス:**
 
-1. **バージョンチェック** - [package.json](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/package.json) からバージョンを抽出し、リリースタグが既に存在するかどうかを確認
+1. **バージョンチェック** - [package.json](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json) からバージョンを抽出し、リリースタグが既に存在するかどうかを確認
 2. **Unity Installer のビルド** - Unity パッケージインストーラーをテストしてエクスポート（`AI-Game-Dev-Installer.unitypackage`）
 3. **MCP Server のビルド** - [build-all.sh](../../Unity-MCP-Server/build-all.sh) を使用してクロスプラットフォーム実行ファイル（Windows、macOS、Linux）をコンパイル
 4. **Unity プラグインテスト** - 以下の組み合わせで包括的なテストを実行:
@@ -691,4 +691,4 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 3. **Docker Hub** - クラウドデプロイメント用のコンテナ化された MCP Server
 4. **OpenUPM** - Unity プラグインパッケージ（GitHub リリースから自動同期）
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

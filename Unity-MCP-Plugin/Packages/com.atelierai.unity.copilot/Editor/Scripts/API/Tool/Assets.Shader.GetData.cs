@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -30,18 +30,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string AssetsShaderGetDataToolId = "assets-shader-get-data";
 
-        [McpPluginTool
+        [UcoTool
         (
             AssetsShaderGetDataToolId,
             Title = "Assets / Shader / Get Data",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Get detailed data about a shader asset — properties, subshaders, passes, " +
+        [UcoSkillDescription("Get detailed data about a shader asset — properties, subshaders, passes, " +
             "compilation messages, and supported status. Supports token-saving path-scoped reads via `paths` or " +
             "`viewQuery`. Use '" + Tool_Assets.AssetsFindToolId + "' with `t:Shader` or '" +
             AssetsShaderListAllToolId + "' to locate the shader first.")]
-        [McpPluginSkillBody("Get detailed data about a shader asset in the Unity project. " +
+        [UcoSkillBody("Get detailed data about a shader asset in the Unity project. " +
             "Returns shader properties, subshaders, passes, compilation errors, and supported status. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' tool with filter 't:Shader' to find shaders, " +
             "or '" + AssetsShaderListAllToolId + "' tool to list all shader names.\n\n" +

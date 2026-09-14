@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -75,7 +75,7 @@ namespace AIGD
             var readiness = EditorToolExecutionScheduler.Shared.Snapshot(
                 com.AtelierAI.Unity.Copilot.UnityCopilotPluginEditor.HasInstance
                 && com.AtelierAI.Unity.Copilot.UnityCopilotPluginEditor.ConnectionState.CurrentValue
-                    == com.IvanMurzak.McpPlugin.ConnectionState.Connected,
+                    == com.AtelierAI.Uco.Framework.ConnectionState.Connected,
                 ignoreCurrentSerializedCall: true);
             var blockers = new List<string>();
             if (EditorApplication.isCompiling) blockers.Add("compiling");

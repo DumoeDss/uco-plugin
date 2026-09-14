@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -51,18 +51,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ".bin", ".pak"
         };
 
-        [McpPluginTool
+        [UcoTool
         (
             ScriptFindInFileToolId,
             Title = "Script / Find In File",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Ripgrep-style text search over project files under `Assets/` or `Packages/`. " +
+        [UcoSkillDescription("Ripgrep-style text search over project files under `Assets/` or `Packages/`. " +
             "Streams files line-by-line with a configurable regex (or plain-text) pattern. " +
             "Supports glob filtering, case-insensitive match, context lines, and bounded result/file-size caps. " +
             "Pair with '" + ScriptReadToolId + "' to read the surrounding code once you find a hit.")]
-        [McpPluginSkillBody("Recursively searches files under `Assets/` or `Packages/` for a regex or plain-text pattern. " +
+        [UcoSkillBody("Recursively searches files under `Assets/` or `Packages/` for a regex or plain-text pattern. " +
             "Designed to behave like ripgrep — streams files, skips binaries by extension, caps file size, and bounds total results.\n\n" +
             "## Inputs\n\n" +
             "- `pattern` — required regex. When `plainText=true`, the pattern is escaped and matched literally.\n" +

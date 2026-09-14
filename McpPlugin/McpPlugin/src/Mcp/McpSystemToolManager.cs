@@ -16,22 +16,22 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Manages system tools — internal tools available via HTTP API but NOT exposed to MCP clients.
-    /// System tools are discovered via <see cref="McpPluginToolAttribute"/> with
-    /// <see cref="McpPluginToolAttribute.ToolType"/> set to <see cref="McpToolType.System"/>.
+    /// System tools are discovered via <see cref="UcoToolAttribute"/> with
+    /// <see cref="UcoToolAttribute.ToolType"/> set to <see cref="UcoToolType.System"/>.
     /// </summary>
-    public class McpSystemToolManager : ISystemToolManager
+    public class UcoSystemToolManager : ISystemToolManager
     {
         readonly ILogger _logger;
         readonly SystemToolRunnerCollection _tools;
@@ -39,8 +39,8 @@ namespace com.IvanMurzak.McpPlugin
 
         public ToolExecutionPipeline ExecutionPipeline => _executionPipeline;
 
-        public McpSystemToolManager(
-            ILogger<McpSystemToolManager> logger,
+        public UcoSystemToolManager(
+            ILogger<UcoSystemToolManager> logger,
             SystemToolRunnerCollection tools,
             ToolExecutionPipeline? executionPipeline = null)
         {

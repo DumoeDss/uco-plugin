@@ -13,7 +13,7 @@ using System.Text.Json.Nodes;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public partial class RunTool
     {

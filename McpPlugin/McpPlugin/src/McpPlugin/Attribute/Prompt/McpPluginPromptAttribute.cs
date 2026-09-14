@@ -9,12 +9,12 @@
 */
 
 using System;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class McpPluginPromptAttribute : Attribute
+    public sealed class UcoPromptAttribute : Attribute
     {
         public string Name { get; set; } = string.Empty;
         public Role Role { get; set; } = Role.User;
@@ -38,6 +38,6 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>Gets the Enabled value, or null if it was not explicitly set.</summary>
         public bool? EnabledValue => _enabledSet ? _enabled : null;
 
-        public McpPluginPromptAttribute() { }
+        public UcoPromptAttribute() { }
     }
 }

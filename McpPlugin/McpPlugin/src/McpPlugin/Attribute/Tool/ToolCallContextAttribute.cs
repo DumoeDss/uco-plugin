@@ -10,7 +10,7 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Marks a reflected tool parameter that receives the current invocation

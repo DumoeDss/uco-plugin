@@ -14,13 +14,13 @@ using System.Net.WebSockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Creates configured <see cref="ClientWebSocket"/> instances.
@@ -100,7 +100,7 @@ namespace com.IvanMurzak.McpPlugin
 
                 // Set instance ID header for per-session routing
                 if (!string.IsNullOrWhiteSpace(instanceId))
-                    ws.Options.SetRequestHeader(Consts.MCP.Server.Headers.McpInstanceId, instanceId);
+                    ws.Options.SetRequestHeader(Consts.MCP.Server.Headers.UcoInstanceId, instanceId);
 
                 // No subprotocol — plain WebSocket, matching the Node server
 

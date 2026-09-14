@@ -13,17 +13,17 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Skills;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Skills;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using R3;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public partial class McpPlugin : IMcpPlugin, IDisposable
+    public partial class McpPlugin : IUcoPlugin, IDisposable
     {
         private readonly ILogger<McpPlugin> _logger;
         private readonly IMcpManagerHub _mcpManagerHub;
@@ -36,11 +36,11 @@ namespace com.IvanMurzak.McpPlugin
         private readonly ConnectionConfig _connectionConfig;
 
         public ILogger Logger => _logger;
-        public IMcpManager McpManager { get; private set; }
-        public IMcpManagerHub McpManagerHub => _mcpManagerHub;
+        public IMcpManager UcoManager { get; private set; }
+        public IMcpManagerHub UcoManagerHub => _mcpManagerHub;
         public Common.Version Version => _version;
         public VersionHandshakeResponse? VersionHandshakeStatus => _mcpManagerHub?.VersionHandshakeStatus;
-        public ulong ToolCallsCount => McpManager.ToolManager?.ToolCallsCount ?? 0;
+        public ulong ToolCallsCount => UcoManager.ToolManager?.ToolCallsCount ?? 0;
         public ReadOnlyReactiveProperty<ConnectionState> ConnectionState => _mcpManagerHub?.ConnectionState
             ?? new ReactiveProperty<ConnectionState>(WsState.Disconnected);
         public ReadOnlyReactiveProperty<bool> KeepConnected => _mcpManagerHub?.KeepConnected
@@ -60,7 +60,7 @@ namespace com.IvanMurzak.McpPlugin
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{class} Ctor.", nameof(McpPlugin));
 
-            McpManager = mcpManager ?? throw new ArgumentNullException(nameof(mcpManager));
+            UcoManager = mcpManager ?? throw new ArgumentNullException(nameof(mcpManager));
             _cancellationTokenSource = _disposables.ToCancellationTokenSource();
 
             _mcpManagerHub = mcpManagerHub ?? throw new ArgumentNullException(nameof(mcpManagerHub));
@@ -70,22 +70,22 @@ namespace com.IvanMurzak.McpPlugin
             _skillContentCollection = skillContentCollection ?? throw new ArgumentNullException(nameof(skillContentCollection));
             _mcpManagerHub.SetCapabilityRegistrationHandler(RegisterCapabilitiesAsync);
 
-            McpManager.OnForceDisconnect
+            UcoManager.OnForceDisconnect
                 .Subscribe(_ =>
                 {
                     _logger.LogDebug("{method}, force disconnect requested.",
-                        nameof(McpManager.OnForceDisconnect));
+                        nameof(UcoManager.OnForceDisconnect));
 
                     _mcpManagerHub.Disconnect();
                 })
                 .AddTo(_disposables);
 
-            McpManager.ToolManager?.OnToolsUpdated
+            UcoManager.ToolManager?.OnToolsUpdated
                 .ThrottleFirst(TimeSpan.FromMilliseconds(100))
                 .Subscribe(async _ =>
                 {
                     _logger.LogDebug("{method}, tools updated event received.",
-                        nameof(McpManager.ToolManager.OnToolsUpdated));
+                        nameof(UcoManager.ToolManager.OnToolsUpdated));
 
                     if (_cancellationTokenSource.Token.IsCancellationRequested)
                         return;
@@ -99,13 +99,13 @@ namespace com.IvanMurzak.McpPlugin
                         _logger.LogError(ex,
                             "{method}: skill auto-generation skipped — host did not provide a project root. " +
                             "Set ConnectionConfig.ProjectRootPath or pass basePath to GenerateSkillFiles.",
-                            nameof(McpManager.ToolManager.OnToolsUpdated));
+                            nameof(UcoManager.ToolManager.OnToolsUpdated));
                     }
 
                     if (_mcpManagerHub == null)
                     {
                         _logger.LogWarning("{method}, RPC Router is not initialized, cannot notify about updated tools.",
-                            nameof(McpManager.ToolManager.OnToolsUpdated));
+                            nameof(UcoManager.ToolManager.OnToolsUpdated));
                         return;
                     }
 
@@ -122,7 +122,7 @@ namespace com.IvanMurzak.McpPlugin
                     {
                         _logger.LogDebug(
                             "{method}, connection state is {state}, not Connected; a pre-handshake tools update notification cannot be served. Skipping.",
-                            nameof(McpManager.ToolManager.OnToolsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                            nameof(UcoManager.ToolManager.OnToolsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
                         return;
                     }
 
@@ -139,7 +139,7 @@ namespace com.IvanMurzak.McpPlugin
                         // bounds the exception detail to type + message.
                         _logger.LogError(ex,
                             "{method}: dispatching the tools update notification failed: {exceptionType}: {message}.",
-                            nameof(McpManager.ToolManager.OnToolsUpdated), ex.GetType().Name, ex.Message);
+                            nameof(UcoManager.ToolManager.OnToolsUpdated), ex.GetType().Name, ex.Message);
                     }
                 })
                 .AddTo(_disposables);
@@ -157,12 +157,12 @@ namespace com.IvanMurzak.McpPlugin
                     nameof(McpPlugin));
             }
 
-            McpManager.PromptManager?.OnPromptsUpdated
+            UcoManager.PromptManager?.OnPromptsUpdated
                 .ThrottleFirst(TimeSpan.FromMilliseconds(100))
                 .Subscribe(async _ =>
                 {
                     _logger.LogDebug("{method}, prompts updated event received.",
-                        nameof(McpManager.PromptManager.OnPromptsUpdated));
+                        nameof(UcoManager.PromptManager.OnPromptsUpdated));
 
                     if (_cancellationTokenSource.Token.IsCancellationRequested)
                         return;
@@ -170,7 +170,7 @@ namespace com.IvanMurzak.McpPlugin
                     if (_mcpManagerHub == null)
                     {
                         _logger.LogWarning("{method}, RPC Router is not initialized, cannot notify about updated prompts.",
-                            nameof(McpManager.PromptManager.OnPromptsUpdated));
+                            nameof(UcoManager.PromptManager.OnPromptsUpdated));
                         return;
                     }
 
@@ -179,7 +179,7 @@ namespace com.IvanMurzak.McpPlugin
                     {
                         _logger.LogDebug(
                             "{method}, connection state is {state}, not Connected; a pre-handshake prompts update notification cannot be served. Skipping.",
-                            nameof(McpManager.PromptManager.OnPromptsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                            nameof(UcoManager.PromptManager.OnPromptsUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
                         return;
                     }
 
@@ -192,17 +192,17 @@ namespace com.IvanMurzak.McpPlugin
                         // Contained dispatch — see the tools-updated subscription above.
                         _logger.LogError(ex,
                             "{method}: dispatching the prompts update notification failed: {exceptionType}: {message}.",
-                            nameof(McpManager.PromptManager.OnPromptsUpdated), ex.GetType().Name, ex.Message);
+                            nameof(UcoManager.PromptManager.OnPromptsUpdated), ex.GetType().Name, ex.Message);
                     }
                 })
                 .AddTo(_disposables);
 
-            McpManager.ResourceManager?.OnResourcesUpdated
+            UcoManager.ResourceManager?.OnResourcesUpdated
                 .ThrottleFirst(TimeSpan.FromMilliseconds(100))
                 .Subscribe(async _ =>
                 {
                     _logger.LogDebug("{method}, resources updated event received.",
-                        nameof(McpManager.ResourceManager.OnResourcesUpdated));
+                        nameof(UcoManager.ResourceManager.OnResourcesUpdated));
 
                     if (_cancellationTokenSource.Token.IsCancellationRequested)
                         return;
@@ -210,7 +210,7 @@ namespace com.IvanMurzak.McpPlugin
                     if (_mcpManagerHub == null)
                     {
                         _logger.LogWarning("{method}, RPC Router is not initialized, cannot notify about updated resources.",
-                            nameof(McpManager.ResourceManager.OnResourcesUpdated));
+                            nameof(UcoManager.ResourceManager.OnResourcesUpdated));
                         return;
                     }
 
@@ -219,7 +219,7 @@ namespace com.IvanMurzak.McpPlugin
                     {
                         _logger.LogDebug(
                             "{method}, connection state is {state}, not Connected; a pre-handshake resources update notification cannot be served. Skipping.",
-                            nameof(McpManager.ResourceManager.OnResourcesUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
+                            nameof(UcoManager.ResourceManager.OnResourcesUpdated), _mcpManagerHub.ConnectionState.CurrentValue);
                         return;
                     }
 
@@ -232,7 +232,7 @@ namespace com.IvanMurzak.McpPlugin
                         // Contained dispatch — see the tools-updated subscription above.
                         _logger.LogError(ex,
                             "{method}: dispatching the resources update notification failed: {exceptionType}: {message}.",
-                            nameof(McpManager.ResourceManager.OnResourcesUpdated), ex.GetType().Name, ex.Message);
+                            nameof(UcoManager.ResourceManager.OnResourcesUpdated), ex.GetType().Name, ex.Message);
                     }
                 })
                 .AddTo(_disposables);
@@ -245,7 +245,7 @@ namespace com.IvanMurzak.McpPlugin
             // The Node bridge currently uses the tools update as the runner-eligibility
             // signal. Advertise prompts and resources first, then tools last, so that signal
             // cannot make the generation ready while another capability is still pending.
-            if (McpManager.PromptManager != null)
+            if (UcoManager.PromptManager != null)
             {
                 var prompts = await _mcpManagerHub.NotifyAboutUpdatedPrompts(
                     new Common.Model.RequestPromptsUpdated(),
@@ -253,7 +253,7 @@ namespace com.IvanMurzak.McpPlugin
                 EnsureCapabilityRegistrationSucceeded("prompts", prompts);
             }
 
-            if (McpManager.ResourceManager != null)
+            if (UcoManager.ResourceManager != null)
             {
                 var resources = await _mcpManagerHub.NotifyAboutUpdatedResources(
                     new Common.Model.RequestResourcesUpdated(),
@@ -297,14 +297,14 @@ namespace com.IvanMurzak.McpPlugin
             var skillsPath = ResolveSkillsPath(path);
             var success = true;
 
-            var tools = McpManager.ToolManager?.GetAllTools();
+            var tools = UcoManager.ToolManager?.GetAllTools();
             if (tools == null)
             {
                 success = false;
             }
             else
             {
-                var systemTools = McpManager.SystemToolManager?.GetAllTools();
+                var systemTools = UcoManager.SystemToolManager?.GetAllTools();
                 var allTools = systemTools != null ? tools.Concat(systemTools) : tools;
                 if (!_skillFileGenerator.Generate(allTools, skillsPath, _connectionConfig.Host))
                     success = false;
@@ -324,14 +324,14 @@ namespace com.IvanMurzak.McpPlugin
             var skillsPath = ResolveSkillsPath(path);
             var success = true;
 
-            var tools = McpManager.ToolManager?.GetAllTools();
+            var tools = UcoManager.ToolManager?.GetAllTools();
             if (tools == null)
             {
                 success = false;
             }
             else
             {
-                var systemTools = McpManager.SystemToolManager?.GetAllTools();
+                var systemTools = UcoManager.SystemToolManager?.GetAllTools();
                 var allTools = systemTools != null ? tools.Concat(systemTools) : tools;
                 if (!_skillFileGenerator.Delete(allTools, skillsPath))
                     success = false;
@@ -435,7 +435,7 @@ namespace com.IvanMurzak.McpPlugin
                 _logger.LogError("Error during async disposal: {message}\n{stackTrace}", ex.Message, ex.StackTrace);
             }
 
-            McpManager.Dispose();
+            UcoManager.Dispose();
 
             _logger.LogDebug("{method} completed.", nameof(Dispose));
         }

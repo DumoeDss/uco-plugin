@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -60,17 +60,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string GraphicsRenderingStatsToolId = "graphics-rendering-stats";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsRenderingStatsToolId,
             Title = "Graphics / Rendering Stats",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Sample Unity's renderer stats (`UnityEditor.UnityStats`) — draw calls, " +
+        [UcoSkillDescription("Sample Unity's renderer stats (`UnityEditor.UnityStats`) — draw calls, " +
             "batches, triangles, vertices, set-pass calls, shadow casters, texture memory and count. " +
             "Reads values rendered most recently by the Editor (Game / Scene view).")]
-        [McpPluginSkillBody("Wraps the editor-only `UnityEditor.UnityStats` static class.\n\n" +
+        [UcoSkillBody("Wraps the editor-only `UnityEditor.UnityStats` static class.\n\n" +
             "## Caveats\n\n" +
             "- Values reflect the last rendered frame. Open and focus the Game or Scene view to refresh them.\n" +
             "- All getters are read via reflection so missing fields in a given Unity version do not break the call.\n" +

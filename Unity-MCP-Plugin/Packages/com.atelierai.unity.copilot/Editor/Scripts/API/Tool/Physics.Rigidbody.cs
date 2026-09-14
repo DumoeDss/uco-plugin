@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using UnityEditor;
@@ -83,17 +83,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Get
         // -----------------------------------------------------------------
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsRigidbodyGetToolId,
             Title = "Physics / Rigidbody / Get",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Snapshot the Rigidbody (3D) or Rigidbody2D (2D) state on the target GameObject. " +
+        [UcoSkillDescription("Snapshot the Rigidbody (3D) or Rigidbody2D (2D) state on the target GameObject. " +
             "When the GameObject has both, the explicit 'dimension' argument disambiguates; otherwise the present " +
             "component wins.")]
-        [McpPluginSkillBody("Reads `mass`, damping, kinematic / gravity flags, interpolation, collision detection, " +
+        [UcoSkillBody("Reads `mass`, damping, kinematic / gravity flags, interpolation, collision detection, " +
             "constraints, and current linear / angular velocity into a `RigidbodyResult`.\n\n" +
             "## Inputs\n\n" +
             "- `target` — GameObjectRef (path / name / instanceID).\n" +
@@ -144,15 +144,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Configure
         // -----------------------------------------------------------------
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsRigidbodyConfigureToolId,
             Title = "Physics / Rigidbody / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Mutate fields of a Rigidbody / Rigidbody2D. Only non-null arguments are " +
+        [UcoSkillDescription("Mutate fields of a Rigidbody / Rigidbody2D. Only non-null arguments are " +
             "applied. The dimension is inferred from the present component when not specified.")]
-        [McpPluginSkillBody("Writes to `Rigidbody` (3D) or `Rigidbody2D` (2D). Maps `drag` / `angularDrag` to the " +
+        [UcoSkillBody("Writes to `Rigidbody` (3D) or `Rigidbody2D` (2D). Maps `drag` / `angularDrag` to the " +
             "Unity 6 `linearDamping` / `angularDamping` API automatically.\n\n" +
             "## Inputs\n\n" +
             "- `target` — GameObjectRef.\n" +

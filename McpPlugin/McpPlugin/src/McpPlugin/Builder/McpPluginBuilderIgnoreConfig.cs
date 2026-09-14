@@ -12,13 +12,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Configuration for ignoring assemblies and namespaces during plugin building.
     /// This class is thread-safe for concurrent read operations after configuration is complete.
     /// </summary>
-    public class McpPluginBuilderIgnoreConfig
+    public class UcoBuilderIgnoreConfig
     {
         private readonly object _lock = new();
 

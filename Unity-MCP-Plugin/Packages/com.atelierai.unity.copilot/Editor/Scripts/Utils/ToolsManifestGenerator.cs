@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Nodes;
 using com.AtelierAI.Unity.Copilot.Editor.Branding;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,9 +34,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// Each entry contains <c>name</c>, <c>enabled</c>, <c>title</c>,
     /// <c>description</c>, <c>inputSchema</c>, optionally <c>outputSchema</c>,
     /// and the four nullable safety-hint members
-    /// — exactly matching <see cref="com.IvanMurzak.McpPlugin.Server.Api.DirectToolCallEndpoints"/>.
+    /// — exactly matching <see cref="com.AtelierAI.Uco.Framework.Server.Api.DirectToolCallEndpoints"/>.
     /// The <c>enabled</c> field reflects the DEFAULT state from
-    /// <see cref="McpPluginToolAttribute"/> (not per-project runtime overrides)
+    /// <see cref="UcoToolAttribute"/> (not per-project runtime overrides)
     /// so the shipped manifest is deterministic across projects.
     /// </para>
     /// <para>
@@ -71,7 +71,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 return;
             }
 
-            var toolManager = plugin.McpManager?.ToolManager;
+            var toolManager = plugin.UcoManager?.ToolManager;
             if (toolManager == null)
             {
                 Debug.LogError(
@@ -151,7 +151,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         }
 
         /// <summary>
-        /// Resolves the DEFAULT enabled state from the <c>[McpPluginTool]</c>
+        /// Resolves the DEFAULT enabled state from the <c>[UcoTool]</c>
         /// attribute — NOT the runtime-overridden state. This ensures the
         /// shipped manifest reflects plugin defaults rather than per-project
         /// config overrides applied by <c>ApplyConfigToMcpPlugin</c>.
@@ -159,7 +159,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         static bool ResolveDefaultEnabled(IRunTool tool)
         {
             // IRunTool.Method exposes the underlying MethodInfo.
-            var attr = tool.Method?.GetCustomAttribute<McpPluginToolAttribute>();
+            var attr = tool.Method?.GetCustomAttribute<UcoToolAttribute>();
             // EnabledValue returns null when not explicitly set → default is true.
             return attr?.EnabledValue ?? true;
         }

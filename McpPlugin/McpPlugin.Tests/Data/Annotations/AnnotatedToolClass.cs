@@ -8,40 +8,40 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Annotations
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Annotations
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public static class AnnotatedToolClass
     {
-        [McpPluginTool("tool-no-hints", "Tool With No Hints")]
+        [UcoTool("tool-no-hints", "Tool With No Hints")]
         public static void NoHints() { }
 
-        [McpPluginTool("tool-readonly", "Read-Only Tool", ReadOnlyHint = true)]
+        [UcoTool("tool-readonly", "Read-Only Tool", ReadOnlyHint = true)]
         public static void ReadOnly() { }
 
-        [McpPluginTool("tool-destructive-false", "Non-Destructive Tool", DestructiveHint = false)]
+        [UcoTool("tool-destructive-false", "Non-Destructive Tool", DestructiveHint = false)]
         public static void DestructiveFalse() { }
 
-        [McpPluginTool("tool-idempotent", "Idempotent Tool", IdempotentHint = true)]
+        [UcoTool("tool-idempotent", "Idempotent Tool", IdempotentHint = true)]
         public static void Idempotent() { }
 
-        [McpPluginTool("tool-open-world", "Open World Tool", OpenWorldHint = true)]
+        [UcoTool("tool-open-world", "Open World Tool", OpenWorldHint = true)]
         public static void OpenWorld() { }
 
-        [McpPluginTool("tool-all-hints", "All Hints Tool",
+        [UcoTool("tool-all-hints", "All Hints Tool",
             ReadOnlyHint = true,
             DestructiveHint = false,
             IdempotentHint = true,
             OpenWorldHint = false)]
         public static void AllHints() { }
 
-        [McpPluginTool("tool-enabled-default", "Tool With Default Enabled")]
+        [UcoTool("tool-enabled-default", "Tool With Default Enabled")]
         public static void EnabledDefault() { }
 
-        [McpPluginTool("tool-enabled-true", "Tool With Enabled True", Enabled = true)]
+        [UcoTool("tool-enabled-true", "Tool With Enabled True", Enabled = true)]
         public static void EnabledTrue() { }
 
-        [McpPluginTool("tool-enabled-false", "Tool With Enabled False", Enabled = false)]
+        [UcoTool("tool-enabled-false", "Tool With Enabled False", Enabled = false)]
         public static void EnabledFalse() { }
     }
 }

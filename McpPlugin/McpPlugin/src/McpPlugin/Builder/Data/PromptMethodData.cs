@@ -11,16 +11,16 @@
 using System;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public class PromptMethodData
     {
         public string Name => Attribute.Name;
         public Type ClassType { get; set; }
         public MethodInfo MethodInfo { get; set; }
-        public McpPluginPromptAttribute Attribute { get; set; }
+        public UcoPromptAttribute Attribute { get; set; }
 
-        public PromptMethodData(Type classType, MethodInfo methodInfo, McpPluginPromptAttribute attribute)
+        public PromptMethodData(Type classType, MethodInfo methodInfo, UcoPromptAttribute attribute)
         {
             ClassType = classType;
             MethodInfo = methodInfo;

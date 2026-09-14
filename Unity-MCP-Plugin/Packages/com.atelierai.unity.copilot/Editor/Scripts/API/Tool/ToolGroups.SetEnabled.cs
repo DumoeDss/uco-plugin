@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using AIGD;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 
@@ -26,17 +26,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string ToolsSetGroupEnabledId = "tools-set-group-enabled";
 
-        [McpPluginTool
+        [UcoTool
         (
             ToolsSetGroupEnabledId,
             Title = "Tools / Set Group Enabled",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Enable or disable an MCP tool group at runtime, persisting the choice to EditorPrefs. " +
+        [UcoSkillDescription("Enable or disable an uco tool group at runtime, persisting the choice to EditorPrefs. " +
             "Use this together with 'tools-list-groups' to keep the LLM tool-list lean: turn off niche groups " +
             "(physics, profiler, vfx) until you need them. " +
             "NOTE: currently a soft hint — disabled tools remain callable; enforcement requires hooking the request pipeline.")]
-        [McpPluginSkillBody("Toggle a logical tool group. " +
+        [UcoSkillBody("Toggle a logical tool group. " +
             "Groups are declared on `Tool_*` partial-class roots via `[ToolGroupAttribute(\"name\")]`. " +
             "This tool only updates the registry + EditorPrefs; it does not modify the upstream NuGet package " +
             "or hook `IRunTool.RunCallTool`, so toggling is informational only at the moment.\n\n" +
@@ -46,7 +46,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "## Persistence\n\n" +
             "Stored under EditorPrefs key `UnityMcp.ToolGroups.Enabled` as a pipe-separated " +
             "`group=0|group=1` string. Stale entries (for groups that no longer exist) are ignored on load.")]
-        [Description("Enable or disable an MCP tool group at runtime, persisting the choice to EditorPrefs. " +
+        [Description("Enable or disable an uco tool group at runtime, persisting the choice to EditorPrefs. " +
             "Soft hint only — disabled tools remain callable through the upstream request pipeline.")]
         public ToolGroupResult SetGroupEnabled
         (

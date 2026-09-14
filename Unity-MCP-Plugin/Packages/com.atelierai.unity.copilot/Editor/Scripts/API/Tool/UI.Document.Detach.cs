@@ -16,7 +16,7 @@
 #nullable enable
 using System.ComponentModel;
 using AIGD;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using UnityEditor;
@@ -28,16 +28,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocumentDetachToolId = "ui-document-detach";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocumentDetachToolId,
             Title = "UI / Document / Detach",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Remove the `UnityEngine.UIElements.UIDocument` component from the target " +
+        [UcoSkillDescription("Remove the `UnityEngine.UIElements.UIDocument` component from the target " +
             "GameObject. Returns `Ok=false` when the GameObject has no UIDocument. " +
             "Pair with '" + DocumentAttachToolId + "' to add it back.")]
-        [McpPluginSkillBody("Detach (remove) a UIDocument component from a GameObject.\n\n" +
+        [UcoSkillBody("Detach (remove) a UIDocument component from a GameObject.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject. Required.\n\n" +
             "## Behavior\n\n" +

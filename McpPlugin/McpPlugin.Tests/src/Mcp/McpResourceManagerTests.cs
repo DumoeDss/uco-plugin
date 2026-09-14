@@ -15,24 +15,24 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     public class McpResourceManagerTests : IDisposable
     {
-        private readonly Mock<ILogger<McpResourceManager>> _mockLogger;
+        private readonly Mock<ILogger<UcoResourceManager>> _mockLogger;
         private readonly Mock<Reflector> _mockReflector;
         private readonly ResourceRunnerCollection _resourceCollection;
-        private readonly McpResourceManager _manager;
+        private readonly UcoResourceManager _manager;
 
         public McpResourceManagerTests()
         {
             // Setup dependencies
-            _mockLogger = new Mock<ILogger<McpResourceManager>>();
+            _mockLogger = new Mock<ILogger<UcoResourceManager>>();
             _mockReflector = new Mock<Reflector>();
             _resourceCollection = new ResourceRunnerCollection(_mockReflector.Object, null);
 
             // Create the manager with proper dependencies
-            _manager = new McpResourceManager(
+            _manager = new UcoResourceManager(
                 _mockLogger.Object,
                 _mockReflector.Object,
                 _resourceCollection

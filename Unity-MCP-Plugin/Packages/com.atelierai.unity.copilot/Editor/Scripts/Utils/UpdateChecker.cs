@@ -29,17 +29,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// OpenUPM is the source of truth for the version that Unity Package Manager will actually
     /// install for end users. GitHub releases are published before the OpenUPM build pipeline
     /// finishes, so polling GitHub releases would prompt users to update to a version that is
-    /// not yet installable. See https://github.com/IvanMurzak/Unity-MCP/issues/694.
+    /// not yet installable. See https://github.com/IvanMurzak/uco-plugin/issues/694.
     ///
     /// Two opt-out layers gate the popup, in this order:
     ///   1. <see cref="IsDisabledForProject"/> — team-shared, stored in
     ///      <c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c> via
     ///      <see cref="UnityCopilotUpdateProjectSettings"/>. Set this once and commit it to
     ///      disable the popup for every team member who clones the project. See
-    ///      https://github.com/IvanMurzak/Unity-MCP/issues/768.
+    ///      https://github.com/IvanMurzak/uco-plugin/issues/768.
     ///   2. <see cref="IsDoNotShowAgain"/> — per-user, stored in <see cref="EditorPrefs"/>
     ///      (NOT <see cref="PlayerPrefs"/> — clearing in-game <c>PlayerPrefs</c> must not
-    ///      wipe the editor flag). See https://github.com/IvanMurzak/Unity-MCP/issues/755.
+    ///      wipe the editor flag). See https://github.com/IvanMurzak/uco-plugin/issues/755.
     /// </remarks>
     public static class UpdateChecker
     {
@@ -52,7 +52,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         // Anchored at both ends: accepts only complete "N.N" or "N.N.N" strings. Without the
         // trailing anchor, "1.0.0-preview" would match and CompareVersions would silently
         // treat the "0-preview" segment as 0, making pre-release tags look equal to the
-        // final release. See https://github.com/IvanMurzak/Unity-MCP/issues/694 review.
+        // final release. See https://github.com/IvanMurzak/uco-plugin/issues/694 review.
         private static readonly Regex VersionPattern = new(@"^\d+\.\d+(\.\d+)?$", RegexOptions.Compiled);
 
         // Hoisted to a single static instance to avoid socket exhaustion (TIME_WAIT) under
@@ -131,7 +131,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// <remarks>
         /// Stored in <see cref="EditorPrefs"/> (per-user, per-Unity-install) — not in
         /// <see cref="PlayerPrefs"/>. Clearing in-game <c>PlayerPrefs</c> must not silently
-        /// reset the editor flag. See https://github.com/IvanMurzak/Unity-MCP/issues/755.
+        /// reset the editor flag. See https://github.com/IvanMurzak/uco-plugin/issues/755.
         /// </remarks>
         public static bool IsDoNotShowAgain
         {

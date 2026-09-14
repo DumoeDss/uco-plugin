@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -26,17 +26,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string PhysicsShapecastToolId = "physics-shapecast";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsShapecastToolId,
             Title = "Physics / Shapecast",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Cast a moving shape (`box` | `sphere` | `capsule`) along `direction` and return " +
+        [UcoSkillDescription("Cast a moving shape (`box` | `sphere` | `capsule`) along `direction` and return " +
             "the colliders it hits. Wraps `Physics.BoxCast(All)`, `Physics.SphereCast(All)`, `Physics.CapsuleCast(All)` " +
             "for 3D and `Physics2D.BoxCast(All)`, `Physics2D.CircleCast(All)`, `Physics2D.CapsuleCast(All)` for 2D.")]
-        [McpPluginSkillBody("Shapecast a primitive volume along a direction.\n\n" +
+        [UcoSkillBody("Shapecast a primitive volume along a direction.\n\n" +
             "## Inputs (common)\n\n" +
             "- `shape` — `'box'`, `'sphere'`, or `'capsule'` (case-insensitive). In 2D `'sphere'` and `'circle'` are equivalent.\n" +
             "- `origin` — shape center / start position in world space.\n" +

@@ -11,7 +11,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Text;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -23,7 +23,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectSetParentToolId = "gameobject-set-parent";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectSetParentToolId,
             Title = "GameObject / Set Parent",
@@ -37,10 +37,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Reparent a batch of GameObjects under a new parent in the currently opened Prefab " +
+        [UcoSkillDescription("Reparent a batch of GameObjects under a new parent in the currently opened Prefab " +
             "or active Scene. Per-item failures are reported in the returned status string instead of aborting the batch. " +
             "Use '" + GameObjectFindToolId + "' to locate the GameObjects first.")]
-        [McpPluginSkillBody("Set parent GameObject to list of GameObjects in opened Prefab or in a Scene. " +
+        [UcoSkillBody("Set parent GameObject to list of GameObjects in opened Prefab or in a Scene. " +
             "Use '" + GameObjectFindToolId + "' tool to find the target GameObjects first.\n\n" +
             "## Inputs\n\n" +
             "- `gameObjectRefs` — list of children to reparent.\n" +

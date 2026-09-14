@@ -12,7 +12,7 @@
 using System;
 using System.Linq;
 using System.Threading;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using Microsoft.Extensions.Logging;
@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 .WhereNotNull()
                 .Subscribe(plugin =>
             {
-                plugin.McpManager.OnClientConnected
+                plugin.UcoManager.OnClientConnected
                     .Subscribe(data =>
                     {
                         Logger.LogInformation("On AI agent connected: {clientName} ({clientVersion})",
@@ -41,7 +41,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                     })
                     .AddTo(_disposables);
 
-                plugin.McpManager.OnClientDisconnected
+                plugin.UcoManager.OnClientDisconnected
                     .Subscribe(mcpClientData =>
                     {
                         Logger.LogInformation("On AI agent disconnected: {clientName} ({clientVersion})",
@@ -49,7 +49,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                     })
                     .AddTo(_disposables);
 
-                plugin.McpManager.OnClientsChanged
+                plugin.UcoManager.OnClientsChanged
                     .ObserveOnCurrentSynchronizationContext()
                     .Subscribe(mcpClients =>
                     {
@@ -82,17 +82,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         private void FetchAiAgentData(int retryCount = 3, int retryDelayMs = 3000)
         {
-            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.McpPluginInstance;
+            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
             if (mcpPluginInstance == null)
             {
-                Logger.LogDebug("Cannot fetch AI agent data: McpPluginInstance is null");
+                Logger.LogDebug("Cannot fetch AI agent data: UcoPluginInstance is null");
                 return;
             }
 
-            var mcpManagerHub = mcpPluginInstance.McpManagerHub;
+            var mcpManagerHub = mcpPluginInstance.UcoManagerHub;
             if (mcpManagerHub == null)
             {
-                Logger.LogDebug("Cannot fetch AI agent data: McpManagerHub is null");
+                Logger.LogDebug("Cannot fetch AI agent data: UcoManagerHub is null");
                 return;
             }
 

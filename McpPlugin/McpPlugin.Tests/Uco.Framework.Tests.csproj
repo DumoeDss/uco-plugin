@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Uco.Framework.Tests</AssemblyName>
+    <RootNamespace>com.AtelierAI.Uco.Framework.Tests</RootNamespace>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
@@ -19,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../McpPlugin/McpPlugin.csproj" />
+    <ProjectReference Include="../McpPlugin/Uco.Framework.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,13 +10,13 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class McpPluginToolTypeAttribute : Attribute
+    public sealed class UcoToolTypeAttribute : Attribute
     {
         public string? Path { get; set; }
 
-        public McpPluginToolTypeAttribute() { }
+        public UcoToolTypeAttribute() { }
     }
 }

@@ -10,7 +10,7 @@
 
 #nullable enable
 using System.Diagnostics;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using Microsoft.Extensions.Logging;
 using R3;
 
@@ -29,7 +29,7 @@ namespace com.AtelierAI.Unity.Copilot
             IncrementSingletonCount();
         }
 
-        internal IMcpPlugin BuildFromBuilder(IMcpPluginBuilder builder)
+        internal IUcoPlugin BuildFromBuilder(IMcpPluginBuilder builder)
         {
             _logger.LogTrace("{method} called.", nameof(BuildFromBuilder));
 

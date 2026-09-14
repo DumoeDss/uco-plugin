@@ -11,15 +11,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp.Resource
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp.Resource
 {
     #region Test Data Classes
 

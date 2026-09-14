@@ -9,8 +9,8 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -99,7 +99,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var plugin = UnityCopilotPluginEditor.CurrentPlugin;
             Assert.IsNotNull(plugin, "The editor plugin must expose the authoritative live registry.");
-            var tools = plugin!.McpManager!.ToolManager!.GetAllTools().ToArray();
+            var tools = plugin!.UcoManager!.ToolManager!.GetAllTools().ToArray();
             var live = ToolsManifestGenerator.BuildToolsArray(tools);
             var excludedLiveNames = tools.Select(tool => tool.Name)
                 .Where(name => name == "editor-application-request-close"

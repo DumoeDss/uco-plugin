@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public interface IConnection : IDisposable
     {

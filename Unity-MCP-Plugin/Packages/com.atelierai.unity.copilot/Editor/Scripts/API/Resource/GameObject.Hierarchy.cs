@@ -11,9 +11,9 @@
 #nullable enable
 using System;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
@@ -24,12 +24,12 @@ using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_GameObject
     {
-        [McpPluginResource
+        [UcoResource
         (
             Name = "GameObject from Current Scene by Path",
             Route = "gameobject://currentScene/{path}",

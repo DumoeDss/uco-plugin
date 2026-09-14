@@ -12,8 +12,8 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Screenshot
     {
         public const string ScreenshotGameViewToolId = "screenshot-game-view";
-        [McpPluginTool
+        [UcoTool
         (
             ScreenshotGameViewToolId,
             Title = "Screenshot / Game View",
@@ -31,10 +31,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Capture a screenshot of the Unity Editor's Game View by reading its internal " +
+        [UcoSkillDescription("Capture a screenshot of the Unity Editor's Game View by reading its internal " +
             "render texture directly. Image size matches the current Game View resolution; the tool corrects Y-flip on " +
             "DirectX / Metal so the output is always upright. Requires an open Game View window.")]
-        [McpPluginSkillBody("Captures a screenshot from the Unity Editor Game View and returns it as an image. " +
+        [UcoSkillBody("Captures a screenshot from the Unity Editor Game View and returns it as an image. " +
             "Reads the Game View's own render texture directly via the Unity Editor API. " +
             "The image size matches the current Game View resolution. " +
             "Returns the image directly for visual inspection by the LLM.\n\n" +

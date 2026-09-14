@@ -16,16 +16,16 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public class McpToolManager : IToolManager
+    public class UcoToolManager : IToolManager
     {
         protected readonly ILogger _logger;
         protected readonly Reflector _reflector;
@@ -53,8 +53,8 @@ namespace com.IvanMurzak.McpPlugin
             return guarded;
         }
 
-        public McpToolManager(
-            ILogger<McpToolManager> logger,
+        public UcoToolManager(
+            ILogger<UcoToolManager> logger,
             Reflector reflector,
             ToolRunnerCollection tools,
             ToolExecutionPipeline? executionPipeline = null)

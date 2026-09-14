@@ -11,7 +11,7 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using Shouldly;
 
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ using R3;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
+namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
 {
     /// <summary>
     /// Tests for the server-side rejection detection logic in ConnectionManager.

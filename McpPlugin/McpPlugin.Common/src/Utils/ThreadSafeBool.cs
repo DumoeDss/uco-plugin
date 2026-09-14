@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     /// <summary>
     /// Thread-safe boolean variable using a simple lock-based approach.

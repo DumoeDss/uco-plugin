@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -24,17 +24,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string PhysicsLinecastToolId = "physics-linecast";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsLinecastToolId,
             Title = "Physics / Linecast",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Test whether any collider intersects the line segment between `from` and `to`. " +
+        [UcoSkillDescription("Test whether any collider intersects the line segment between `from` and `to`. " +
             "Wraps `UnityEngine.Physics.Linecast` (3D) or `UnityEngine.Physics2D.Linecast` (2D). " +
             "Returns a `RaycastResult` with `Hit=false` when the segment is clear.")]
-        [McpPluginSkillBody("Linecast between two world-space points and return the first collider hit.\n\n" +
+        [UcoSkillBody("Linecast between two world-space points and return the first collider hit.\n\n" +
             "## Inputs\n\n" +
             "- `from` / `to` — start and end of the segment in world space.\n" +
             "- `layerMask` — bitmask of layers to test. `null` or `-1` -> all layers (`~0`).\n" +

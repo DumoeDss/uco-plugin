@@ -13,7 +13,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Unity
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Unity
 {
     [Description(@"Find GameObject in opened Prefab or in the active Scene.")]
     public class GameObjectRef : AssetObjectRef

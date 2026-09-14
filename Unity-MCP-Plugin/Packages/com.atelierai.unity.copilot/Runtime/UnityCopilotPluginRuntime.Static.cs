@@ -10,7 +10,7 @@
 
 #nullable enable
 using System;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -82,7 +82,7 @@ namespace com.AtelierAI.Unity.Copilot
 
         /// <summary>
         /// Creates a <see cref="UnityCopilotPluginBuilder"/> pre-configured with Unity
-        /// defaults. Use <see cref="UnityCopilotPluginBuilder.McpPlugin"/> to configure
+        /// defaults. Use <see cref="UnityCopilotPluginBuilder.Builder"/> to configure
         /// host, token, ignored assemblies, custom tools, etc., then call
         /// <see cref="UnityCopilotPluginBuilder.Build"/> to apply and connect.
         /// <para>
@@ -116,7 +116,7 @@ namespace com.AtelierAI.Unity.Copilot
             var version = runtimeInstance.BuildVersion();
             var loggerProvider = runtimeInstance.BuildLoggerProvider();
 
-            var mcpBuilder = new McpPluginBuilder(version, loggerProvider);
+            var mcpBuilder = new UcoBuilder(version, loggerProvider);
             configure?.Invoke(mcpBuilder);
 
             return new UnityCopilotPluginBuilder(mcpBuilder, runtimeInstance, loggerProvider);

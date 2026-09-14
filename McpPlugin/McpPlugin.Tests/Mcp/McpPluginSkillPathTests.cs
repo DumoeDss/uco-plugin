@@ -14,14 +14,14 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpPluginSkillPathTests : IDisposable
@@ -49,8 +49,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
         // ── helpers ────────────────────────────────────────────────────────────────
 
-        IMcpPlugin BuildPlugin(ConnectionConfig config)
-            => new McpPluginBuilder(_version)
+        IUcoPlugin BuildPlugin(ConnectionConfig config)
+            => new UcoBuilder(_version)
                 .SetConfig(config)
                 .AddTool(ToolName, new MockRunTool(ToolName))
                 .Build(_reflector);

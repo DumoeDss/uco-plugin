@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
@@ -24,7 +24,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.AtelierAI.Unity.Copilot
 {
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
     using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
     public partial class UnityCopilotPlugin
@@ -34,9 +34,9 @@ namespace com.AtelierAI.Unity.Copilot
         protected sealed class CopilotPluginSlot : IDisposable
         {
             private readonly object _mutex = new();
-            private IMcpPlugin? _instance;
+            private IUcoPlugin? _instance;
 
-            public IMcpPlugin? Instance
+            public IUcoPlugin? Instance
             {
                 get { lock (_mutex) { return _instance; } }
             }
@@ -48,7 +48,7 @@ namespace com.AtelierAI.Unity.Copilot
 
             // Calls factory inside lock — guarantees build-once under concurrent access.
             // Returns the built instance if it was just created, null if already built.
-            public IMcpPlugin? BuildOnce(Func<IMcpPlugin> factory)
+            public IUcoPlugin? BuildOnce(Func<IUcoPlugin> factory)
             {
                 lock (_mutex)
                 {
@@ -59,7 +59,7 @@ namespace com.AtelierAI.Unity.Copilot
             }
 
             // Disposes old instance (if any), sets new one, returns it.
-            public IMcpPlugin Set(IMcpPlugin plugin)
+            public IUcoPlugin Set(IUcoPlugin plugin)
             {
                 lock (_mutex)
                 {
@@ -71,7 +71,7 @@ namespace com.AtelierAI.Unity.Copilot
 
             // Atomically returns and clears the instance without disposing it.
             // Used by callers that need to control when/how disposal happens (e.g. background thread).
-            public IMcpPlugin? TakeInstance()
+            public IUcoPlugin? TakeInstance()
             {
                 lock (_mutex)
                 {
@@ -91,9 +91,9 @@ namespace com.AtelierAI.Unity.Copilot
             }
         }
 
-        protected virtual com.IvanMurzak.McpPlugin.Common.Version BuildVersion()
+        protected virtual com.AtelierAI.Uco.Framework.Common.Version BuildVersion()
         {
-            return new com.IvanMurzak.McpPlugin.Common.Version
+            return new com.AtelierAI.Uco.Framework.Common.Version
             {
                 Api = Consts.ApiVersion,
                 Plugin = UnityCopilotPlugin.Version,
@@ -106,8 +106,8 @@ namespace com.AtelierAI.Unity.Copilot
             return new UnityLoggerProvider();
         }
 
-        protected virtual IMcpPlugin BuildMcpPlugin(
-            com.IvanMurzak.McpPlugin.Common.Version version,
+        protected virtual IUcoPlugin BuildMcpPlugin(
+            com.AtelierAI.Uco.Framework.Common.Version version,
             Reflector reflector,
             ILoggerProvider? loggerProvider = null,
             Action<IMcpPluginBuilder>? configure = null)
@@ -115,7 +115,7 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(BuildMcpPlugin));
 
             var assemblies = AssemblyUtils.AllAssemblies;
-            var mcpPluginBuilder = new McpPluginBuilder(version, loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(version, loggerProvider)
                 .WithProjectPathPolicy(new ProjectPathPolicy(
                     System.IO.Directory.GetParent(Application.dataPath)?.FullName
                     ?? Application.dataPath))
@@ -139,7 +139,7 @@ namespace com.AtelierAI.Unity.Copilot
                     "Unity.",
                     "Microsoft",
                     "R3",
-                    "McpPlugin",
+                    "UcoFramework",
                     "ReflectorNet",
                     "com.AtelierAI.Unity.Copilot.TestFiles",
                     "com.AtelierAI.Unity.Copilot.Editor.Tests",
@@ -162,12 +162,12 @@ namespace com.AtelierAI.Unity.Copilot
             return mcpPlugin;
         }
 
-        protected virtual void ApplyConfigToMcpPlugin(IMcpPlugin mcpPlugin)
+        protected virtual void ApplyConfigToMcpPlugin(IUcoPlugin mcpPlugin)
         {
             _logger.LogTrace("{method} called.", nameof(ApplyConfigToMcpPlugin));
 
             // Enable/Disable tools based on config
-            var toolManager = mcpPlugin.McpManager.ToolManager;
+            var toolManager = mcpPlugin.UcoManager.ToolManager;
             if (toolManager != null)
             {
                 var enabledToolsOverride = unityConnectionConfig.EnabledToolsOverride;
@@ -210,7 +210,7 @@ namespace com.AtelierAI.Unity.Copilot
             }
 
             // Enable/Disable prompts based on config
-            var promptManager = mcpPlugin.McpManager.PromptManager;
+            var promptManager = mcpPlugin.UcoManager.PromptManager;
             if (promptManager != null)
             {
                 foreach (var prompt in promptManager.GetAllPrompts())
@@ -224,7 +224,7 @@ namespace com.AtelierAI.Unity.Copilot
             }
 
             // Enable/Disable resources based on config
-            var resourceManager = mcpPlugin.McpManager.ResourceManager;
+            var resourceManager = mcpPlugin.UcoManager.ResourceManager;
             if (resourceManager != null)
             {
                 foreach (var resource in resourceManager.GetAllResources())

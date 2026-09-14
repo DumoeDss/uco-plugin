@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -27,16 +27,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraCmVcamPriorityToolId = "camera-cm-vcam-priority";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraCmVcamPriorityToolId,
             Title = "Camera / Cinemachine / Set VCam Priority",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Set the priority of a Cinemachine virtual-camera (CM 2.x or CM 3.x). " +
+        [UcoSkillDescription("Set the priority of a Cinemachine virtual-camera (CM 2.x or CM 3.x). " +
             "Persists into prefab/scene via `SerializedProperty` — do not bypass with `vcam.Priority = X`. " +
             "Returns Ok=false when the Cinemachine package is not installed.")]
-        [McpPluginSkillBody("Sets `Priority` on a Cinemachine virtual-camera component.\n\n" +
+        [UcoSkillBody("Sets `Priority` on a Cinemachine virtual-camera component.\n\n" +
             "## CM-version compatibility\n\n" +
             "- CM 2.x — `CinemachineVirtualCamera.Priority` is a public `int` field.\n" +
             "- CM 3.x — `CinemachineCamera.Priority` is a `PrioritySettings` struct with " +

@@ -10,7 +10,7 @@
 
 #nullable enable
 using System.Collections.Generic;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
 namespace com.AtelierAI.Unity.Copilot.Runtime.Extensions
 {

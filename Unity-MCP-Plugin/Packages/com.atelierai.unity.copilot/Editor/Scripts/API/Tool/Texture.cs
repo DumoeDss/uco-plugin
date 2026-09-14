@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// Programmatic Texture2D generation tools. Each tool writes a `.png` file into the
     /// Unity project and imports it through `AssetDatabase`.
     /// </summary>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Texture
     {
         // Hard caps shared across every texture-create tool. Picked to keep a single

@@ -6,12 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Shouldly;
 using Xunit;
-using static com.IvanMurzak.McpPlugin.Tests.Mcp.AuthoringTestSupport;
+using static com.AtelierAI.Uco.Framework.Tests.Mcp.AuthoringTestSupport;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     /// <summary>
     /// Tasks 4.4 and 4.6: the confirmation binding covers the tool, canonical

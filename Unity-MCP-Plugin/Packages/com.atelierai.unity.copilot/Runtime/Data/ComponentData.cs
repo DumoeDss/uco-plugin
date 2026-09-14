@@ -36,7 +36,7 @@ namespace AIGD
 
     //         if (includeData)
     //         {
-    //             var reflector = McpPlugin.McpPlugin.Instance!.McpManager.Reflector;
+    //             var reflector = UcoFramework.UcoFramework.Instance!.UcoManager.Reflector;
     //             response.Data = reflector.Serialize(
     //                 obj: go,
     //                 name: go.name,

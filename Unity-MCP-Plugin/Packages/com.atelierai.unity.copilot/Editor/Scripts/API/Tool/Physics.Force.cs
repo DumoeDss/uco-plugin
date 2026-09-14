@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using AIGD;
@@ -45,17 +45,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string PhysicsForceApplyToolId = "physics-force-apply";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsForceApplyToolId,
             Title = "Physics / Force / Apply",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Apply a force, torque, explosion, or impulse to a Rigidbody (3D) or Rigidbody2D (2D). " +
+        [UcoSkillDescription("Apply a force, torque, explosion, or impulse to a Rigidbody (3D) or Rigidbody2D (2D). " +
             "Dispatches to `Rigidbody.AddForce`, `Rigidbody.AddTorque`, `Rigidbody.AddExplosionForce`, or the impulse " +
             "variant of `AddForce` based on `action`. Returns Ok=false with `Error` set when the target lacks the " +
             "appropriate rigidbody. Explosions are only supported in 3D physics.")]
-        [McpPluginSkillBody("Apply a physics force to a rigidbody.\n\n" +
+        [UcoSkillBody("Apply a physics force to a rigidbody.\n\n" +
             "## Inputs\n\n" +
             "- `target` — GameObject hosting the Rigidbody / Rigidbody2D.\n" +
             "- `action` — `'force'` | `'torque'` | `'explosion'` | `'impulse'` (case-insensitive).\n" +

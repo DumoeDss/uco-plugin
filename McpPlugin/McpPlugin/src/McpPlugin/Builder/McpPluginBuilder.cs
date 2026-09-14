@@ -13,19 +13,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Skills;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Skills;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public partial class McpPluginBuilder : IMcpPluginBuilder
+    public partial class UcoBuilder : IMcpPluginBuilder
     {
         protected readonly ILogger? _logger;
         protected readonly ILoggerProvider? _loggerProvider;
@@ -43,7 +43,7 @@ namespace com.IvanMurzak.McpPlugin
         protected readonly List<SkillMemberData> _skillFields = new();
 
         // Ignore configuration for filtering assemblies, namespaces, and types
-        protected readonly McpPluginBuilderIgnoreConfig _ignoreConfig = new();
+        protected readonly UcoBuilderIgnoreConfig _ignoreConfig = new();
 
         // Optional externally provided config instance (set via SetConfig)
         protected ConnectionConfig? _externalConfig;
@@ -66,10 +66,10 @@ namespace com.IvanMurzak.McpPlugin
         public IServiceCollection Services => _services;
         public ServiceProvider? ServiceProvider { get; private set; }
 
-        public McpPluginBuilder(Version version, ILoggerProvider? loggerProvider = null, IServiceCollection? services = null)
+        public UcoBuilder(Version version, ILoggerProvider? loggerProvider = null, IServiceCollection? services = null)
         {
             _loggerProvider = loggerProvider;
-            _logger = loggerProvider?.CreateLogger(nameof(McpPluginBuilder));
+            _logger = loggerProvider?.CreateLogger(nameof(UcoBuilder));
             _services = services ?? new ServiceCollection();
 
             if (_loggerProvider != null)
@@ -84,19 +84,19 @@ namespace com.IvanMurzak.McpPlugin
             _services.AddSingleton<IConnectionManager, ConnectionManager>();
             _services.AddSingleton<IWebSocketConnectionProvider, WebSocketConnectionProvider>();
 
-            _services.AddSingleton<IToolManager, McpToolManager>();
-            _services.AddSingleton<IPromptManager, McpPromptManager>();
-            _services.AddSingleton<IResourceManager, McpResourceManager>();
+            _services.AddSingleton<IToolManager, UcoToolManager>();
+            _services.AddSingleton<IPromptManager, UcoPromptManager>();
+            _services.AddSingleton<IResourceManager, UcoResourceManager>();
 
-            _services.AddSingleton<McpSystemToolManager>();
-            _services.AddSingleton<ISystemToolManager>(sp => sp.GetRequiredService<McpSystemToolManager>());
+            _services.AddSingleton<UcoSystemToolManager>();
+            _services.AddSingleton<ISystemToolManager>(sp => sp.GetRequiredService<UcoSystemToolManager>());
 
-            _services.AddSingleton<IMcpPlugin, McpPlugin>();
-            _services.AddSingleton<IMcpManagerHub, McpManagerClientHub>();
+            _services.AddSingleton<IUcoPlugin, McpPlugin>();
+            _services.AddSingleton<IMcpManagerHub, UcoManagerClientHub>();
 
-            _services.AddSingleton<McpManager>();
-            _services.AddSingleton<IMcpManager>(sp => sp.GetRequiredService<McpManager>());
-            _services.AddSingleton<IClientMcpManager>(sp => sp.GetRequiredService<McpManager>());
+            _services.AddSingleton<UcoManager>();
+            _services.AddSingleton<IMcpManager>(sp => sp.GetRequiredService<UcoManager>());
+            _services.AddSingleton<IClientMcpManager>(sp => sp.GetRequiredService<UcoManager>());
 
             _services.AddSingleton<ISkillFileGenerator, SkillFileGenerator>();
 
@@ -128,23 +128,23 @@ namespace com.IvanMurzak.McpPlugin
         {
             ThrowIfBuilt();
 
-            var attribute = methodInfo.GetCustomAttribute<McpPluginToolAttribute>();
+            var attribute = methodInfo.GetCustomAttribute<UcoToolAttribute>();
             return WithTool(attribute!, classType, methodInfo);
         }
         public virtual IMcpPluginBuilder WithTool(string name, string? title, Type classType, MethodInfo methodInfo)
         {
             ThrowIfBuilt();
 
-            var attribute = new McpPluginToolAttribute(name, title);
+            var attribute = new UcoToolAttribute(name, title);
             return WithTool(attribute, classType, methodInfo);
         }
-        public virtual IMcpPluginBuilder WithTool(McpPluginToolAttribute attribute, Type classType, MethodInfo methodInfo)
+        public virtual IMcpPluginBuilder WithTool(UcoToolAttribute attribute, Type classType, MethodInfo methodInfo)
         {
             ThrowIfBuilt();
 
             if (attribute == null)
             {
-                _logger?.LogWarning($"Method {classType.FullName}{methodInfo.Name} does not have a '{nameof(McpPluginToolAttribute)}'.");
+                _logger?.LogWarning($"Method {classType.FullName}{methodInfo.Name} does not have a '{nameof(UcoToolAttribute)}'.");
                 return this;
             }
 
@@ -198,7 +198,7 @@ namespace com.IvanMurzak.McpPlugin
             return this;
         }
 
-        public virtual IMcpPluginBuilder WithHandshakeIdentity(com.IvanMurzak.McpPlugin.Common.IHandshakeIdentity identity)
+        public virtual IMcpPluginBuilder WithHandshakeIdentity(com.AtelierAI.Uco.Framework.Common.IHandshakeIdentity identity)
         {
             ThrowIfBuilt();
             if (identity == null)
@@ -225,10 +225,10 @@ namespace com.IvanMurzak.McpPlugin
         {
             ThrowIfBuilt();
 
-            var attribute = methodInfo.GetCustomAttribute<McpPluginPromptAttribute>();
+            var attribute = methodInfo.GetCustomAttribute<UcoPromptAttribute>();
             if (attribute == null)
             {
-                _logger?.LogWarning($"Method {classType.FullName}{methodInfo.Name} does not have a '{nameof(McpPluginPromptAttribute)}'.");
+                _logger?.LogWarning($"Method {classType.FullName}{methodInfo.Name} does not have a '{nameof(UcoPromptAttribute)}'.");
                 return this;
             }
 
@@ -260,10 +260,10 @@ namespace com.IvanMurzak.McpPlugin
         {
             ThrowIfBuilt();
 
-            var attribute = getContentMethod.GetCustomAttribute<McpPluginResourceAttribute>();
+            var attribute = getContentMethod.GetCustomAttribute<UcoResourceAttribute>();
             if (attribute == null)
             {
-                _logger?.LogWarning($"Method {classType.FullName}{getContentMethod.Name} does not have a '{nameof(McpPluginResourceAttribute)}'.");
+                _logger?.LogWarning($"Method {classType.FullName}{getContentMethod.Name} does not have a '{nameof(UcoResourceAttribute)}'.");
                 return this;
             }
 
@@ -373,7 +373,7 @@ namespace com.IvanMurzak.McpPlugin
         /// <param name="reflector">The reflector instance used for reflection operations.</param>
         /// <returns>The built plugin instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the reflector is null.</exception>
-        public virtual IMcpPlugin Build(Reflector reflector)
+        public virtual IUcoPlugin Build(Reflector reflector)
         {
             ThrowIfBuilt();
 
@@ -385,11 +385,11 @@ namespace com.IvanMurzak.McpPlugin
 
             _services.AddSingleton(reflector);
 
-            var standardMethods = _toolMethods.Where(m => m.Attribute.ToolType == McpToolType.Standard).ToList();
-            var systemMethods = _toolMethods.Where(m => m.Attribute.ToolType == McpToolType.System).ToList();
+            var standardMethods = _toolMethods.Where(m => m.Attribute.ToolType == UcoToolType.Standard).ToList();
+            var systemMethods = _toolMethods.Where(m => m.Attribute.ToolType == UcoToolType.System).ToList();
 
-            var standardRunners = _toolRunners.Where(r => r.Value.ToolType == McpToolType.Standard).ToDictionary(r => r.Key, r => r.Value);
-            var systemRunners = _toolRunners.Where(r => r.Value.ToolType == McpToolType.System).ToDictionary(r => r.Key, r => r.Value);
+            var standardRunners = _toolRunners.Where(r => r.Value.ToolType == UcoToolType.Standard).ToDictionary(r => r.Key, r => r.Value);
+            var systemRunners = _toolRunners.Where(r => r.Value.ToolType == UcoToolType.System).ToDictionary(r => r.Key, r => r.Value);
 
             _services.AddSingleton(new ToolRunnerCollection(reflector, _loggerProvider?.CreateLogger(nameof(ToolRunnerCollection)))
                 .Add(standardMethods)
@@ -422,7 +422,7 @@ namespace com.IvanMurzak.McpPlugin
             ServiceProvider = _services.BuildServiceProvider();
             isBuilt = true;
 
-            return ServiceProvider.GetRequiredService<IMcpPlugin>();
+            return ServiceProvider.GetRequiredService<IUcoPlugin>();
         }
 
         protected virtual void ThrowIfBuilt()

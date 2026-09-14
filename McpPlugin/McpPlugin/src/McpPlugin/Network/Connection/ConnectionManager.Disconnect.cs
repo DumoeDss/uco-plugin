@@ -13,9 +13,9 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public partial class ConnectionManager : IConnectionManager, IAsyncDisposable
     {

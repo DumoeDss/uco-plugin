@@ -10,18 +10,18 @@
 
 using System;
 using System.IO;
-using com.IvanMurzak.McpPlugin.Skills;
-using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Skills;
+using com.AtelierAI.Uco.Framework.Tests.Data.Annotations;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpPluginSkillContentTests : IDisposable
@@ -45,9 +45,9 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 Directory.Delete(_tempDir, recursive: true);
         }
 
-        private McpPluginBuilder BuildWithSkills()
+        private UcoBuilder BuildWithSkills()
         {
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithSkills(typeof(AnnotatedSkillClass));
@@ -140,12 +140,12 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             collection.ContainsKey("disabled-prop").ShouldBeFalse();
         }
 
-        // ── WithSkillsFromAssembly discovers [McpPluginSkillType] classes ───
+        // ── WithSkillsFromAssembly discovers [UcoSkillType] classes ───
 
         [Fact]
         public void WithSkillsFromAssembly_DiscoversAnnotatedSkillClasses()
         {
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithSkillsFromAssembly(typeof(AnnotatedSkillClass).Assembly);
@@ -269,10 +269,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void WithSkillsFromAssembly_IgnoredNamespace_SkillsAreExcluded()
         {
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder
                 .AddLogging(b => b.AddXunitTestOutput(_output))
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Annotations")
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Annotations")
                 .WithSkillsFromAssembly(typeof(AnnotatedSkillClass).Assembly);
             builder.Build(new Reflector());
 

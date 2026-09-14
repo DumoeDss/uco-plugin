@@ -355,7 +355,7 @@ describe('waitForExit', () => {
 // ─── live-editor integration smoke test (gated by UMCP_LIVE=1) ───────────────
 //
 // This block is skipped by default so CI does not require Unity. To exercise
-// it locally, run `UMCP_LIVE=1 npm test` inside `Unity-MCP/cli/` after
+// it locally, run `UMCP_LIVE=1 npm test` inside `uco-plugin/cli/` after
 // `unity-mcp-cli open <project>` has launched a real editor for
 // `UMCP_LIVE_PROJECT`. The acceptance criterion validated here is the
 // graceful-close path; the timeout and force-kill paths require a wedged

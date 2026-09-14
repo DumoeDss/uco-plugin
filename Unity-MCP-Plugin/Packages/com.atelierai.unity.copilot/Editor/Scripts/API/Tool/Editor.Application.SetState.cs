@@ -12,7 +12,7 @@
 using AIGD;
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -22,17 +22,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Editor
     {
         public const string EditorApplicationSetStateToolId = "editor-application-set-state";
-        [McpPluginTool
+        [UcoTool
         (
             EditorApplicationSetStateToolId,
             Title = "Editor / Application / Set State",
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Start / stop / pause the Unity Editor 'playmode'. " +
+        [UcoSkillDescription("Start / stop / pause the Unity Editor 'playmode'. " +
             "Use '" + EditorApplicationGetStateToolId + "' to inspect the current state first. " +
             "Throws if the project currently has compilation errors.")]
-        [McpPluginSkillBody("Control the Unity Editor application state. " +
+        [UcoSkillBody("Control the Unity Editor application state. " +
             "You can start, stop, or pause the 'playmode'. " +
             "Use '" + EditorApplicationGetStateToolId + "' tool to get the current state first.\n\n" +
             "## Inputs\n\n" +

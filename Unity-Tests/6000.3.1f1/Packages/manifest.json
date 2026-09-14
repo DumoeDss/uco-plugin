@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.atelierai.unity.copilot": "file:./../../../Unity-MCP-Plugin/Packages/com.atelierai.unity.copilot",
+    "com.atelierai.unity.copilot": "file:./../../../uco-unity-project/Packages/com.atelierai.unity.copilot",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.visualstudio": "2.0.25",
     "com.unity.test-framework": "1.6.0",

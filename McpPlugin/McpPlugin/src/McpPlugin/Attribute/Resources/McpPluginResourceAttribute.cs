@@ -10,10 +10,10 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class McpPluginResourceAttribute : Attribute
+    public sealed class UcoResourceAttribute : Attribute
     {
         public string Route { get; set; } = string.Empty;
         public string? Name { get; set; }
@@ -37,6 +37,6 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>Gets the Enabled value, or null if it was not explicitly set.</summary>
         public bool? EnabledValue => _enabledSet ? _enabled : null;
 
-        public McpPluginResourceAttribute() { }
+        public UcoResourceAttribute() { }
     }
 }

@@ -11,17 +11,17 @@
 using System;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public class SkillMemberData
     {
         public string Name => Attribute.Name;
         public Type ClassType { get; set; }
         public MemberInfo MemberInfo { get; set; }
-        public McpPluginSkillAttribute Attribute { get; set; }
+        public UcoSkillAttribute Attribute { get; set; }
         public string Content { get; set; }
 
-        public SkillMemberData(Type classType, MemberInfo memberInfo, McpPluginSkillAttribute attribute, string content)
+        public SkillMemberData(Type classType, MemberInfo memberInfo, UcoSkillAttribute attribute, string content)
         {
             ClassType = classType;
             MemberInfo = memberInfo;

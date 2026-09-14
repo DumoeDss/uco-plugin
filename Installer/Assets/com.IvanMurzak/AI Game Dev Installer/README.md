@@ -3,21 +3,21 @@
 
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![MCP](https://badge.mcpx.dev?type=server 'MCP Server')](https://modelcontextprotocol.io/introduction)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)
 [![Unity Asset Store](https://img.shields.io/badge/Asset%20Store-View-blue?logo=unity&labelColor=333A41 'Asset Store')](https://u3d.as/3wsw)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=49BC5C 'Unity Editor supported')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=49BC5C 'Unity Runtime supported')](https://unity.com/releases/editor/archive)
 [![OpenUPM](https://img.shields.io/npm/v/com.ivanmurzak.unity.mcp?label=OpenUPM&registry_uri=https://package.openupm.com&labelColor=333A41 'OpenUPM package')](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)</br>
 [![Discord](https://img.shields.io/badge/Discord-Join-7289da?logo=discord&logoColor=white&labelColor=333A41 'Join')](https://discord.gg/cfbdMZX99G)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
 AI helper which does wide range of tasks in Unity Editor and even in a running game compiled to any platform. It connects to AI using TCP connection, that is why it is so flexible.
 
 💬 **Join our community:** [Discord Server](https://discord.gg/cfbdMZX99G) - Ask questions, showcase your work, and connect with other developers!
 
-![AI work](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/level-building.gif 'Level building')
+![AI work](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/level-building.gif 'Level building')
 
 </div>
 
@@ -26,16 +26,16 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 
   <table>
     <tr>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/flying-orbs.gif" alt="Animation" title="Animation" /></td>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/golden-sphere.gif" alt="Animation" title="Animation" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/flying-orbs.gif" alt="Animation" title="Animation" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/golden-sphere.gif" alt="Animation" title="Animation" /></td>
     </tr>
     <tr>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/runner.gif" alt="Runner Game" title="Runner Game" /></td>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/procedural-terrain.gif" alt="Procedural Terrain" title="Procedural Terrain" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/runner.gif" alt="Runner Game" title="Runner Game" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/procedural-terrain.gif" alt="Procedural Terrain" title="Procedural Terrain" /></td>
     </tr>
     <tr>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/create-material.gif" alt="Material creating" title="Material creating" /></td>
-      <td><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/playing-maze.gif" alt="Maze Game" title="Maze Game" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/create-material.gif" alt="Material creating" title="Material creating" /></td>
+      <td><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/playing-maze.gif" alt="Maze Game" title="Maze Game" /></td>
     </tr>
   </table>
 
@@ -46,7 +46,7 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 - ✅ Chat with AI like with a human
 - ✅ Local and Remote usage supported
 - ✅ `stdio` and `streamableHttp` protocols supported
-- ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/ai-tools.md)
+- ✅ Wide range of default [AI tools](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/ai-tools.md)
 - ✅ Use `Description` attribute in C# code to provide detailed information for `class`, `field`, `property` or `method`.
 - ✅ Customizable reflection convertors, inspired by `System.Text.Json` convertors
   - do you have something extremely custom in your project? Make custom reflection convertor to let LLM be able to read and write into that data
@@ -72,9 +72,9 @@ AI helper which does wide range of tasks in Unity Editor and even in a running g
 
 | Unity Version | Editmode                                                                                                                                                                               | Playmode                                                                                                                                                                               | Standalone                                                                                                                                                                               |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2022.3.62f3   | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2022-3-62f3-editmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2022-3-62f3-playmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2022-3-62f3-standalone)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) |
-| 2023.2.22f1   | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-22f1-editmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-22f1-playmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-2023-2-22f1-standalone)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml) |
-| 6000.3.1f1    | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-3-1f1-editmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)  | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-3-1f1-playmode)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)  | [![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg?job=test-unity-6000-3-1f1-standalone)](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)  |
+| 2022.3.62f3   | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2022-3-62f3-editmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2022-3-62f3-playmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2022-3-62f3-standalone)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) |
+| 2023.2.22f1   | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2023-2-22f1-editmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2023-2-22f1-playmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-2023-2-22f1-standalone)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml) |
+| 6000.3.1f1    | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-6000-3-1f1-editmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)  | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-6000-3-1f1-playmode)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)  | [![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg?job=test-unity-6000-3-1f1-standalone)](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)  |
 
 ## Requirements
 
@@ -101,7 +101,7 @@ Choose `MCP Client` you prefer, don't need to install all of them. This is will 
 
 ## Step 1: Install `Unity Plugin`
 
-- **[⬇️ Download Installer](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
+- **[⬇️ Download Installer](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
 - **📂 Import installer into Unity project**
   > - You may use double click on the file - Unity will open it
   > - OR: You may open Unity Editor first, then click on `Assets/Import Package/Custom Package`, then choose the file
@@ -127,7 +127,7 @@ openupm add com.ivanmurzak.unity.mcp
 - Open `Window/AI Connector (Unity-MCP)`
 - Click `Configure` at your MCP client
 
-![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/ai-connector-window.gif)
+![Unity_AI](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/ai-connector-window.gif)
 
 > If MCP client is not in the list, use the raw JSON below in the window, to inject it into your MCP client. Read instructions for your MCP client how to do that.
 
@@ -228,7 +228,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 # Advanced MCP server setup
 
-Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `streamableHttp` and `stdio`. [Read more...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
+Unity-MCP server supports many different launch options and docker docker deployment. Both transport protocol are supported `streamableHttp` and `stdio`. [Read more...](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/mcp-server.md)
 
 # Add custom `tool`
 
@@ -283,7 +283,7 @@ public class Tool_GameObject
 
 Contribution is highly appreciated. Brings your ideas and lets make the game development as simple as never before! Do you have an idea of a new `tool`, feature or did you spot a bug and know how to fix it.
 
-1. 👉 [Fork the project](https://github.com/IvanMurzak/Unity-MCP/fork)
-2. Clone the fork and open the `./Unity-MCP-Plugin` folder in Unity
+1. 👉 [Fork the project](https://github.com/IvanMurzak/uco-plugin/fork)
+2. Clone the fork and open the `./uco-unity-project` folder in Unity
 3. Implement new things in the project, commit, push it to GitHub
 4. Create Pull Request targeting original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository, `main` branch.

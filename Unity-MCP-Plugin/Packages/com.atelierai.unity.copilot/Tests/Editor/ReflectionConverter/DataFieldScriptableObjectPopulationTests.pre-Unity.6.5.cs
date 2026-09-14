@@ -89,8 +89,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 () =>
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
-                    var mcpInstance = plugin?.McpPluginInstance;
-                    var manager = mcpInstance?.McpManager;
+                    var mcpInstance = plugin?.UcoPluginInstance;
+                    var manager = mcpInstance?.UcoManager;
                     var reflector = manager?.Reflector;
 
                     if (reflector == null)

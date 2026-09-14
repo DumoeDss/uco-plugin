@@ -8,31 +8,31 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Annotations
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Annotations
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public static class MixedToolTypeClass
     {
-        [McpPluginTool("standard-tool-a", "Standard Tool A")]
+        [UcoTool("standard-tool-a", "Standard Tool A")]
         public static string StandardA() => "a";
 
-        [McpPluginTool("standard-tool-b", "Standard Tool B")]
+        [UcoTool("standard-tool-b", "Standard Tool B")]
         public static string StandardB() => "b";
 
-        [McpPluginTool(
+        [UcoTool(
             "system-tool-x",
             "System Tool X",
-            ToolType = McpToolType.System,
+            ToolType = UcoToolType.System,
             ReadOnlyHint = true,
             DestructiveHint = false,
             IdempotentHint = true,
             OpenWorldHint = false)]
         public static string SystemX() => "x";
 
-        [McpPluginTool("system-tool-y", "System Tool Y", ToolType = McpToolType.System)]
+        [UcoTool("system-tool-y", "System Tool Y", ToolType = UcoToolType.System)]
         public static string SystemY() => "y";
 
-        [McpPluginTool("standard-default", "Default ToolType")]
+        [UcoTool("standard-default", "Default ToolType")]
         public static string DefaultType() => "default";
     }
 }

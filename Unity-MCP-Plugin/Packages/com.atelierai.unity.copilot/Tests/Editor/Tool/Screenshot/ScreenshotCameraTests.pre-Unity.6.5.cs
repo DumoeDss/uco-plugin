@@ -11,7 +11,7 @@
 #nullable enable
 #if !UNITY_6000_5_OR_NEWER
 using System.Text.RegularExpressions;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using AIGD;
 using NUnit.Framework;

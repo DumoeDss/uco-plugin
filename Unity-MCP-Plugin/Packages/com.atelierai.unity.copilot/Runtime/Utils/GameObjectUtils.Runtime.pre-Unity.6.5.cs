@@ -13,7 +13,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

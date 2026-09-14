@@ -19,7 +19,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -43,7 +43,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string ScriptGetShaToolId = "script-get-sha";
 
-        [McpPluginTool
+        [UcoTool
         (
             ScriptGetShaToolId,
             Title = "Script / Get SHA",
@@ -51,11 +51,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Compute the SHA-256 of a `.cs` script file's raw bytes. " +
+        [UcoSkillDescription("Compute the SHA-256 of a `.cs` script file's raw bytes. " +
             "Returns the hash + byte size. Use this to capture an optimistic-lock token, then pass it as " +
             "`expectedSha` to '" + ScriptApplyEditsToolId + "' — the edit will be rejected with `STALE_SHA` if the file " +
             "changed between read and write.")]
-        [McpPluginSkillBody("Computes the SHA-256 hash of the raw bytes of a `.cs` file on disk and returns " +
+        [UcoSkillBody("Computes the SHA-256 hash of the raw bytes of a `.cs` file on disk and returns " +
             "the hex digest and byte size. Read-only. Designed as the companion to '" + ScriptApplyEditsToolId + "' " +
             "for optimistic concurrency control.\n\n" +
             "## Inputs\n\n" +

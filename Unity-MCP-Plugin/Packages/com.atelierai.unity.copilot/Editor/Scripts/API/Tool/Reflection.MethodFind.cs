@@ -12,7 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Reflection
     {
         public const string ReflectionMethodFindToolId = "reflection-method-find";
-        [McpPluginTool
+        [UcoTool
         (
             ReflectionMethodFindToolId,
             Title = "Method C# / Find",
@@ -30,10 +30,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = true
         )]
-        [McpPluginSkillDescription("Find C# methods across every loaded assembly by name / type / parameters — " +
+        [UcoSkillDescription("Find C# methods across every loaded assembly by name / type / parameters — " +
             "including private methods. Returns serialized `MethodData` entries usable as schemas for '" +
             ReflectionMethodCallToolId + "'.")]
-        [McpPluginSkillBody("Find method in the project using C# Reflection. " +
+        [UcoSkillBody("Find method in the project using C# Reflection. " +
             "It looks for all assemblies in the project and finds method by its name, class name and parameters. " +
             "Even private methods are available. " +
             "Use '" + ReflectionMethodCallToolId + "' to call the method after finding it.\n\n" +

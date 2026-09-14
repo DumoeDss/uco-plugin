@@ -14,7 +14,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     public partial class ResponseCallTool : IRequestID
     {

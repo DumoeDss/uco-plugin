@@ -13,9 +13,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot
 
     public partial class UnityCopilotPlugin : IDisposable
     {
-        public const string Version = "0.75.1";
+        public const string Version = "0.76.0";
 
         private static int _singletonCount = 0;
         public static bool HasAnyInstance => _singletonCount > 0;
@@ -42,17 +42,17 @@ namespace com.AtelierAI.Unity.Copilot
         protected readonly CopilotPluginSlot _plugin = new();
 
         // Tracks only the latest plugin's ConnectionState subscription.
-        // Replaced (old one disposed) each time BuildMcpPlugin creates a new IMcpPlugin instance.
+        // Replaced (old one disposed) each time BuildMcpPlugin creates a new IUcoPlugin instance.
         private IDisposable? _pluginConnectionSubscription;
 
-        public IMcpPlugin? McpPluginInstance => _plugin.Instance;
+        public IUcoPlugin? UcoPluginInstance => _plugin.Instance;
         public bool HasMcpPluginInstance => _plugin.HasInstance;
 
-        public ILogger Logger => McpPluginInstance?.Logger ?? _logger;
-        public Reflector? Reflector => McpPluginInstance?.McpManager.Reflector;
-        public IToolManager? Tools => McpPluginInstance?.McpManager.ToolManager;
-        public IPromptManager? Prompts => McpPluginInstance?.McpManager.PromptManager;
-        public IResourceManager? Resources => McpPluginInstance?.McpManager.ResourceManager;
+        public ILogger Logger => UcoPluginInstance?.Logger ?? _logger;
+        public Reflector? Reflector => UcoPluginInstance?.UcoManager.Reflector;
+        public IToolManager? Tools => UcoPluginInstance?.UcoManager.ToolManager;
+        public IPromptManager? Prompts => UcoPluginInstance?.UcoManager.PromptManager;
+        public IResourceManager? Resources => UcoPluginInstance?.UcoManager.ResourceManager;
 
         public UnityLogCollector? LogCollector { get; protected set; } = null;
 
@@ -136,10 +136,10 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(Connect));
             try
             {
-                var mcpPlugin = McpPluginInstance;
+                var mcpPlugin = UcoPluginInstance;
                 if (mcpPlugin == null)
                 {
-                    _logger.LogError("{method}: McpPlugin instance is null.", nameof(Connect));
+                    _logger.LogError("{method}: uco plugin instance is null.", nameof(Connect));
                     return false;
                 }
 
@@ -165,16 +165,16 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(Disconnect));
             try
             {
-                var mcpPlugin = McpPluginInstance;
+                var mcpPlugin = UcoPluginInstance;
                 if (mcpPlugin == null)
                 {
-                    _logger.LogWarning("{method}: McpPlugin instance is null, nothing to disconnect, ignoring.",
+                    _logger.LogWarning("{method}: uco plugin instance is null, nothing to disconnect, ignoring.",
                         nameof(Disconnect));
                     return;
                 }
                 try
                 {
-                    _logger.LogDebug("{method}: Disconnecting McpPlugin instance.", nameof(Disconnect));
+                    _logger.LogDebug("{method}: Disconnecting uco plugin instance.", nameof(Disconnect));
                     await mcpPlugin.Disconnect();
                 }
                 catch (Exception e)
@@ -194,16 +194,16 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(DisconnectImmediate));
             try
             {
-                var mcpPlugin = McpPluginInstance;
+                var mcpPlugin = UcoPluginInstance;
                 if (mcpPlugin == null)
                 {
-                    _logger.LogWarning("{method}: McpPlugin instance is null, nothing to disconnect, ignoring.",
+                    _logger.LogWarning("{method}: uco plugin instance is null, nothing to disconnect, ignoring.",
                         nameof(DisconnectImmediate));
                     return;
                 }
                 try
                 {
-                    _logger.LogDebug("{method}: Disconnecting McpPlugin instance.", nameof(DisconnectImmediate));
+                    _logger.LogDebug("{method}: Disconnecting uco plugin instance.", nameof(DisconnectImmediate));
                     mcpPlugin.DisconnectImmediate();
                 }
                 catch (Exception e)
@@ -220,8 +220,8 @@ namespace com.AtelierAI.Unity.Copilot
 
         public async Task NotifyToolRequestCompleted(RequestToolCompletedData request, CancellationToken cancellationToken = default)
         {
-            var mcpPlugin = McpPluginInstance
-                ?? throw new InvalidOperationException($"{nameof(McpPluginInstance)} is null");
+            var mcpPlugin = UcoPluginInstance
+                ?? throw new InvalidOperationException($"{nameof(UcoPluginInstance)} is null");
 
             while (mcpPlugin.ConnectionState.CurrentValue != WsState.Connected)
             {
@@ -234,21 +234,21 @@ namespace com.AtelierAI.Unity.Copilot
                 }
             }
 
-            if (mcpPlugin.McpManager == null)
+            if (mcpPlugin.UcoManager == null)
             {
                 _logger.LogCritical("{method}: {instance} is null",
-                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.McpManager));
+                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.UcoManager));
                 return;
             }
 
-            if (mcpPlugin.McpManagerHub == null)
+            if (mcpPlugin.UcoManagerHub == null)
             {
                 _logger.LogCritical("{method}: {instance} is null",
-                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.McpManagerHub));
+                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.UcoManagerHub));
                 return;
             }
 
-            await mcpPlugin.McpManagerHub.NotifyToolRequestCompleted(request);
+            await mcpPlugin.UcoManagerHub.NotifyToolRequestCompleted(request);
         }
 
         // --- Token / Port utilities ---

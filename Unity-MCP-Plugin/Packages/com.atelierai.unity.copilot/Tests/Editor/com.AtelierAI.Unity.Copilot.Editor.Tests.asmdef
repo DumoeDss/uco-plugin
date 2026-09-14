@@ -21,8 +21,8 @@
         "System.Text.Json.dll",
         "Microsoft.Extensions.Logging.Abstractions.dll",
         "ReflectorNet.dll",
-        "McpPlugin.dll",
-        "McpPlugin.Common.dll",
+        "Uco.Framework.dll",
+        "Uco.Framework.Common.dll",
         "R3.dll"
     ],
     "autoReferenced": true,

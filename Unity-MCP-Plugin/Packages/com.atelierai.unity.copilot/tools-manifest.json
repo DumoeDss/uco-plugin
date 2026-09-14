@@ -9706,7 +9706,7 @@
           "properties": {
             "Port": {
               "type": "integer",
-              "description": "MCP server port. SHA256 hash of project path -\u003E 20000-29999 range."
+              "description": "Bridge server port. SHA256 hash of project path -\u003E 20000-29999 range."
             },
             "ProjectPath": {
               "type": "string",
@@ -9803,7 +9803,7 @@
           "properties": {
             "Port": {
               "type": "integer",
-              "description": "MCP server port. SHA256 hash of project path -\u003E 20000-29999 range."
+              "description": "Bridge server port. SHA256 hash of project path -\u003E 20000-29999 range."
             },
             "ProjectPath": {
               "type": "string",
@@ -17979,7 +17979,7 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Tool / Set Enabled State",
-    "description": "Enable or disable MCP tools by name. Allows controlling which tools are available for the AI agent.",
+    "description": "Enable or disable uco tools by name. Allows controlling which tools are available for the AI agent.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -17998,7 +17998,7 @@
           "properties": {
             "Name": {
               "type": "string",
-              "description": "Name of the MCP tool to enable or disable."
+              "description": "Name of the uco tool to enable or disable."
             },
             "Enabled": {
               "type": "boolean",
@@ -18099,7 +18099,7 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Tools / List Groups",
-    "description": "List all MCP tool groups with current enabled state and tool membership. Pass includeTools=false to omit the per-group tool name arrays (ToolCount is still reported).",
+    "description": "List all uco tool groups with current enabled state and tool membership. Pass includeTools=false to omit the per-group tool name arrays (ToolCount is still reported).",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -18150,7 +18150,7 @@
             },
             "Tools": {
               "$ref": "#/$defs/System.String%5B%5D",
-              "description": "Tool ids that belong to this group (the values exposed as MCP tool names)."
+              "description": "Tool ids that belong to this group (the values exposed as uco tool names)."
             },
             "ToolCount": {
               "type": "integer",
@@ -18195,7 +18195,7 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Tools / Set Group Enabled",
-    "description": "Enable or disable an MCP tool group at runtime, persisting the choice to EditorPrefs. Soft hint only \u2014 disabled tools remain callable through the upstream request pipeline.",
+    "description": "Enable or disable an uco tool group at runtime, persisting the choice to EditorPrefs. Soft hint only \u2014 disabled tools remain callable through the upstream request pipeline.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -19164,7 +19164,7 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Tool / List",
-    "description": "List all Unity-MCP tools registered in the connected Unity Editor instance. Optionally filter by regex across tool names, descriptions, and arguments.",
+    "description": "List all uco tools registered in the connected Unity Editor instance. Optionally filter by regex across tool names, descriptions, and arguments.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -19220,13 +19220,13 @@
               "description": "Tool input arguments."
             }
           },
-          "description": "MCP tool information."
+          "description": "uco tool information."
         },
         "AIGD.ToolInputData[]": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/AIGD.ToolInputData",
-            "description": "MCP tool input argument."
+            "description": "uco tool input argument."
           }
         },
         "AIGD.ToolInputData": {
@@ -19241,13 +19241,13 @@
               "description": "Argument description."
             }
           },
-          "description": "MCP tool input argument."
+          "description": "uco tool input argument."
         },
         "AIGD.ToolInfoData[]": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/AIGD.ToolInfoData",
-            "description": "MCP tool information."
+            "description": "uco tool information."
           }
         }
       },

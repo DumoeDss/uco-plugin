@@ -14,15 +14,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public class McpResourceManager : IResourceManager
+    public class UcoResourceManager : IResourceManager
     {
         protected readonly ILogger _logger;
         protected readonly Reflector _reflector;
@@ -35,7 +35,7 @@ namespace com.IvanMurzak.McpPlugin
 
         public IEnumerable<IRunResource> GetAllResources() => _resources.Values.ToList();
 
-        public McpResourceManager(ILogger<McpResourceManager> logger, Reflector reflector, ResourceRunnerCollection resources)
+        public UcoResourceManager(ILogger<UcoResourceManager> logger, Reflector reflector, ResourceRunnerCollection resources)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor");

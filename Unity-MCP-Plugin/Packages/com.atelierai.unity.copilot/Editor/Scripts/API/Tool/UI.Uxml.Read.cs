@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -25,16 +25,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UxmlReadToolId = "ui-uxml-read";
 
-        [McpPluginTool
+        [UcoTool
         (
             UxmlReadToolId,
             Title = "UI / UXML / Read",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read a UXML file under 'Assets/' and return its raw XML content as a string. " +
+        [UcoSkillDescription("Read a UXML file under 'Assets/' and return its raw XML content as a string. " +
             "Pair with '" + UxmlModifyToolId + "' for structural edits or '" + UxmlCreateToolId + "' to write a new file.")]
-        [McpPluginSkillBody("Read a UXML asset's full XML content as a string.\n\n" +
+        [UcoSkillBody("Read a UXML asset's full XML content as a string.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path under 'Assets/' ending in '.uxml'.\n\n" +
             "## Behavior\n\n" +

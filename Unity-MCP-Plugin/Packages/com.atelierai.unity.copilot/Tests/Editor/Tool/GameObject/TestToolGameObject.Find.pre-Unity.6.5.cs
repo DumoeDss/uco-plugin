@@ -12,7 +12,7 @@
 #if !UNITY_6000_5_OR_NEWER
 using System;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Editor.Tests.Utils;

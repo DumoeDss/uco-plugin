@@ -8,11 +8,11 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 using System.Reflection;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data
+namespace com.AtelierAI.Uco.Framework.Tests.Data
 {
     public class VersionTests
     {
@@ -22,7 +22,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
             const string expectedVersion = "7.0.0-unity-copilot.1";
 
             Consts.PluginVersion.ShouldBe(expectedVersion);
-            InformationalVersion(typeof(McpPluginBuilder).Assembly).ShouldBe(expectedVersion);
+            InformationalVersion(typeof(UcoBuilder).Assembly).ShouldBe(expectedVersion);
             InformationalVersion(typeof(Consts).Assembly).ShouldBe(expectedVersion);
         }
 

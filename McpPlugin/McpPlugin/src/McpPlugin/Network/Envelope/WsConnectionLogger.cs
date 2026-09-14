@@ -12,7 +12,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Replaces <c>HubConnectionLogger</c>. Subscribes to

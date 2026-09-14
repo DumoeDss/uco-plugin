@@ -3,33 +3,33 @@
 
 [![npm](https://img.shields.io/npm/v/unity-mcp-cli?label=npm&labelColor=333A41 'npm 包')](https://www.npmjs.com/package/unity-mcp-cli)
 [![Node.js](https://img.shields.io/badge/Node.js-%5E20.19.0%20%7C%7C%20%3E%3D22.12.0-5FA04E?logo=nodedotjs&labelColor=333A41 'Node.js')](https://nodejs.org/)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/promo/ai-developer-banner-glitch.gif" alt="AI Game Developer" title="Unity MCP CLI" width="100%">
+  <img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/promo/ai-developer-banner-glitch.gif" alt="AI Game Developer" title="Unity MCP CLI" width="100%">
 
   <p>
-    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
-    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
-    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
-    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
-    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
+    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
+    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
+    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
+    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
+    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
   </p>
 
 </div>
 
-<b>[中文](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/docs/README.zh-CN.md) | [日本語](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/docs/README.ja.md) | [Español](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/docs/README.es.md)</b>
+<b>[中文](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/docs/README.zh-CN.md) | [日本語](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/docs/README.ja.md) | [Español](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/docs/README.es.md)</b>
 
 跨平台 CLI 工具，适用于 **[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** — 创建项目、安装插件、配置 MCP 工具，以及启动带有活跃 MCP 连接的 Unity。所有操作只需一行命令。
 
-## ![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-features.zh-CN.svg?raw=true)
+## ![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-features.zh-CN.svg?raw=true)
 
 - :white_check_mark: **创建项目** — 通过 Unity 编辑器搭建新的 Unity 项目
 - :white_check_mark: **安装编辑器** — 从命令行安装任意版本的 Unity 编辑器
@@ -47,7 +47,7 @@
 - :white_check_mark: **详细模式** — 在任何命令中使用 `--verbose` 获取详细的诊断输出
 - :white_check_mark: **版本感知** — 绝不降级插件版本，从 OpenUPM 解析最新版本
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 快速开始
 
@@ -84,7 +84,7 @@ npx unity-mcp-cli install-plugin /path/to/unity/project
 
 > **系统要求：** [Node.js](https://nodejs.org/) ^20.19.0 || >=22.12.0。如果未找到 [Unity Hub](https://unity.com/download)，将自动安装。
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 目录
 
@@ -110,7 +110,7 @@ npx unity-mcp-cli install-plugin /path/to/unity/project
     - [配置文件](#配置文件)
     - [Unity Hub 集成](#unity-hub-集成)
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 命令
 
@@ -156,7 +156,7 @@ unity-mcp-cli configure ./MyGame \
   --enable-all-resources
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `create-project`
 
@@ -177,7 +177,7 @@ unity-mcp-cli create-project /path/to/new/project
 unity-mcp-cli create-project ./MyGame --unity 2022.3.62f1
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `install-plugin`
 
@@ -205,7 +205,7 @@ unity-mcp-cli install-plugin ./MyGame --plugin-version 0.51.6
 
 > 运行此命令后，请在 Unity 编辑器中打开项目以完成包安装。
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `install-unity`
 
@@ -228,7 +228,7 @@ unity-mcp-cli install-unity 6000.3.1f1
 unity-mcp-cli install-unity --path ./MyGame
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `open`
 
@@ -277,7 +277,7 @@ unity-mcp-cli open ./MyGame \
   --tools gameobject-create,gameobject-find
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `run-tool`
 
@@ -323,7 +323,7 @@ unity-mcp-cli run-tool scene-save --url http://localhost:8080
 unity-mcp-cli run-tool assets-list ./MyGame --raw | jq '.results'
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `wait-for-ready`
 
@@ -361,7 +361,7 @@ unity-mcp-cli wait-for-ready ./MyGame --timeout 60000 --interval 2000
 unity-mcp-cli wait-for-ready --url http://localhost:8080 --timeout 30000
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `setup-mcp`
 
@@ -392,7 +392,7 @@ unity-mcp-cli setup-mcp --list
 unity-mcp-cli setup-mcp cursor ./MyGame --transport stdio
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `setup-skills`
 
@@ -417,7 +417,7 @@ unity-mcp-cli setup-skills claude-code ./MyGame
 unity-mcp-cli setup-skills --list
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `remove-plugin`
 
@@ -438,7 +438,7 @@ unity-mcp-cli remove-plugin ./MyGame
 
 > 运行此命令后，请在 Unity 编辑器中打开项目以应用更改。
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## `status`
 
@@ -455,7 +455,7 @@ unity-mcp-cli status ./MyGame
 | `--token <token>` | 否 | 覆盖 Bearer 令牌（绕过配置） |
 | `--timeout <ms>` | 否 | 探测超时时间（毫秒）（默认：5000） |
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 ## 全局选项
 
@@ -473,7 +473,7 @@ unity-mcp-cli status ./MyGame
 unity-mcp-cli install-plugin ./MyGame --verbose
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 完整自动化示例
 
@@ -502,7 +502,7 @@ unity-mcp-cli wait-for-ready ./MyAIGame
 unity-mcp-cli run-tool tests-run ./MyAIGame --input '{"testMode":"EditMode"}'
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 工作原理
 
@@ -532,6 +532,6 @@ CLI 根据 Unity 项目的目录路径生成**确定性端口**（SHA256 哈希�
 - **macOS** — 下载 DMG，挂载后将 `Unity Hub.app` 复制到 `/Applications`
 - **Linux** — 将 `UnityHub.AppImage` 下载到 `~/Applications/`
 
-> 如需完整的 Unity-MCP 项目文档，请参阅[主 README](https://github.com/IvanMurzak/Unity-MCP/blob/main/README.md)。
+> 如需完整的 Unity-MCP 项目文档，请参阅[主 README](https://github.com/IvanMurzak/uco-plugin/blob/main/README.md)。
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

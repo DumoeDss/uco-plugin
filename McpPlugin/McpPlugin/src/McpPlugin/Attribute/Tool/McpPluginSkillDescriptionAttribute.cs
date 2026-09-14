@@ -10,7 +10,7 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Provides a concise text written into the SKILL.md YAML <c>description:</c> field.
@@ -23,11 +23,11 @@ namespace com.IvanMurzak.McpPlugin
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class McpPluginSkillDescriptionAttribute : Attribute
+    public sealed class UcoSkillDescriptionAttribute : Attribute
     {
         public string Description { get; }
 
-        public McpPluginSkillDescriptionAttribute(string description)
+        public UcoSkillDescriptionAttribute(string description)
         {
             Description = description ?? string.Empty;
         }

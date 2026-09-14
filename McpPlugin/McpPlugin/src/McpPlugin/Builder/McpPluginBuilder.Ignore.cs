@@ -12,9 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public partial class McpPluginBuilder
+    public partial class UcoBuilder
     {
         #region Ignore Assembly
 

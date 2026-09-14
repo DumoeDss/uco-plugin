@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <InternalsVisibleTo Include="McpPlugin.Tests" />
+    <InternalsVisibleTo Include="Uco.Framework.Tests" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
-    <RootNamespace>com.IvanMurzak.McpPlugin</RootNamespace>
+    <RootNamespace>com.AtelierAI.Uco.Framework</RootNamespace>
+    <AssemblyName>Uco.Framework</AssemblyName>
     <LangVersion>9.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -34,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="./../McpPlugin.Common/McpPlugin.Common.csproj" />
+    <ProjectReference Include="./../McpPlugin.Common/Uco.Framework.Common.csproj" />
     <ProjectReference Include="../../ReflectorNet/ReflectorNet/ReflectorNet.csproj" />
     <PackageReference Include="R3" Version="1.3.0" />
   </ItemGroup>

@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Unity
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Unity
 {
     [Description(@"Array of GameObjects in opened Prefab or in the active Scene.")]
     public class GameObjectRefList : List<GameObjectRef>

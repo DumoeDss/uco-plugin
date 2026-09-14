@@ -22,7 +22,66 @@ namespace com.AtelierAI.Unity.Copilot
 {
     public partial class UnityCopilotPluginEditor
     {
-        public static string ResourcesFileName => "AI-Game-Developer-Config";
+        public static string ResourcesFileName => "uco-config";
+
+        /// <summary>
+        /// Pre-rename filename (uco 0.3.0 / plugin 0.76.0 renamed
+        /// AI-Game-Developer-Config.json to uco-config.json). When only the
+        /// legacy file exists it is read and then migrated: saved under the
+        /// new name and the legacy file removed.
+        /// </summary>
+        public static string LegacyResourcesFileName => "AI-Game-Developer-Config";
+
+        /// <summary>True when only the legacy-named config exists right now.</summary>
+        static bool LegacyConfigNeedsMigration
+        {
+            get
+            {
+                var newPath = Path.GetFullPath(Path.Combine(ProjectRootPath, $"UserSettings/{ResourcesFileName}.json"));
+                var legacyPath = Path.GetFullPath(Path.Combine(ProjectRootPath, $"UserSettings/{LegacyResourcesFileName}.json"));
+                return !File.Exists(newPath) && File.Exists(legacyPath);
+            }
+        }
+
+        /// <summary>Project-relative path of the config actually present on disk.</summary>
+        public static string EffectiveAssetsFilePath
+        {
+            get
+            {
+                var newPath = $"UserSettings/{ResourcesFileName}.json";
+                var legacyPath = $"UserSettings/{LegacyResourcesFileName}.json";
+                if (File.Exists(Path.GetFullPath(Path.Combine(ProjectRootPath, newPath))))
+                    return newPath;
+                return File.Exists(Path.GetFullPath(Path.Combine(ProjectRootPath, legacyPath)))
+                    ? legacyPath
+                    : newPath;
+            }
+        }
+
+        /// <summary>
+        /// One-shot rename migration: after a config was loaded from the
+        /// legacy filename, persist it under the new name and delete the old
+        /// file so the project converges on UserSettings/uco-config.json.
+        /// </summary>
+        static void MigrateLegacyConfigFileIfNeeded()
+        {
+            try
+            {
+                if (!LegacyConfigNeedsMigration)
+                    return;
+                var legacyPath = Path.GetFullPath(Path.Combine(ProjectRootPath, $"UserSettings/{LegacyResourcesFileName}.json"));
+                var newPath = Path.GetFullPath(Path.Combine(ProjectRootPath, $"UserSettings/{ResourcesFileName}.json"));
+                File.Copy(legacyPath, newPath, overwrite: false);
+                File.Delete(legacyPath);
+                _logger.LogWarning("{method}: migrated {legacy} to {new} (uco rename); the old file was removed.",
+                    nameof(MigrateLegacyConfigFileIfNeeded), LegacyResourcesFileName, ResourcesFileName);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "{method}: legacy config migration failed; falling back to the legacy name for this session.",
+                    nameof(MigrateLegacyConfigFileIfNeeded));
+            }
+        }
 
         /// <summary>
         /// Project-relative path used by Unity's AssetDatabase API.
@@ -56,7 +115,7 @@ namespace com.AtelierAI.Unity.Copilot
         }
 
 #if UNITY_EDITOR
-        public static UnityEngine.TextAsset AssetFile => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(AssetsFilePath);
+        public static UnityEngine.TextAsset AssetFile => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(EffectiveAssetsFilePath);
 #endif
 
         UnityConnectionConfig GetOrCreateConfig() => GetOrCreateConfig(out _);
@@ -67,7 +126,12 @@ namespace com.AtelierAI.Unity.Copilot
             {
                 // Both Edit mode and Play mode read from the same UserSettings JSON file
                 // Use the absolute path so File.Exists/ReadAllText resolve correctly regardless of CWD.
-                var json = File.Exists(AssetsFileAbsolutePath) ? File.ReadAllText(AssetsFileAbsolutePath) : null;
+                // The effective path prefers the renamed uco-config.json and falls back to
+                // the legacy AI-Game-Developer-Config.json until the one-shot migration runs.
+                var effectiveAbsolute = Path.GetFullPath(Path.Combine(ProjectRootPath, EffectiveAssetsFilePath));
+                var json = File.Exists(effectiveAbsolute) ? File.ReadAllText(effectiveAbsolute) : null;
+                if (!string.IsNullOrWhiteSpace(json))
+                    MigrateLegacyConfigFileIfNeeded();
 
                 UnityConnectionConfig? config = null;
                 try

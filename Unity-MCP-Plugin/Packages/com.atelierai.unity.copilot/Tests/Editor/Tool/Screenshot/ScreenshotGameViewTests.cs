@@ -10,7 +10,7 @@
 
 #nullable enable
 using System.Text.RegularExpressions;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using NUnit.Framework;
 using UnityEditor;

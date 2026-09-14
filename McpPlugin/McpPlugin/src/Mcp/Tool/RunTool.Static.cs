@@ -13,7 +13,7 @@ using System.Reflection;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Provides functionality to execute methods dynamically, supporting both static and instance methods.
@@ -39,7 +39,7 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard,
+            UcoToolType toolType = UcoToolType.Standard,
             AuthoringCapabilityDescriptor? authoringCapability = null,
             ToolExecutionSchedulingMetadata? executionScheduling = null,
             bool returnsDurableOperationHandle = false)
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard,
+            UcoToolType toolType = UcoToolType.Standard,
             AuthoringCapabilityDescriptor? authoringCapability = null,
             ToolExecutionSchedulingMetadata? executionScheduling = null,
             bool returnsDurableOperationHandle = false)
@@ -108,7 +108,7 @@ namespace com.IvanMurzak.McpPlugin
             bool? idempotentHint = null,
             bool? openWorldHint = null,
             bool? enabled = null,
-            McpToolType toolType = McpToolType.Standard,
+            UcoToolType toolType = UcoToolType.Standard,
             AuthoringCapabilityDescriptor? authoringCapability = null,
             ToolExecutionSchedulingMetadata? executionScheduling = null,
             bool returnsDurableOperationHandle = false)

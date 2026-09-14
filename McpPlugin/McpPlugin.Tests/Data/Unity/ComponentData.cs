@@ -11,7 +11,7 @@
 using System.Collections.Generic;
 using com.IvanMurzak.ReflectorNet.Model;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Unity
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Unity
 {
     [System.Serializable]
     public class ComponentData : ComponentDataLight

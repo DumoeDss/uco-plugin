@@ -9,7 +9,7 @@
 */
 
 #nullable enable
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -42,24 +42,24 @@ namespace com.AtelierAI.Unity.Copilot
     public sealed class UnityCopilotPluginBuilder
     {
         /// <summary>
-        /// The underlying <see cref="McpPluginBuilder"/> pre-configured with Unity
+        /// The underlying <see cref="UcoBuilder"/> pre-configured with Unity
         /// defaults (logging, standard ignored assemblies, assembly scanning).
         /// Use this to configure host, token, additional ignored assemblies, custom
         /// tools/prompts/resources, and anything else supported by the MCP plugin.
         /// </summary>
-        public IMcpPluginBuilder McpPlugin { get; }
+        public IMcpPluginBuilder Builder { get; }
 
         private readonly UnityCopilotPluginRuntime _runtimePlugin;
         private readonly ILogger? _logger;
 
         internal UnityCopilotPluginBuilder(IMcpPluginBuilder mcpBuilder, UnityCopilotPluginRuntime runtimePlugin, ILoggerProvider? loggerProvider = null)
         {
-            McpPlugin = mcpBuilder;
+            Builder = mcpBuilder;
             _runtimePlugin = runtimePlugin;
             _logger = loggerProvider?.CreateLogger(nameof(UnityCopilotPluginBuilder));
 
             // Apply Unity-specific defaults — the developer does not need to repeat these.
-            McpPlugin
+            Builder
                 .AddLogging(lb =>
                 {
                     lb.ClearProviders();
@@ -78,7 +78,7 @@ namespace com.AtelierAI.Unity.Copilot
                     "Unity.",
                     "Microsoft",
                     "R3",
-                    "McpPlugin",
+                    "UcoFramework",
                     "ReflectorNet",
                     "com.AtelierAI.Unity.Copilot.TestFiles",
                     "com.AtelierAI.Unity.Copilot.Editor.Tests",
@@ -96,7 +96,7 @@ namespace com.AtelierAI.Unity.Copilot
             _logger?.LogTrace("{method} called.", nameof(Build));
 
             _logger?.LogDebug("{method}: Building runtime MCP Plugin from builder...", nameof(Build));
-            var built = _runtimePlugin.BuildFromBuilder(McpPlugin);
+            var built = _runtimePlugin.BuildFromBuilder(Builder);
 
             _logger?.LogTrace("{method} completed.", nameof(Build));
             return _runtimePlugin;

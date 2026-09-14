@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -23,15 +23,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets_Prefab
     {
         public const string AssetsPrefabCloseToolId = "assets-prefab-close";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsPrefabCloseToolId,
             Title = "Assets / Prefab / Close"
         )]
-        [McpPluginSkillDescription("Close the currently opened prefab edit stage. " +
+        [UcoSkillDescription("Close the currently opened prefab edit stage. " +
             "Optionally saves changes back to the prefab asset before closing. " +
             "Pair with '" + AssetsPrefabOpenToolId + "' to enter the edit mode first.")]
-        [McpPluginSkillBody("Close currently opened prefab. " +
+        [UcoSkillBody("Close currently opened prefab. " +
             "Use it when you are in prefab editing mode in Unity Editor. " +
             "Use '" + AssetsPrefabOpenToolId + "' tool to open a prefab first.\n\n" +
             "## Inputs\n\n" +

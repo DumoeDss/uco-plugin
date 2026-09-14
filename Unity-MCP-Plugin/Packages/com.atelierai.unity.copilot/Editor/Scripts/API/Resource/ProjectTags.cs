@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace AIGD
@@ -35,14 +35,14 @@ namespace AIGD
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
     using AIGD;
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_ProjectTags
     {
         public const string ProjectTagsResourceUri = "project://tags";
 
-        [McpPluginResource
+        [UcoResource
         (
             Name = "Project Tags",
             Route = ProjectTagsResourceUri,

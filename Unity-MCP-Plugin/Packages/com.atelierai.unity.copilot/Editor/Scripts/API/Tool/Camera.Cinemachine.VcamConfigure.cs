@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -29,17 +29,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraCmVcamConfigureToolId = "camera-cm-vcam-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraCmVcamConfigureToolId,
             Title = "Camera / Cinemachine / Configure VCam",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure a Cinemachine virtual-camera (CM 2.x `CinemachineVirtualCamera` or " +
+        [UcoSkillDescription("Configure a Cinemachine virtual-camera (CM 2.x `CinemachineVirtualCamera` or " +
             "CM 3.x `CinemachineCamera`) — priority, lens FOV, and optional noise profile. " +
             "Cinemachine is detected via reflection at runtime: when the package is not installed, the call " +
             "returns Ok=false with `Error = \"" + nameof(Error.CinemachineNotInstalled) + "\"` instead of throwing.")]
-        [McpPluginSkillBody("Configures a Cinemachine virtual-camera component on the target GameObject.\n\n" +
+        [UcoSkillBody("Configures a Cinemachine virtual-camera component on the target GameObject.\n\n" +
             "## Inputs\n\n" +
             "- `vcamRef` — host GameObject of the virtual-camera component.\n" +
             "- `priority` — Brain selection priority. Written via `SerializedProperty` to persist into prefab/scene.\n" +

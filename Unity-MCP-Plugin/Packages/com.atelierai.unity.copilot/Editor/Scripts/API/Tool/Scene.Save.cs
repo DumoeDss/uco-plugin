@@ -12,7 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Scene
     {
         public const string SceneSaveToolId = "scene-save";
-        [McpPluginTool
+        [UcoTool
         (
             SceneSaveToolId,
             Title = "Scene / Save",
@@ -40,10 +40,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Intent = AuthoringPathAccessIntent.Modify,
             RootCategory = ProjectPathRootCategories.Assets,
             Required = false)]
-        [McpPluginSkillDescription("Save an opened scene back to its asset file (or to a new path when `path` is " +
+        [UcoSkillDescription("Save an opened scene back to its asset file (or to a new path when `path` is " +
             "provided). When `openedSceneName` is empty, saves the currently active scene. " +
             "Use '" + SceneListOpenedToolId + "' to find the scene name first.")]
-        [McpPluginSkillBody("Save Opened scene to the asset file. " +
+        [UcoSkillBody("Save Opened scene to the asset file. " +
             "Use '" + SceneListOpenedToolId + "' tool to get the list of all opened scenes.\n\n" +
             "## Inputs\n\n" +
             "- `openedSceneName` (optional) — name of an opened scene to save. Empty/null = active scene.\n" +

@@ -13,11 +13,11 @@ using System;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Services;
 using com.AtelierAI.Unity.Copilot.Editor.UI.Controls;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
@@ -89,7 +89,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             if (UnityCopilotPluginEditor.ConnectionMode != ConnectionMode.Cloud)
                 return;
 
-            Debug.LogWarning("[AI Game Developer] The server rejected the authorization token. " +
+            Debug.LogWarning("[Unity Co-Pilot] The server rejected the authorization token. " +
                 "The token has been cleared. Please click 'Authorize' to obtain a new token.");
 
             UnityCopilotPluginEditor.CloudToken = null;

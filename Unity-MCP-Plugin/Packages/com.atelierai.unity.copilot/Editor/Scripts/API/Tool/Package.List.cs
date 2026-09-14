@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor.PackageManager;
 
@@ -49,7 +49,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string PackageListToolId = "package-list";
-        [McpPluginTool
+        [UcoTool
         (
             PackageListToolId,
             Title = "Package Manager / List Installed",
@@ -57,10 +57,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("List all UPM packages installed in the Unity project — name, version, source, " +
+        [UcoSkillDescription("List all UPM packages installed in the Unity project — name, version, source, " +
             "description. Optionally filter by source (registry, embedded, local, git, built-in, local tarball), " +
             "by name/display/description substring, and by direct-dependency-only.")]
-        [McpPluginSkillBody("List all packages installed in the Unity project (UPM packages). " +
+        [UcoSkillBody("List all packages installed in the Unity project (UPM packages). " +
             "Returns information about each installed package including name, version, source, and description. " +
             "Use this to check which packages are currently installed before adding or removing packages.\n\n" +
             "## Inputs\n\n" +

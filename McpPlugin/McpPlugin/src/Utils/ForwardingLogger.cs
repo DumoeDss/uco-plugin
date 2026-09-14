@@ -11,7 +11,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public class ForwardLoggerProvider : ILoggerProvider
     {

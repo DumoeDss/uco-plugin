@@ -11,7 +11,7 @@
 #nullable enable
 using com.AtelierAI.Unity.Copilot.Editor.Services;
 using com.AtelierAI.Unity.Copilot.Editor.UI;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using NUnit.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests

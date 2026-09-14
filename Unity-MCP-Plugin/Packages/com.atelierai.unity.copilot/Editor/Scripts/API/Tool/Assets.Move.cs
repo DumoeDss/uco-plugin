@@ -13,7 +13,7 @@ using AIGD;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -23,16 +23,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsMoveToolId = "assets-move";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsMoveToolId,
             Title = "Assets / Move",
             Enabled = false
         )]
-        [McpPluginSkillDescription("Move or rename assets at the given project paths. " +
+        [UcoSkillDescription("Move or rename assets at the given project paths. " +
             "Refreshes the AssetDatabase at the end. " +
             "Use '" + AssetsFindToolId + "' to locate the assets first.")]
-        [McpPluginSkillBody("Move the assets at paths in the project. " +
+        [UcoSkillBody("Move the assets at paths in the project. " +
             "Should be used for asset rename. " +
             "Does AssetDatabase.Refresh() at the end. " +
             "Use '" + AssetsFindToolId + "' tool to find assets before moving.\n\n" +

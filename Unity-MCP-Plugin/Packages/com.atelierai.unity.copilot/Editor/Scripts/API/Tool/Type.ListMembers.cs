@@ -15,7 +15,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -24,7 +24,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Type
     {
         public const string TypeListMembersToolId = "type-list-members";
-        [McpPluginTool
+        [UcoTool
         (
             TypeListMembersToolId,
             Title = "Type / List Members",
@@ -33,10 +33,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = true
         )]
-        [McpPluginSkillDescription("List the members of a C# type (methods, properties, fields, events, constructors) " +
+        [UcoSkillDescription("List the members of a C# type (methods, properties, fields, events, constructors) " +
             "by reflection across all loaded assemblies. Verify what a type actually exposes in THIS Unity version " +
             "before calling it via script-execute / reflection-method-call.")]
-        [McpPluginSkillBody("List the members of a C# type via reflection — the way to verify your knowledge of an API " +
+        [UcoSkillBody("List the members of a C# type via reflection — the way to verify your knowledge of an API " +
             "against the ACTUAL loaded assembly (LLM training data can lag the installed Unity version, and packages add members).\n\n" +
             "## Inputs\n\n" +
             "- `typeName` — full type name preferred (e.g. `UnityEngine.Camera`, `UnityEditor.EditorGUILayout`). Simple names work when unambiguous.\n" +

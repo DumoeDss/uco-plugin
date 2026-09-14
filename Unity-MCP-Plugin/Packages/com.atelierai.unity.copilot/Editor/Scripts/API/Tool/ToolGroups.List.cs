@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AIGD;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 
@@ -27,17 +27,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string ToolsListGroupsId = "tools-list-groups";
 
-        [McpPluginTool
+        [UcoTool
         (
             ToolsListGroupsId,
             Title = "Tools / List Groups",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List all MCP tool groups discovered via the [ToolGroupAttribute] marker, " +
+        [UcoSkillDescription("List all uco tool groups discovered via the [ToolGroupAttribute] marker, " +
             "with current enabled state and tool membership. Pair with 'tools-set-group-enabled' to gate the " +
             "LLM-visible tool surface and reduce per-request token cost.")]
-        [McpPluginSkillBody("Snapshot of every tool group known to the registry.\n\n" +
+        [UcoSkillBody("Snapshot of every tool group known to the registry.\n\n" +
             "## Output\n\n" +
             "Array of `ToolGroupSnapshot { Name, Enabled, DefaultEnabled, Description, Tools, ToolCount }`. " +
             "Sorted by `Name` ascending.\n\n" +
@@ -49,7 +49,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "`Enabled = false` is a *soft hint* in the current implementation. Tool calls are not blocked at " +
             "the upstream `IRunTool.RunCallTool` boundary — see the `Note` field on `tools-set-group-enabled` " +
             "for the rationale.")]
-        [Description("List all MCP tool groups with current enabled state and tool membership. " +
+        [Description("List all uco tool groups with current enabled state and tool membership. " +
             "Pass includeTools=false to omit the per-group tool name arrays (ToolCount is still reported).")]
         public ToolGroupSnapshot[] ListGroups(
             [Description("Populate each group's Tools array with its member tool names (default true). " +

@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using AIGD;
@@ -26,17 +26,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string VfxParticleGetToolId = "vfx-particle-get";
 
-        [McpPluginTool
+        [UcoTool
         (
             VfxParticleGetToolId,
             Title = "VFX / Particle / Get",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read the current state of a `UnityEngine.ParticleSystem` — playback flags, " +
+        [UcoSkillDescription("Read the current state of a `UnityEngine.ParticleSystem` — playback flags, " +
             "particle count, and a subset of the main / emission / shape / velocity-over-lifetime modules. " +
             "Pair with '" + VfxParticleConfigureToolId + "' to write back.")]
-        [McpPluginSkillBody("Returns a `ParticleResult` whose `Snapshot` describes the ParticleSystem state.\n\n" +
+        [UcoSkillBody("Returns a `ParticleResult` whose `Snapshot` describes the ParticleSystem state.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject of the ParticleSystem component. Required.\n\n" +
             "## Behavior\n\n" +

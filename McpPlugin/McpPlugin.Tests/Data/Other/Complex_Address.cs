@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 // Complex class: Address with multiple properties
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Address
     {

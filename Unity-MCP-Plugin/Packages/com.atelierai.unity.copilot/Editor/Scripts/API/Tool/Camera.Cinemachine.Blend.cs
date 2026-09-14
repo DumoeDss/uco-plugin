@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -28,16 +28,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraCmSetDefaultBlendToolId = "camera-cm-set-default-blend";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraCmSetDefaultBlendToolId,
             Title = "Camera / Cinemachine / Set Default Blend",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure the `DefaultBlend` field on a `CinemachineBrain` (the global default " +
+        [UcoSkillDescription("Configure the `DefaultBlend` field on a `CinemachineBrain` (the global default " +
             "blend between virtual cameras). Locates the Brain automatically — pass null/empty arguments to keep a " +
             "field unchanged. Returns Ok=false when the Cinemachine package is not installed or no Brain exists.")]
-        [McpPluginSkillBody("Writes the Brain's default blend `Style` and/or `Time` via `SerializedProperty`. " +
+        [UcoSkillBody("Writes the Brain's default blend `Style` and/or `Time` via `SerializedProperty`. " +
             "Both fields are optional; only those supplied are modified.\n\n" +
             "## Inputs\n\n" +
             "- `style` — blend style enum name. Common values: `Cut`, `EaseInOut`, `EaseIn`, `EaseOut`, `Linear`, " +

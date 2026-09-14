@@ -15,8 +15,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.API.TestRunner;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
@@ -42,18 +42,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             public int WaitTimeoutSeconds = DefaultWaitTimeoutSeconds;
             public bool SandboxScene;
         }
-        [McpPluginTool
+        [UcoTool
         (
             TestsRunToolId,
             Title = "Tests / Run",
             Enabled = true,
             DurableOperationStart = true
         )]
-        [McpPluginSkillDescription("Execute Unity tests (`EditMode` or `PlayMode`) and return per-test results. " +
+        [UcoSkillDescription("Execute Unity tests (`EditMode` or `PlayMode`) and return per-test results. " +
             "Supports filtering by test assembly, namespace, class, and method. " +
             "Refreshes the AssetDatabase first; defers execution across domain reloads if scripts changed. " +
             "Precondition: every open scene must be saved — dirty scenes abort the run.")]
-        [McpPluginSkillBody("Execute Unity tests and return detailed results. " +
+        [UcoSkillBody("Execute Unity tests and return detailed results. " +
             "Supports filtering by test mode, assembly, namespace, class, and method. " +
             "Recommended to use '" + nameof(TestMode.EditMode) + "' for faster iteration during development. " +
             "Precondition: every open scene MUST be saved (no unsaved changes). If any open scene is dirty, " +

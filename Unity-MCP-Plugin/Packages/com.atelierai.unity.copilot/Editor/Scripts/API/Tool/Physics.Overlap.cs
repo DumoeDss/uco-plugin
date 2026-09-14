@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -51,17 +51,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string PhysicsOverlapToolId = "physics-overlap";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsOverlapToolId,
             Title = "Physics / Overlap",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Find all colliders overlapping a primitive volume (`box` | `sphere`) at `center`. " +
+        [UcoSkillDescription("Find all colliders overlapping a primitive volume (`box` | `sphere`) at `center`. " +
             "Wraps `Physics.OverlapBox` / `Physics.OverlapSphere` (3D) or `Physics2D.OverlapBoxAll` / " +
             "`Physics2D.OverlapCircleAll` (2D). Returns an empty array when nothing overlaps.")]
-        [McpPluginSkillBody("Find every collider currently overlapping a primitive volume.\n\n" +
+        [UcoSkillBody("Find every collider currently overlapping a primitive volume.\n\n" +
             "## Inputs\n\n" +
             "- `shape` — `'box'` or `'sphere'` (case-insensitive). For 2D, `'sphere'` and `'circle'` both map to `OverlapCircleAll`.\n" +
             "- `center` — volume center in world space.\n" +

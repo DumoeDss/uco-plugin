@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -24,7 +24,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectComponentAddToolId = "gameobject-component-add";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectComponentAddToolId,
             Title = "GameObject / Component / Add"
@@ -37,11 +37,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Add one or more Components to a GameObject in the opened Prefab or active Scene. " +
+        [UcoSkillDescription("Add one or more Components to a GameObject in the opened Prefab or active Scene. " +
             "Component types are looked up by full name (with namespace) or by class-name fallback. " +
             "Use '" + GameObjectFindToolId + "' to locate the host GameObject and '" + ComponentListToolId +
             "' to discover valid component type names.")]
-        [McpPluginSkillBody("Add Component to GameObject in opened Prefab or in a Scene. " +
+        [UcoSkillBody("Add Component to GameObject in opened Prefab or in a Scene. " +
             "Use '" + GameObjectFindToolId + "' tool to find the target GameObject first. " +
             "Use '" + ComponentListToolId + "' tool to find the component type names to add.\n\n" +
             "## Inputs\n\n" +

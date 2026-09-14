@@ -10,9 +10,9 @@
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Serialization
+namespace com.AtelierAI.Uco.Framework.Tests.Serialization
 {
     public class JsonSerializationTests
     {
@@ -32,7 +32,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Serialization
             // Dispose the plugin immediately â€” Build() configures the reflector synchronously.
             // Keeping the plugin alive leaves a ConnectionManager running indefinitely,
             // causing xUnit's AsyncTestSyncContext to wait forever (hang).
-            using var plugin = new McpPluginBuilder(new Version())
+            using var plugin = new UcoBuilder(new Version())
                 .AddLogging(b => { })
                 .Build(reflector);
 
@@ -46,7 +46,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Serialization
         {
             // Arrange
             var reflector = new Reflector();
-            using var plugin = new McpPluginBuilder(new Version())
+            using var plugin = new UcoBuilder(new Version())
                 .AddLogging(b => { })
                 .Build(reflector);
 
@@ -77,7 +77,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Serialization
         {
             // Arrange
             var reflector = new Reflector();
-            using var plugin = new McpPluginBuilder(new Version())
+            using var plugin = new UcoBuilder(new Version())
                 .AddLogging(b => { })
                 .Build(reflector);
 

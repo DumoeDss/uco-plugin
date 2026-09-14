@@ -13,7 +13,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -24,17 +24,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Reflection
     {
         public const string ReflectionMethodCallToolId = "reflection-method-call";
-        [McpPluginTool
+        [UcoTool
         (
             ReflectionMethodCallToolId,
             Title = "Method C# / Call",
             Enabled = true
         )]
-        [McpPluginSkillDescription("Call a C# method by reflection — including private methods. " +
+        [UcoSkillDescription("Call a C# method by reflection — including private methods. " +
             "Requires a method schema obtained via '" + ReflectionMethodFindToolId + "'. " +
             "Supports static methods, instance methods (with optional target deserialization), and main-thread / " +
             "off-thread execution.")]
-        [McpPluginSkillBody("Call C# method. Any method could be called, even private methods. " +
+        [UcoSkillBody("Call C# method. Any method could be called, even private methods. " +
             "It requires to receive proper method schema. " +
             "Use '" + ReflectionMethodFindToolId + "' to find available method before using it. " +
             "Receives input parameters and returns result.\n\n" +

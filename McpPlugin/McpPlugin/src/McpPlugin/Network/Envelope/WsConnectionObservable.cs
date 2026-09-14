@@ -11,7 +11,7 @@
 using System;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Replaces <c>HubConnectionObservable</c>. Exposes an R3 observable for

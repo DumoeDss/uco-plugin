@@ -6,31 +6,31 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker 镜像')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity 编辑器支持')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity 运行时支持')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg '测试通过')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg '测试通过')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-加入-7289da?logo=discord&logoColor=white&labelColor=333A41 '加入')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=下载量&query=%24.downloads&suffix=%2F月&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP '星标')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=许可证&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP '星标')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=许可证&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="AI 工作" title="关卡构建" width="100%">
+  <img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="AI 工作" title="关卡构建" width="100%">
 
   <p>
-    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
-    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
-    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
-    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
-    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
+    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
+    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
+    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
+    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
+    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
   </p>
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/README.md) | [日本語](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.ja.md) | [Español](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.es.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/README.md) | [日本語](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.ja.md) | [Español](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.es.md)</b>
 
 </div>
 
@@ -40,10 +40,10 @@
 
 > **[💬 加入我们的 Discord 服务器](https://discord.gg/cfbdMZX99G)** — 提问、展示作品，与其他开发者交流！
 
-## ![AI 游戏开发者 — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-features.zh-CN.svg?raw=true)
+## ![AI 游戏开发者 — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-features.zh-CN.svg?raw=true)
 
 - ✔️ **AI 智能体** — 无供应商锁定，自由使用来自 **Anthropic**、**OpenAI**、**Microsoft** 或任何其他服务商的最优秀智能体
-- ✔️ **工具** — 丰富的默认 [MCP 工具](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/default-mcp-tools.md)，用于在 Unity 编辑器中操作
+- ✔️ **工具** — 丰富的默认 [MCP 工具](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/default-mcp-tools.md)，用于在 Unity 编辑器中操作
 - ✔️ **技能** — 根据操作系统、Unity 版本和项目中的插件为 AI 生成技能
 - ✔️ **代码与测试** — 使用 AI 智能体开发游戏机制并进行测试
 - ✔️ **运行时（游戏内）** — 直接在已编译的游戏中使用 LLM，实现动态 NPC 行为或调试
@@ -52,7 +52,7 @@
 - ✔️ **灵活部署** — 支持本地（stdio）和远程（http）两种配置方式
 - ✔️ **可扩展** — 在项目代码中[创建自定义工具](#add-custom-tool)
 
-[![下载安装器](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/button/button_download_zh-CN.svg?raw=true)](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
+[![下载安装器](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/button/button_download_zh-CN.svg?raw=true)](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
 
 https://github.com/user-attachments/assets/228baf4d-4f00-4dce-939d-fb985ebdd8dd
 
@@ -72,20 +72,20 @@ unity-mcp-cli login ./MyUnityProject
 unity-mcp-cli open ./MyUnityProject
 ```
 
-![AI 游戏开发者 Windows](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
+![AI 游戏开发者 Windows](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 快速开始
 
 三步即可启动运行：
 
 1. **[安装插件](#step-1-install-unity-mcp-plugin)** — 下载 `.unitypackage` 安装器，或运行 `openupm add com.ivanmurzak.unity.mcp`
-   > **替代方式：** `npx unity-mcp-cli install-plugin ./MyUnityProject` — 参见 [CLI 文档](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)
+   > **替代方式：** `npx unity-mcp-cli install-plugin ./MyUnityProject` — 参见 [CLI 文档](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)
 2. **[选择 AI 智能体](#step-2-install-ai-agent)** — Claude Code、Claude Desktop、GitHub Copilot、Cursor 或其他
 3. **[配置 AI 智能体](#step-3-configure-ai-agent)** — 在 Unity 中打开 `Window/AI Game Developer`，点击**自动生成技能**（推荐）或**配置 MCP**
-  ![Setup AI Skills](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
-   > **替代方式：** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — 参见 [CLI 文档](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)
+  ![Setup AI Skills](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
+   > **替代方式：** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — 参见 [CLI 文档](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)
 
 
 就是这样。询问 AI *"以半径 2 圆形排列创建 3 个立方体"*，然后看它实现。✨
@@ -179,7 +179,7 @@ unity-mcp-cli open ./MyUnityProject
 | **[AI ParticleSystem](https://github.com/IvanMurzak/Unity-AI-ParticleSystem/)** | Unity 粒子系统附加工具集 |
 | **[AI ProBuilder](https://github.com/IvanMurzak/Unity-AI-ProBuilder/)** | Unity ProBuilder 附加工具集 |
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 目录
 
@@ -235,10 +235,10 @@ unity-mcp-cli open ./MyUnityProject
 | [MCP 服务器设置](docs/mcp-server.md) | 服务器配置、环境变量、远程托管 |
 | [Docker 部署](docs/DOCKER_DEPLOYMENT.md) | 分步 Docker 部署指南 |
 | [开发指南](docs/dev/Development.md) | 架构、代码风格、CI/CD — 面向贡献者 |
-| [Wiki](https://github.com/IvanMurzak/Unity-MCP/wiki) | 入门教程、API 参考、常见问题 |
-| [CLI 工具](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) | 通过命令行安装插件、配置和连接 |
+| [Wiki](https://github.com/IvanMurzak/uco-plugin/wiki) | 入门教程、API 参考、常见问题 |
+| [CLI 工具](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) | 通过命令行安装插件、配置和连接 |
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 安装
 
@@ -259,14 +259,14 @@ unity-mcp-cli open ./MyUnityProject
 
 ### 选项 1 — 安装器
 
-- **[⬇️ 下载安装器](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
+- **[⬇️ 下载安装器](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
 - **📂 将安装器导入 Unity 项目**
   > - 双击文件 — Unity 将自动打开它
   > - 或者：先打开 Unity 编辑器，然后点击 `Assets/Import Package/Custom Package`，选择文件
 
 ### 选项 2 — CLI（推荐）
 
-通过 [`unity-mcp-cli`](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) 安装插件 — 无需 Unity 编辑器：
+通过 [`unity-mcp-cli`](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) 安装插件 — 无需 Unity 编辑器：
 
 ```bash
 # 1.1 安装 unity-mcp-cli                                   #  ┌────────────────────┐
@@ -291,7 +291,7 @@ unity-mcp-cli open ./MyUnityProject                        #  │ vscode-copilot
 unity-mcp-cli wait-for-ready ./MyUnityProject
 ```
 
-> 查看[完整 CLI 文档](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)了解所有可用命令。
+> 查看[完整 CLI 文档](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)了解所有可用命令。
 
 ## 第二步：安装 `AI 智能体`
 
@@ -316,7 +316,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 - 选项 1：点击 `Auto-generate` 技能**（推荐）**
 - 选项 2：点击 `Configure` 模型上下文协议（MCP）
 
-![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/ai-connector-window.gif)
+![Unity_AI](https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/ai-connector-window.gif)
 
 > 如果你的 MCP 客户端不在列表中，请使用窗口中显示的原始 JSON 将其注入到你的 MCP 客户端。请阅读你具体 MCP 客户端的相关说明了解操作方法。
 
@@ -350,7 +350,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
 
   ```bash
   gemini mcp add ai-game-developer <command>
@@ -360,7 +360,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
 
   ```bash
   claude mcp add ai-game-developer <command>
@@ -370,7 +370,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
 
   ```bash
   copilot
@@ -386,7 +386,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
   > 将 `<command>` 替换为上表中对应的命令
 </details>
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # AI 工作流示例
 
@@ -440,7 +440,7 @@ Unity MCP 提供高级工具，使 LLM 能够更快、更有效地工作，避�
 - ✔️ **实时 Unity API** — Unity API 即时可用 — 即使 Unity 更新，你也能获得最新的 API
 - ✔️ **自文档化** — 通过 `Description` 属性访问任意 `类`、`方法` 或 `属性` 的人类可读描述
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 自定义工具
 
@@ -502,7 +502,7 @@ public static class Prompt_ScriptingCode
 }
 ```
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 运行时使用（游戏内）
 
@@ -555,11 +555,11 @@ public static class ChessGameAI
 
 使用场景有很多，想象一下你正在开发一款带有机器人的国际象棋游戏。你可以通过编写几行代码，将机器人的决策逻辑外包给 LLM。
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Unity `MCP Server` 设置
 
-**[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** 服务器支持多种不同的启动选项和 Docker 部署。两种传输协议均受支持：`streamableHttp` 和 `stdio`。如果你需要自定义或将 Unity MCP 服务器部署到云端，本节适合你。[了解更多...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
+**[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** 服务器支持多种不同的启动选项和 Docker 部署。两种传输协议均受支持：`streamableHttp` 和 `stdio`。如果你需要自定义或将 Unity MCP 服务器部署到云端，本节适合你。[了解更多...](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/mcp-server.md)
 
 ## 变量
 
@@ -605,7 +605,7 @@ Unity.exe -batchmode -nographics \
 
 确保已安装 Docker。如果你在 Windows 操作系统上，请确保 Docker Desktop 已启动。
 
-[阅读高级 Docker 配置说明](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/DOCKER_DEPLOYMENT.md)。
+[阅读高级 Docker 配置说明](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/DOCKER_DEPLOYMENT.md)。
 
 ### `streamableHttp` 传输
 
@@ -686,7 +686,7 @@ docker run -e MCP_PLUGIN_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
 
 ## 二进制可执行文件
 
-你可以直接从二进制文件启动 Unity `MCP Server`。你需要针对你的 CPU 架构专门编译的二进制文件。请查看 [GitHub 发布页面](https://github.com/IvanMurzak/Unity-MCP/releases)，其中包含为所有 CPU 架构预编译的二进制文件。
+你可以直接从二进制文件启动 Unity `MCP Server`。你需要针对你的 CPU 架构专门编译的二进制文件。请查看 [GitHub 发布页面](https://github.com/IvanMurzak/uco-plugin/releases)，其中包含为所有 CPU 架构预编译的二进制文件。
 
 ```bash
 ./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport stdio
@@ -714,7 +714,7 @@ docker run -e MCP_PLUGIN_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
 
 </details>
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Unity MCP 架构工作原理
 
@@ -817,7 +817,7 @@ MCP — 模型上下文协议（Model Context Protocol）。简而言之，这�
 - "性能至关重要 — 对于频繁实例化的对象优先使用对象池"
 - "本项目遵循 SOLID 原则 — 解释任何架构决策"
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 贡献 💙💛
 
@@ -825,10 +825,10 @@ MCP — 模型上下文协议（Model Context Protocol）。简而言之，这�
 
 **如果你觉得本项目有用，请给它一个星标 🌟！**
 
-1. 👉 [阅读开发文档](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md)
-2. 👉 [Fork 项目](https://github.com/IvanMurzak/Unity-MCP/fork)
-3. 克隆 fork 并在 Unity 中打开 `./Unity-MCP-Plugin` 文件夹
+1. 👉 [阅读开发文档](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md)
+2. 👉 [Fork 项目](https://github.com/IvanMurzak/uco-plugin/fork)
+3. 克隆 fork 并在 Unity 中打开 `./uco-unity-project` 文件夹
 4. 在项目中实现新功能，提交并推送到 GitHub
-5. 创建针对原始 [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP/compare) 仓库 `main` 分支的 Pull Request
+5. 创建针对原始 [Unity-MCP](https://github.com/IvanMurzak/uco-plugin/compare) 仓库 `main` 分支的 Pull Request
 
-![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI 游戏开发者 — Unity SKILLS 和 MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

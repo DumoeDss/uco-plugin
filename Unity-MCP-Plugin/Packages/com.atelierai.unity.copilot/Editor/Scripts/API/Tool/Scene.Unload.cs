@@ -13,7 +13,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Scene
     {
         public const string SceneUnloadToolId = "scene-unload";
-        [McpPluginTool
+        [UcoTool
         (
             SceneUnloadToolId,
             Title = "Scene / Unload"
@@ -39,10 +39,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SupportsPlanning = true,
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner))]
-        [McpPluginSkillDescription("Unload an opened scene from the Unity Editor (asynchronously via " +
+        [UcoSkillDescription("Unload an opened scene from the Unity Editor (asynchronously via " +
             "`SceneManager.UnloadSceneAsync`). " +
             "Use '" + SceneListOpenedToolId + "' to find the scene name first.")]
-        [McpPluginSkillBody("Unload scene from the Opened scenes in Unity Editor. " +
+        [UcoSkillBody("Unload scene from the Opened scenes in Unity Editor. " +
             "Use '" + SceneListOpenedToolId + "' tool to get the list of all opened scenes.\n\n" +
             "## Inputs\n\n" +
             "- `name` — required non-empty scene name. Must match an opened scene; otherwise throws.\n\n" +

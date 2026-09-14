@@ -11,7 +11,7 @@ using Moq;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Network.Connection
+namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
 {
     public sealed class ConnectionManagerDiagnosticsTests
     {

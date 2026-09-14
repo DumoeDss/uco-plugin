@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace AIGD
 {
@@ -50,7 +50,7 @@ namespace AIGD
         [Description("Optional human-readable description from the attribute. May be null.")]
         public string? Description { get; set; }
 
-        [Description("Tool ids that belong to this group (the values exposed as MCP tool names).")]
+        [Description("Tool ids that belong to this group (the values exposed as uco tool names).")]
         public string[] Tools { get; set; } = System.Array.Empty<string>();
 
         [Description("Number of tools in this group. Equal to Tools.Length; provided for " +
@@ -113,7 +113,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// <b>Opting tools into a group.</b> Add
     /// <c>[ToolGroup("vfx")]</c> (or any other group name) to the
     /// partial-class root of a <c>Tool_*</c> type — the same file that carries
-    /// <c>[McpPluginToolType]</c>. The registry will pick it up on the next
+    /// <c>[UcoToolType]</c>. The registry will pick it up on the next
     /// domain reload. No existing tool files are touched in this implementation;
     /// callers are expected to add the marker themselves on the tools they
     /// want to gate.
@@ -129,7 +129,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// the user's choice.
     /// </para>
     /// </remarks>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_ToolGroups
     {
         public static class Error

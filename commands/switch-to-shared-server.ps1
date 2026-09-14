@@ -32,7 +32,7 @@
 
 .PARAMETER Projects
     One or more Unity project root folders (the folder containing
-    Assets/ and UserSettings/). Defaults to the Unity-MCP-Plugin folder
+    Assets/ and UserSettings/). Defaults to the uco-unity-project folder
     that sits next to this script.
 
 .PARAMETER Revert
@@ -77,10 +77,10 @@ $ErrorActionPreference = 'Stop'
 
 # ── Default project list ─────────────────────────────────────────────────────
 $scriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
-$unityMcpDir = Split-Path -Parent $scriptDir
+$ucoPluginDir = Split-Path -Parent $scriptDir
 
 if (-not $Projects -or $Projects.Count -eq 0) {
-    $defaultProject = Join-Path $unityMcpDir 'Unity-MCP-Plugin'
+    $defaultProject = Join-Path $ucoPluginDir 'uco-unity-project'
     if (Test-Path $defaultProject) {
         $Projects = @($defaultProject)
         Write-Host "==> No -Projects passed, defaulting to: $defaultProject" -ForegroundColor DarkGray
@@ -217,7 +217,7 @@ if ($mode -eq 'switch' -and $ok -gt 0 -and -not $DryRun) {
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor Cyan
     Write-Host "  1. Start the shared server, e.g.:"
-    Write-Host "       cd $unityMcpDir\Unity-MCP-Server" -ForegroundColor DarkGray
+    Write-Host "       cd $ucoPluginDir\Unity-MCP-Server" -ForegroundColor DarkGray
     Write-Host "       dotnet run -c Release -- port=$($uri.Port)" -ForegroundColor DarkGray
     Write-Host "       (NoAuthMcpStrategy.AllowMultipleConnections needs to be true — see Phase B follow-up.)"
     Write-Host "  2. (Once per project) Sync the local Phase A/B DLLs:"

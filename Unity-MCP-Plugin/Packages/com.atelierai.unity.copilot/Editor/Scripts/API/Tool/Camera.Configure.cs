@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -29,17 +29,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraConfigureToolId = "camera-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraConfigureToolId,
             Title = "Camera / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure properties on a `UnityEngine.Camera` component (FOV, clear flags, " +
+        [UcoSkillDescription("Configure properties on a `UnityEngine.Camera` component (FOV, clear flags, " +
             "culling mask, clip planes, background color, orthographic mode/size, render-order depth). " +
             "Pass only the fields you want to change — null fields are left untouched. " +
             "Use '" + CameraGetDataToolId + "' to inspect the current values first.")]
-        [McpPluginSkillBody("Configure a Unity Camera. Only the supplied (non-null) fields are written; everything else is left as-is.\n\n" +
+        [UcoSkillBody("Configure a Unity Camera. Only the supplied (non-null) fields are written; everything else is left as-is.\n\n" +
             "## Inputs\n\n" +
             "- `cameraRef` — host GameObject of the Camera component. Required.\n" +
             "- `fieldOfView` — perspective FOV in degrees.\n" +

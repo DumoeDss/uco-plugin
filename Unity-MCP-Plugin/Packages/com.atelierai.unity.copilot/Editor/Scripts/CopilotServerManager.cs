@@ -26,8 +26,8 @@ using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor
 {
-    using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public enum CopilotServerStatus

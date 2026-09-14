@@ -10,7 +10,7 @@
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Infrastructure
+namespace com.AtelierAI.Uco.Framework.Tests.Infrastructure
 {
     public static class TestLoggerFactory
     {

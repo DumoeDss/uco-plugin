@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using NUnit.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
@@ -30,9 +30,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                     try { return assembly.GetTypes(); }
                     catch (ReflectionTypeLoadException) { return Array.Empty<Type>(); }
                 })
-                .Where(type => type.GetCustomAttribute<McpPluginToolTypeAttribute>() != null)
+                .Where(type => type.GetCustomAttribute<UcoToolTypeAttribute>() != null)
                 .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
-                .Where(method => method.GetCustomAttribute<McpPluginToolAttribute>() != null)
+                .Where(method => method.GetCustomAttribute<UcoToolAttribute>() != null)
                 .ToList();
 
             Assert.IsTrue(toolMethods.Count > 0, "Should find at least one MCP tool method");
@@ -43,7 +43,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 var parameters = method.GetParameters();
                 if (parameters.Length == 0)
                 {
-                    var attr = method.GetCustomAttribute<McpPluginToolAttribute>()!;
+                    var attr = method.GetCustomAttribute<UcoToolAttribute>()!;
                     zeroParamTools.Add($"  - {attr.Name} ({method.DeclaringType?.Name}.{method.Name})");
                 }
             }

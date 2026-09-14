@@ -12,18 +12,18 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Data.Ignored;
-using com.IvanMurzak.McpPlugin.Tests.Data.Ignored.SubNamespace;
-using com.IvanMurzak.McpPlugin.Tests.Data.Included;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Data.Ignored;
+using com.AtelierAI.Uco.Framework.Tests.Data.Ignored.SubNamespace;
+using com.AtelierAI.Uco.Framework.Tests.Data.Included;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderIgnoreTests
@@ -46,13 +46,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly);
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -68,13 +68,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(assemblyName);
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -86,7 +86,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
@@ -106,14 +106,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -126,15 +126,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<SubNamespaceToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -148,16 +148,16 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
                 .IgnoreNamespaces(
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Included");
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Included");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -170,11 +170,11 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
-            Action act = () => builder.IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            Action act = () => builder.IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Assert
             Should.Throw<InvalidOperationException>(act)
@@ -193,13 +193,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
 
             // Call WithToolsFromAssembly BEFORE IgnoreNamespace - should still work due to lazy evaluation
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -216,13 +216,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var testAssembly = typeof(IgnoreTestPromptClass).Assembly;
 
             // Call WithPromptsFromAssembly BEFORE IgnoreNamespace - should still work due to lazy evaluation
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithPromptsFromAssembly(testAssembly)
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.PromptManager!.RunListPrompts(new RequestListPrompts());
+            var response = await plugin.UcoManager.PromptManager!.RunListPrompts(new RequestListPrompts());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -241,14 +241,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly)
                 .RemoveIgnoredAssembly(testAssembly);
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -263,14 +263,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(assemblyName)
                 .RemoveIgnoredAssembly(assemblyName);
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -282,7 +282,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
@@ -302,15 +302,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored")
-                .RemoveIgnoredNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored")
+                .RemoveIgnoredNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -323,19 +323,19 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
                 .IgnoreNamespaces(
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Included")
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Included")
                 .RemoveIgnoredNamespaces(
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Included");
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Included");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -348,11 +348,11 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
-            Action act = () => builder.RemoveIgnoredNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            Action act = () => builder.RemoveIgnoredNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Assert
             Should.Throw<InvalidOperationException>(act)
@@ -369,14 +369,14 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly)
                 .ClearIgnoredAssemblies();
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -391,7 +391,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly)
                 .IgnoreAssembly(assemblyName)
@@ -399,7 +399,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -411,16 +411,16 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<SubNamespaceToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored")
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored")
                 .ClearIgnoredNamespaces();
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -435,15 +435,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var reflector = new Reflector();
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly)
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored")
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored")
                 .ClearAllIgnored();
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.ToolManager!.RunListTool(new RequestListTool());
+            var response = await plugin.UcoManager.ToolManager!.RunListTool(new RequestListTool());
 
             // Assert
             response.Value.ShouldNotBeNull();
@@ -457,7 +457,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
@@ -473,7 +473,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
@@ -489,7 +489,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider);
+            var builder = new UcoBuilder(_version, _loggerProvider);
             builder.Build(reflector);
 
             // Act
@@ -509,7 +509,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly);
 
             // Act - Query count first (modifies cache)
@@ -530,7 +530,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly);
 
             // Act - Query count first (modifies cache)
@@ -550,7 +550,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly);
 
@@ -572,7 +572,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(assemblyName);
 
@@ -593,7 +593,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly);
 
@@ -614,7 +614,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange - Use WithTools<T> to register types directly (not via assembly scanning)
             // because GetIgnoredTypesCount uses GetExportedTypes which only returns public types
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>();
 
@@ -622,7 +622,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var countBefore = builder.GetIgnoredTypesCount();
 
             // Add namespace ignore after cache is modified
-            builder.IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            builder.IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
             var countAfter = builder.GetIgnoredTypesCount();
 
             // Assert
@@ -634,7 +634,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void GetIgnoredTypesCount_AfterIgnoreNamespaces_ShouldInvalidateCache()
         {
             // Arrange - Use WithTools<T> to register types directly
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>();
 
@@ -643,8 +643,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
 
             // Add namespace ignores after cache is modified
             builder.IgnoreNamespaces(
-                "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                "com.IvanMurzak.McpPlugin.Tests.Data.Included");
+                "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                "com.AtelierAI.Uco.Framework.Tests.Data.Included");
             var countAfter = builder.GetIgnoredTypesCount();
 
             // Assert
@@ -656,16 +656,16 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void GetIgnoredTypesCount_AfterRemoveIgnoredNamespace_ShouldInvalidateCache()
         {
             // Arrange - Use WithTools<T> to register types directly
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act - Query count first (modifies cache with ignored state)
             var countBefore = builder.GetIgnoredTypesCount();
 
             // Remove namespace ignore after cache is modified
-            builder.RemoveIgnoredNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            builder.RemoveIgnoredNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
             var countAfter = builder.GetIgnoredTypesCount();
 
             // Assert
@@ -677,20 +677,20 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void GetIgnoredTypesCount_AfterRemoveIgnoredNamespaces_ShouldInvalidateCache()
         {
             // Arrange - Use WithTools<T> to register types directly
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
                 .IgnoreNamespaces(
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                    "com.IvanMurzak.McpPlugin.Tests.Data.Included");
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                    "com.AtelierAI.Uco.Framework.Tests.Data.Included");
 
             // Act - Query count first (modifies cache with ignored state)
             var countBefore = builder.GetIgnoredTypesCount();
 
             // Remove namespace ignores after cache is modified
             builder.RemoveIgnoredNamespaces(
-                "com.IvanMurzak.McpPlugin.Tests.Data.Ignored",
-                "com.IvanMurzak.McpPlugin.Tests.Data.Included");
+                "com.AtelierAI.Uco.Framework.Tests.Data.Ignored",
+                "com.AtelierAI.Uco.Framework.Tests.Data.Included");
             var countAfter = builder.GetIgnoredTypesCount();
 
             // Assert
@@ -702,10 +702,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void GetIgnoredTypesCount_AfterClearIgnoredNamespaces_ShouldInvalidateCache()
         {
             // Arrange - Use WithTools<T> to register types directly
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act - Query count first (modifies cache with ignored state)
             var countBefore = builder.GetIgnoredTypesCount();
@@ -724,10 +724,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly)
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act - Query counts first (modifies both caches with ignored state)
             var assemblyCountBefore = builder.GetIgnoredAssembliesCount();
@@ -750,7 +750,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly);
 
             // Act - Query count first (modifies cache)
@@ -771,7 +771,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly);
 
             // Act - Query count first (modifies cache)
@@ -791,7 +791,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(testAssembly);
 
@@ -813,7 +813,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
             var assemblyName = testAssembly.GetName().Name!;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly)
                 .IgnoreAssembly(assemblyName);
 
@@ -834,7 +834,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var testAssembly = typeof(IgnoreTestToolClass).Assembly;
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithToolsFromAssembly(testAssembly);
 
             // Act & Assert - Multiple mutations should always reflect current state
@@ -857,21 +857,21 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void CacheInvalidation_NamespaceMutations_ShouldAlwaysReflectCurrentState()
         {
             // Arrange
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithTools<IgnoreTestToolClass>()
                 .WithTools<IncludeTestToolClass>();
 
             // Act & Assert - Multiple mutations should always reflect current state
             builder.GetIgnoredTypesCount().ShouldBe(0);
 
-            builder.IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            builder.IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
             var countAfterIgnore = builder.GetIgnoredTypesCount();
             countAfterIgnore.ShouldBeGreaterThan(0);
 
-            builder.RemoveIgnoredNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            builder.RemoveIgnoredNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
             builder.GetIgnoredTypesCount().ShouldBe(0);
 
-            builder.IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+            builder.IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
             builder.GetIgnoredTypesCount().ShouldBe(countAfterIgnore);
 
             builder.ClearIgnoredNamespaces();
@@ -887,15 +887,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .WithPrompts<IgnoreTestPromptClass>()
                 .WithPrompts<SubNamespacePromptClass>()
                 .WithPrompts<IncludeTestPromptClass>()
-                .IgnoreNamespace("com.IvanMurzak.McpPlugin.Tests.Data.Ignored");
+                .IgnoreNamespace("com.AtelierAI.Uco.Framework.Tests.Data.Ignored");
 
             // Act
             var plugin = builder.Build(reflector);
-            var response = await plugin.McpManager.PromptManager!.RunListPrompts(new RequestListPrompts());
+            var response = await plugin.UcoManager.PromptManager!.RunListPrompts(new RequestListPrompts());
 
             // Assert
             response.Value.ShouldNotBeNull();

@@ -19,7 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.AtelierAI.Unity.Copilot.Runtime.Attributes;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// <c>TypeCache.GetTypesWithAttribute&lt;ToolGroupAttribute&gt;()</c>,
     /// and for each marked class enumerates public/non-public instance and static
     /// methods, reflecting any attribute whose simple type-name is
-    /// <c>McpPluginToolAttribute</c> (the external NuGet attribute we are
+    /// <c>UcoToolAttribute</c> (the external NuGet attribute we are
     /// deliberately *not* taking a hard compile-time dependency on, so the
     /// upstream package can evolve without breaking this file).
     /// </para>
@@ -281,9 +281,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         static void Scan()
         {
             // Production tool declarations predate ToolGroupAttribute, so discover the
-            // actual McpPluginTool methods and classify their stable tool IDs. An explicit
+            // actual UcoTool methods and classify their stable tool IDs. An explicit
             // ToolGroupAttribute on a declaring type remains the override seam.
-            var methods = TypeCache.GetMethodsWithAttribute<McpPluginToolAttribute>();
+            var methods = TypeCache.GetMethodsWithAttribute<UcoToolAttribute>();
             foreach (var method in methods)
             {
                 var toolName = ExtractToolName(method);
@@ -360,10 +360,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         /// <summary>
         /// Reflect a method's custom attributes looking for one whose simple
-        /// type name is <c>McpPluginToolAttribute</c>, and pull out the tool
+        /// type name is <c>UcoToolAttribute</c>, and pull out the tool
         /// id via its <c>Name</c> property. We intentionally avoid a typed
         /// reference to the external NuGet attribute so this file does not
-        /// require linking against <c>McpPlugin.dll</c> at compile time —
+        /// require linking against <c>Uco.Framework.dll</c> at compile time —
         /// the asmdef already references it for the rest of the codebase,
         /// but loose coupling here keeps the registry resilient to upstream
         /// renames of the property surface.
@@ -378,7 +378,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             {
                 if (attr == null) continue;
                 var typeName = attr.GetType().Name;
-                if (typeName != "McpPluginToolAttribute")
+                if (typeName != "UcoToolAttribute")
                     continue;
 
                 // Probe a small set of likely member names. The upstream

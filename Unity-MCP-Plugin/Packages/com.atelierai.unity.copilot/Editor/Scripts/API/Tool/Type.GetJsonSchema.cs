@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Type
     {
         public const string TypeGetJsonSchemaToolId = "type-get-json-schema";
-        [McpPluginTool
+        [UcoTool
         (
             TypeGetJsonSchemaToolId,
             Title = "Type / Get Json Schema",
@@ -31,10 +31,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = true
         )]
-        [McpPluginSkillDescription("Generate a JSON Schema for a C# type name via reflection. " +
+        [UcoSkillDescription("Generate a JSON Schema for a C# type name via reflection. " +
             "Supports primitives, enums, arrays, generic collections, dictionaries, and complex objects. " +
             "Knobs control inclusion of nested `$defs` and whether type-level / property-level descriptions are emitted.")]
-        [McpPluginSkillBody("Generates a JSON Schema for a given C# type name using reflection. " +
+        [UcoSkillBody("Generates a JSON Schema for a given C# type name using reflection. " +
             "Supports primitives, enums, arrays, generic collections, dictionaries, and complex objects. " +
             "The type must be present in any loaded assembly. " +
             "Use the full type name (e.g. 'UnityEngine.Vector3') for best results.\n\n" +

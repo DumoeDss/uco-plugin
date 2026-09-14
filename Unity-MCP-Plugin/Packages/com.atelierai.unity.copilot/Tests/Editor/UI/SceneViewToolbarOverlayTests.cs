@@ -61,7 +61,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void OpenWindowButton_SetsExpectedTextAndTooltip()
         {
             var button = new OpenWindowButton();
-            Assert.AreEqual("Game Developer", button.text);
+            Assert.AreEqual("Unity Co-Pilot", button.text);
             Assert.IsNotEmpty(button.tooltip);
         }
 

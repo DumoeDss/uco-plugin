@@ -14,7 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     /// <summary>
     /// Runtime call context derived from <see cref="ToolCallControl"/>.

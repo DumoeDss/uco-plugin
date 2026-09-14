@@ -18,7 +18,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin.Skills
+namespace com.AtelierAI.Uco.Framework.Skills
 {
     /// <summary>
     /// Generates AI skill markdown files for each registered MCP tool.
@@ -27,7 +27,7 @@ namespace com.IvanMurzak.McpPlugin.Skills
     /// <para>
     /// Override virtual members to customize any aspect of file generation without replacing
     /// the entire class. Register a custom subclass via
-    /// <c>McpPluginBuilder.WithSkillFileGenerator&lt;T&gt;()</c>.
+    /// <c>UcoBuilder.WithSkillFileGenerator&lt;T&gt;()</c>.
     /// </para>
     /// </summary>
     public class SkillFileGenerator : ISkillFileGenerator
@@ -1052,7 +1052,7 @@ namespace com.IvanMurzak.McpPlugin.Skills
         /// </summary>
         protected static string GetApiRoutePrefix(IRunTool tool)
         {
-            return tool.ToolType == McpToolType.System ? "/api/system-tools" : "/api/tools";
+            return tool.ToolType == UcoToolType.System ? "/api/system-tools" : "/api/tools";
         }
 
         /// <summary>
@@ -1174,8 +1174,8 @@ namespace com.IvanMurzak.McpPlugin.Skills
             {
                 _logger?.LogWarning(
                     "{class}: Description for '{name}' is {len} chars, exceeding the YAML cap of {cap}. " +
-                    "Truncating for SKILL.md; consider adding [McpPluginSkillDescription] for a concise summary " +
-                    "and [McpPluginSkillBody] for long-form content.",
+                    "Truncating for SKILL.md; consider adding [UcoSkillDescription] for a concise summary " +
+                    "and [UcoSkillBody] for long-form content.",
                     nameof(SkillFileGenerator), toolOrSkillName, fullDescription.Length, cap);
                 return TruncateForYaml(fullDescription, cap);
             }

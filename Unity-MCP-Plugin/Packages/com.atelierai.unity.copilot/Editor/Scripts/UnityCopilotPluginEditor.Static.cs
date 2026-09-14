@@ -15,17 +15,17 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
 
 namespace com.AtelierAI.Unity.Copilot
 {
-    using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+    using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
     using LogLevel = com.AtelierAI.Unity.Copilot.Runtime.Utils.LogLevel;
 
@@ -76,11 +76,11 @@ namespace com.AtelierAI.Unity.Copilot
             }
         }
 
-        // Replaces McpPlugin.McpPlugin static singleton behavior
-        private static readonly ReactiveProperty<IMcpPlugin?> _pluginProperty = new(null);
-        public static ReadOnlyReactiveProperty<IMcpPlugin?> PluginProperty => _pluginProperty;
-        public static IMcpPlugin? CurrentPlugin => _pluginProperty.Value;
-        private static void SetCurrentPlugin(IMcpPlugin? plugin) => _pluginProperty.Value = plugin;
+        // Replaces UcoFramework.UcoFramework static singleton behavior
+        private static readonly ReactiveProperty<IUcoPlugin?> _pluginProperty = new(null);
+        public static ReadOnlyReactiveProperty<IUcoPlugin?> PluginProperty => _pluginProperty;
+        public static IUcoPlugin? CurrentPlugin => _pluginProperty.Value;
+        private static void SetCurrentPlugin(IUcoPlugin? plugin) => _pluginProperty.Value = plugin;
 
         public static LogLevel LogLevel
         {

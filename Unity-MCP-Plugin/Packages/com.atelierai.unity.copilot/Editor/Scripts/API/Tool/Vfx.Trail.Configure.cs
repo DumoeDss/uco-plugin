@@ -15,7 +15,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -29,16 +29,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string VfxTrailConfigureToolId = "vfx-trail-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             VfxTrailConfigureToolId,
             Title = "VFX / Trail / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure a `UnityEngine.TrailRenderer` — time, start/end width, start/end color, " +
+        [UcoSkillDescription("Configure a `UnityEngine.TrailRenderer` — time, start/end width, start/end color, " +
             "minVertexDistance, emitting flag, autodestruct flag. " +
             "Pass only the fields you want to change — null fields are left untouched.")]
-        [McpPluginSkillBody("Configure a Unity TrailRenderer. Only the supplied (non-null) fields are written; " +
+        [UcoSkillBody("Configure a Unity TrailRenderer. Only the supplied (non-null) fields are written; " +
             "everything else is left as-is. The colors are accepted as `Vector4` (RGBA in [0..1]).\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject of the TrailRenderer. Required.\n" +

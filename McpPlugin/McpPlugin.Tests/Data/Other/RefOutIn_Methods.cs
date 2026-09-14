@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 // Cases: ref/out/in parameters
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class RefOutIn_Methods
     {

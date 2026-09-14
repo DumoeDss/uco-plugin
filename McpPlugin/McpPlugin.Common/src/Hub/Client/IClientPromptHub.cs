@@ -9,9 +9,9 @@
 */
 
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin.Common.Hub.Client
+namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
 {
     public interface IClientPromptHub
     {

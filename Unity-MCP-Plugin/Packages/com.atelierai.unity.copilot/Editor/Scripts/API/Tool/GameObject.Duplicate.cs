@@ -12,7 +12,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectDuplicateToolId = "gameobject-duplicate";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectDuplicateToolId,
             Title = "GameObject / Duplicate"
@@ -39,10 +39,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Duplicate a batch of GameObjects in the currently opened Prefab or active Scene. " +
+        [UcoSkillDescription("Duplicate a batch of GameObjects in the currently opened Prefab or active Scene. " +
             "Marks each affected scene as dirty after duplication. " +
             "Use '" + GameObjectFindToolId + "' to locate the source GameObjects first.")]
-        [McpPluginSkillBody("Duplicate GameObjects in opened Prefab or in a Scene. " +
+        [UcoSkillBody("Duplicate GameObjects in opened Prefab or in a Scene. " +
             "Use '" + GameObjectFindToolId + "' tool to find the target GameObjects first.\n\n" +
             "## Inputs\n\n" +
             "- `gameObjectRefs` — `GameObjectRefList` of source GameObjects.\n\n" +

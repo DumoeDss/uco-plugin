@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildJobListToolId = "build-job-list";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildJobListToolId,
             Title = "Build / List Jobs",
@@ -31,10 +31,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ExecutionAffinity = ToolExecutionAffinity.Background,
             ThreadSafeRead = true
         )]
-        [McpPluginSkillDescription("List every build job registered in this editor session. " +
+        [UcoSkillDescription("List every build job registered in this editor session. " +
             "Set `includeCompleted=false` to drop succeeded/failed jobs and return only active " +
             "(`queued` or `running`) entries.")]
-        [McpPluginSkillBody("List build jobs. " +
+        [UcoSkillBody("List build jobs. " +
             "The list projects the project-local durable operation registry. Each entry is the same " +
             "`BuildJobInfo` produced by '" + BuildPlayerToolId + "', so " +
             "callers can rely on the same fields and lifecycle semantics.\n\n" +

@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -28,7 +28,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocsLookupToolId = "docs-lookup";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocsLookupToolId,
             Title = "Docs / Lookup",
@@ -36,10 +36,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             OpenWorldHint = true
         )]
-        [McpPluginSkillDescription("Look up a batch of Unity documentation queries in parallel across ScriptReference, " +
+        [UcoSkillDescription("Look up a batch of Unity documentation queries in parallel across ScriptReference, " +
             "Manual and (optionally) Package docs. Each query is dispatched to all configured sources concurrently and " +
             "every successful hit is returned. Use it as the broad 'I don't know where this lives' entry point.")]
-        [McpPluginSkillBody("Searches Unity docs across multiple sources in parallel.\n\n" +
+        [UcoSkillBody("Searches Unity docs across multiple sources in parallel.\n\n" +
             "## Inputs\n\n" +
             "- `queries` *(required)* — one or more query strings. Each entry is split on '.' into class + member " +
             "for the ScriptReference probe, and slugified ('-' join, lowercase fallback) for the Manual probe.\n" +

@@ -13,8 +13,8 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
 using System.Net.WebSockets;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         private ILogger<ConnectionManager> _mockLogger = null!;
         private MockHubEndpointConnectionProvider _mockConnectionProvider = null!;
         private ConnectionManager? _connectionManager;
-        private com.IvanMurzak.McpPlugin.Common.Version _testVersion = new();
+        private com.AtelierAI.Uco.Framework.Common.Version _testVersion = new();
 
         [SetUp]
         public void SetUp()

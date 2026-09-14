@@ -15,11 +15,11 @@ using System.Linq;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Collection of system tool runners — built from methods with
-    /// <see cref="McpPluginToolAttribute.ToolType"/> set to <see cref="McpToolType.System"/>.
+    /// <see cref="UcoToolAttribute.ToolType"/> set to <see cref="UcoToolType.System"/>.
     /// </summary>
     public class SystemToolRunnerCollection : IDictionary<string, IRunTool>, IReadOnlyDictionary<string, IRunTool>
     {

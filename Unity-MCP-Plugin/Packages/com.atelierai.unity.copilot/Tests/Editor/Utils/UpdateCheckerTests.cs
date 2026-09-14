@@ -426,7 +426,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             Assert.IsTrue(UpdateChecker.ShouldCheckForUpdates());
         }
 
-        // Team-shared kill-switch tests — see https://github.com/IvanMurzak/Unity-MCP/issues/768.
+        // Team-shared kill-switch tests — see https://github.com/IvanMurzak/uco-plugin/issues/768.
         // The project flag must short-circuit ShouldCheckForUpdates() BEFORE the per-user
         // DoNotShowAgain check, so flipping it on suppresses the popup for the whole team
         // regardless of individual users' EditorPrefs state.

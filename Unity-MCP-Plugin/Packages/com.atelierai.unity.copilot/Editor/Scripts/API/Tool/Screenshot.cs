@@ -17,8 +17,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Win32.SafeHandles;
 using UnityEditor;
@@ -43,7 +43,7 @@ namespace AIGD
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Screenshot
     {
         private const int MaxDimension = 16384;
@@ -251,7 +251,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             if (string.IsNullOrWhiteSpace(outputFile) && !metadataOnly)
                 return ResponseCallTool.Image(pngBytes,
-                    com.IvanMurzak.McpPlugin.Common.Consts.MimeType.ImagePng, caption);
+                    com.AtelierAI.Uco.Framework.Common.Consts.MimeType.ImagePng, caption);
 
             string? resolvedPath = null;
             if (!string.IsNullOrWhiteSpace(outputFile))

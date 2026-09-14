@@ -15,7 +15,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -77,17 +77,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         public const string PhysicsCollisionMatrixGetToolId = "physics-collision-matrix-get";
         public const string PhysicsCollisionMatrixSetToolId = "physics-collision-matrix-set";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsCollisionMatrixGetToolId,
             Title = "Physics / Collision Matrix / Get",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Snapshot the layer-vs-layer collision matrix for the requested dimension " +
+        [UcoSkillDescription("Snapshot the layer-vs-layer collision matrix for the requested dimension " +
             "('3d' default or '2d'). Only populated layers (non-empty name) are returned to keep the response " +
             "small.")]
-        [McpPluginSkillBody("Reads `Physics.GetIgnoreLayerCollision` (3D) or `Physics2D.GetIgnoreLayerCollision` (2D).\n\n" +
+        [UcoSkillBody("Reads `Physics.GetIgnoreLayerCollision` (3D) or `Physics2D.GetIgnoreLayerCollision` (2D).\n\n" +
             "## Inputs\n\n" +
             "- `dimension` (default `'3d'`) — `'2d'` or `'3d'`.\n\n" +
             "## Behavior\n\n" +
@@ -107,15 +107,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             return MainThread.Instance.Run(() => ReadMatrix(dim));
         }
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsCollisionMatrixSetToolId,
             Title = "Physics / Collision Matrix / Set",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Toggle whether two layers should collide for the requested dimension. " +
+        [UcoSkillDescription("Toggle whether two layers should collide for the requested dimension. " +
             "Layers can be referenced by name or by integer index (0..31).")]
-        [McpPluginSkillBody("Calls `Physics.IgnoreLayerCollision(a, b, !collide)` (3D) or the matching " +
+        [UcoSkillBody("Calls `Physics.IgnoreLayerCollision(a, b, !collide)` (3D) or the matching " +
             "`Physics2D` API. Marks the corresponding ProjectSettings asset dirty so the change persists.\n\n" +
             "## Inputs\n\n" +
             "- `layerA` / `layerB` — layer name or numeric index (0..31).\n" +

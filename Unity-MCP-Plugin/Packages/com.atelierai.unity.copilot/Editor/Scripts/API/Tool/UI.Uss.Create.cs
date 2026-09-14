@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -26,16 +26,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UssCreateToolId = "ui-uss-create";
 
-        [McpPluginTool
+        [UcoTool
         (
             UssCreateToolId,
             Title = "UI / USS / Create",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Write a new USS file under 'Assets/'. USS is treated as opaque text — no CSS AST " +
+        [UcoSkillDescription("Write a new USS file under 'Assets/'. USS is treated as opaque text — no CSS AST " +
             "validation is performed. Refuses to overwrite an existing asset unless 'overwrite=true' is provided. " +
             "Pair with '" + UssReadToolId + "' and '" + UssModifyToolId + "' for incremental edits.")]
-        [McpPluginSkillBody("Create a new USS (UI Toolkit Style Sheet) asset.\n\n" +
+        [UcoSkillBody("Create a new USS (UI Toolkit Style Sheet) asset.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path under 'Assets/' ending in '.uss'. Intermediate folders are created.\n" +
             "- `content` — full USS document as a string. Must not be null.\n" +

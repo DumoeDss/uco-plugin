@@ -12,7 +12,7 @@
 using AIGD;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -34,16 +34,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         };
 
         public const string AssetsCreateFolderToolId = "assets-create-folder";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsCreateFolderToolId,
             Title = "Assets / Create Folder",
             Enabled = false
         )]
-        [McpPluginSkillDescription("Create a new folder under a parent folder inside 'Assets/'. " +
+        [UcoSkillDescription("Create a new folder under a parent folder inside 'Assets/'. " +
             "The parent path must start with 'Assets/' and every intermediate folder in it must already exist. " +
             "Refreshes the AssetDatabase at the end and returns the GUID(s) of the created folder(s).")]
-        [McpPluginSkillBody("Creates a new folder in the specified parent folder. " +
+        [UcoSkillBody("Creates a new folder in the specified parent folder. " +
             "The parent folder string must start with the 'Assets' folder, and all folders within the parent folder string must already exist. " +
             "For example, when specifying 'Assets/ParentFolder1/ParentFolder2/', the new folder will be created in 'ParentFolder2' only if ParentFolder1 and ParentFolder2 already exist. " +
             "Use it to organize scripts and assets in the project. " +

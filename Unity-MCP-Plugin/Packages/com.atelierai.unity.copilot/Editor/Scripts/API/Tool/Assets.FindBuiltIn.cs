@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -25,17 +25,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsFindBuiltInToolId = "assets-find-built-in";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsFindBuiltInToolId,
             Title = "Assets / Find (Built-in)",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Search the built-in assets of the Unity Editor (located at " +
+        [UcoSkillDescription("Search the built-in assets of the Unity Editor (located at " +
             ExtensionsRuntimeObject.UnityEditorBuiltInResourcesPath + "). " +
             "Filters by name and/or type; built-in assets have no GUID so GUID-based lookups are not supported.")]
-        [McpPluginSkillBody("Search the built-in assets of the Unity Editor located in the built-in resources: " +
+        [UcoSkillBody("Search the built-in assets of the Unity Editor located in the built-in resources: " +
             ExtensionsRuntimeObject.UnityEditorBuiltInResourcesPath + ". " +
             "Doesn't support GUIDs since built-in assets do not have them.\n\n" +
             "## Inputs\n\n" +

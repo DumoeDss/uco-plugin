@@ -11,7 +11,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Pair<TKey, TValue>
         where TKey : notnull

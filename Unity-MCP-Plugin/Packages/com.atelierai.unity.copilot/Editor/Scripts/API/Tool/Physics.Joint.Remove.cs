@@ -15,7 +15,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -30,16 +30,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string PhysicsJointRemoveToolId = "physics-joint-remove";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsJointRemoveToolId,
             Title = "Physics / Joint / Remove",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Remove one or all Joint / Joint2D components from a GameObject. " +
+        [UcoSkillDescription("Remove one or all Joint / Joint2D components from a GameObject. " +
             "Use `jointIndex = -1` to remove every matching joint at once, or a specific 0-based index to remove just " +
             "one. The `jointType` filter restricts removal to a specific joint family.")]
-        [McpPluginSkillBody("Remove Joint components from a GameObject in the opened Prefab or active Scene.\n\n" +
+        [UcoSkillBody("Remove Joint components from a GameObject in the opened Prefab or active Scene.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject. Required.\n" +
             "- `jointIndex` — 0-based index into the filtered joint list; `-1` removes every match. Default 0.\n" +

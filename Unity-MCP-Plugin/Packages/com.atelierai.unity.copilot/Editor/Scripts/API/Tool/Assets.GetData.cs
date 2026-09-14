@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
@@ -26,17 +26,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsGetDataToolId = "assets-get-data";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsGetDataToolId,
             Title = "Assets / Get Data",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Get asset data from the asset file in the Unity project — every serializable " +
+        [UcoSkillDescription("Get asset data from the asset file in the Unity project — every serializable " +
             "field and property. Supports token-saving path-scoped reads via `paths` or `viewQuery`. " +
             "Use '" + AssetsFindToolId + "' to find the asset first.")]
-        [McpPluginSkillBody("Get asset data from the asset file in the Unity project. " +
+        [UcoSkillBody("Get asset data from the asset file in the Unity project. " +
             "It includes all serializable fields and properties of the asset. " +
             "Use '" + AssetsFindToolId + "' tool to find asset before using this tool.\n\n" +
             "## Path-scoped reads (token-saving)\n\n" +

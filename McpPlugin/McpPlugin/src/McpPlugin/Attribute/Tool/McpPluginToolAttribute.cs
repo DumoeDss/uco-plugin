@@ -10,10 +10,10 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class McpPluginToolAttribute : Attribute
+    public sealed class UcoToolAttribute : Attribute
     {
         public string Name { get; set; }
         public string? Title { get; set; }
@@ -21,9 +21,9 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>
         /// The type of tool. Standard tools are exposed to MCP clients;
         /// System tools are only available via the HTTP API.
-        /// Defaults to <see cref="McpToolType.Standard"/>.
+        /// Defaults to <see cref="UcoToolType.Standard"/>.
         /// </summary>
-        public McpToolType ToolType { get; set; } = McpToolType.Standard;
+        public UcoToolType ToolType { get; set; } = UcoToolType.Standard;
 
         private bool _readOnlyHint;
         private bool _readOnlyHintSet;
@@ -136,7 +136,7 @@ namespace com.IvanMurzak.McpPlugin
                     ThreadSafeRead = _threadSafeReadSet && _threadSafeRead
                 };
 
-        public McpPluginToolAttribute(string name, string? title = null)
+        public UcoToolAttribute(string name, string? title = null)
         {
             Name = name;
             Title = title;

@@ -57,13 +57,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
         public static readonly NuGetPackage[] Packages =
         {
             // --- Runtime dependencies (included in game builds) ---
-            // NOTE: com.IvanMurzak.McpPlugin and com.IvanMurzak.ReflectorNet are
+            // NOTE: com.AtelierAI.Uco.Framework and com.IvanMurzak.ReflectorNet are
             // intentionally absent from this array. Those three DLLs (ReflectorNet.dll,
-            // McpPlugin.dll, McpPlugin.Common.dll) are now built from local source via
+            // Uco.Framework.dll, Uco.Framework.Common.dll) are now built from local source via
             // commands/build-framework-dlls.ps1 and committed as static assets in
             // Assets/Plugins/NuGet/. The resolver never fetches or cleans them because
             // they are not in Packages[] nor in .nuget-installed.json.
-            // v8 pinned to match what McpPlugin.dll (netstandard2.1) is compiled against.
+            // v8 pinned to match what Uco.Framework.dll (netstandard2.1) is compiled against.
             // Higher versions cause MissingMethodException at runtime in Unity versions
             // whose built-in BCL doesn't override our NuGet install (e.g. Unity 6.5).
             new NuGetPackage("System.Text.Json",                                      "8.0.5",  includeInBuild: true),

@@ -12,7 +12,7 @@
 #if !UNITY_6000_5_OR_NEWER
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using UnityEditor;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Editor_Selection
     {
         public const string EditorSelectionGetToolId = "editor-selection-get";
-        [McpPluginTool
+        [UcoTool
         (
             EditorSelectionGetToolId,
             Title = "Editor / Selection / Get",
@@ -30,8 +30,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription(GetSkill.Description)]
-        [McpPluginSkillBody(GetSkill.Body)]
+        [UcoSkillDescription(GetSkill.Description)]
+        [UcoSkillBody(GetSkill.Body)]
         [Description("Get information about the current Selection in the Unity Editor. " +
             "Use '" + EditorSelectionSetToolId + "' tool to set the selection.")]
         public SelectionData Get(

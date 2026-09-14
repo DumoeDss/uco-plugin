@@ -17,21 +17,21 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Build
     {
         // -----------------------------------------------------------------
         // DTOs
         // -----------------------------------------------------------------
 
-        public class BuildJobInfo : com.IvanMurzak.McpPlugin.Common.Model.IDurableOperationHandle
+        public class BuildJobInfo : com.AtelierAI.Uco.Framework.Common.Model.IDurableOperationHandle
         {
             [Description("Unique job ID for polling via build-job-get.")]
             public string JobId { get; set; } = "";

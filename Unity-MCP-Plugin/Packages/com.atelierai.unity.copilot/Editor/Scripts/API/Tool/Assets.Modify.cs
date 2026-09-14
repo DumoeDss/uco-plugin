@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
@@ -30,14 +30,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsModifyToolId = "assets-modify";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsModifyToolId,
             Title = "Assets / Modify",
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription(ModifySkill.Description)]
-        [McpPluginSkillBody(ModifySkill.Body)]
+        [UcoSkillDescription(ModifySkill.Description)]
+        [UcoSkillBody(ModifySkill.Body)]
         [Description("Modify asset file in the project. " +
             "Use '" + AssetsGetDataToolId + "' tool first to inspect the asset structure before modifying. " +
             "Not allowed to modify asset file in 'Packages/' folder. Please modify it in 'Assets/' folder.\n\n" +

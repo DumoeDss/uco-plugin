@@ -10,7 +10,7 @@
 
 #nullable enable
 using System;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.Extensions.Logging;
@@ -53,9 +53,9 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         public void SerializeTarget()
         {
             var logger = UnityLoggerFactory.LoggerFactory.CreateLogger(nameof(TestSerialization));
-            if (!UnityCopilotPluginRuntime.HasInstance || UnityCopilotPluginRuntime.Instance.McpPluginInstance == null)
+            if (!UnityCopilotPluginRuntime.HasInstance || UnityCopilotPluginRuntime.Instance.UcoPluginInstance == null)
                 throw new InvalidOperationException("No active UnityCopilotPluginRuntime instance. Call UnityCopilotPluginRuntime.Initialize().Build() first.");
-            var reflector = UnityCopilotPluginRuntime.Instance.McpPluginInstance.McpManager.Reflector
+            var reflector = UnityCopilotPluginRuntime.Instance.UcoPluginInstance.UcoManager.Reflector
                 ?? throw new InvalidOperationException("Reflector is null");
 
             logger.LogInformation($"Serializing target '{target?.name}' of type '{target?.GetType().GetTypeId()}' with recursive={recursive}");

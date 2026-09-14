@@ -3,12 +3,12 @@
 using System;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Shouldly;
 using Xunit;
-using static com.IvanMurzak.McpPlugin.Tests.Mcp.AuthoringTestSupport;
+using static com.AtelierAI.Uco.Framework.Tests.Mcp.AuthoringTestSupport;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     /// <summary>
     /// Task 4.1: strict none|validate|plan dispatch. Every unsupported or

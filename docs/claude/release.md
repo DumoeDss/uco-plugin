@@ -1,6 +1,6 @@
 # Release & Versioning
 
-Version is sourced from [Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/package.json](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/package.json). Bump with `.\commands\bump-version.ps1 <version>`.
+Version is sourced from [uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json). Bump with `.\commands\bump-version.ps1 <version>`.
 
 ## CI/CD
 

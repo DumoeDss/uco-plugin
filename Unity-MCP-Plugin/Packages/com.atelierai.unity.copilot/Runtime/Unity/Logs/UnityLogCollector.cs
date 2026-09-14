@@ -15,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;

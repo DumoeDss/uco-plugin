@@ -17,7 +17,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -32,17 +32,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string VfxGraphConfigureToolId = "vfx-graph-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             VfxGraphConfigureToolId,
             Title = "VFX / Graph / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Set a single exposed property on a VFX Graph `VisualEffect` component. " +
+        [UcoSkillDescription("Set a single exposed property on a VFX Graph `VisualEffect` component. " +
             "Requires the `com.unity.visualeffectgraph` package — returns Ok=false with " +
             "'VFX Graph package (com.unity.visualeffectgraph) not installed.' when the package is missing. " +
             "Supports valueType ∈ { float, int, bool, vector2, vector3, vector4, color }.")]
-        [McpPluginSkillBody("Set a single exposed property on a VisualEffect (VFX Graph) component. " +
+        [UcoSkillBody("Set a single exposed property on a VisualEffect (VFX Graph) component. " +
             "The implementation is reflection-only — no hard dependency on the VFX Graph assembly — so this tool " +
             "is safe to compile even when the package is not installed. At runtime the tool probes for " +
             "`UnityEngine.VFX.VisualEffect` and returns a structured error when missing.\n\n" +

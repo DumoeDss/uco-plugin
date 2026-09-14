@@ -11,10 +11,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public static class JsonNodeExtensions
     {

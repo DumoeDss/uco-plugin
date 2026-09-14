@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Text.Json.Nodes;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public enum AuthoringRollbackStatus
     {

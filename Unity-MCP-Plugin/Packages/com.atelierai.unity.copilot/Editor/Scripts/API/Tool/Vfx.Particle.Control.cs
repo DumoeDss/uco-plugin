@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using AIGD;
@@ -27,15 +27,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string VfxParticleControlToolId = "vfx-particle-control";
 
-        [McpPluginTool
+        [UcoTool
         (
             VfxParticleControlToolId,
             Title = "VFX / Particle / Control",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Control playback of a `UnityEngine.ParticleSystem` — play / pause / stop / " +
+        [UcoSkillDescription("Control playback of a `UnityEngine.ParticleSystem` — play / pause / stop / " +
             "clear / emit. The 'emit' action injects `emitCount` particles immediately via `ParticleSystem.Emit(int)`.")]
-        [McpPluginSkillBody("Control ParticleSystem playback. Operates on the supplied GameObject's ParticleSystem " +
+        [UcoSkillBody("Control ParticleSystem playback. Operates on the supplied GameObject's ParticleSystem " +
             "component plus its children (matching Unity's default 'withChildren=true' behavior).\n\n" +
             "## Actions\n\n" +
             "- `play` — `ParticleSystem.Play(withChildren: true)`.\n" +

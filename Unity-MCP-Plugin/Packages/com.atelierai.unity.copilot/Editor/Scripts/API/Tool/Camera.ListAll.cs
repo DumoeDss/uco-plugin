@@ -15,7 +15,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -25,17 +25,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraListAllToolId = "camera-list-all";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraListAllToolId,
             Title = "Camera / List All",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List every `UnityEngine.Camera` in the active scenes (including inactive ones), " +
+        [UcoSkillDescription("List every `UnityEngine.Camera` in the active scenes (including inactive ones), " +
             "with a configuration snapshot per camera. Reports `cinemachineInstalled` so callers know whether the " +
             "Cinemachine-specific tools are available.")]
-        [McpPluginSkillBody("Enumerates all Cameras in the loaded scenes via `Object.FindObjectsByType<Camera>(IncludeInactive)` " +
+        [UcoSkillBody("Enumerates all Cameras in the loaded scenes via `Object.FindObjectsByType<Camera>(IncludeInactive)` " +
             "and returns a snapshot per camera plus the global Cinemachine-availability flag.\n\n" +
             "## Output shape\n\n" +
             "- `CinemachineInstalled` — true when the Cinemachine package is detected (via reflection).\n" +

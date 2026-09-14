@@ -8,19 +8,19 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Ignored
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Ignored
 {
-    [McpPluginToolType]
+    [UcoToolType]
     internal class IgnoreTestToolClass
     {
-        [McpPluginTool("ignore-test-tool", "Test tool for ignore tests")]
+        [UcoTool("ignore-test-tool", "Test tool for ignore tests")]
         public static string TestTool() => "test";
     }
 
-    [McpPluginPromptType]
+    [UcoPromptType]
     internal class IgnoreTestPromptClass
     {
-        [McpPluginPrompt(Name = "ignore-test-prompt")]
+        [UcoPrompt(Name = "ignore-test-prompt")]
         public static string TestPrompt() => "test prompt";
     }
 }

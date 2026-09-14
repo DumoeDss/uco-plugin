@@ -10,7 +10,7 @@
 
 using System.Threading.Tasks;
 
-namespace com.IvanMurzak.McpPlugin.Common.Hub.Client
+namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
 {
     public interface IClientDisconnectable
     {

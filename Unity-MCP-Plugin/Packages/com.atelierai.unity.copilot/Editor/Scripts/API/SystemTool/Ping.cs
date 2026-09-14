@@ -10,25 +10,25 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Ping
     {
         public const string PingToolId = "ping";
-        [McpPluginTool
+        [UcoTool
         (
             PingToolId,
             Title = "Ping",
             ReadOnlyHint = true,
             IdempotentHint = true,
-            ToolType = McpToolType.System
+            ToolType = UcoToolType.System
         )]
-        [McpPluginSkillDescription("Lightweight readiness probe. Returns the input `message` echoed back, or `'pong'` " +
+        [UcoSkillDescription("Lightweight readiness probe. Returns the input `message` echoed back, or `'pong'` " +
             "when omitted. Useful for CLI health checks and SignalR connectivity smoke tests.")]
-        [McpPluginSkillBody("Lightweight readiness probe. Returns the input message or 'pong' if omitted.\n\n" +
+        [UcoSkillBody("Lightweight readiness probe. Returns the input message or 'pong' if omitted.\n\n" +
             "## Inputs\n\n" +
             "- `message` (optional) — when present, echoed back verbatim.\n\n" +
             "## Behavior\n\n" +

@@ -11,7 +11,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.IvanMurzak.McpPlugin.Common.Utils
+namespace com.AtelierAI.Uco.Framework.Common.Utils
 {
     public interface IDataArguments
     {

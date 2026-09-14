@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     /// <summary>
     /// Marker for a durable operation handle. Reflected tools returning this marker

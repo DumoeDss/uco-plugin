@@ -10,16 +10,16 @@
 
 #nullable enable
 using System.Runtime.InteropServices;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginSkillType]
+    [UcoSkillType]
     public static class Skill_InitialSetup
     {
         public const string SkillId = "unity-initial-setup";
 
-        [McpPluginSkill(SkillId,
+        [UcoSkill(SkillId,
 @"Provides an initial setup for AI Skills, `unity-mcp-cli` command line tool installation
 and everything else that is helpful to set up at the start of the project. Essential packages,
 and basic configurations.")]

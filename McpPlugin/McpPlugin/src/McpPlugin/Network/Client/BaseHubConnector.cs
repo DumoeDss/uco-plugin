@@ -11,15 +11,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Hub.Server;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Hub.Server;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Microsoft.Extensions.Logging;
 using R3;
-using WsState = com.IvanMurzak.McpPlugin.ConnectionState;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using WsState = com.AtelierAI.Uco.Framework.ConnectionState;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public abstract class BaseHubConnector : IConnectServerHub, IDisposable
     {

@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin.Utils
+namespace com.AtelierAI.Uco.Framework.Utils
 {
     public static class ArgumentUtils
     {

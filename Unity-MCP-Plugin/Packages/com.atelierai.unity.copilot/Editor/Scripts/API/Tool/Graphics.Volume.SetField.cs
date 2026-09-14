@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -28,17 +28,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string GraphicsVolumeSetFieldToolId = "graphics-volume-set-field";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsVolumeSetFieldToolId,
             Title = "Graphics / Volume / Set Field",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Set the `.value` (and optionally `.overrideState`) of a single " +
+        [UcoSkillDescription("Set the `.value` (and optionally `.overrideState`) of a single " +
             "`VolumeParameter<T>` field on a `VolumeComponent` override. Reflection-only — works without a " +
             "compile-time dependency on URP/HDRP. `valueJson` is parsed against the underlying `T` of the " +
             "parameter (float, int, bool, enum, Color, Vector2/3/4).")]
-        [McpPluginSkillBody("Walks the VolumeComponent's reflection-discovered fields to find a " +
+        [UcoSkillBody("Walks the VolumeComponent's reflection-discovered fields to find a " +
             "`VolumeParameter<T>` whose declared name matches `fieldName`. The parameter's `.value` is " +
             "written via reflection, and `.overrideState` is set to true by default (so the value actually " +
             "contributes to the blend).\n\n" +

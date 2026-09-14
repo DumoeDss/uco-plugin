@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.76.0] - 2026-09-14 — Phase E rename (uco)
+
+Ships together with the renamed CLI package **uco 0.3.0** (formerly cocli).
+
+### Changed (rename)
+
+- Framework DLLs renamed: `McpPlugin.dll` -> `Uco.Framework.dll`,
+  `McpPlugin.Common.dll` -> `Uco.Framework.Common.dll` (GUIDs preserved via
+  renamed .meta files; asmdef precompiledReferences and link.xml updated;
+  `uco install` removes the legacy-named DLLs from installed projects).
+- Framework namespaces renamed:
+  `com.IvanMurzak.McpPlugin` -> `com.AtelierAI.Uco.Framework`,
+  `com.IvanMurzak.McpPlugin.Common` -> `com.AtelierAI.Uco.Framework.Common`.
+- Tool/skill attributes renamed: `[McpPluginTool]` -> `[UcoTool]`,
+  `[McpPluginToolType]` -> `[UcoToolType]`, `[McpPluginSkillDescription]` ->
+  `[UcoSkillDescription]`, `[McpPluginSkillBody]` -> `[UcoSkillBody]`, plus
+  the prompt/resource/argument attribute family and the manager/builder
+  surface (`McpToolManager` -> `UcoToolManager`, `McpPluginBuilder` ->
+  `UcoBuilder`, `IMcpPluginBuilder` retained).
+- Config file renamed: `UserSettings/AI-Game-Developer-Config.json` ->
+  `UserSettings/uco-config.json` with a one-shot migration on first Editor
+  start (the legacy file is copied to the new name and removed).
+- Plugin branding: displayName "Unity Co-Pilot", author AtelierAI, README
+  header de-branded (upstream attribution retained), LICENSE dual-copyright
+  (Ivan Murzak + AtelierAI fork line), Editor UI strings "AI Game Developer"
+  -> "Unity Co-Pilot". `instance-get-current` env fields unchanged.
+- Version constants and package metadata bumped to 0.76.0.
+
+### Compatibility
+
+- Wire protocol, tool names, package id (`com.atelierai.unity.copilot`),
+  asmdef names, and `com.AtelierAI.Unity.Copilot.*` namespaces are unchanged.
+- Old config filename is read as a fallback by both the plugin and the CLI
+  until migration; installed projects should upgrade via `uco install`
+  (removes the old framework DLLs).
+
 ## [0.75.1] - 2026-09-14
 
 Sibling-cleanup release: clears the five pre-existing EditMode failures

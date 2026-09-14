@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Unity.Profiling;
 using Unity.Profiling.LowLevel.Unsafe;
@@ -34,7 +34,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Profiler
     {
         public const string ProfilerGetFrameTimingToolId = "profiler-get-frame-timing";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerGetFrameTimingToolId,
             Title = "Profiler / Get Frame Timing",
@@ -42,10 +42,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Capture the latest frame timing from Unity's `FrameTimingManager` (CPU / GPU / " +
+        [UcoSkillDescription("Capture the latest frame timing from Unity's `FrameTimingManager` (CPU / GPU / " +
             "main-thread / render-thread costs). Requires Frame Timing Stats to be enabled in Player settings or a " +
             "Development Build.")]
-        [McpPluginSkillBody("Calls `FrameTimingManager.CaptureFrameTimings()` then `GetLatestTimings(1, _)`. " +
+        [UcoSkillBody("Calls `FrameTimingManager.CaptureFrameTimings()` then `GetLatestTimings(1, _)`. " +
             "Returns CPU frame time, GPU frame time, main-thread and render-thread costs (where supported), present-wait, " +
             "frame-complete, and scale factors.\n\n" +
             "## Caveats\n\n" +
@@ -95,17 +95,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerGetCountersToolId = "profiler-get-counters";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerGetCountersToolId,
             Title = "Profiler / Get Counters",
             ReadOnlyHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Sample `ProfilerRecorder` counters in a category (Render, Scripts, Memory, " +
+        [UcoSkillDescription("Sample `ProfilerRecorder` counters in a category (Render, Scripts, Memory, " +
             "Physics, Animation, Audio, ...). Pass explicit counter names to read a subset, or omit to enumerate all " +
             "counters in the category via `ProfilerRecorderHandle.GetAvailable`.")]
-        [McpPluginSkillBody("Sample one or more `ProfilerRecorder` counters from a `ProfilerCategory`. " +
+        [UcoSkillBody("Sample one or more `ProfilerRecorder` counters from a `ProfilerCategory`. " +
             "When `counters` is omitted, every counter currently available in the category is discovered via " +
             "`ProfilerRecorderHandle.GetAvailable`. Starts a recorder per counter, waits one editor tick for samples " +
             "to accumulate, then disposes each recorder.\n\n" +
@@ -189,7 +189,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerGetObjectMemoryToolId = "profiler-get-object-memory";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerGetObjectMemoryToolId,
             Title = "Profiler / Get Object Memory",
@@ -197,9 +197,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Return the runtime memory size of a single `UnityEngine.Object` resolved by a " +
+        [UcoSkillDescription("Return the runtime memory size of a single `UnityEngine.Object` resolved by a " +
             "scene hierarchy path or an asset path. Wraps `Profiler.GetRuntimeMemorySizeLong`.")]
-        [McpPluginSkillBody("Resolve an object by scene hierarchy path first via `GameObject.Find`, falling back " +
+        [UcoSkillBody("Resolve an object by scene hierarchy path first via `GameObject.Find`, falling back " +
             "to `AssetDatabase.LoadAssetAtPath`, then report the runtime memory size via " +
             "`Profiler.GetRuntimeMemorySizeLong`. Throws if the object cannot be resolved.")]
         [Description("Return runtime memory size for a scene or asset object via Profiler.GetRuntimeMemorySizeLong.")]

@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectModifyToolId = "gameobject-modify";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectModifyToolId,
             Title = "GameObject / Modify",
@@ -40,10 +40,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Modify GameObject fields and properties in opened Prefab or in a Scene. " +
+        [UcoSkillDescription("Modify GameObject fields and properties in opened Prefab or in a Scene. " +
             "You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects. " +
             "Three modification surfaces are available per GameObject (gameObjectDiffs, pathPatchesPerGameObject, jsonPatchesPerGameObject) — see the skill body for details.")]
-        [McpPluginSkillBody(
+        [UcoSkillBody(
             "## Three modification surfaces\n\n" +
             "Per GameObject — parallel arrays must have the same length as `gameObjectRefs`:\n\n" +
             "1. `gameObjectDiffs` — full `SerializedMember` diff per GameObject (legacy, backwards compatible).\n" +

@@ -16,7 +16,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -28,18 +28,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string GraphicsVolumeListToolId = "graphics-volume-list";
 
-        [McpPluginTool
+        [UcoTool
         (
             GraphicsVolumeListToolId,
             Title = "Graphics / Volume / List",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List every `UnityEngine.Rendering.Volume` (URP/HDRP/SRP-Core post-processing " +
+        [UcoSkillDescription("List every `UnityEngine.Rendering.Volume` (URP/HDRP/SRP-Core post-processing " +
             "volume) in the currently opened scenes. Returns hierarchy path, isGlobal/priority/weight flags, the " +
             "asset path of the assigned `VolumeProfile` (when set), and the short class names of each override " +
             "the profile contains. Filter the result set with `sceneGlob` and/or `onlyWithProfile`.")]
-        [McpPluginSkillBody("Read-only inventory of Volume components. Returns Ok=false with an SRP-Core-missing " +
+        [UcoSkillBody("Read-only inventory of Volume components. Returns Ok=false with an SRP-Core-missing " +
             "error when the `com.unity.render-pipelines.core` package is not installed.\n\n" +
             "## Inputs\n\n" +
             "- `sceneGlob` (optional) — wildcard pattern (`*`/`?`) applied against the scene asset path of each " +

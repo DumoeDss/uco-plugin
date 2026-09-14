@@ -16,7 +16,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -26,14 +26,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string TextureCreateCheckerToolId = "texture-create-checker";
 
-        [McpPluginTool
+        [UcoTool
         (
             TextureCreateCheckerToolId,
             Title = "Texture / Create Checker Pattern"
         )]
-        [McpPluginSkillDescription("Generate a Texture2D with a two-color checkerboard pattern and save it as a PNG " +
+        [UcoSkillDescription("Generate a Texture2D with a two-color checkerboard pattern and save it as a PNG " +
             "asset under 'Assets/'. The cell size is `squareSize` pixels.")]
-        [McpPluginSkillBody("Generate a checkerboard Texture2D and import it into the Unity project.\n\n" +
+        [UcoSkillBody("Generate a checkerboard Texture2D and import it into the Unity project.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must start with `Assets/` and end with `.png`.\n" +
             "- `width`, `height` — pixel dimensions in [1, 4096]; total pixel count capped at 16,777,216.\n" +

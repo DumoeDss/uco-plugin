@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectComponentModifyToolId = "gameobject-component-modify";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectComponentModifyToolId,
             Title = "GameObject / Component / Modify",
@@ -41,11 +41,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Modify a specific Component on a GameObject in opened Prefab or in a Scene. " +
+        [UcoSkillDescription("Modify a specific Component on a GameObject in opened Prefab or in a Scene. " +
             "Allows direct modification of component fields and properties without wrapping in GameObject structure. " +
             "Use '" + GameObjectComponentGetToolId + "' first to inspect the component structure before modifying. " +
             "Three modification surfaces are available (componentDiff, pathPatches, jsonPatch) — see the skill body for details.")]
-        [McpPluginSkillBody(
+        [UcoSkillBody(
             "## Three modification surfaces\n\n" +
             "Use whichever fits the task:\n\n" +
             "1. `componentDiff` — full `SerializedMember` diff (legacy, backwards compatible).\n" +

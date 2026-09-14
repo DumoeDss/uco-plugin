@@ -11,12 +11,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin.Skills;
+using com.AtelierAI.Uco.Framework.Skills;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public interface IMcpPluginBuilder
     {
@@ -24,7 +24,7 @@ namespace com.IvanMurzak.McpPlugin
 
         // Tool methods
         IMcpPluginBuilder WithTool(Type classType, MethodInfo methodInfo);
-        IMcpPluginBuilder WithTool(McpPluginToolAttribute attribute, Type classType, MethodInfo methodInfo);
+        IMcpPluginBuilder WithTool(UcoToolAttribute attribute, Type classType, MethodInfo methodInfo);
         IMcpPluginBuilder WithTool(string name, string? title, Type classType, MethodInfo methodInfo);
         IMcpPluginBuilder AddTool(string name, IRunTool runner);
         IMcpPluginBuilder WithTools<T>();
@@ -39,7 +39,7 @@ namespace com.IvanMurzak.McpPlugin
             where T : class, IToolExecutionMiddleware;
         IMcpPluginBuilder AddToolExecutionMiddleware(IToolExecutionMiddleware middleware);
         IMcpPluginBuilder WithProjectPathPolicy(ProjectPathPolicy policy);
-        IMcpPluginBuilder WithHandshakeIdentity(com.IvanMurzak.McpPlugin.Common.IHandshakeIdentity identity);
+        IMcpPluginBuilder WithHandshakeIdentity(com.AtelierAI.Uco.Framework.Common.IHandshakeIdentity identity);
         IMcpPluginBuilder WithToolExecutionScheduler(IToolExecutionScheduler scheduler);
 
         // Prompt methods
@@ -77,7 +77,7 @@ namespace com.IvanMurzak.McpPlugin
         IMcpPluginBuilder WithConfigFromArgsOrEnv(string[]? args = null);
         IMcpPluginBuilder WithSkillFileGenerator<T>() where T : class, ISkillFileGenerator;
         IMcpPluginBuilder WithSkillFileGenerator(ISkillFileGenerator instance);
-        IMcpPlugin Build(Reflector reflector);
+        IUcoPlugin Build(Reflector reflector);
 
         // Ignore Assembly methods
         IMcpPluginBuilder IgnoreAssembly(Assembly assembly);

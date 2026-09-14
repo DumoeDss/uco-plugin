@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -26,16 +26,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Object
     {
         public const string ObjectModifyToolId = "object-modify";
-        [McpPluginTool
+        [UcoTool
         (
             ObjectModifyToolId,
             Title = "Object / Modify",
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Modify a Unity `UnityEngine.Object`'s serializable fields/properties. " +
+        [UcoSkillDescription("Modify a Unity `UnityEngine.Object`'s serializable fields/properties. " +
             "Three modification surfaces are available (`objectDiff`, `pathPatches`, `jsonPatch`) — see the skill body. " +
             "Use '" + ObjectGetDataToolId + "' first to inspect the object structure.")]
-        [McpPluginSkillBody("Modify the specified Unity Object. " +
+        [UcoSkillBody("Modify the specified Unity Object. " +
             "Allows direct modification of object fields and properties. " +
             "Use '" + ObjectGetDataToolId + "' first to inspect the object structure before modifying.\n\n" +
             "## Three modification surfaces\n\n" +

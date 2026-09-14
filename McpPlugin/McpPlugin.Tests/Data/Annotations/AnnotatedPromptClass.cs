@@ -8,18 +8,18 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Annotations
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Annotations
 {
-    [McpPluginPromptType]
+    [UcoPromptType]
     public static class AnnotatedPromptClass
     {
-        [McpPluginPrompt(Name = "prompt-enabled-default")]
+        [UcoPrompt(Name = "prompt-enabled-default")]
         public static string EnabledDefault() => "default";
 
-        [McpPluginPrompt(Name = "prompt-enabled-true", Enabled = true)]
+        [UcoPrompt(Name = "prompt-enabled-true", Enabled = true)]
         public static string EnabledTrue() => "enabled";
 
-        [McpPluginPrompt(Name = "prompt-enabled-false", Enabled = false)]
+        [UcoPrompt(Name = "prompt-enabled-false", Enabled = false)]
         public static string EnabledFalse() => "disabled";
     }
 }

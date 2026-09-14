@@ -9,14 +9,14 @@
 */
 
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin.Common.Hub.Server
+namespace com.AtelierAI.Uco.Framework.Common.Hub.Server
 {
     public interface IServerMcpManager : IServerToolHub, IServerPromptHub, IServerResourceHub
     {
         Task<VersionHandshakeResponse> PerformVersionHandshake(RequestVersionHandshake request);
-        Task<McpClientData[]> GetMcpClientData();
-        Task<McpServerData> GetMcpServerData();
+        Task<UcoClientData[]> GetMcpClientData();
+        Task<UcoServerData> GetMcpServerData();
     }
 }

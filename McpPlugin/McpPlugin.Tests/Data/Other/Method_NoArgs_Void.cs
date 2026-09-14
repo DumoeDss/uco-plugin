@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 // Method with no arguments returning void
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Method_NoArgs_Void
     {

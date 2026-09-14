@@ -10,7 +10,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -20,7 +20,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Scene
     {
         public const string SceneCreateToolId = "scene-create";
-        [McpPluginTool
+        [UcoTool
         (
             SceneCreateToolId,
             Title = "Scene / Create"
@@ -40,9 +40,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Intent = AuthoringPathAccessIntent.Create,
             RootCategory = ProjectPathRootCategories.Assets,
             Required = true)]
-        [McpPluginSkillDescription("Create a new Unity scene asset and save it at the given `.unity` path. " +
+        [UcoSkillDescription("Create a new Unity scene asset and save it at the given `.unity` path. " +
             "Use '" + SceneListOpenedToolId + "' to inspect the resulting opened-scene set afterwards.")]
-        [McpPluginSkillBody("Create new scene in the project assets. " +
+        [UcoSkillBody("Create new scene in the project assets. " +
             "Use '" + SceneListOpenedToolId + "' tool to list all opened scenes after creation.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must end with `.unity`. Non-empty.\n" +

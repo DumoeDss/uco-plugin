@@ -10,10 +10,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public class ConnectionConfig
     {
@@ -53,8 +53,8 @@ namespace com.IvanMurzak.McpPlugin
         /// <summary>
         /// Path for generated skill markdown files. Can be absolute or relative.
         /// When relative, it is anchored against (in priority order): the <c>basePath</c> argument
-        /// passed to <see cref="IMcpPlugin.GenerateSkillFiles(string?)"/> /
-        /// <see cref="IMcpPlugin.DeleteSkillFiles(string?)"/>; otherwise <see cref="ProjectRootPath"/>;
+        /// passed to <see cref="IUcoPlugin.GenerateSkillFiles(string?)"/> /
+        /// <see cref="IUcoPlugin.DeleteSkillFiles(string?)"/>; otherwise <see cref="ProjectRootPath"/>;
         /// otherwise the resolver throws. There is no silent fallback to the host process's
         /// current working directory — see GitHub issue #107.
         /// Default is 'SKILLS'. Set via command line arg 'mcp-skills-folder' or environment variable 'MCP_SKILLS_FOLDER'.
@@ -85,10 +85,10 @@ namespace com.IvanMurzak.McpPlugin
         public static string GetSkillsFolderFromArgsOrEnv(string[]? args = null)
         {
             args ??= Environment.GetCommandLineArgs();
-            var folder = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpSkillsFolder);
+            var folder = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoSkillsFolder);
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.McpSkillsFolder.TrimStart('-'), out var argFolder))
+            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.UcoSkillsFolder.TrimStart('-'), out var argFolder))
                 return argFolder;
 
             return folder ?? "SKILLS";
@@ -106,10 +106,10 @@ namespace com.IvanMurzak.McpPlugin
         public static string GetEndpointFromArgsOrEnv(string[]? args = null)
         {
             args ??= Environment.GetCommandLineArgs();
-            var endpoint = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpServerEndpoint);
+            var endpoint = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoServerEndpoint);
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.McpServerEndpoint.TrimStart('-'), out var argEndpoint))
+            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.UcoServerEndpoint.TrimStart('-'), out var argEndpoint))
                 return argEndpoint;
 
             return endpoint ?? Consts.Hub.DefaultHost;
@@ -118,10 +118,10 @@ namespace com.IvanMurzak.McpPlugin
         public static string? GetTokenFromArgsOrEnv(string[]? args = null)
         {
             args ??= Environment.GetCommandLineArgs();
-            var token = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpPluginToken);
+            var token = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoPluginToken);
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.McpPluginToken.TrimStart('-'), out var argToken))
+            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.UcoPluginToken.TrimStart('-'), out var argToken))
                 return argToken;
 
             return token;
@@ -130,10 +130,10 @@ namespace com.IvanMurzak.McpPlugin
         public static int GetTimeoutFromArgsOrEnv(string[]? args = null)
         {
             args ??= Environment.GetCommandLineArgs();
-            var timeoutStr = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpServerTimeout);
+            var timeoutStr = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoServerTimeout);
             var commandLineArgs = ArgsUtils.ParseLineArguments(args);
 
-            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.McpServerTimeout.TrimStart('-'), out var argTimeout))
+            if (commandLineArgs.TryGetValue(Consts.MCP.Plugin.Args.UcoServerTimeout.TrimStart('-'), out var argTimeout))
             {
                 if (int.TryParse(argTimeout, out var timeoutFromArgs))
                     return timeoutFromArgs;
@@ -149,21 +149,21 @@ namespace com.IvanMurzak.McpPlugin
         {
             // --- Global variables ---
 
-            var endpoint = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpServerEndpoint);
+            var endpoint = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoServerEndpoint);
             if (endpoint != null)
                 Host = endpoint;
 
             // --- Plugin variables ---
 
-            var timeout = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpServerTimeout);
+            var timeout = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoServerTimeout);
             if (timeout != null && int.TryParse(timeout, out var parsedEnvTimeoutMs))
                 TimeoutMs = parsedEnvTimeoutMs;
 
-            var token = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpPluginToken);
+            var token = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoPluginToken);
             if (token != null)
                 Token = token;
 
-            var skillsFolder = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.McpSkillsFolder);
+            var skillsFolder = Environment.GetEnvironmentVariable(Consts.MCP.Plugin.Env.UcoSkillsFolder);
             if (skillsFolder != null)
                 SkillsPath = skillsFolder;
         }
@@ -173,21 +173,21 @@ namespace com.IvanMurzak.McpPlugin
 
             // --- Global variables ---
 
-            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.McpServerEndpoint.TrimStart('-'));
+            var argPort = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.UcoServerEndpoint.TrimStart('-'));
             if (argPort != null)
                 Host = argPort;
 
             // --- Plugin variables ---
 
-            var argPluginTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.McpServerTimeout.TrimStart('-'));
+            var argPluginTimeout = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.UcoServerTimeout.TrimStart('-'));
             if (argPluginTimeout != null && int.TryParse(argPluginTimeout, out var timeoutMs))
                 TimeoutMs = timeoutMs;
 
-            var argToken = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.McpPluginToken.TrimStart('-'));
+            var argToken = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.UcoPluginToken.TrimStart('-'));
             if (argToken != null)
                 Token = argToken;
 
-            var argSkillsFolder = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.McpSkillsFolder.TrimStart('-'));
+            var argSkillsFolder = commandLineArgs.GetValueOrDefault(Consts.MCP.Plugin.Args.UcoSkillsFolder.TrimStart('-'));
             if (argSkillsFolder != null)
                 SkillsPath = argSkillsFolder;
         }

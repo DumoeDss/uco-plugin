@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.Collections;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using NUnit.Framework;

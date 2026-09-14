@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
@@ -26,16 +26,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildSceneAddToolId = "build-scene-add";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildSceneAddToolId,
             Title = "Build / Add Scene",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Add a scene to `EditorBuildSettings.scenes` at the requested index " +
+        [UcoSkillDescription("Add a scene to `EditorBuildSettings.scenes` at the requested index " +
             "(default: append). If the scene is already present, its `enabled` flag is updated and the " +
             "row is moved to `insertAt` when supplied.")]
-        [McpPluginSkillBody("Add or move a scene in `EditorBuildSettings.scenes`. " +
+        [UcoSkillBody("Add or move a scene in `EditorBuildSettings.scenes`. " +
             "If the scene is not yet present it is inserted at `insertAt` (or appended when null). " +
             "If the scene is already present it is moved to `insertAt` (when supplied) and its `enabled` " +
             "flag is updated. The full updated scene list is returned.\n\n" +

@@ -14,23 +14,23 @@
 
 #nullable enable
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_UnityInstances
     {
         public const string UnityInstancesResourceUri = "editor://unity-instances";
 
-        [McpPluginResource
+        [UcoResource
         (
             Name = "Unity Instances",
             Route = UnityInstancesResourceUri,

@@ -24,9 +24,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         public OpenWindowButton()
         {
-            text = "Game Developer";
+            text = "Unity Co-Pilot";
             icon = EditorAssetLoader.LoadAssetAtPath<Texture2D>(EditorAssetLoader.PackageLogoIcon);
-            tooltip = "Open AI Game Developer window";
+            tooltip = "Open Unity Co-Pilot window";
             clicked += MainWindowEditor.ShowWindowVoid;
             RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
         }

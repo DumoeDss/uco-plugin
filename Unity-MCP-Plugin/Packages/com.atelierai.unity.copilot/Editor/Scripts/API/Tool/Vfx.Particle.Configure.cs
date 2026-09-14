@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -30,19 +30,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string VfxParticleConfigureToolId = "vfx-particle-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             VfxParticleConfigureToolId,
             Title = "VFX / Particle / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure high-frequency fields on a `UnityEngine.ParticleSystem` — " +
+        [UcoSkillDescription("Configure high-frequency fields on a `UnityEngine.ParticleSystem` — " +
             "main module (duration / loop / startLifetime / startSpeed / startSize / startColor / " +
             "gravityModifier / maxParticles / simulationSpace), emission module (rateOverTime / enabled), " +
             "shape module (enabled / shapeType / radius), and velocity-over-lifetime (enabled / linear). " +
             "Pass only the fields you want to change — null fields are left untouched. " +
             "Use '" + VfxParticleGetToolId + "' to inspect current values first.")]
-        [McpPluginSkillBody("Configure a Unity ParticleSystem. Only the supplied (non-null) fields are written; " +
+        [UcoSkillBody("Configure a Unity ParticleSystem. Only the supplied (non-null) fields are written; " +
             "everything else is left as-is. Curve / random-range / two-constant modes for MinMaxCurves are not " +
             "exposed by this tool — constant values overwrite the current curve. Use direct component modification " +
             "via 'gameobject-component-modify' for advanced cases.\n\n" +

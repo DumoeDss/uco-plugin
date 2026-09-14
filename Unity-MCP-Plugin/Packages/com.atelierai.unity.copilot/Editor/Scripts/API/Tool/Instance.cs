@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -28,10 +28,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// are currently registered on this machine and identify the caller; they
     /// do <b>not</b> route or proxy tool calls between Editors. True
     /// cross-instance routing requires server-side support in the external
-    /// NuGet <c>com.IvanMurzak.McpPlugin</c> package and is intentionally out
+    /// NuGet <c>com.AtelierAI.Uco.Framework</c> package and is intentionally out
     /// of scope for this layer.
     /// </remarks>
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Instance
     {
         public class UnityInstanceListResult

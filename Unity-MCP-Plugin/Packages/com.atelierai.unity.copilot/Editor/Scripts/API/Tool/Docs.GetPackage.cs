@@ -18,7 +18,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocsGetPackageToolId = "docs-get-package";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocsGetPackageToolId,
             Title = "Docs / Get Package",
@@ -34,11 +34,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             OpenWorldHint = true
         )]
-        [McpPluginSkillDescription("Fetch a Unity package documentation page " +
+        [UcoSkillDescription("Fetch a Unity package documentation page " +
             "(https://docs.unity3d.com/Packages/<package>@<pkgVersion>/manual/<page>.html) and parse it into title + " +
             "sections + code examples. Use it for URP/HDRP/Input System/UI Toolkit and any other UPM package's " +
             "official manual.")]
-        [McpPluginSkillBody("Fetches a Unity **Package** documentation page and returns the parsed structure.\n\n" +
+        [UcoSkillBody("Fetches a Unity **Package** documentation page and returns the parsed structure.\n\n" +
             "## Inputs\n\n" +
             "- `package` *(required)* — package id such as `com.unity.render-pipelines.universal`.\n" +
             "- `page` *(required)* — page slug under the package's `manual/` folder, e.g. `index`, `2d-index`, " +

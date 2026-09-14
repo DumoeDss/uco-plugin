@@ -18,21 +18,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
     /// Exposes Unity-MCP's team-shared update settings under
-    /// <c>Edit ▸ Project Settings ▸ AI Game Developer</c>.
+    /// <c>Edit ▸ Project Settings ▸ Unity Co-Pilot</c>.
     /// </summary>
     /// <remarks>
     /// Mutations write through to <see cref="UnityCopilotUpdateProjectSettings"/>, whose backing
     /// asset (<c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c>) is intended to be
-    /// committed to VCS. See https://github.com/IvanMurzak/Unity-MCP/issues/768.
+    /// committed to VCS. See https://github.com/IvanMurzak/uco-plugin/issues/768.
     /// </remarks>
     internal static class UnityCopilotProjectSettingsProvider
     {
-        private const string SettingsPath = "Project/AI Game Developer";
+        private const string SettingsPath = "Project/Unity Co-Pilot";
 
         [SettingsProvider]
         public static SettingsProvider Create() => new SettingsProvider(SettingsPath, SettingsScope.Project)
         {
-            label = "AI Game Developer",
+            label = "Unity Co-Pilot",
             guiHandler = _ =>
             {
                 EditorGUILayout.LabelField("Update Notifications", EditorStyles.boldLabel);

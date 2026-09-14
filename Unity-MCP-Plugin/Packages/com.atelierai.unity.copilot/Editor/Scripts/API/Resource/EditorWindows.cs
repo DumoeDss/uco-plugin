@@ -16,9 +16,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -54,9 +54,9 @@ namespace AIGD
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
     using AIGD;
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_EditorWindows
     {
         public const string EditorWindowsResourceUri = "editor://windows";
@@ -67,7 +67,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         /// </summary>
         private const int DefaultMaxWindows = 100;
 
-        [McpPluginResource
+        [UcoResource
         (
             Name = "Editor Windows",
             Route = EditorWindowsResourceUri,

@@ -11,7 +11,7 @@
 using System.Text.Json;
 using com.IvanMurzak.ReflectorNet;
 
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public static class JsonConfiguration
     {

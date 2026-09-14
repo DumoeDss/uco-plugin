@@ -20,8 +20,8 @@ namespace com.IvanMurzak.Unity.MCP.Installer
         // Source folder inside the Installer Unity project that contains the
         // self-contained bootstrap scripts shipped to end users.
         // NOTE: This is the Installer's OWN package folder — it is intentionally
-        // independent from the Unity-MCP-Plugin source at
-        // `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp`. The Installer
+        // independent from the uco-unity-project source at
+        // `uco-unity-project/Packages/com.ivanmurzak.unity.mcp`. The Installer
         // only adds `com.ivanmurzak.unity.mcp` as an OpenUPM dependency in the
         // user's manifest.json; it never ships the plugin source directly.
         const string PackagePath = "Assets/com.IvanMurzak/AI Game Dev Installer";

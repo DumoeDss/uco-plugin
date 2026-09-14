@@ -13,18 +13,18 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Data.Annotations;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests_SystemTools
@@ -39,10 +39,10 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _loggerProvider = new XunitTestOutputLoggerProvider(output);
         }
 
-        private IMcpPlugin BuildWithMixedTools()
+        private IUcoPlugin BuildWithMixedTools()
         {
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithTools(typeof(MixedToolTypeClass));
             return builder.Build(reflector);
@@ -53,15 +53,15 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void ToolAttribute_DefaultToolType_ShouldBeStandard()
         {
-            var attr = new McpPluginToolAttribute("test");
-            attr.ToolType.ShouldBe(McpToolType.Standard);
+            var attr = new UcoToolAttribute("test");
+            attr.ToolType.ShouldBe(UcoToolType.Standard);
         }
 
         [Fact]
         public void ToolAttribute_ToolTypeSystem_ShouldBeSystem()
         {
-            var attr = new McpPluginToolAttribute("test") { ToolType = McpToolType.System };
-            attr.ToolType.ShouldBe(McpToolType.System);
+            var attr = new UcoToolAttribute("test") { ToolType = UcoToolType.System };
+            attr.ToolType.ShouldBe(UcoToolType.System);
         }
 
         // ── Builder splits standard vs system tools ─────────────────────
@@ -70,7 +70,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_StandardTools_ShouldBeInToolManager()
         {
             var plugin = BuildWithMixedTools();
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools().Select(t => t.Name).ToList();
 
             tools.ShouldContain("standard-tool-a");
@@ -82,7 +82,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_SystemTools_ShouldNotBeInToolManager()
         {
             var plugin = BuildWithMixedTools();
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools().Select(t => t.Name).ToList();
 
             tools.ShouldNotContain("system-tool-x");
@@ -93,7 +93,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_SystemTools_ShouldBeInSystemToolManager()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             systemToolManager.ShouldNotBeNull();
             systemToolManager.HasTool("system-tool-x").ShouldBeTrue();
@@ -104,7 +104,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_StandardTools_ShouldNotBeInSystemToolManager()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             systemToolManager.HasTool("standard-tool-a").ShouldBeFalse();
             systemToolManager.HasTool("standard-tool-b").ShouldBeFalse();
@@ -115,8 +115,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_ToolCounts_ShouldBeCorrect()
         {
             var plugin = BuildWithMixedTools();
-            var toolManager = plugin.McpManager.ToolManager!;
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             toolManager.TotalToolsCount.ShouldBe(3); // standard-tool-a, standard-tool-b, standard-default
             systemToolManager.TotalToolsCount.ShouldBe(2); // system-tool-x, system-tool-y
@@ -128,7 +128,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task RunSystemTool_ExistingTool_ShouldSucceed()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             var request = new RequestCallTool("system-tool-x", new Dictionary<string, JsonElement>());
             var response = await systemToolManager.RunSystemTool(request);
@@ -141,7 +141,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task RunSystemTool_NonExistentTool_ShouldReturnError()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             var request = new RequestCallTool("nonexistent-tool", new Dictionary<string, JsonElement>());
             var response = await systemToolManager.RunSystemTool(request);
@@ -155,7 +155,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task RunSystemTool_NullRequest_ShouldReturnError()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             var response = await systemToolManager.RunSystemTool(null!);
 
@@ -167,7 +167,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task RunSystemTool_EmptyName_ShouldReturnError()
         {
             var plugin = BuildWithMixedTools();
-            var systemToolManager = plugin.McpManager.SystemToolManager!;
+            var systemToolManager = plugin.UcoManager.SystemToolManager!;
 
             var request = new RequestCallTool("", new Dictionary<string, JsonElement>());
             var response = await systemToolManager.RunSystemTool(request);
@@ -183,7 +183,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task ListTools_ShouldOnlyReturnStandardTools()
         {
             var plugin = BuildWithMixedTools();
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             var response = await toolManager.RunListTool(new RequestListTool());
 
@@ -202,7 +202,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task ListSystemTools_ShouldPreserveExplicitSafetyHints()
         {
             var plugin = BuildWithMixedTools();
-            var response = await plugin.McpManager.SystemToolManager!
+            var response = await plugin.UcoManager.SystemToolManager!
                 .RunListSystemTool(new RequestListTool());
 
             response.Status.ShouldBe(ResponseStatus.Success);
@@ -217,7 +217,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public async Task ListSystemTools_ShouldKeepUnsetSafetyHintsNull()
         {
             var plugin = BuildWithMixedTools();
-            var response = await plugin.McpManager.SystemToolManager!
+            var response = await plugin.UcoManager.SystemToolManager!
                 .RunListSystemTool(new RequestListTool());
 
             response.Status.ShouldBe(ResponseStatus.Success);
@@ -262,13 +262,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void Build_NoSystemTools_SystemToolManagerShouldStillExist()
         {
             var reflector = new Reflector();
-            var builder = new McpPluginBuilder(_version, _loggerProvider)
+            var builder = new UcoBuilder(_version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithTools(typeof(AnnotatedToolClass));
             var plugin = builder.Build(reflector);
 
-            plugin.McpManager.SystemToolManager.ShouldNotBeNull();
-            plugin.McpManager.SystemToolManager!.TotalToolsCount.ShouldBe(0);
+            plugin.UcoManager.SystemToolManager.ShouldNotBeNull();
+            plugin.UcoManager.SystemToolManager!.TotalToolsCount.ShouldBe(0);
         }
 
     }

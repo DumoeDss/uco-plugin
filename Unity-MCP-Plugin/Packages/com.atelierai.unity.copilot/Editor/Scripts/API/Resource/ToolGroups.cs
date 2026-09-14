@@ -14,15 +14,15 @@
 
 #nullable enable
 using System.Text;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
     /// <summary>
     /// Read-only resource that exposes the current tool-group registry
@@ -31,12 +31,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// resource channel, which lets clients subscribe / cache it cheaply
     /// without paying for a tool invocation.
     /// </summary>
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_ToolGroups
     {
         public const string ToolGroupsResourceUri = "editor://tool-groups";
 
-        [McpPluginResource
+        [UcoResource
         (
             Name = "Tool Groups",
             Route = ToolGroupsResourceUri,

@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -85,17 +85,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         public const string PhysicsSettingsGetToolId = "physics-settings-get";
         public const string PhysicsSettingsSetToolId = "physics-settings-set";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsSettingsGetToolId,
             Title = "Physics / Settings / Get",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read the current Unity physics settings for the requested dimension " +
+        [UcoSkillDescription("Read the current Unity physics settings for the requested dimension " +
             "('3d' default or '2d'). Returns the gravity vector, solver iterations, thresholds, and global " +
             "query flags.")]
-        [McpPluginSkillBody("Reads from `UnityEngine.Physics` (3D) or `UnityEngine.Physics2D` (2D).\n\n" +
+        [UcoSkillBody("Reads from `UnityEngine.Physics` (3D) or `UnityEngine.Physics2D` (2D).\n\n" +
             "## Inputs\n\n" +
             "- `dimension` (default `'3d'`) — `'2d'` or `'3d'`.\n\n" +
             "## Behavior\n\n" +
@@ -120,16 +120,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             });
         }
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsSettingsSetToolId,
             Title = "Physics / Settings / Set",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Mutate Unity physics settings for the requested dimension. Any argument left " +
+        [UcoSkillDescription("Mutate Unity physics settings for the requested dimension. Any argument left " +
             "null is ignored; only the non-null arguments are applied. Marks the corresponding ProjectSettings " +
             "asset dirty so the change persists.")]
-        [McpPluginSkillBody("Writes to `UnityEngine.Physics` (3D) or `UnityEngine.Physics2D` (2D).\n\n" +
+        [UcoSkillBody("Writes to `UnityEngine.Physics` (3D) or `UnityEngine.Physics2D` (2D).\n\n" +
             "## Inputs\n\n" +
             "- `dimension` (default `'3d'`) — `'2d'` or `'3d'`.\n" +
             "- `gravity` — Vector3 (z is ignored for 2D).\n" +

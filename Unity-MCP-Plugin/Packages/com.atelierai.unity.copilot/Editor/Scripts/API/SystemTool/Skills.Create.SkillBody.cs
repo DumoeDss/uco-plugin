@@ -18,7 +18,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -27,10 +27,10 @@ using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Sample
     {
-        [McpPluginTool(""sample-get"", Title = ""Sample / Get"")]
+        [UcoTool(""sample-get"", Title = ""Sample / Get"")]
         [Description(""Finds a GameObject and returns its ref data."")]
         public GameObjectRef Get
         (
@@ -47,7 +47,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             });
         }
 
-        [McpPluginTool(""sample-rename"", Title = ""Sample / Rename"")]
+        [UcoTool(""sample-rename"", Title = ""Sample / Rename"")]
         [Description(""Renames a GameObject."")]
         public void Rename
         (
@@ -113,7 +113,7 @@ using AIGD;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
-    [McpPluginToolType]
+    [UcoToolType]
     public partial class Tool_Sample
     {
         public ResponseCallValueTool<MyResult> MyTool(...)

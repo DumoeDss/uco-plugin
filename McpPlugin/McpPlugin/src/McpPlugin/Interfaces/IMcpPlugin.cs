@@ -9,16 +9,16 @@
 */
 
 using System;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public interface IMcpPlugin : IConnection, IDisposable
+    public interface IUcoPlugin : IConnection, IDisposable
     {
         ILogger Logger { get; }
-        IMcpManager McpManager { get; }
-        IMcpManagerHub? McpManagerHub { get; }
+        IMcpManager UcoManager { get; }
+        IMcpManagerHub? UcoManagerHub { get; }
         /// <summary>
         /// Gets the version of the MCP plugin.
         /// </summary>

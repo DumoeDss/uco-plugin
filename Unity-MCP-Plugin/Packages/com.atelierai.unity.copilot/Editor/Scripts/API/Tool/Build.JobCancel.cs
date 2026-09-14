@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -10,7 +10,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildJobCancelToolId = "build-job-cancel";
 
-        [McpPluginTool(BuildJobCancelToolId, Title = "Build / Cancel Job",
+        [UcoTool(BuildJobCancelToolId, Title = "Build / Cancel Job",
             DestructiveHint = true, IdempotentHint = true)]
         [Description("Request cancellation of a queued/running player build. Running BuildPipeline work is non-interruptible and reports cancellation pending until it returns.")]
         public BuildJobInfo CancelJob(string jobId)

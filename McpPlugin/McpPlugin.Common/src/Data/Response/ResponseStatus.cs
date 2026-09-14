@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     /// <summary>
     /// Serialized as lowercase strings on the wire: "error", "success", "processing".

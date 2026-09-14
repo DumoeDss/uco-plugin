@@ -13,8 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using UnityEngine;
 
@@ -23,8 +23,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.Utils
     public class DynamicCallToolExecutor : LazyNodeExecutor
     {
         public DynamicCallToolExecutor(MethodInfo toolMethod, Func<string> jsonProvider, Reflector? reflector = null) : this(
-            toolName: toolMethod.GetCustomAttribute<McpPluginToolAttribute>()?.Name
-                ?? throw new ArgumentException("Tool method must have a McpPluginTool attribute."),
+            toolName: toolMethod.GetCustomAttribute<UcoToolAttribute>()?.Name
+                ?? throw new ArgumentException("Tool method must have a UcoTool attribute."),
             jsonProvider: jsonProvider,
             reflector: reflector)
         {
@@ -36,7 +36,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.Utils
             if (jsonProvider == null) throw new ArgumentNullException(nameof(jsonProvider));
 
             reflector ??= UnityCopilotPluginEditor.Instance.Reflector ??
-                throw new ArgumentNullException(nameof(reflector), "Reflector cannot be null. Ensure McpPlugin is initialized before using this executor.");
+                throw new ArgumentNullException(nameof(reflector), "Reflector cannot be null. Ensure uco framework is initialized before using this executor.");
 
             SetAction(() =>
             {

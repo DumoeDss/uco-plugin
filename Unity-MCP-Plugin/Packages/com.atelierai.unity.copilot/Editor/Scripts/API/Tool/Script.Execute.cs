@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
@@ -30,15 +30,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public static partial class Tool_Script
     {
         public const string ScriptExecuteToolId = "script-execute";
-        [McpPluginTool
+        [UcoTool
         (
             ScriptExecuteToolId,
             Title = "Script / Execute",
             OpenWorldHint = true
         )]
-        [McpPluginSkillDescription("Compiles and executes C# code dynamically using Roslyn. " +
+        [UcoSkillDescription("Compiles and executes C# code dynamically using Roslyn. " +
             "Supports a full-code mode (default) and a body-only mode — see the skill body for the difference and for how to pass Unity object references as parameters.")]
-        [McpPluginSkillBody(
+        [UcoSkillBody(
             "## Modes\n\n" +
             "- **Full code mode** (default, `isMethodBody=false`): the `csharpCode` argument must define a complete class with a static method (no top-level statements).\n" +
             "- **Body-only mode** (`isMethodBody=true`): provide only the method body statements. The tool auto-generates the usings, class, and method header.\n\n" +

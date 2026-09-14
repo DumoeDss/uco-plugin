@@ -9,10 +9,10 @@
 */
 
 using System.Collections.Generic;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public interface ISystemToolManager : IClientSystemToolHub
     {

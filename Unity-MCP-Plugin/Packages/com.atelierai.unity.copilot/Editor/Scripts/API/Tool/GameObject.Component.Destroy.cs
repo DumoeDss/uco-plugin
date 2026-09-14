@@ -12,7 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -23,7 +23,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectComponentDestroyToolId = "gameobject-component-destroy";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectComponentDestroyToolId,
             Title = "GameObject / Component / Destroy",
@@ -37,11 +37,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Destroy one or more Components from a target GameObject. Missing (null) components " +
+        [UcoSkillDescription("Destroy one or more Components from a target GameObject. Missing (null) components " +
             "are skipped — they cannot be destroyed. " +
             "Use '" + GameObjectFindToolId + "' and '" + GameObjectComponentGetToolId +
             "' to identify the components first.")]
-        [McpPluginSkillBody("Destroy one or many components from target GameObject. Can't destroy missed components. " +
+        [UcoSkillBody("Destroy one or many components from target GameObject. Can't destroy missed components. " +
             "Use '" + GameObjectFindToolId + "' tool to find the target GameObject and '" + GameObjectComponentGetToolId + "' to get component details first.\n\n" +
             "## Inputs\n\n" +
             "- `gameObjectRef` — the host GameObject.\n" +

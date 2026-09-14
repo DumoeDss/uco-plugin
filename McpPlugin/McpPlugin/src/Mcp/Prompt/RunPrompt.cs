@@ -16,11 +16,11 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     /// <summary>
     /// Provides functionality to execute methods dynamically, supporting both static and instance methods.
@@ -74,19 +74,19 @@ namespace com.IvanMurzak.McpPlugin
         public RunPrompt(Reflector reflector, string name, ILogger? logger, MethodInfo methodInfo) : base(reflector, logger, methodInfo)
         {
             Name = name;
-            Role = methodInfo.GetCustomAttribute<McpPluginPromptAttribute>()?.Role ?? Role.User;
+            Role = methodInfo.GetCustomAttribute<UcoPromptAttribute>()?.Role ?? Role.User;
         }
 
         public RunPrompt(Reflector reflector, string name, ILogger? logger, object targetInstance, MethodInfo methodInfo) : base(reflector, logger, targetInstance, methodInfo)
         {
             Name = name;
-            Role = methodInfo.GetCustomAttribute<McpPluginPromptAttribute>()?.Role ?? Role.User;
+            Role = methodInfo.GetCustomAttribute<UcoPromptAttribute>()?.Role ?? Role.User;
         }
 
         public RunPrompt(Reflector reflector, string name, ILogger? logger, Type classType, MethodInfo methodInfo) : base(reflector, logger, classType, methodInfo)
         {
             Name = name;
-            Role = methodInfo.GetCustomAttribute<McpPluginPromptAttribute>()?.Role ?? Role.User;
+            Role = methodInfo.GetCustomAttribute<UcoPromptAttribute>()?.Role ?? Role.User;
         }
 
         protected override object? GetParameterValue(Reflector reflector, ParameterInfo paramInfo, object? value)
@@ -213,7 +213,7 @@ namespace com.IvanMurzak.McpPlugin
 
                 return ResponseGetPrompt.Success(
                         result.ToString()!,
-                        role: Method.GetCustomAttribute<McpPluginPromptAttribute>()?.Role ?? Role.User,
+                        role: Method.GetCustomAttribute<UcoPromptAttribute>()?.Role ?? Role.User,
                         description: description)
                     .SetRequestID(requestId);
             }

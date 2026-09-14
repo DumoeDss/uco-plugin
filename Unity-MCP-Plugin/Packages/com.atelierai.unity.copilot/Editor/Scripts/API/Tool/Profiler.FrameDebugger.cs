@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
@@ -29,17 +29,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Profiler
     {
         public const string FrameDebuggerEnableToolId = "frame-debugger-enable";
-        [McpPluginTool
+        [UcoTool
         (
             FrameDebuggerEnableToolId,
             Title = "Frame Debugger / Enable",
             DestructiveHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Open the Frame Debugger window and enable capture. The whole tool is implemented " +
+        [UcoSkillDescription("Open the Frame Debugger window and enable capture. The whole tool is implemented " +
             "through reflection on `UnityEditorInternal.FrameDebuggerUtility` (and its Unity 6+ namespaced variant) " +
             "because the API is internal.")]
-        [McpPluginSkillBody("Open `Window/Analysis/Frame Debugger` (capture only works while it is open), then " +
+        [UcoSkillBody("Open `Window/Analysis/Frame Debugger` (capture only works while it is open), then " +
             "invoke `FrameDebuggerUtility.SetEnabled(true)` via reflection. When the Editor is in Play mode, the " +
             "game must be paused first — otherwise this tool throws with a clear instruction. Returns the current " +
             "event count.")]
@@ -68,7 +68,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string FrameDebuggerDisableToolId = "frame-debugger-disable";
-        [McpPluginTool
+        [UcoTool
         (
             FrameDebuggerDisableToolId,
             Title = "Frame Debugger / Disable",
@@ -76,9 +76,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Disable the Unity Frame Debugger via reflection on `FrameDebuggerUtility`. " +
+        [UcoSkillDescription("Disable the Unity Frame Debugger via reflection on `FrameDebuggerUtility`. " +
             "Idempotent — safe to call when already disabled.")]
-        [McpPluginSkillBody("Call `FrameDebuggerUtility.SetEnabled(false)` via reflection. Returns the post-call " +
+        [UcoSkillBody("Call `FrameDebuggerUtility.SetEnabled(false)` via reflection. Returns the post-call " +
             "enabled state (always false on success).")]
         [Description("Disable the Unity Frame Debugger via reflection.")]
         public FrameDebuggerStatusResult DisableFrameDebugger(string? nothing = null)
@@ -92,16 +92,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string FrameDebuggerGetEventsToolId = "frame-debugger-get-events";
-        [McpPluginTool
+        [UcoTool
         (
             FrameDebuggerGetEventsToolId,
             Title = "Frame Debugger / Get Events",
             ReadOnlyHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Page through draw-call events captured by the Frame Debugger. " +
+        [UcoSkillDescription("Page through draw-call events captured by the Frame Debugger. " +
             "Implemented entirely through reflection on `FrameDebuggerUtility` — best-effort across Unity versions.")]
-        [McpPluginSkillBody("Walk `FrameDebuggerUtility.count` events with paging (`pageSize` + `cursor`). " +
+        [UcoSkillBody("Walk `FrameDebuggerUtility.count` events with paging (`pageSize` + `cursor`). " +
             "Each entry is populated best-effort from `GetFrameEventInfoName(int)`, `GetFrameEvents()` descriptors, " +
             "and `GetFrameEventData(int)` / Unity-6 `GetFrameEventData(int, FrameDebuggerEventData)`.\n\n" +
             "## Output fields (when reflection finds them)\n\n" +

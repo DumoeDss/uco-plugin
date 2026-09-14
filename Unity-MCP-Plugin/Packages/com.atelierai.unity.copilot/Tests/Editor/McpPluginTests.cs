@@ -17,7 +17,7 @@ using UnityEngine.TestTools;
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     [TestFixture]
-    public class McpPluginTests : BaseTest
+    public class UcoPluginTests : BaseTest
     {
         const int WaitTimeoutTicks = 100000;
 
@@ -25,19 +25,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void CurrentPlugin_ShouldNotBeNull_WhenInitialized()
         {
             // Act & Assert
-            Assert.IsNotNull(UnityCopilotPluginEditor.Instance.McpPluginInstance, "CurrentPlugin should not be null after initialization");
+            Assert.IsNotNull(UnityCopilotPluginEditor.Instance.UcoPluginInstance, "CurrentPlugin should not be null after initialization");
         }
 
         [Test]
         public void CurrentPlugin_ShouldHaveValidMcpManager()
         {
             // Act
-            var plugin = UnityCopilotPluginEditor.Instance.McpPluginInstance;
+            var plugin = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
 
             // Assert
             Assert.IsNotNull(plugin, "CurrentPlugin should not be null");
-            Assert.IsNotNull(plugin!.McpManager, "McpManager should not be null");
-            Assert.IsNotNull(plugin!.McpManager.Reflector, "Reflector should not be null");
+            Assert.IsNotNull(plugin!.UcoManager, "UcoManager should not be null");
+            Assert.IsNotNull(plugin!.UcoManager.Reflector, "Reflector should not be null");
         }
 
         [UnityTest]

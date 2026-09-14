@@ -11,7 +11,7 @@
 using System;
 using System.Text.Json;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public static class ExtensionsJsonElement
     {

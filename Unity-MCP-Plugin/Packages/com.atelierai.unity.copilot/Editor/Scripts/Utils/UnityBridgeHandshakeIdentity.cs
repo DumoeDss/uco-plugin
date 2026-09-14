@@ -9,7 +9,7 @@
 #nullable enable
 using System.Diagnostics;
 using System.IO;
-using com.IvanMurzak.McpPlugin.Common;
+using com.AtelierAI.Uco.Framework.Common;
 using UnityEngine;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils

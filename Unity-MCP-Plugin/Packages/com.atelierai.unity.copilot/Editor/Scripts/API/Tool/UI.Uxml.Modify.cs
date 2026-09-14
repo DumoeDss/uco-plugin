@@ -22,7 +22,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -31,17 +31,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UxmlModifyToolId = "ui-uxml-modify";
 
-        [McpPluginTool
+        [UcoTool
         (
             UxmlModifyToolId,
             Title = "UI / UXML / Modify",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Structurally modify a UXML file: replace an element, append a child element, " +
+        [UcoSkillDescription("Structurally modify a UXML file: replace an element, append a child element, " +
             "remove an element, or set an attribute. Targets are selected via a small XPath subset that knows about " +
             "the 'ui:' (UnityEngine.UIElements) and 'uie:' (UnityEditor.UIElements) namespace prefixes. " +
             "Pair with '" + UxmlReadToolId + "' to inspect existing content before modifying.")]
-        [McpPluginSkillBody("Structurally modify a UXML asset.\n\n" +
+        [UcoSkillBody("Structurally modify a UXML asset.\n\n" +
             "## Operations\n\n" +
             "- `replace` — replace the matched element with the XML fragment in `newContent`.\n" +
             "- `append-child` — append the XML fragment in `newContent` as a new last child of the matched element.\n" +

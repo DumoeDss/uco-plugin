@@ -23,8 +23,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
@@ -33,7 +33,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BatchExecuteToolId = "batch-execute";
 
-        [McpPluginTool
+        [UcoTool
         (
             BatchExecuteToolId,
             Title = "Batch Execute",
@@ -47,11 +47,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ValidatorType = typeof(UnityBatchAuthoringValidator),
             PlannerType = typeof(UnityBatchAuthoringPlanner),
             TransactionFactoryType = typeof(UnityAuthoringTransactionFactory))]
-        [McpPluginSkillDescription("Execute multiple tool calls in a single SignalR round-trip. " +
+        [UcoSkillDescription("Execute multiple tool calls in a single SignalR round-trip. " +
             "Drastically reduces LLM-to-Unity latency by amortizing transport overhead across many calls. " +
             "Use this when issuing several independent tool calls in sequence (e.g. create N GameObjects, " +
             "modify several components, query a handful of assets).")]
-        [McpPluginSkillBody("Dispatches a list of `BatchCommand`s through the plugin's internal tool runner, " +
+        [UcoSkillBody("Dispatches a list of `BatchCommand`s through the plugin's internal tool runner, " +
             "saving one network hop per command compared to issuing each tool call individually.\n\n" +
             "## Inputs\n\n" +
             "- `commands` — array of `{ tool, params }` entries. `tool` is the tool id " +
@@ -119,7 +119,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
             // The pipeline injects the parent context for normal calls. Keep a
             // generated root context for direct/reflected callers that invoke
-            // this method without going through McpToolManager.
+            // this method without going through UcoToolManager.
             var parentContext = context;
             if (parentContext == null)
             {

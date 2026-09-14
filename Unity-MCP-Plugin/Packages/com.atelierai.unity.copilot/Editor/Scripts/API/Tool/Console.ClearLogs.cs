@@ -11,7 +11,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -36,7 +36,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Console
     {
         public const string ConsoleClearLogsToolId = "console-clear-logs";
-        [McpPluginTool
+        [UcoTool
         (
             ConsoleClearLogsToolId,
             Title = "Console / Clear Logs",
@@ -44,9 +44,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             DestructiveHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Clear the log cache (used by '" + ConsoleGetLogsToolId + "') and the Unity Editor Console window. " +
+        [UcoSkillDescription("Clear the log cache (used by '" + ConsoleGetLogsToolId + "') and the Unity Editor Console window. " +
             "Useful for isolating logs to a specific action by clearing the slate first.")]
-        [McpPluginSkillBody("Clears the log cache (used by console-get-logs) and the Unity Editor Console window. " +
+        [UcoSkillBody("Clears the log cache (used by console-get-logs) and the Unity Editor Console window. " +
             "Useful for isolating errors related to a specific action by clearing logs before performing the action.\n\n" +
             "## Behavior\n\n" +
             "Calls `Debug.ClearDeveloperConsole()` to wipe the Editor Console, then clears the plugin-side `LogCollector` " +

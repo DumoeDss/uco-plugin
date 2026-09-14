@@ -9,10 +9,10 @@
 */
 using System.Collections.Generic;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public static class ExtensionsRequestCallTool
     {
@@ -25,7 +25,7 @@ namespace com.IvanMurzak.McpPlugin
         // {
         //     data.Arguments ??= value == null
         //         ? new Dictionary<string, JsonElement>()
-        //         : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(McpPlugin.Instance?.McpRunner.Reflector) };
+        //         : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(McpPlugin.Instance?.UcoRunner.Reflector) };
         //     return data;
         // }
     }

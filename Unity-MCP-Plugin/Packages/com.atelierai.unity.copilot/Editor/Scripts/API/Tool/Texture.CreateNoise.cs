@@ -16,7 +16,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -26,15 +26,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string TextureCreateNoiseToolId = "texture-create-noise";
 
-        [McpPluginTool
+        [UcoTool
         (
             TextureCreateNoiseToolId,
             Title = "Texture / Create Perlin Noise"
         )]
-        [McpPluginSkillDescription("Generate a Texture2D filled with fractal Perlin noise (octave-summed fBm using " +
+        [UcoSkillDescription("Generate a Texture2D filled with fractal Perlin noise (octave-summed fBm using " +
             "`UnityEngine.Mathf.PerlinNoise`) and save it as a PNG asset under 'Assets/'. Output is grayscale by " +
             "default, or tinted by an RGB color when `grayscale=false`.")]
-        [McpPluginSkillBody("Generate a Perlin / fBm noise Texture2D and import it into the Unity project.\n\n" +
+        [UcoSkillBody("Generate a Perlin / fBm noise Texture2D and import it into the Unity project.\n\n" +
             "## Inputs\n\n" +
             "- `path` — must start with `Assets/` and end with `.png`.\n" +
             "- `width`, `height` — pixel dimensions in [1, 4096]; total pixel count capped at 16,777,216.\n" +

@@ -123,7 +123,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             string? localHost,
             bool allowLanBind,
             bool forceTokenWhenLanBind,
-            global::com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server.AuthOption authOption,
+            global::com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server.AuthOption authOption,
             string? token,
             out string reason)
         {
@@ -145,7 +145,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
             if (forceTokenWhenLanBind)
             {
-                var tokenRequired = authOption == global::com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server.AuthOption.required;
+                var tokenRequired = authOption == global::com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server.AuthOption.required;
                 if (!tokenRequired || string.IsNullOrEmpty(token))
                 {
                     reason =

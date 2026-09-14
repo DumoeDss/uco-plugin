@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace com.IvanMurzak.McpPlugin.Utils
+namespace com.AtelierAI.Uco.Framework.Utils
 {
     public static class DirectoryUtils
     {

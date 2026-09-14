@@ -11,7 +11,7 @@
 #nullable enable
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Scene
     {
         public const string SceneOpenToolId = "scene-open";
-        [McpPluginTool
+        [UcoTool
         (
             SceneOpenToolId,
             Title = "Scene / Open"
@@ -34,10 +34,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             SupportsPlanning = true,
             ValidatorType = typeof(UnityPilotAuthoringValidator),
             PlannerType = typeof(UnityPilotAuthoringPlanner))]
-        [McpPluginSkillDescription("Open a Unity scene asset in Single or Additive mode. " +
+        [UcoSkillDescription("Open a Unity scene asset in Single or Additive mode. " +
             "Returns the post-open list of all opened scenes. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' to locate the scene asset first.")]
-        [McpPluginSkillBody("Open scene from the project asset file. " +
+        [UcoSkillBody("Open scene from the project asset file. " +
             "Use '" + Tool_Assets.AssetsFindToolId + "' tool to find the scene asset first.\n\n" +
             "## Inputs\n\n" +
             "- `sceneRef` — `AssetObjectRef` pointing at a `SceneAsset`. Throws if the asset cannot be resolved or " +

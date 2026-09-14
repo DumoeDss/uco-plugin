@@ -8,19 +8,19 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Ignored.SubNamespace
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Ignored.SubNamespace
 {
-    [McpPluginToolType]
+    [UcoToolType]
     internal class SubNamespaceToolClass
     {
-        [McpPluginTool("sub-namespace-tool", "Tool in sub-namespace")]
+        [UcoTool("sub-namespace-tool", "Tool in sub-namespace")]
         public static string TestTool() => "test";
     }
 
-    [McpPluginPromptType]
+    [UcoPromptType]
     internal class SubNamespacePromptClass
     {
-        [McpPluginPrompt(Name = "sub-namespace-prompt")]
+        [UcoPrompt(Name = "sub-namespace-prompt")]
         public static string TestPrompt() => "test prompt";
     }
 }

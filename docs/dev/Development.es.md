@@ -6,14 +6,14 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Docker Image')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editor supported')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtime supported')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'Tests Passed')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-Join-7289da?logo=discord&logoColor=white&labelColor=333A41 'Join')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=Downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Stars')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md) | [日本語](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.ja.md) | [中文](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.zh-CN.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md) | [日本語](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.ja.md) | [中文](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.zh-CN.md)</b>
 
 </div>
 
@@ -30,7 +30,7 @@ Este documento explica la estructura interna, el diseño, el estilo de código y
 - [Estructura del proyecto](#estructura-del-proyecto)
   - [🔹Unity-MCP-Server](#unity-mcp-server)
     - [Imagen Docker](#imagen-docker)
-  - [🔸Unity-MCP-Plugin](#unity-mcp-plugin)
+  - [🔸uco-unity-project](#unity-mcp-plugin)
     - [Paquete UPM](#paquete-upm)
     - [Editor](#editor)
     - [Runtime](#runtime)
@@ -58,7 +58,7 @@ Este documento explica la estructura interna, el diseño, el estilo de código y
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Visión y Objetivos
 
@@ -73,7 +73,7 @@ Creemos que la IA será (si no lo es ya) una parte importante del desarrollo de 
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Requisitos previos
 
@@ -91,7 +91,7 @@ Antes de contribuir, asegúrate de tener instaladas las siguientes herramientas:
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Configuración del entorno local
 
@@ -102,7 +102,7 @@ Antes de contribuir, asegúrate de tener instaladas las siguientes herramientas:
    ```
 
 2. **Abrir el Plugin en Unity**
-   - Abre Unity Hub → Añadir proyecto → selecciona la carpeta `Unity-MCP-Plugin/`
+   - Abre Unity Hub → Añadir proyecto → selecciona la carpeta `uco-unity-project/`
    - Unity compilará todos los ensamblados automáticamente al abrirlo por primera vez
 
 3. **Abrir el Servidor en tu IDE**
@@ -122,24 +122,24 @@ Antes de contribuir, asegúrate de tener instaladas las siguientes herramientas:
 
 6. **Depurar con MCP Inspector** *(opcional)*
    ```bash
-   Unity-MCP-Plugin/Commands/start_mcp_inspector.bat   # Windows (.bat)
+   uco-unity-project/Commands/start_mcp_inspector.bat   # Windows (.bat)
    Unity-MCP-Server/commands/start-mcp-inspector.ps1   # PowerShell (multiplataforma)
    ```
    Requiere Node.js. Abre una interfaz en el navegador en `http://localhost:5173` para la inspección en tiempo real de los mensajes del protocolo MCP.
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Contribuir
 
 Construyamos juntos el brillante futuro del desarrollo de videojuegos; contribuye al proyecto. Usa este documento para entender la estructura del proyecto y cómo funciona exactamente.
 
-1. [Haz un fork del proyecto](https://github.com/IvanMurzak/Unity-MCP/fork)
+1. [Haz un fork del proyecto](https://github.com/IvanMurzak/uco-plugin/fork)
 2. Realiza tus mejoras siguiendo el estilo de código
-3. [Crea un Pull Request](https://github.com/IvanMurzak/Unity-MCP/compare)
+3. [Crea un Pull Request](https://github.com/IvanMurzak/uco-plugin/compare)
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Estructura del proyecto
 
@@ -147,7 +147,7 @@ Construyamos juntos el brillante futuro del desarrollo de videojuegos; contribuy
 graph LR
   A(◽Agente IA)
   B(🔹Unity-MCP-Server)
-  C(🔸Unity-MCP-Plugin)
+  C(🔸uco-unity-project)
   D(🎮Unity)
 
   %% Relaciones
@@ -158,9 +158,9 @@ graph LR
 
 ◽**Agente IA** - Cualquier interfaz de IA como: *Claude*, *Copilot*, *Cursor* u otras. No forma parte de este proyecto, pero es un elemento importante de la arquitectura.
 
-🔹**Unity-MCP-Server** - `Servidor MCP` que se conecta al `Agente IA` y opera con él. Al mismo tiempo, `Unity-MCP-Server` se comunica con `Unity-MCP-Plugin` a través de SignalR. Puede ejecutarse localmente o en la nube con transporte HTTP. Stack tecnológico: `C#`, `ASP.NET Core`, `SignalR`
+🔹**Unity-MCP-Server** - `Servidor MCP` que se conecta al `Agente IA` y opera con él. Al mismo tiempo, `Unity-MCP-Server` se comunica con `uco-unity-project` a través de SignalR. Puede ejecutarse localmente o en la nube con transporte HTTP. Stack tecnológico: `C#`, `ASP.NET Core`, `SignalR`
 
-🔸**Unity-MCP-Plugin** - `Plugin de Unity` integrado en un proyecto Unity con acceso a la API de Unity. Se comunica con `Unity-MCP-Server` y ejecuta comandos provenientes del servidor. Stack tecnológico: `C#`, `Unity`, `SignalR`
+🔸**uco-unity-project** - `Plugin de Unity` integrado en un proyecto Unity con acceso a la API de Unity. Se comunica con `Unity-MCP-Server` y ejecuta comandos provenientes del servidor. Stack tecnológico: `C#`, `Unity`, `SignalR`
 
 🎮**Unity** - Unity Engine, motor de videojuegos.
 
@@ -181,19 +181,19 @@ Una aplicación C# ASP.NET Core que actúa como puente entre los agentes de IA (
    - Envía notificaciones a los agentes de IA cuando cambian las capacidades (actualizaciones de listas de tools/prompts)
 
 2. **Comunicación a través del Hub SignalR** ([RemoteApp.cs](Unity-MCP-Server/src/Hub/RemoteApp.cs), [BaseHub.cs](Unity-MCP-Server/src/Hub/BaseHub.cs))
-   - Gestiona la comunicación bidireccional en tiempo real con Unity-MCP-Plugin mediante SignalR
+   - Gestiona la comunicación bidireccional en tiempo real con uco-unity-project mediante SignalR
    - Maneja el handshake de versión para garantizar la compatibilidad de API entre el servidor y el plugin
    - Rastrea las conexiones de clientes y gestiona las desconexiones
    - Enruta las notificaciones de actualización de tools/prompts/resources desde Unity a los agentes de IA
 
 3. **Enrutamiento y ejecución de solicitudes** ([ToolRouter.Call.cs](Unity-MCP-Server/src/Routing/Tool/ToolRouter.Call.cs), [PromptRouter.Get.cs](Unity-MCP-Server/src/Routing/Prompt/PromptRouter.Get.cs), [ResourceRouter.ReadResource.cs](Unity-MCP-Server/src/Routing/Resource/ResourceRouter.ReadResource.cs))
-   - Enruta las solicitudes de los agentes de IA a la instancia adecuada de Unity-MCP-Plugin
+   - Enruta las solicitudes de los agentes de IA a la instancia adecuada de uco-unity-project
    - Gestiona llamadas a Tools, solicitudes de Prompts y lecturas de Resources
    - Realiza el manejo de errores y validación
    - Convierte entre los formatos del protocolo MCP y los modelos de datos internos
 
 4. **Servicio de ejecución remota** ([RemoteToolRunner.cs](Unity-MCP-Server/src/Client/RemoteToolRunner.cs), [RemotePromptRunner.cs](Unity-MCP-Server/src/Client/RemotePromptRunner.cs), [RemoteResourceRunner.cs](Unity-MCP-Server/src/Client/RemoteResourceRunner.cs))
-   - Invoca procedimientos remotos en Unity-MCP-Plugin a través de SignalR
+   - Invoca procedimientos remotos en uco-unity-project a través de SignalR
    - Rastrea solicitudes asíncronas y gestiona tiempos de espera
    - Implementa patrones de solicitud/respuesta con soporte de cancelación
    - Maneja callbacks de finalización de solicitudes desde instancias de Unity
@@ -211,45 +211,45 @@ Una aplicación C# ASP.NET Core que actúa como puente entre los agentes de IA (
 
 ---
 
-## 🔸Unity-MCP-Plugin
+## 🔸uco-unity-project
 
 Se integra en el entorno de Unity. Utiliza `Unity-MCP-Common` para buscar *Tools*, *Resources* y *Prompts* MCP en el código base local mediante reflexión. Se comunica con `Unity-MCP-Server` para enviar actualizaciones sobre *Tools*, *Resources* y *Prompts* MCP. Recibe comandos del `Unity-MCP-Server` y los ejecuta.
 
-> Ubicación del proyecto: `Unity-MCP-Plugin`
+> Ubicación del proyecto: `uco-unity-project`
 
 ### Paquete UPM
 
-`Unity-MCP-Plugin` es un paquete UPM. La carpeta raíz del paquete se encuentra en `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp` y contiene el archivo `package.json`, que se utiliza para publicar el paquete directamente desde una release de GitHub en [OpenUPM](https://openupm.com/).
+`uco-unity-project` es un paquete UPM. La carpeta raíz del paquete se encuentra en `uco-unity-project/Packages/com.ivanmurzak.unity.mcp` y contiene el archivo `package.json`, que se utiliza para publicar el paquete directamente desde una release de GitHub en [OpenUPM](https://openupm.com/).
 
-> Ubicación: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp`
+> Ubicación: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp`
 
 ### Editor
 
 El componente Editor proporciona integración con Unity Editor, implementando capacidades MCP (Tools, Prompts, Resources) y gestionando el ciclo de vida de `Unity-MCP-Server`.
 
-> Ubicación: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor`
+> Ubicación: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor`
 
 **Responsabilidades principales:**
 
-1. **Gestión del ciclo de vida del Plugin** ([Startup.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
+1. **Gestión del ciclo de vida del Plugin** ([Startup.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/Startup.cs))
    - Se auto-inicializa al cargar Unity Editor mediante `[InitializeOnLoad]`
    - Gestiona la persistencia de la conexión a lo largo del ciclo de vida del Editor (recarga de ensamblados, transiciones de modo Play)
    - Reconexión automática tras la recarga del dominio o la salida del modo Play
 
-2. **Gestión del binario del servidor MCP** ([McpServerManager.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
+2. **Gestión del binario del servidor MCP** ([McpServerManager.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/McpServerManager.cs))
    - Descarga y gestiona el ejecutable de `Unity-MCP-Server` desde las releases de GitHub
    - Selección de binario multiplataforma (Windows/macOS/Linux, x86/x64/ARM/ARM64)
    - Aplicación de compatibilidad de versiones entre el servidor y el plugin
    - Generación de configuración para agentes de IA (JSON con rutas de ejecutables y ajustes de conexión)
 
-3. **Implementación de la API MCP** ([Scripts/API/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
+3. **Implementación de la API MCP** ([Scripts/API/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/API/))
    - **Tools** (50+): GameObject, Scene, Assets, Prefabs, Scripts, Components, Editor Control, Test Runner, Console, Reflection
    - **Prompts**: Plantillas predefinidas para tareas comunes de desarrollo en Unity
    - **Resources**: Acceso basado en URI a datos del Unity Editor con serialización JSON
    - Todas las operaciones se ejecutan en el hilo principal de Unity para garantizar la seguridad de hilos
    - Descubrimiento basado en atributos mediante `[McpPluginTool]`, `[McpPluginPrompt]`, `[McpPluginResource]`
 
-4. **Interfaz del Editor** ([Scripts/UI/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
+4. **Interfaz del Editor** ([Scripts/UI/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Editor/Scripts/UI/))
    - Ventana de configuración para la gestión de conexiones (`Window > AI Game Developer`)
    - Gestión del binario del servidor y acceso a logs mediante elementos del menú de Unity
 
@@ -257,28 +257,28 @@ El componente Editor proporciona integración con Unity Editor, implementando ca
 
 El componente Runtime proporciona la infraestructura principal compartida entre los modos Editor y Runtime, gestionando la comunicación SignalR, la serialización y el acceso seguro a la API de Unity desde múltiples hilos.
 
-> Ubicación: `Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime`
+> Ubicación: `uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime`
 
 **Responsabilidades principales:**
 
-1. **Núcleo del Plugin y conexión SignalR** ([UnityMcpPlugin.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
+1. **Núcleo del Plugin y conexión SignalR** ([UnityMcpPlugin.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs))
    - Singleton thread-safe que gestiona el ciclo de vida del plugin mediante `BuildAndStart()`
    - Descubre MCP Tools/Prompts/Resources de los ensamblados usando reflexión
    - Establece la conexión SignalR con Unity-MCP-Server con monitoreo de estado reactivo (biblioteca R3)
    - Gestión de configuración: host, puerto, tiempo de espera, compatibilidad de versiones
 
-2. **Dispatcher del hilo principal** ([MainThreadDispatcher.cs](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
+2. **Dispatcher del hilo principal** ([MainThreadDispatcher.cs](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Utils/MainThreadDispatcher.cs))
    - Redirige las llamadas a la API de Unity desde hilos en segundo plano de SignalR al hilo principal de Unity
    - Ejecución basada en cola en el bucle Update de Unity
    - Fundamental para la ejecución segura de operaciones MCP
 
-3. **Serialización de tipos Unity** ([ReflectionConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/), [JsonConverters/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
+3. **Serialización de tipos Unity** ([ReflectionConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/ReflectionConverters/), [JsonConverters/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/JsonConverters/))
    - Serialización JSON personalizada para tipos de Unity (GameObject, Component, Transform, Vector3, Quaternion, etc.)
    - Convierte objetos de Unity a formato de referencia (`GameObjectRef`, `ComponentRef`) con seguimiento de instanceID
    - Se integra con ReflectorNet para la introspección de objetos y la serialización de componentes
    - Proporciona esquemas JSON para las definiciones de tipos del protocolo MCP
 
-4. **Registro y diagnósticos** ([Logger/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/), [Unity/Logs/](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
+4. **Registro y diagnósticos** ([Logger/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Logger/), [Unity/Logs/](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/))
    - Conecta Microsoft.Extensions.Logging con la consola de Unity con niveles codificados por color
    - Recopila logs de la consola de Unity para su recuperación por parte de la IA a través de MCP Tools
 
@@ -340,7 +340,7 @@ graph LR
   A(◾Installer)
   subgraph Instalación
     B(🎮Unity)
-    C(🔸Unity-MCP-Plugin)
+    C(🔸uco-unity-project)
   end
 
   %% Relaciones
@@ -348,13 +348,13 @@ graph LR
   B -.- C
 ```
 
-**Installer** instala `Unity-MCP-Plugin` y sus dependencias como paquetes NPM en un proyecto Unity.
+**Installer** instala `uco-unity-project` y sus dependencias como paquetes NPM en un proyecto Unity.
 
 > Ubicación del proyecto: `Installer`
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Estilo de código
 
@@ -513,7 +513,7 @@ Provide position, rotation, and scale to minimize subsequent operations.")]
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Ejecutar pruebas
 
@@ -522,7 +522,7 @@ Las pruebas cubren tres modos en tres versiones de Unity (2022, 2023, 6000) y do
 ## Ejecución local
 
 **Unity Test Runner (GUI)**
-1. Abre el proyecto `Unity-MCP-Plugin/` en Unity
+1. Abre el proyecto `uco-unity-project/` en Unity
 2. Ve a `Window > General > Test Runner`
 3. Selecciona la pestaña **EditMode** o **PlayMode**
 4. Haz clic en **Run All** o selecciona pruebas específicas y usa **Run Selected**
@@ -570,7 +570,7 @@ Cada trabajo de CI se llama `test-unity-{version}-{mode}` (por ej., `test-unity-
 
 ---
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # CI/CD
 
@@ -597,7 +597,7 @@ Esto es lo que necesitas saber al trabajar con CI como colaborador:
 
 **Proceso:**
 
-1. **Verificación de versión** - Extrae la versión de [package.json](../../Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp/package.json) y comprueba si ya existe el tag de release
+1. **Verificación de versión** - Extrae la versión de [package.json](../../uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json) y comprueba si ya existe el tag de release
 2. **Compilación del Installer de Unity** - Prueba y exporta el instalador del paquete Unity (`AI-Game-Dev-Installer.unitypackage`)
 3. **Compilación del servidor MCP** - Compila ejecutables multiplataforma (Windows, macOS, Linux) usando [build-all.sh](../../Unity-MCP-Server/build-all.sh)
 4. **Pruebas del Plugin de Unity** - Ejecuta pruebas completas en:
@@ -692,4 +692,4 @@ Esto es lo que necesitas saber al trabajar con CI como colaborador:
 3. **Docker Hub** - Servidor MCP en contenedor para despliegues en la nube
 4. **OpenUPM** - Paquete del plugin de Unity (sincronizado automáticamente desde las releases de GitHub)
 
-![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

@@ -12,7 +12,7 @@
 using AIGD;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
@@ -24,17 +24,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsDeleteToolId = "assets-delete";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsDeleteToolId,
             Title = "Assets / Delete",
             DestructiveHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Delete the assets at the given project paths. " +
+        [UcoSkillDescription("Delete the assets at the given project paths. " +
             "Refreshes the AssetDatabase at the end. " +
             "Use '" + AssetsFindToolId + "' to locate the assets first.")]
-        [McpPluginSkillBody("Delete the assets at paths from the project. " +
+        [UcoSkillBody("Delete the assets at paths from the project. " +
             "Does AssetDatabase.Refresh() at the end. " +
             "Use '" + AssetsFindToolId + "' tool to find assets before deleting.\n\n" +
             "## Inputs\n\n" +

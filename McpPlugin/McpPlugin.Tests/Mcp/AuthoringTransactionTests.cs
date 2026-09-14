@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Shouldly;
 using Xunit;
-using static com.IvanMurzak.McpPlugin.Tests.Mcp.AuthoringTestSupport;
+using static com.AtelierAI.Uco.Framework.Tests.Mcp.AuthoringTestSupport;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     /// <summary>
     /// Tasks 5.1 and 5.6: one transaction per top-level call, disposal on

@@ -18,7 +18,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocsGetScriptReferenceToolId = "docs-get-script-reference";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocsGetScriptReferenceToolId,
             Title = "Docs / Get ScriptReference",
@@ -34,11 +34,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             OpenWorldHint = true
         )]
-        [McpPluginSkillDescription("Fetch a Unity ScriptReference page (https://docs.unity3d.com/ScriptReference/) " +
+        [UcoSkillDescription("Fetch a Unity ScriptReference page (https://docs.unity3d.com/ScriptReference/) " +
             "and parse the Description, Declaration signatures, Parameters table, Returns block and code examples " +
             "into a structured `ScriptRefDoc` payload. Use it to verify class / method signatures and find usage examples " +
             "before writing C# code.")]
-        [McpPluginSkillBody("Fetches an official Unity **ScriptReference** page and returns its structured contents.\n\n" +
+        [UcoSkillBody("Fetches an official Unity **ScriptReference** page and returns its structured contents.\n\n" +
             "## Inputs\n\n" +
             "- `className` *(required)* — Unity class such as `Physics`, `Transform`, `Rigidbody`.\n" +
             "- `memberName` *(optional)* — method or property name to look up. If omitted, returns the class page.\n" +

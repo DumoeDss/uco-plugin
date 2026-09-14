@@ -10,8 +10,8 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +21,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Screenshot
     {
         public const string ScreenshotSceneViewToolId = "screenshot-scene-view";
-        [McpPluginTool
+        [UcoTool
         (
             ScreenshotSceneViewToolId,
             Title = "Screenshot / Scene View",
@@ -29,9 +29,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Capture a screenshot from the Unity Editor Scene View at the requested size. " +
+        [UcoSkillDescription("Capture a screenshot from the Unity Editor Scene View at the requested size. " +
             "Renders via the Scene View's active camera onto a temporary `RenderTexture`. Requires an open Scene View.")]
-        [McpPluginSkillBody("Captures a screenshot from the Unity Editor Scene View and returns it as an image. " +
+        [UcoSkillBody("Captures a screenshot from the Unity Editor Scene View and returns it as an image. " +
             "Returns the image directly for visual inspection by the LLM.\n\n" +
             "## Inputs\n\n" +
             "- `width` (default 1920) / `height` (default 1080) — output pixels. Must be > 0 and ≤ `MaxDimension`.\n\n" +

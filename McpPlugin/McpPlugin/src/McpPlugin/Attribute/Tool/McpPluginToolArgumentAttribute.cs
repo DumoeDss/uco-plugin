@@ -10,13 +10,13 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class McpPluginToolArgumentAttribute : Attribute
+    public sealed class UcoToolArgumentAttribute : Attribute
     {
         public string Name { get; set; } = string.Empty;
 
-        public McpPluginToolArgumentAttribute() { }
+        public UcoToolArgumentAttribute() { }
     }
 }

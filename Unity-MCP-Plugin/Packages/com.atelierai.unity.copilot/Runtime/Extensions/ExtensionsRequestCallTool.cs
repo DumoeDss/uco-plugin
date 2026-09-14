@@ -11,7 +11,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 
 namespace com.AtelierAI.Unity.Copilot.Runtime.Extensions
@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Extensions
         {
             data.Arguments ??= value == null
                 ? new Dictionary<string, JsonElement>()
-                : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(UnityCopilotPluginRuntime.Instance.McpPluginInstance?.McpManager.Reflector) };
+                : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(UnityCopilotPluginRuntime.Instance.UcoPluginInstance?.UcoManager.Reflector) };
             return data;
         }
         // public static IRequestData BuildRequest(this IRequestTool data)

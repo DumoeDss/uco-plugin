@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -31,17 +31,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string PhysicsJointConfigureToolId = "physics-joint-configure";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsJointConfigureToolId,
             Title = "Physics / Joint / Configure",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Configure an existing 3D or 2D Joint on a GameObject — anchors, connected body, " +
+        [UcoSkillDescription("Configure an existing 3D or 2D Joint on a GameObject — anchors, connected body, " +
             "axis, break thresholds, motor, limits, springs, and (ConfigurableJoint) per-axis motion locks. " +
             "Only the supplied (non-null) fields are written; everything else is left as-is. " +
             "Use '" + PhysicsJointAddToolId + "' to attach the joint first.")]
-        [McpPluginSkillBody("Configure an existing Joint on a GameObject. Only non-null parameters are written.\n\n" +
+        [UcoSkillBody("Configure an existing Joint on a GameObject. Only non-null parameters are written.\n\n" +
             "## Joint targeting\n\n" +
             "When multiple joints live on the same GameObject, use `jointIndex` (0-based, default 0) and/or `jointType` " +
             "(case-insensitive alias) to pick the right one. `jointType` is matched against the joint's concrete type " +

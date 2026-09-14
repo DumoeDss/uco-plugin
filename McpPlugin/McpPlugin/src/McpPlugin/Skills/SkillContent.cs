@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Skills
+namespace com.AtelierAI.Uco.Framework.Skills
 {
     /// <summary>
     /// Immutable implementation of <see cref="ISkillContent"/>.

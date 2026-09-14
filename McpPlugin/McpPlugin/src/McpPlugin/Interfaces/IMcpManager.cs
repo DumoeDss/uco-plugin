@@ -9,29 +9,29 @@
 */
 using System;
 using System.Collections.Generic;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public interface IMcpManager : IDisposable
     {
         Reflector Reflector { get; }
 
         /// <summary>Current snapshot of all MCP clients the server reports as active.</summary>
-        IReadOnlyList<McpClientData> ActiveClients { get; }
+        IReadOnlyList<UcoClientData> ActiveClients { get; }
 
         Observable<Unit> OnForceDisconnect { get; }
 
         /// <summary>Fires with the newly connected client's data each time a client connects.</summary>
-        Observable<McpClientData> OnClientConnected { get; }
+        Observable<UcoClientData> OnClientConnected { get; }
 
         /// <summary>Fires with the disconnected client's data each time a client disconnects.</summary>
-        Observable<McpClientData> OnClientDisconnected { get; }
+        Observable<UcoClientData> OnClientDisconnected { get; }
 
         /// <summary>Fires with the full active-client list every time any client connects or disconnects.</summary>
-        Observable<IReadOnlyList<McpClientData>> OnClientsChanged { get; }
+        Observable<IReadOnlyList<UcoClientData>> OnClientsChanged { get; }
 
         IToolManager? ToolManager { get; }
         IPromptManager? PromptManager { get; }

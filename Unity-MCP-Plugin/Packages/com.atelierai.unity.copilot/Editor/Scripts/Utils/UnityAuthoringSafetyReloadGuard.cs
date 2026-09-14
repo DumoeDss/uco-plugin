@@ -8,7 +8,7 @@
 #nullable enable
 
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
@@ -53,10 +53,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         private static System.Collections.Generic.IEnumerable<ToolExecutionPipeline> Pipelines()
         {
             var plugin = UnityCopilotPluginEditor.Instance;
-            if (plugin.Tools is McpToolManager tools)
+            if (plugin.Tools is UcoToolManager tools)
                 yield return tools.ExecutionPipeline;
-            if (plugin.McpPluginInstance?.McpManager.SystemToolManager is McpSystemToolManager systemTools
-                && !(plugin.Tools is McpToolManager regular && ReferenceEquals(regular.ExecutionPipeline, systemTools.ExecutionPipeline)))
+            if (plugin.UcoPluginInstance?.UcoManager.SystemToolManager is UcoSystemToolManager systemTools
+                && !(plugin.Tools is UcoToolManager regular && ReferenceEquals(regular.ExecutionPipeline, systemTools.ExecutionPipeline)))
                 yield return systemTools.ExecutionPipeline;
         }
 

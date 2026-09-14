@@ -11,8 +11,8 @@
 #nullable enable
 using System.ComponentModel;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -23,7 +23,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Screenshot
     {
         public const string ScreenshotCameraToolId = "screenshot-camera";
-        [McpPluginTool
+        [UcoTool
         (
             ScreenshotCameraToolId,
             Title = "Screenshot / Camera",
@@ -31,10 +31,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Capture a screenshot from a Unity `Camera` and return it as a PNG image " +
+        [UcoSkillDescription("Capture a screenshot from a Unity `Camera` and return it as a PNG image " +
             "for direct LLM inspection. Falls back to `Camera.main` (then any active camera) when `cameraRef` is null. " +
             "Width and height are capped to keep response size manageable.")]
-        [McpPluginSkillBody("Captures a screenshot from a camera and returns it as an image. " +
+        [UcoSkillBody("Captures a screenshot from a camera and returns it as an image. " +
             "If no camera is specified, uses the Main Camera. " +
             "Returns the image directly for visual inspection by the LLM.\n\n" +
             "## Inputs\n\n" +

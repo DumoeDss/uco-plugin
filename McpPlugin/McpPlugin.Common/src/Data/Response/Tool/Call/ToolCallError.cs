@@ -13,7 +13,7 @@ using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     /// <summary>Stable machine-readable error codes for controlled calls.</summary>
     public static class ToolCallErrorCodes

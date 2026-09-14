@@ -13,7 +13,7 @@ using AIGD;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
@@ -36,7 +36,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Editor
     {
         public const string EditorApplicationGetStateToolId = "editor-application-get-state";
-        [McpPluginTool
+        [UcoTool
         (
             EditorApplicationGetStateToolId,
             Title = "Editor / Application / Get State",
@@ -44,9 +44,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Return the current state of `UnityEditor.EditorApplication` — playmode, " +
+        [UcoSkillDescription("Return the current state of `UnityEditor.EditorApplication` — playmode, " +
             "paused state, compilation state, and related flags.")]
-        [McpPluginSkillBody("Returns available information about 'UnityEditor.EditorApplication'. " +
+        [UcoSkillBody("Returns available information about 'UnityEditor.EditorApplication'. " +
             "Use it to get information about the current state of the Unity Editor application. " +
             "Such as: playmode, paused state, compilation state, etc.\n\n" +
             "## Behavior\n\n" +
@@ -62,7 +62,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             });
         }
 
-        [McpPluginTool(
+        [UcoTool(
             "editor-application-request-close",
             Title = "Editor / Application / Request Close",
             DestructiveHint = true,

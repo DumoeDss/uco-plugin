@@ -11,16 +11,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Hub.Client;
-using com.IvanMurzak.McpPlugin.Common.Hub.Server;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Hub.Client;
+using com.AtelierAI.Uco.Framework.Common.Hub.Server;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     // ── Notification params wrapper types ────────────────────────────────
     // The Node server sends each notification's params as a single wrapper object
@@ -29,19 +29,19 @@ namespace com.IvanMurzak.McpPlugin
 
     public class OnInitialClientDataParams
     {
-        public McpClientData[] Clients { get; set; } = Array.Empty<McpClientData>();
+        public UcoClientData[] Clients { get; set; } = Array.Empty<UcoClientData>();
     }
 
     public class OnMcpClientConnectedParams
     {
-        public McpClientData Connected { get; set; } = null!;
-        public McpClientData[] All { get; set; } = Array.Empty<McpClientData>();
+        public UcoClientData Connected { get; set; } = null!;
+        public UcoClientData[] All { get; set; } = Array.Empty<UcoClientData>();
     }
 
     public class OnMcpClientDisconnectedParams
     {
-        public McpClientData Disconnected { get; set; } = null!;
-        public McpClientData[] Remaining { get; set; } = Array.Empty<McpClientData>();
+        public UcoClientData Disconnected { get; set; } = null!;
+        public UcoClientData[] Remaining { get; set; } = Array.Empty<UcoClientData>();
     }
 
     public class ForceDisconnectParams
@@ -49,9 +49,9 @@ namespace com.IvanMurzak.McpPlugin
         public string? Reason { get; set; }
     }
 
-    // ── McpManagerClientHub ──────────────────────────────────────────────
+    // ── UcoManagerClientHub ──────────────────────────────────────────────
 
-    public class McpManagerClientHub : BaseHubConnector, IMcpManagerHub
+    public class UcoManagerClientHub : BaseHubConnector, IMcpManagerHub
     {
         readonly IClientMcpManager _mcpManager;
 
@@ -62,8 +62,8 @@ namespace com.IvanMurzak.McpPlugin
         /// </summary>
         private volatile int _liveNotificationEpoch = 0;
 
-        public McpManagerClientHub(
-            ILogger<McpManagerClientHub> logger,
+        public UcoManagerClientHub(
+            ILogger<UcoManagerClientHub> logger,
             Version apiVersion,
             IWebSocketConnectionProvider wsProvider,
             IClientMcpManager mcpManager,
@@ -99,7 +99,7 @@ namespace com.IvanMurzak.McpPlugin
                     if (_liveNotificationEpoch != 0)
                     {
                         _logger.LogDebug("{class}.{method} Discarding stale initial snapshot: live notifications already received.",
-                            nameof(McpManagerClientHub), nameof(IClientMcpRpc.OnInitialClientData));
+                            nameof(UcoManagerClientHub), nameof(IClientMcpRpc.OnInitialClientData));
                         return;
                     }
                     if (param != null)
@@ -139,7 +139,7 @@ namespace com.IvanMurzak.McpPlugin
                     if (connectionManager.ConnectionGeneration != expectedGeneration)
                     {
                         _logger.LogWarning("{class}.{method} Received ForceDisconnect on a stale connection — ignoring to protect the active connection.",
-                            nameof(McpManagerClientHub), nameof(IClientMcpRpc.ForceDisconnect));
+                            nameof(UcoManagerClientHub), nameof(IClientMcpRpc.ForceDisconnect));
                         return;
                     }
 
@@ -312,22 +312,22 @@ namespace com.IvanMurzak.McpPlugin
             return _connectionManager.InvokeAsync<RequestToolCompletedData, ResponseData>(nameof(IServerMcpManager.NotifyToolRequestCompleted), request, cancellationToken);
         }
 
-        public Task<McpClientData[]> GetMcpClientData()
+        public Task<UcoClientData[]> GetMcpClientData()
         {
             _logger.LogTrace("{class}.{method}", nameof(IServerMcpManager), nameof(IServerMcpManager.GetMcpClientData));
-            return _connectionManager.InvokeAsync<McpClientData[]>(nameof(IServerMcpManager.GetMcpClientData), _cancellationTokenSource.Token);
+            return _connectionManager.InvokeAsync<UcoClientData[]>(nameof(IServerMcpManager.GetMcpClientData), _cancellationTokenSource.Token);
         }
 
-        public Task<McpServerData> GetMcpServerData()
+        public Task<UcoServerData> GetMcpServerData()
         {
             _logger.LogTrace("{class}.{method}", nameof(IServerMcpManager), nameof(IServerMcpManager.GetMcpServerData));
-            return _connectionManager.InvokeAsync<McpServerData>(nameof(IServerMcpManager.GetMcpServerData), _cancellationTokenSource.Token);
+            return _connectionManager.InvokeAsync<UcoServerData>(nameof(IServerMcpManager.GetMcpServerData), _cancellationTokenSource.Token);
         }
 
         protected override Task OnConnectedAsync(CancellationToken cancellationToken)
         {
             _logger.LogDebug("{class}.{method} Connected. Waiting for server-pushed initial client data snapshot.",
-                nameof(McpManagerClientHub), nameof(OnConnectedAsync));
+                nameof(UcoManagerClientHub), nameof(OnConnectedAsync));
             return Task.CompletedTask;
         }
 

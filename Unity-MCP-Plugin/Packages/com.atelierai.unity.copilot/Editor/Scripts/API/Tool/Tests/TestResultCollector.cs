@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using UnityEditor.TestTools.TestRunner.Api;
@@ -345,10 +345,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             var requestId = ownership?.RequestId ?? string.Empty;
             if (completedOwnedOperation && string.IsNullOrEmpty(requestId) == false)
             {
-                var mcpPlugin = UnityCopilotPluginEditor.Instance.McpPluginInstance ?? throw new InvalidOperationException("MCP Plugin instance is not available.");
+                var mcpPlugin = UnityCopilotPluginEditor.Instance.UcoPluginInstance ?? throw new InvalidOperationException("MCP Plugin instance is not available.");
 
                 var response = ResponseCallValueTool<TestRunResponse>
-                    .SuccessStructured(mcpPlugin.McpManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse))
+                    .SuccessStructured(mcpPlugin.UcoManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse))
                     .SetRequestID(requestId);
 
                 _ = UnityCopilotPluginEditor.NotifyToolRequestCompleted(new RequestToolCompletedData

@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor.PackageManager;
 
@@ -25,7 +25,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
 
         public const string PackageSearchToolId = "package-search";
-        [McpPluginTool
+        [UcoTool
         (
             PackageSearchToolId,
             Title = "Package Manager / Search",
@@ -34,10 +34,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             OpenWorldHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Search Unity's package registry plus locally installed packages (Git, local, " +
+        [UcoSkillDescription("Search Unity's package registry plus locally installed packages (Git, local, " +
             "embedded sources) by query string. Returns available versions and installation status. " +
             "Online mode fetches exact matches from the live registry then supplements with cached substring matches.")]
-        [McpPluginSkillBody("Search for packages in both Unity Package Manager registry and installed packages. " +
+        [UcoSkillBody("Search for packages in both Unity Package Manager registry and installed packages. " +
             "Use this to find packages by name before installing them. Returns available versions and installation status. " +
             "Searches both the Unity registry and locally installed packages (including Git, local, and embedded sources). " +
             "Results are prioritized: exact name match, exact display name match, name substring, display name substring, description substring. " +

@@ -11,7 +11,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Infrastructure
+namespace com.AtelierAI.Uco.Framework.Tests.Infrastructure
 {
     /// <summary>
     /// ILogger implementation that writes to xUnit's ITestOutputHelper.

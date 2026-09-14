@@ -10,7 +10,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public static partial class Consts
     {
@@ -32,18 +32,18 @@ namespace com.IvanMurzak.McpPlugin.Common
 
                 public static partial class Args
                 {
-                    public const string McpServerEndpoint = "mcp-server-endpoint";
-                    public const string McpServerTimeout = "mcp-server-timeout";
-                    public const string McpPluginToken = "mcp-plugin-token";
-                    public const string McpSkillsFolder = "mcp-skills-folder";
+                    public const string UcoServerEndpoint = "mcp-server-endpoint";
+                    public const string UcoServerTimeout = "mcp-server-timeout";
+                    public const string UcoPluginToken = "mcp-plugin-token";
+                    public const string UcoSkillsFolder = "mcp-skills-folder";
                 }
 
                 public static class Env
                 {
-                    public const string McpServerEndpoint = "MCP_SERVER_ENDPOINT";
-                    public const string McpServerTimeout = "MCP_SERVER_TIMEOUT";
-                    public const string McpPluginToken = "MCP_PLUGIN_TOKEN";
-                    public const string McpSkillsFolder = "MCP_SKILLS_FOLDER";
+                    public const string UcoServerEndpoint = "MCP_SERVER_ENDPOINT";
+                    public const string UcoServerTimeout = "MCP_SERVER_TIMEOUT";
+                    public const string UcoPluginToken = "MCP_PLUGIN_TOKEN";
+                    public const string UcoSkillsFolder = "MCP_SKILLS_FOLDER";
                 }
             }
             public static partial class Server
@@ -177,7 +177,7 @@ namespace com.IvanMurzak.McpPlugin.Common
                     /// stdio transport uses a fixed sentinel session id since there
                     /// is no HTTP request.
                     /// </summary>
-                    public const string McpSessionId = "Mcp-Session-Id";
+                    public const string UcoSessionId = "Mcp-Session-Id";
 
                     /// <summary>
                     /// Sentinel session id used by the stdio transport (which has no
@@ -194,7 +194,7 @@ namespace com.IvanMurzak.McpPlugin.Common
                     /// registry. Optional — plugins that do not set it remain
                     /// reachable via the legacy token-based routing.
                     /// </summary>
-                    public const string McpInstanceId = "X-Mcp-Instance-Id";
+                    public const string UcoInstanceId = "X-Mcp-Instance-Id";
                 }
             }
         }

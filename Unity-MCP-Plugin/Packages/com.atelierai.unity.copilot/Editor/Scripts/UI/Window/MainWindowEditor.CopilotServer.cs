@@ -11,15 +11,15 @@
 #nullable enable
 using System;
 using System.Threading;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Common.Utils;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.UI.Controls;
 using Microsoft.Extensions.Logging;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
@@ -298,7 +298,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             }
         }
 
-        private long SetMcpServerData(McpServerData? data, CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
+        private long SetMcpServerData(UcoServerData? data, CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
         {
             var version = Interlocked.Increment(ref _mcpServerDataVersion);
             if (Logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Trace))
@@ -321,17 +321,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             var fetchVersion = SetMcpServerData(null, status, btnStartStop, statusCircle, statusLabel);
 
             // Then try to fetch additional data asynchronously
-            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.McpPluginInstance;
+            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
             if (mcpPluginInstance == null)
             {
-                Logger.LogDebug("Cannot fetch server data: McpPluginInstance is null");
+                Logger.LogDebug("Cannot fetch server data: UcoPluginInstance is null");
                 return;
             }
 
-            var mcpManagerHub = mcpPluginInstance.McpManagerHub;
+            var mcpManagerHub = mcpPluginInstance.UcoManagerHub;
             if (mcpManagerHub == null)
             {
-                Logger.LogDebug("Cannot fetch server data: McpManagerHub is null");
+                Logger.LogDebug("Cannot fetch server data: UcoManagerHub is null");
                 return;
             }
 

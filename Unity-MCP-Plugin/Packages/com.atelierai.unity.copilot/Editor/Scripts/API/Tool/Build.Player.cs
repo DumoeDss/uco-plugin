@@ -17,7 +17,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
@@ -31,18 +31,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string BuildPlayerToolId = "build-player";
 
-        [McpPluginTool
+        [UcoTool
         (
             BuildPlayerToolId,
             Title = "Build / Player",
             DestructiveHint = true,
             DurableOperationStart = true
         )]
-        [McpPluginSkillDescription("Start a Unity player build for the requested target platform. " +
+        [UcoSkillDescription("Start a Unity player build for the requested target platform. " +
             "Returns a `BuildJobInfo` carrying a `JobId`. Inspect progress via '" + BuildJobGetToolId + "' " +
             "or list all jobs via '" + BuildJobListToolId + "'. Scenes default to `EditorBuildSettings.scenes` " +
             "(enabled rows) but can be overridden with the `scenes` argument.")]
-        [McpPluginSkillBody("Start a Unity player build. " +
+        [UcoSkillBody("Start a Unity player build. " +
             "The build is dispatched on the next editor update tick, so the tool returns immediately with " +
             "`Status='queued'`. Poll '" + BuildJobGetToolId + "' to observe state transitions: queued → running → " +
             "succeeded|failed. Because `BuildPipeline.BuildPlayer` runs synchronously on the editor main thread, " +

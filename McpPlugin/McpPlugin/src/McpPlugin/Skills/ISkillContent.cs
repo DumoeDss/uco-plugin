@@ -8,7 +8,7 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-namespace com.IvanMurzak.McpPlugin.Skills
+namespace com.AtelierAI.Uco.Framework.Skills
 {
     /// <summary>
     /// Represents a custom skill with a name, description, and markdown content body.

@@ -8,12 +8,12 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data
+namespace com.AtelierAI.Uco.Framework.Tests.Data
 {
     public class McpServerDataTests
     {
@@ -21,7 +21,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_DefaultConstructor_InitializesWithDefaultValues()
         {
             // Act
-            var serverData = new McpServerData();
+            var serverData = new UcoServerData();
 
             // Assert
             serverData.ServerVersion.ShouldBeNull();
@@ -33,7 +33,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_CanSetServerVersion()
         {
             // Arrange
-            var serverData = new McpServerData();
+            var serverData = new UcoServerData();
 
             // Act
             serverData.ServerVersion = "1.2.3";
@@ -46,7 +46,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_CanSetServerApiVersion()
         {
             // Arrange
-            var serverData = new McpServerData();
+            var serverData = new UcoServerData();
 
             // Act
             serverData.ServerApiVersion = "2.0.0";
@@ -61,7 +61,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_CanSetIsAiAgentConnected(bool isConnected)
         {
             // Arrange
-            var serverData = new McpServerData();
+            var serverData = new UcoServerData();
 
             // Act
             serverData.IsAiAgentConnected = isConnected;
@@ -74,7 +74,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_ObjectInitializer_ShouldSetAllProperties()
         {
             // Act
-            var serverData = new McpServerData
+            var serverData = new UcoServerData
             {
                 ServerVersion = "1.0.0",
                 ServerApiVersion = "1.0.0",
@@ -91,7 +91,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_Serialize_ShouldUseJsonPropertyNames()
         {
             // Arrange
-            var serverData = new McpServerData
+            var serverData = new UcoServerData
             {
                 ServerVersion = "1.0.0",
                 ServerApiVersion = "2.0.0",
@@ -111,7 +111,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
         public void McpServerData_RoundTrip_ShouldPreserveAllValues()
         {
             // Arrange
-            var original = new McpServerData
+            var original = new UcoServerData
             {
                 ServerVersion = "1.2.3",
                 ServerApiVersion = "1.0.0",
@@ -120,7 +120,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Data
 
             // Act
             var json = JsonSerializer.Serialize(original);
-            var deserialized = JsonSerializer.Deserialize<McpServerData>(json);
+            var deserialized = JsonSerializer.Deserialize<UcoServerData>(json);
 
             // Assert
             deserialized.ShouldNotBeNull();

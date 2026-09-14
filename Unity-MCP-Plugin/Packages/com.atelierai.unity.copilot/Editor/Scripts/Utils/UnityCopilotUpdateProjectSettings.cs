@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// <see cref="UpdateChecker.ShouldCheckForUpdates"/>: the project flag short-circuits
     /// the check before the per-user flag is consulted.
     ///
-    /// See <see href="https://github.com/IvanMurzak/Unity-MCP/issues/768"/>.
+    /// See <see href="https://github.com/IvanMurzak/uco-plugin/issues/768"/>.
     /// </remarks>
     /// <remarks>
     /// <see cref="FilePathAttribute.Location.ProjectFolder"/> resolves the relative path against

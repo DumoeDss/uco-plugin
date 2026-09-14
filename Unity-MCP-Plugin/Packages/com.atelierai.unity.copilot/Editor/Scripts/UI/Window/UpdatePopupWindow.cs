@@ -23,7 +23,7 @@ using UnityEngine.UIElements;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// A popup window that notifies the user when a new version of AI Game Developer is available.
+    /// A popup window that notifies the user when a new version of Unity Co-Pilot is available.
     /// </summary>
     public class UpdatePopupWindow : NotificationPopupWindow
     {
@@ -42,7 +42,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         // CreateGUI() is invoked again, and BindUI() re-binds button click handlers — but
         // these private fields revert to empty, so the labels render empty and "Install
         // Update" attempts to install "{PackageId}@" (empty version), which silently fails.
-        // See https://github.com/IvanMurzak/Unity-MCP/issues/702.
+        // See https://github.com/IvanMurzak/uco-plugin/issues/702.
         [SerializeField] private string currentVersion = string.Empty;
         [SerializeField] private string latestVersion = string.Empty;
 
@@ -197,7 +197,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 UnityCopilotPluginEditor.Instance.LogInfo("Package updated to version {version}", typeof(UpdatePopupWindow), latestVersion);
                 EditorUtility.DisplayDialog(
                     "Update Complete",
-                    $"AI Game Developer has been updated to version {latestVersion}.\n\nUnity will recompile scripts automatically.",
+                    $"Unity Co-Pilot has been updated to version {latestVersion}.\n\nUnity will recompile scripts automatically.",
                     "OK");
             }
             else if (addRequest.Status >= StatusCode.Failure)

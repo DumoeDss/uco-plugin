@@ -13,9 +13,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using com.IvanMurzak.ReflectorNet.Utils;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
-    public partial class McpPluginBuilder
+    public partial class UcoBuilder
     {
         private const BindingFlags MethodBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
         private const BindingFlags FieldBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
@@ -59,10 +59,10 @@ namespace com.IvanMurzak.McpPlugin
                         continue;
 
                     // Use IsDefined for fast check before GetCustomAttribute
-                    var hasToolTypeAttr = isToolAssembly && Attribute.IsDefined(type, typeof(McpPluginToolTypeAttribute));
-                    var hasPromptTypeAttr = isPromptAssembly && Attribute.IsDefined(type, typeof(McpPluginPromptTypeAttribute));
-                    var hasResourceTypeAttr = isResourceAssembly && Attribute.IsDefined(type, typeof(McpPluginResourceTypeAttribute));
-                    var hasSkillTypeAttr = isSkillAssembly && Attribute.IsDefined(type, typeof(McpPluginSkillTypeAttribute));
+                    var hasToolTypeAttr = isToolAssembly && Attribute.IsDefined(type, typeof(UcoToolTypeAttribute));
+                    var hasPromptTypeAttr = isPromptAssembly && Attribute.IsDefined(type, typeof(UcoPromptTypeAttribute));
+                    var hasResourceTypeAttr = isResourceAssembly && Attribute.IsDefined(type, typeof(UcoResourceTypeAttribute));
+                    var hasSkillTypeAttr = isSkillAssembly && Attribute.IsDefined(type, typeof(UcoSkillTypeAttribute));
 
                     if (!hasToolTypeAttr && !hasPromptTypeAttr && !hasResourceTypeAttr && !hasSkillTypeAttr)
                         continue;
@@ -145,19 +145,19 @@ namespace com.IvanMurzak.McpPlugin
                 // Single pass through attributes
                 foreach (var attr in attributes)
                 {
-                    if (processTool && attr is McpPluginToolAttribute toolAttr)
+                    if (processTool && attr is UcoToolAttribute toolAttr)
                     {
                         if (string.IsNullOrEmpty(toolAttr.Name))
                             throw new ArgumentException($"Tool name cannot be null or empty. Type: {type.Name}, Method: {method.Name}");
                         WithTool(toolAttr, classType: type, methodInfo: method);
                     }
-                    else if (processPrompt && attr is McpPluginPromptAttribute promptAttr)
+                    else if (processPrompt && attr is UcoPromptAttribute promptAttr)
                     {
                         if (string.IsNullOrEmpty(promptAttr.Name))
                             throw new ArgumentException($"Prompt name cannot be null or empty. Type: {type.Name}, Method: {method.Name}");
                         WithPrompt(name: promptAttr.Name, classType: type, methodInfo: method);
                     }
-                    else if (processResource && attr is McpPluginResourceAttribute)
+                    else if (processResource && attr is UcoResourceAttribute)
                     {
                         WithResource(classType: type, getContentMethod: method);
                     }
@@ -170,13 +170,13 @@ namespace com.IvanMurzak.McpPlugin
             // Scan const string fields
             foreach (var field in type.GetFields(FieldBindingFlags))
             {
-                var skillAttr = field.GetCustomAttribute<McpPluginSkillAttribute>();
+                var skillAttr = field.GetCustomAttribute<UcoSkillAttribute>();
                 if (skillAttr == null)
                     continue;
 
                 if (!field.IsLiteral || field.FieldType != typeof(string))
                     throw new ArgumentException(
-                        $"Field '{field.Name}' in type '{type.Name}' has [McpPluginSkill] but is not a const string. " +
+                        $"Field '{field.Name}' in type '{type.Name}' has [UcoSkill] but is not a const string. " +
                         "Only const string fields and static string properties are supported.");
 
                 if (string.IsNullOrEmpty(skillAttr.Name))
@@ -201,19 +201,19 @@ namespace com.IvanMurzak.McpPlugin
             // Scan static string properties
             foreach (var property in type.GetProperties(FieldBindingFlags))
             {
-                var skillAttr = property.GetCustomAttribute<McpPluginSkillAttribute>();
+                var skillAttr = property.GetCustomAttribute<UcoSkillAttribute>();
                 if (skillAttr == null)
                     continue;
 
                 if (property.PropertyType != typeof(string))
                     throw new ArgumentException(
-                        $"Property '{property.Name}' in type '{type.Name}' has [McpPluginSkill] but is not a string property. " +
+                        $"Property '{property.Name}' in type '{type.Name}' has [UcoSkill] but is not a string property. " +
                         "Only const string fields and static string properties are supported.");
 
                 var getter = property.GetGetMethod(nonPublic: true);
                 if (getter == null || !getter.IsStatic)
                     throw new ArgumentException(
-                        $"Property '{property.Name}' in type '{type.Name}' has [McpPluginSkill] but is not a static property with a getter. " +
+                        $"Property '{property.Name}' in type '{type.Name}' has [UcoSkill] but is not a static property with a getter. " +
                         "Only const string fields and static string properties are supported.");
 
                 if (string.IsNullOrEmpty(skillAttr.Name))

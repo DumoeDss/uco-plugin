@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -43,17 +43,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
 
         public const string PhysicsSimulateStepToolId = "physics-simulate-step";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsSimulateStepToolId,
             Title = "Physics / Simulate / Step",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Advance the physics simulation by `deltaTime` seconds (Edit Mode friendly). " +
+        [UcoSkillDescription("Advance the physics simulation by `deltaTime` seconds (Edit Mode friendly). " +
             "Wraps `Physics.Simulate` (3D) or `Physics2D.Simulate` (2D). On Unity 6+ the simulation mode is " +
             "temporarily flipped to `SimulationMode.Script` and restored after the step; on pre-6 the legacy " +
             "`Physics.autoSimulation` flag is toggled instead.")]
-        [McpPluginSkillBody("Run a single physics step. Useful for headless Edit-Mode tests or for " +
+        [UcoSkillBody("Run a single physics step. Useful for headless Edit-Mode tests or for " +
             "deterministically stepping after `'physics-force-apply'`.\n\n" +
             "## Inputs\n\n" +
             "- `deltaTime` — step duration in seconds. Defaults to `Time.fixedDeltaTime` when null.\n" +

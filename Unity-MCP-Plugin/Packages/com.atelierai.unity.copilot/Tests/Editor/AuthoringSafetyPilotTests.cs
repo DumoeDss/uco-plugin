@@ -13,8 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Microsoft.Extensions.Logging;
@@ -67,7 +67,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             // doubles is still installed.
             if (UnityCopilotPluginEditor.Instance is TestUnityCopilotPluginEditor leaked)
                 RestoreEditorSingleton(
-                    _sessionOriginalEditor, _sessionOriginalEditor.McpPluginInstance, leaked);
+                    _sessionOriginalEditor, _sessionOriginalEditor.UcoPluginInstance, leaked);
         }
 
         public override IEnumerator SetUp()
@@ -366,7 +366,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
-            var originalPlugin = originalInstance.McpPluginInstance;
+            var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
@@ -470,7 +470,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
-            var originalPlugin = originalInstance.McpPluginInstance;
+            var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
@@ -569,7 +569,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
             originalInstance.BuildMcpPluginIfNeeded();
-            var originalPlugin = originalInstance.McpPluginInstance;
+            var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
@@ -893,7 +893,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
         private static void RestoreEditorSingleton(
             UnityCopilotPluginEditor original,
-            IMcpPlugin? originalPlugin,
+            IUcoPlugin? originalPlugin,
             TestUnityCopilotPluginEditor replacement)
         {
             replacement.DisposeMcpPluginInstance();
@@ -972,8 +972,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ConnectionConfigForTests.KeepConnected = false;
             }
 
-            protected override IMcpPlugin BuildMcpPlugin(
-                com.IvanMurzak.McpPlugin.Common.Version version,
+            protected override IUcoPlugin BuildMcpPlugin(
+                com.AtelierAI.Uco.Framework.Common.Version version,
                 Reflector reflector,
                 ILoggerProvider? loggerProvider = null,
                 Action<IMcpPluginBuilder>? configure = null)
@@ -1009,7 +1009,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             public string? SkillBody => null;
             public JsonNode? InputSchema => new JsonObject();
             public JsonNode? OutputSchema => null;
-            public McpToolType ToolType => McpToolType.Standard;
+            public UcoToolType ToolType => UcoToolType.Standard;
             public bool? ReadOnlyHint => false;
             public bool? DestructiveHint => null;
             public bool? IdempotentHint => null;

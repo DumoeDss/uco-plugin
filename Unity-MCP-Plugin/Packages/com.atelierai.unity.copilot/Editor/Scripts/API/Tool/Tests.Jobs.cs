@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -13,7 +13,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         public const string TestsJobListToolId = "tests-job-list";
         public const string TestsJobCancelToolId = "tests-job-cancel";
 
-        [McpPluginTool(TestsJobGetToolId, Title = "Tests / Get Job",
+        [UcoTool(TestsJobGetToolId, Title = "Tests / Get Job",
             ReadOnlyHint = true, IdempotentHint = true,
             ExecutionAffinity = ToolExecutionAffinity.Background, ThreadSafeRead = true)]
         [Description("Get one durable tests-run operation by ID.")]
@@ -25,14 +25,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             return operation;
         }
 
-        [McpPluginTool(TestsJobListToolId, Title = "Tests / List Jobs",
+        [UcoTool(TestsJobListToolId, Title = "Tests / List Jobs",
             ReadOnlyHint = true, IdempotentHint = true,
             ExecutionAffinity = ToolExecutionAffinity.Background, ThreadSafeRead = true)]
         [Description("List durable tests-run operations.")]
         public static EditorOperationInfo[] ListJobs(bool includeTerminal = true)
             => EditorOperationRegistry.List("tests-run", includeTerminal);
 
-        [McpPluginTool(TestsJobCancelToolId, Title = "Tests / Cancel Job",
+        [UcoTool(TestsJobCancelToolId, Title = "Tests / Cancel Job",
             DestructiveHint = true, IdempotentHint = true)]
         [Description("Request cooperative cancellation of a tests-run operation.")]
         public static EditorOperationInfo CancelJob(string jobId)

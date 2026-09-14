@@ -9,7 +9,7 @@
 */
 using Microsoft.Extensions.Logging;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     public static class ExtensionsLogLevel
     {

@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 using AIGD;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using UnityEditor;
@@ -30,17 +30,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string DocumentAttachToolId = "ui-document-attach";
 
-        [McpPluginTool
+        [UcoTool
         (
             DocumentAttachToolId,
             Title = "UI / Document / Attach",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Add a `UnityEngine.UIElements.UIDocument` to the target GameObject and wire up " +
+        [UcoSkillDescription("Add a `UnityEngine.UIElements.UIDocument` to the target GameObject and wire up " +
             "its `visualTreeAsset` to a UXML at the given asset path. Optionally sets the `panelSettings` reference " +
             "(when the path points at a PanelSettings .asset) and the `sortingOrder`. " +
             "Use '" + UxmlCreateToolId + "' to author the UXML asset first.")]
-        [McpPluginSkillBody("Attach a UIDocument to a GameObject and bind it to a UXML / PanelSettings.\n\n" +
+        [UcoSkillBody("Attach a UIDocument to a GameObject and bind it to a UXML / PanelSettings.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject. Required. UIDocument is added via `GetComponent` + `AddComponent` so " +
             "calling twice is idempotent (the existing UIDocument is reconfigured).\n" +

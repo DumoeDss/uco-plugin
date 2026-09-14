@@ -10,18 +10,18 @@
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Tests.Data.Annotations;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Tests.Data.Annotations;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests_ToolAnnotations
@@ -39,13 +39,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         private async Task<ResponseListTool> GetTool(string toolName)
         {
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output))
                 .WithTools(typeof(AnnotatedToolClass));
 
             var mcpPlugin = mcpPluginBuilder.Build(reflector);
             var request = new RequestListTool();
-            var response = await mcpPlugin.McpManager.ToolManager!.RunListTool(request);
+            var response = await mcpPlugin.UcoManager.ToolManager!.RunListTool(request);
 
             response.ShouldNotBeNull();
             response.Status.ShouldBe(ResponseStatus.Success);

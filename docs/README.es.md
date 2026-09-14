@@ -6,31 +6,31 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Imagen Docker')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editor compatible')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtime compatible')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'Pruebas superadas')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'Pruebas superadas')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-Unirse-7289da?logo=discord&logoColor=white&labelColor=333A41 'Unirse')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=Downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Estrellas')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'Estrellas')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="Trabajo con IA" title="Construcción de niveles" width="100%">
+  <img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="Trabajo con IA" title="Construcción de niveles" width="100%">
 
   <p>
-    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
-    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
-    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
-    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
-    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
+    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
+    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
+    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
+    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
+    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
   </p>
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/README.md) | [中文](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.zh-CN.md) | [日本語](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.ja.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/README.md) | [中文](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.zh-CN.md) | [日本語](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.ja.md)</b>
 
 </div>
 
@@ -40,10 +40,10 @@ A diferencia de otras herramientas, este plugin funciona **dentro de tu juego co
 
 > **[💬 Únete a nuestro servidor de Discord](https://discord.gg/cfbdMZX99G)** - ¡Haz preguntas, muestra tu trabajo y conecta con otros desarrolladores!
 
-## ![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-features.es.svg?raw=true)
+## ![AI Game Developer — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-features.es.svg?raw=true)
 
 - ✔️ **Agentes de IA** - Usa los mejores agentes de **Anthropic**, **OpenAI**, **Microsoft** o cualquier otro proveedor sin dependencia de un solo proveedor
-- ✔️ **Herramientas** - Una amplia gama de [Herramientas MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/default-mcp-tools.md) predeterminadas para operar en Unity Editor
+- ✔️ **Herramientas** - Una amplia gama de [Herramientas MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/default-mcp-tools.md) predeterminadas para operar en Unity Editor
 - ✔️ **Skills** - Genera skills para la IA basadas en el sistema operativo, la versión de Unity y los plugins del proyecto
 - ✔️ **Código y pruebas** - Desarrolla mecánicas de juego y pruébalas con agentes de IA
 - ✔️ **Runtime (en el juego)** - Usa LLMs directamente dentro de tu juego compilado para comportamiento dinámico de NPCs o depuración
@@ -52,7 +52,7 @@ A diferencia de otras herramientas, este plugin funciona **dentro de tu juego co
 - ✔️ **Despliegue flexible** - Funciona localmente (stdio) y de forma remota (http) mediante configuración
 - ✔️ **Extensible** - [Crea herramientas personalizadas en el código de tu proyecto](#add-custom-tool)
 
-[![DESCARGAR INSTALADOR](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/button/button_download_es.svg?raw=true)](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
+[![DESCARGAR INSTALADOR](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/button/button_download_es.svg?raw=true)](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
 
 https://github.com/user-attachments/assets/228baf4d-4f00-4dce-939d-fb985ebdd8dd
 
@@ -72,20 +72,20 @@ unity-mcp-cli login ./MyUnityProject
 unity-mcp-cli open ./MyUnityProject
 ```
 
-![AI Game Developer Windows](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
+![AI Game Developer Windows](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Inicio rápido
 
 Ponte en marcha en tres pasos:
 
 1. **[Instalar el plugin](#step-1-install-unity-mcp-plugin)** — descarga el instalador `.unitypackage` o ejecuta `openupm add com.ivanmurzak.unity.mcp`
-   > **Alternativa:** `npx unity-mcp-cli install-plugin ./MyUnityProject` — ver [documentación de la CLI](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)
+   > **Alternativa:** `npx unity-mcp-cli install-plugin ./MyUnityProject` — ver [documentación de la CLI](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)
 2. **[Elegir un agente de IA](#step-2-install-ai-agent)** — Claude Code, Claude Desktop, GitHub Copilot, Cursor o cualquier otro
 3. **[Configurar el agente de IA](#step-3-configure-ai-agent)** — abre `Window/AI Game Developer` en Unity y haz clic en **Auto-generate skills** (recomendado) o **Configure MCP**
-  ![Setup AI Skills](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
-   > **Alternativa:** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — ver [documentación de la CLI](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)
+  ![Setup AI Skills](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
+   > **Alternativa:** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — ver [documentación de la CLI](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)
 
 
 Eso es todo. Pídele a tu IA *"Crea 3 cubos en un círculo con radio 2"* y observa cómo sucede. ✨
@@ -179,7 +179,7 @@ Instala extensiones cuando necesites más herramientas o [crea tus propias herra
 | **[AI ParticleSystem](https://github.com/IvanMurzak/Unity-AI-ParticleSystem/)** | Conjunto de herramientas adicionales para el sistema de partículas de Unity |
 | **[AI ProBuilder](https://github.com/IvanMurzak/Unity-AI-ProBuilder/)** | Conjunto de herramientas adicionales para Unity ProBuilder |
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Contenidos
 
@@ -235,10 +235,10 @@ Instala extensiones cuando necesites más herramientas o [crea tus propias herra
 | [Configuración del MCP Server](docs/mcp-server.md) | Configuración del servidor, variables de entorno, hosting remoto |
 | [Despliegue con Docker](docs/DOCKER_DEPLOYMENT.md) | Guía paso a paso para despliegue con Docker |
 | [Guía de desarrollo](docs/dev/Development.md) | Arquitectura, estilo de código, CI/CD — para contribuidores |
-| [Wiki](https://github.com/IvanMurzak/Unity-MCP/wiki) | Primeros pasos, tutoriales, referencia de API, preguntas frecuentes |
-| [Herramienta CLI](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) | Instalar plugins, configurar y conectar por línea de comandos |
+| [Wiki](https://github.com/IvanMurzak/uco-plugin/wiki) | Primeros pasos, tutoriales, referencia de API, preguntas frecuentes |
+| [Herramienta CLI](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) | Instalar plugins, configurar y conectar por línea de comandos |
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Instalación
 
@@ -259,14 +259,14 @@ Instala extensiones cuando necesites más herramientas o [crea tus propias herra
 
 ### Opción 1 - Instalador
 
-- **[⬇️ Descargar instalador](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
+- **[⬇️ Descargar instalador](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
 - **📂 Importar el instalador en el proyecto de Unity**
   > - Puedes hacer doble clic en el archivo - Unity lo abrirá automáticamente
   > - O bien: Abre Unity Editor primero, luego haz clic en `Assets/Import Package/Custom Package` y elige el archivo
 
 ### Opción 2 - CLI (recomendado)
 
-Instala el plugin mediante [`unity-mcp-cli`](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) — no se necesita Unity Editor:
+Instala el plugin mediante [`unity-mcp-cli`](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) — no se necesita Unity Editor:
 
 ```bash
 # 1.1 Instalar unity-mcp-cli                                  #  ┌────────────────────┐
@@ -291,7 +291,7 @@ unity-mcp-cli open ./MyUnityProject                        #  │ vscode-copilot
 unity-mcp-cli wait-for-ready ./MyUnityProject
 ```
 
-> Consulta la [documentación completa de la CLI](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) para ver todos los comandos disponibles.
+> Consulta la [documentación completa de la CLI](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) para ver todos los comandos disponibles.
 
 ## Paso 2: Instalar `agente de IA`
 
@@ -316,7 +316,7 @@ Elige un solo `agente de IA` de tu preferencia - no necesitas instalar todos. Es
 - Opción 1: Haz clic en `Auto-generate` Skills **(recomendado)**
 - Opción 2: Haz clic en `Configure` Model Context Protocol (MCP)
 
-![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/ai-connector-window.gif)
+![Unity_AI](https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/ai-connector-window.gif)
 
 > Si tu cliente MCP no está en la lista, usa el JSON sin procesar que se muestra en la ventana para inyectarlo en tu cliente MCP. Lee las instrucciones de tu cliente MCP específico sobre cómo hacerlo.
 
@@ -350,7 +350,7 @@ Si la configuración automática no funciona por cualquier motivo, usa el JSON d
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
 
   ```bash
   gemini mcp add ai-game-developer <command>
@@ -360,7 +360,7 @@ Si la configuración automática no funciona por cualquier motivo, usa el JSON d
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
 
   ```bash
   claude mcp add ai-game-developer <command>
@@ -370,7 +370,7 @@ Si la configuración automática no funciona por cualquier motivo, usa el JSON d
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
 
   ```bash
   copilot
@@ -386,7 +386,7 @@ Si la configuración automática no funciona por cualquier motivo, usa el JSON d
   > Reemplaza `<command>` de la tabla anterior
 </details>
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Ejemplos de flujo de trabajo con IA
 
@@ -440,7 +440,7 @@ Unity MCP proporciona herramientas avanzadas que permiten al LLM trabajar de for
 - ✔️ **API de Unity en vivo** - API de Unity disponible al instante - incluso cuando Unity cambia, obtienes la API actualizada
 - ✔️ **Auto-documentado** - Accede a descripciones legibles de cualquier `class`, `method` o `property` mediante atributos `Description`
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Personalizar herramientas
 
@@ -502,7 +502,7 @@ public static class Prompt_ScriptingCode
 }
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Uso en Runtime (en el juego)
 
@@ -555,11 +555,11 @@ public static class ChessGameAI
 
 Hay muchos casos de uso. Imagina que estás trabajando en un juego de ajedrez con un bot. Puedes externalizar la toma de decisiones del bot al LLM escribiendo unas pocas líneas de código.
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Configuración del `MCP Server` de Unity
 
-El servidor de **[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** soporta muchas opciones de ejecución diferentes y despliegue con Docker. Ambos protocolos de transporte son compatibles: `streamableHttp` y `stdio`. Si necesitas personalizar o desplegar Unity MCP Server en la nube, esta sección es para ti. [Leer más...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
+El servidor de **[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** soporta muchas opciones de ejecución diferentes y despliegue con Docker. Ambos protocolos de transporte son compatibles: `streamableHttp` y `stdio`. Si necesitas personalizar o desplegar Unity MCP Server en la nube, esta sección es para ti. [Leer más...](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/mcp-server.md)
 
 ## Variables
 
@@ -605,7 +605,7 @@ Unity.exe -batchmode -nographics \
 
 Asegúrate de que Docker esté instalado. Y por favor verifica que Docker Desktop esté ejecutándose si estás en un sistema operativo Windows.
 
-[Lee las instrucciones avanzadas de configuración de Docker](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/DOCKER_DEPLOYMENT.md).
+[Lee las instrucciones avanzadas de configuración de Docker](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/DOCKER_DEPLOYMENT.md).
 
 ### Transporte `streamableHttp`
 
@@ -686,7 +686,7 @@ docker run -e MCP_PLUGIN_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
 
 ## Ejecutable binario
 
-Puedes ejecutar el `MCP Server` de Unity directamente desde un archivo binario. Necesitarás tener un binario compilado específicamente para la arquitectura de tu CPU. Consulta la [página de releases en GitHub](https://github.com/IvanMurzak/Unity-MCP/releases), que contiene binarios precompilados para todas las arquitecturas de CPU.
+Puedes ejecutar el `MCP Server` de Unity directamente desde un archivo binario. Necesitarás tener un binario compilado específicamente para la arquitectura de tu CPU. Consulta la [página de releases en GitHub](https://github.com/IvanMurzak/uco-plugin/releases), que contiene binarios precompilados para todas las arquitecturas de CPU.
 
 ```bash
 ./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport stdio
@@ -714,7 +714,7 @@ Puedes ejecutar el `MCP Server` de Unity directamente desde un archivo binario. 
 
 </details>
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Cómo funciona la arquitectura de Unity MCP
 
@@ -817,7 +817,7 @@ Es un puente entre el `MCP Client` y "algo más", en este caso particular es Uni
 - "El rendimiento es crítico - prefiere el object pooling para objetos que se instancian frecuentemente"
 - "Este proyecto sigue los principios SOLID - explica cualquier decisión arquitectónica"
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Contribución 💙💛
 
@@ -825,10 +825,10 @@ Las contribuciones son muy apreciadas. ¡Trae tus ideas y hagamos que el desarro
 
 **¡Por favor dale una estrella 🌟 a este proyecto si te resulta útil!**
 
-1. 👉 [Lee la documentación de desarrollo](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md)
-2. 👉 [Haz un fork del proyecto](https://github.com/IvanMurzak/Unity-MCP/fork)
-3. Clona el fork y abre la carpeta `./Unity-MCP-Plugin` en Unity
+1. 👉 [Lee la documentación de desarrollo](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md)
+2. 👉 [Haz un fork del proyecto](https://github.com/IvanMurzak/uco-plugin/fork)
+3. Clona el fork y abre la carpeta `./uco-unity-project` en Unity
 4. Implementa cosas nuevas en el proyecto, haz commit y push a GitHub
-5. Crea un Pull Request apuntando al repositorio original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP/compare), rama `main`.
+5. Crea un Pull Request apuntando al repositorio original [Unity-MCP](https://github.com/IvanMurzak/uco-plugin/compare), rama `main`.
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

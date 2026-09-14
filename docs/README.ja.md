@@ -6,31 +6,31 @@
 [![Docker Image](https://img.shields.io/docker/image-size/ivanmurzakdev/unity-mcp-server/latest?label=Docker%20Image&logo=docker&labelColor=333A41 'Dockerイメージ')](https://hub.docker.com/r/ivanmurzakdev/unity-mcp-server)
 [![Unity Editor](https://img.shields.io/badge/Editor-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Editorサポート')](https://unity.com/releases/editor/archive)
 [![Unity Runtime](https://img.shields.io/badge/Runtime-X?style=flat&logo=unity&labelColor=333A41&color=2A2A2A 'Unity Runtimeサポート')](https://unity.com/releases/editor/archive)
-[![r](https://github.com/IvanMurzak/Unity-MCP/workflows/release/badge.svg 'テスト合格')](https://github.com/IvanMurzak/Unity-MCP/actions/workflows/release.yml)</br>
+[![r](https://github.com/IvanMurzak/uco-plugin/workflows/release/badge.svg 'テスト合格')](https://github.com/IvanMurzak/uco-plugin/actions/workflows/release.yml)</br>
 [![Discord](https://img.shields.io/badge/Discord-Join-7289da?logo=discord&logoColor=white&labelColor=333A41 '参加')](https://discord.gg/cfbdMZX99G)
 [![OpenUPM](https://img.shields.io/badge/dynamic/json?labelColor=333A41&label=Downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.ivanmurzak.unity.mcp)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/)
-[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'スター')](https://github.com/IvanMurzak/Unity-MCP/stargazers)
-[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/Unity-MCP/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/IvanMurzak/Unity-MCP 'スター')](https://github.com/IvanMurzak/uco-plugin/stargazers)
+[![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP?label=License&labelColor=333A41)](https://github.com/IvanMurzak/uco-plugin/blob/main/LICENSE)
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-  <img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="AI work" title="Level building" width="100%">
+  <img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/promo/ai-developer-banner.jpg" alt="AI work" title="Level building" width="100%">
 
   <p>
-    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
-    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
-    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
-    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
-    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
-    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
-    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
+    <a href="https://claude.ai/download"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/claude-64.png" alt="Claude" title="Claude" height="36"></a>&nbsp;&nbsp;
+    <a href="https://openai.com/index/introducing-codex/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/codex-64.png" alt="Codex" title="Codex" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.cursor.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cursor-64.png" alt="Cursor" title="Cursor" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/docs/copilot/overview"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/github-copilot-64.png" alt="GitHub Copilot" title="GitHub Copilot" height="36"></a>&nbsp;&nbsp;
+    <a href="https://gemini.google.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/gemini-64.png" alt="Gemini" title="Gemini" height="36"></a>&nbsp;&nbsp;
+    <a href="https://antigravity.google/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/antigravity-64.png" alt="Antigravity" title="Antigravity" height="36"></a>&nbsp;&nbsp;
+    <a href="https://code.visualstudio.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/vs-code-64.png" alt="VS Code" title="VS Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://www.jetbrains.com/rider/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/rider-64.png" alt="Rider" title="Rider" height="36"></a>&nbsp;&nbsp;
+    <a href="https://visualstudio.microsoft.com/"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/visual-studio-64.png" alt="Visual Studio" title="Visual Studio" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/anthropics/claude-code"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/open-code-64.png" alt="Open Code" title="Open Code" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/cline/cline"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/cline-64.png" alt="Cline" title="Cline" height="36"></a>&nbsp;&nbsp;
+    <a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/mcp-clients/kilo-code-64.png" alt="Kilo Code" title="Kilo Code" height="36"></a>
   </p>
 
-  <b>[English](https://github.com/IvanMurzak/Unity-MCP/blob/main/README.md) | [中文](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.zh-CN.md) | [Español](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/README.es.md)</b>
+  <b>[English](https://github.com/IvanMurzak/uco-plugin/blob/main/README.md) | [中文](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.zh-CN.md) | [Español](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/README.es.md)</b>
 
 </div>
 
@@ -40,10 +40,10 @@
 
 > **[💬 Discord サーバーに参加](https://discord.gg/cfbdMZX99G)** — 質問したり、作品を披露したり、他の開発者とつながりましょう！
 
-## ![AI ゲーム開発者 — Unity MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-features.ja.svg?raw=true)
+## ![AI ゲーム開発者 — Unity MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-features.ja.svg?raw=true)
 
 - ✔️ **AI エージェント** — **Anthropic**、**OpenAI**、**Microsoft** など、ベンダーロックインなしで最高のエージェントを利用可能
-- ✔️ **ツール** — Unity Editor で操作するための豊富なデフォルト [MCP ツール](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/default-mcp-tools.md)
+- ✔️ **ツール** — Unity Editor で操作するための豊富なデフォルト [MCP ツール](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/default-mcp-tools.md)
 - ✔️ **スキル** — OS、Unity バージョン、プロジェクト内のプラグインに基づいて AI 用スキルを生成
 - ✔️ **コードとテスト** — AI エージェントでゲームメカニクスを開発しテストを実行
 - ✔️ **ランタイム（ゲーム内）** — コンパイル済みゲーム内で直接 LLM を使用し、動的な NPC 挙動やデバッグに活用
@@ -52,7 +52,7 @@
 - ✔️ **柔軟なデプロイ** — 設定によりローカル（stdio）でもリモート（http）でも動作
 - ✔️ **拡張可能** — [プロジェクトコード内にカスタムツールを作成](#add-custom-tool)
 
-[![インストーラーをダウンロード](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/button/button_download_ja.svg?raw=true)](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
+[![インストーラーをダウンロード](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/button/button_download_ja.svg?raw=true)](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)
 
 https://github.com/user-attachments/assets/228baf4d-4f00-4dce-939d-fb985ebdd8dd
 
@@ -72,20 +72,20 @@ unity-mcp-cli login ./MyUnityProject
 unity-mcp-cli open ./MyUnityProject
 ```
 
-![AI Game Developer Windows](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
+![AI Game Developer Windows](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/ai-game-developer-windows.png?raw=true)
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # クイックスタート
 
 3つのステップで始められます：
 
 1. **[プラグインをインストール](#step-1-install-unity-mcp-plugin)** — `.unitypackage` インストーラーをダウンロードするか `openupm add com.ivanmurzak.unity.mcp` を実行
-   > **代替方法：** `npx unity-mcp-cli install-plugin ./MyUnityProject` — [CLI ドキュメント](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)を参照
+   > **代替方法：** `npx unity-mcp-cli install-plugin ./MyUnityProject` — [CLI ドキュメント](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)を参照
 2. **[AI エージェントを選択](#step-2-install-ai-agent)** — Claude Code、Claude Desktop、GitHub Copilot、Cursor、その他
 3. **[AI エージェントを設定](#step-3-configure-ai-agent)** — Unity で `Window/AI Game Developer` を開き、**スキルを自動生成**（推奨）または **MCP を設定** をクリック
-  ![Setup AI Skills](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
-   > **代替方法：** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — [CLI ドキュメント](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)を参照
+  ![Setup AI Skills](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/editor/setup-skills.jpg?raw=true)
+   > **代替方法：** `npx unity-mcp-cli setup-skills claude-code ./MyUnityProject` — [CLI ドキュメント](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)を参照
 
 
 以上です。AI に「半径2の円上に3つのキューブを作成して」と頼んで、実行される様子を見てみましょう。✨
@@ -179,7 +179,7 @@ unity-mcp-cli open ./MyUnityProject
 | **[AI ParticleSystem](https://github.com/IvanMurzak/Unity-AI-ParticleSystem/)** | Unity パーティクルシステム用の追加ツールセット |
 | **[AI ProBuilder](https://github.com/IvanMurzak/Unity-AI-ProBuilder/)** | Unity ProBuilder 用の追加ツールセット |
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # 目次
 
@@ -235,10 +235,10 @@ unity-mcp-cli open ./MyUnityProject
 | [MCP Server セットアップ](docs/mcp-server.md) | サーバー設定、環境変数、リモートホスティング |
 | [Docker デプロイ](docs/DOCKER_DEPLOYMENT.md) | ステップバイステップの Docker デプロイガイド |
 | [開発ガイド](docs/dev/Development.md) | アーキテクチャ、コードスタイル、CI/CD — コントリビューター向け |
-| [Wiki](https://github.com/IvanMurzak/Unity-MCP/wiki) | 入門、チュートリアル、API リファレンス、FAQ |
-| [CLI ツール](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) | コマンドラインでプラグインのインストール、設定、接続 |
+| [Wiki](https://github.com/IvanMurzak/uco-plugin/wiki) | 入門、チュートリアル、API リファレンス、FAQ |
+| [CLI ツール](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) | コマンドラインでプラグインのインストール、設定、接続 |
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # インストール
 
@@ -259,14 +259,14 @@ unity-mcp-cli open ./MyUnityProject
 
 ### オプション1 - インストーラー
 
-- **[⬇️ インストーラーをダウンロード](https://github.com/IvanMurzak/Unity-MCP/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
+- **[⬇️ インストーラーをダウンロード](https://github.com/IvanMurzak/uco-plugin/releases/latest/download/AI-Game-Dev-Installer.unitypackage)**
 - **📂 インストーラーを Unity プロジェクトにインポート**
   > - ファイルをダブルクリックすると Unity が自動的に開きます
   > - または：先に Unity Editor を開き、`Assets/Import Package/Custom Package` をクリックしてファイルを選択してください
 
 ### オプション2 - CLI（推奨）
 
-[`unity-mcp-cli`](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md) でプラグインをインストール — Unity Editor は不要です：
+[`unity-mcp-cli`](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md) でプラグインをインストール — Unity Editor は不要です：
 
 ```bash
 # 1.1 unity-mcp-cli をインストール                          #  ┌────────────────────┐
@@ -291,7 +291,7 @@ unity-mcp-cli open ./MyUnityProject                        #  │ vscode-copilot
 unity-mcp-cli wait-for-ready ./MyUnityProject
 ```
 
-> すべての利用可能なコマンドについては [CLI の完全なドキュメント](https://github.com/IvanMurzak/Unity-MCP/blob/main/cli/README.md)をご覧ください。
+> すべての利用可能なコマンドについては [CLI の完全なドキュメント](https://github.com/IvanMurzak/uco-plugin/blob/main/cli/README.md)をご覧ください。
 
 ## ステップ2: `AI エージェント` をインストール
 
@@ -316,7 +316,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 - オプション1: **スキルを自動生成** をクリック **（推奨）**
 - オプション2: Model Context Protocol (MCP) の **設定** をクリック
 
-![Unity_AI](https://github.com/IvanMurzak/Unity-MCP/raw/main/docs/img/ai-connector-window.gif)
+![Unity_AI](https://github.com/IvanMurzak/uco-plugin/raw/main/docs/img/ai-connector-window.gif)
 
 > お使いの MCP クライアントがリストにない場合は、ウィンドウに表示される生の JSON を使用して MCP クライアントに設定を注入してください。具体的な方法については、お使いの MCP クライアントの説明書をお読みください。
 
@@ -350,7 +350,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/gemini-64.png?raw=true" width="16" height="16" alt="Gemini CLI"> Gemini CLI</summary>
 
   ```bash
   gemini mcp add ai-game-developer <command>
@@ -360,7 +360,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/claude-64.png?raw=true" width="16" height="16" alt="Claude Code CLI"> Claude Code CLI</summary>
 
   ```bash
   claude mcp add ai-game-developer <command>
@@ -370,7 +370,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
 </details>
 
 <details>
-  <summary><img src="https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
+  <summary><img src="https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/mcp-clients/github-copilot-64.png?raw=true" width="16" height="16" alt="GitHub Copilot CLI"> GitHub Copilot CLI</summary>
 
   ```bash
   copilot
@@ -386,7 +386,7 @@ unity-mcp-cli wait-for-ready ./MyUnityProject
   > 上記の表から `<command>` を置き換えてください
 </details>
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # AI ワークフロー例
 
@@ -440,7 +440,7 @@ Unity MCP は、LLM がより速く効果的に作業できるよう高度なツ
 - ✔️ **ライブ Unity API** — Unity API が即座に利用可能 — Unity が更新されても常に最新の API にアクセス
 - ✔️ **自己文書化** — `Description` 属性を通じて、あらゆる `class`、`method`、`property` の人間が読める説明にアクセス
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # ツールのカスタマイズ
 
@@ -502,7 +502,7 @@ public static class Prompt_ScriptingCode
 }
 ```
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # ランタイム使用（ゲーム内）
 
@@ -555,11 +555,11 @@ public static class ChessGameAI
 
 多くのユースケースが考えられます。例えば、ボット付きのチェスゲームを開発しているとしましょう。数行のコードを書くだけで、ボットの意思決定を LLM に委託できます。
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Unity `MCP Server` セットアップ
 
-**[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** Server は多様な起動オプションと Docker デプロイをサポートしています。`streamableHttp` と `stdio` の両方のトランスポートプロトコルに対応しています。Unity MCP Server をカスタマイズしたりクラウドにデプロイする場合は、このセクションをご覧ください。[詳細はこちら...](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/mcp-server.md)
+**[Unity MCP](https://github.com/IvanMurzak/Unity-MCP)** Server は多様な起動オプションと Docker デプロイをサポートしています。`streamableHttp` と `stdio` の両方のトランスポートプロトコルに対応しています。Unity MCP Server をカスタマイズしたりクラウドにデプロイする場合は、このセクションをご覧ください。[詳細はこちら...](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/mcp-server.md)
 
 ## 変数
 
@@ -605,7 +605,7 @@ Unity.exe -batchmode -nographics \
 
 Docker がインストールされていることを確認してください。Windows をお使いの場合は、Docker Desktop が起動していることも確認してください。
 
-[高度な Docker 設定手順はこちら](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/DOCKER_DEPLOYMENT.md)。
+[高度な Docker 設定手順はこちら](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/DOCKER_DEPLOYMENT.md)。
 
 ### `streamableHttp` トランスポート
 
@@ -686,7 +686,7 @@ docker run -e MCP_PLUGIN_PORT=123 -p 123:123 ivanmurzakdev/unity-mcp-server
 
 ## バイナリ実行ファイル
 
-Unity `MCP Server` をバイナリファイルから直接起動できます。お使いの CPU アーキテクチャ用にコンパイルされたバイナリが必要です。[GitHub リリースページ](https://github.com/IvanMurzak/Unity-MCP/releases)には、すべての CPU アーキテクチャ用のコンパイル済みバイナリが含まれています。
+Unity `MCP Server` をバイナリファイルから直接起動できます。お使いの CPU アーキテクチャ用にコンパイルされたバイナリが必要です。[GitHub リリースページ](https://github.com/IvanMurzak/uco-plugin/releases)には、すべての CPU アーキテクチャ用のコンパイル済みバイナリが含まれています。
 
 ```bash
 ./unity-mcp-server --port 8080 --plugin-timeout 10000 --client-transport stdio
@@ -714,7 +714,7 @@ Unity `MCP Server` をバイナリファイルから直接起動できます。�
 
 </details>
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # Unity MCP アーキテクチャの仕組み
 
@@ -817,7 +817,7 @@ MCP — Model Context Protocol。一言で言えば、AI のための `USB Type-
 - 「パフォーマンスが重要 — 頻繁にインスタンス化されるオブジェクトにはオブジェクトプーリングを優先する」
 - 「このプロジェクトは SOLID 原則に従う — アーキテクチャの判断を説明する」
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
 
 # コントリビューション 💙💛
 
@@ -825,10 +825,10 @@ MCP — Model Context Protocol。一言で言えば、AI のための `USB Type-
 
 **このプロジェクトが役に立ったら、ぜひスターを付けてください 🌟**
 
-1. 👉 [開発ドキュメントを読む](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/dev/Development.md)
-2. 👉 [プロジェクトをフォーク](https://github.com/IvanMurzak/Unity-MCP/fork)
-3. フォークをクローンし、Unity で `./Unity-MCP-Plugin` フォルダを開く
+1. 👉 [開発ドキュメントを読む](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/dev/Development.md)
+2. 👉 [プロジェクトをフォーク](https://github.com/IvanMurzak/uco-plugin/fork)
+3. フォークをクローンし、Unity で `./uco-unity-project` フォルダを開く
 4. プロジェクトに新しい機能を実装し、コミット、GitHub にプッシュ
-5. オリジナルの [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP/compare) リポジトリの `main` ブランチに向けてプルリクエストを作成
+5. オリジナルの [Unity-MCP](https://github.com/IvanMurzak/uco-plugin/compare) リポジトリの `main` ブランチに向けてプルリクエストを作成
 
-![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)
+![AI Game Developer — Unity SKILLS and MCP](https://github.com/IvanMurzak/uco-plugin/blob/main/docs/img/promo/hazzard-divider.svg?raw=true)

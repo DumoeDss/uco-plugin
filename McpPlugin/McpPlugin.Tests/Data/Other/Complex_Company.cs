@@ -10,7 +10,7 @@
 // Complex class: Company with nested collections and references
 using System.Collections.Generic;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Company
     {

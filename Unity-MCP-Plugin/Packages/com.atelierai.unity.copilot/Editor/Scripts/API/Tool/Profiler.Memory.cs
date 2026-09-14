@@ -22,7 +22,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEngine;
 
@@ -31,17 +31,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Profiler
     {
         public const string ProfilerMemorySnapshotTakeToolId = "profiler-memory-snapshot-take";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerMemorySnapshotTakeToolId,
             Title = "Profiler / Memory Snapshot / Take",
             DestructiveHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Capture a Unity memory snapshot to a `.snap` file. Requires the " +
+        [UcoSkillDescription("Capture a Unity memory snapshot to a `.snap` file. Requires the " +
             "'com.unity.memoryprofiler' package — if it is not installed, the tool returns a failure result " +
             "(it does NOT throw). Reflection-only invocation so we don't take a hard dependency.")]
-        [McpPluginSkillBody("Take a memory snapshot via the `com.unity.memoryprofiler` package, invoking " +
+        [UcoSkillBody("Take a memory snapshot via the `com.unity.memoryprofiler` package, invoking " +
             "`MemoryProfiler.TakeSnapshot` (or its variant with screenshot callback) by reflection. If no " +
             "`snapshotPath` is supplied, a timestamped file is created under " +
             "`Application.temporaryCachePath/MemoryCaptures/`.\n\n" +
@@ -135,7 +135,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerMemorySnapshotListToolId = "profiler-memory-snapshot-list";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerMemorySnapshotListToolId,
             Title = "Profiler / Memory Snapshot / List",
@@ -143,10 +143,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("List `.snap` memory snapshot files. When `searchPath` is empty, " +
+        [UcoSkillDescription("List `.snap` memory snapshot files. When `searchPath` is empty, " +
             "scans `Application.temporaryCachePath/MemoryCaptures/` and `<projectRoot>/MemoryCaptures/`. " +
             "Requires com.unity.memoryprofiler.")]
-        [McpPluginSkillBody("Enumerate every `.snap` file under the provided `searchPath` (or the default " +
+        [UcoSkillBody("Enumerate every `.snap` file under the provided `searchPath` (or the default " +
             "snapshot directories when omitted). Returns size and creation time for each file.\n\n" +
             "Returns `Ok=false` with `Error` set when the memory profiler package is missing.")]
         [Description("List .snap memory snapshot files in known or supplied directories.")]
@@ -197,7 +197,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerMemorySnapshotCompareToolId = "profiler-memory-snapshot-compare";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerMemorySnapshotCompareToolId,
             Title = "Profiler / Memory Snapshot / Compare",
@@ -205,10 +205,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Compare two `.snap` files at the file-metadata level (size delta, creation-time " +
+        [UcoSkillDescription("Compare two `.snap` files at the file-metadata level (size delta, creation-time " +
             "delta). For object-level diff, open both snapshots in the Memory Profiler window. Requires " +
             "com.unity.memoryprofiler.")]
-        [McpPluginSkillBody("File-level snapshot diff. Reads `FileInfo` for both paths and returns sizes plus the " +
+        [UcoSkillBody("File-level snapshot diff. Reads `FileInfo` for both paths and returns sizes plus the " +
             "delta. The package gating is enforced so this stays consistent with `take` / `list`, even though the " +
             "comparison itself is filesystem-only.")]
         [Description("Compare two .snap files at file-metadata level (size and creation-time delta).")]

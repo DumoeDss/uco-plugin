@@ -2,14 +2,14 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     /// <summary>
     /// Task 6.1: the shared builder registers the authoring safety policy as
@@ -26,7 +26,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var projectRoot = Path.Combine(Path.GetTempPath(), "mcp-wiring-" + System.Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(projectRoot, "Assets"));
             var pathPolicy = new ProjectPathPolicy(projectRoot);
-            var builder = new McpPluginBuilder(new Version());
+            var builder = new UcoBuilder(new Version());
             builder.WithProjectPathPolicy(pathPolicy)
                 .AddToolExecutionMiddleware(recording);
 
@@ -37,8 +37,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             pipeline.Middleware[0].ShouldBeOfType<AuthoringSafetyMiddleware>();
             pipeline.Middleware[1].ShouldBeSameAs(recording);
 
-            var toolManager = services.GetRequiredService<IToolManager>().ShouldBeOfType<McpToolManager>();
-            var systemManager = services.GetRequiredService<McpSystemToolManager>();
+            var toolManager = services.GetRequiredService<IToolManager>().ShouldBeOfType<UcoToolManager>();
+            var systemManager = services.GetRequiredService<UcoSystemToolManager>();
             toolManager.ExecutionPipeline.ShouldBeSameAs(pipeline);
             systemManager.ExecutionPipeline.ShouldBeSameAs(pipeline);
             services.GetRequiredService<ISystemToolManager>().ShouldBeSameAs(systemManager);
@@ -53,7 +53,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         [Fact]
         public void Build_WithoutCustomMiddlewareStillHasSafetyThenPassThrough()
         {
-            var builder = new McpPluginBuilder(new Version());
+            var builder = new UcoBuilder(new Version());
             builder.Build(new Reflector());
             var pipeline = builder.ServiceProvider!.GetRequiredService<ToolExecutionPipeline>();
 

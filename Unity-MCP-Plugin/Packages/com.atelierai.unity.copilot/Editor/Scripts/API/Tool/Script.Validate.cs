@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.CodeAnalysis;
@@ -73,17 +73,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         // Hard cap on input size to avoid OOM from runaway inputs. 1 MiB of C# source is already huge.
         private const int MaxValidateCodeBytes = 1 * 1024 * 1024;
 
-        [McpPluginTool
+        [UcoTool
         (
             ScriptValidateToolId,
             Title = "Script / Validate",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Validate C# source with Roslyn at three strictness levels (Syntax / Semantic / Strict). " +
+        [UcoSkillDescription("Validate C# source with Roslyn at three strictness levels (Syntax / Semantic / Strict). " +
             "Does NOT execute or write to disk — safe pre-flight lint before '" + ScriptUpdateOrCreateToolId + "'. " +
             "Strict / Semantic catch references to unknown namespaces, types, and methods against the project's loaded assemblies.")]
-        [McpPluginSkillBody("Validates a C# source string with Roslyn and returns structured diagnostics. " +
+        [UcoSkillBody("Validates a C# source string with Roslyn and returns structured diagnostics. " +
             "Pure read-only — does NOT compile to an assembly, write any file, or invoke any code. " +
             "Pair with '" + ScriptUpdateOrCreateToolId + "' as a pre-flight check before writing scripts to disk.\n\n" +
             "## Inputs\n\n" +

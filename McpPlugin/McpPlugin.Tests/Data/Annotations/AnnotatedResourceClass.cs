@@ -8,28 +8,28 @@
 └────────────────────────────────────────────────────────────────────────┘
 */
 
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Annotations
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Annotations
 {
-    [McpPluginResourceType]
+    [UcoResourceType]
     public static class AnnotatedResourceClass
     {
-        [McpPluginResource(Route = "test://resource-enabled-default/{id}", Name = "resource-enabled-default", ListResources = nameof(ListResourcesEnabledDefault))]
+        [UcoResource(Route = "test://resource-enabled-default/{id}", Name = "resource-enabled-default", ListResources = nameof(ListResourcesEnabledDefault))]
         public static ResponseResourceContent[] GetResourceEnabledDefault(string id)
             => new[] { ResponseResourceContent.CreateText($"test://resource-enabled-default/{id}", "default") };
 
         public static ResponseListResource[] ListResourcesEnabledDefault()
             => new[] { new ResponseListResource("test://resource-enabled-default/1", "resource-enabled-default") };
 
-        [McpPluginResource(Route = "test://resource-enabled-true/{id}", Name = "resource-enabled-true", Enabled = true, ListResources = nameof(ListResourcesEnabledTrue))]
+        [UcoResource(Route = "test://resource-enabled-true/{id}", Name = "resource-enabled-true", Enabled = true, ListResources = nameof(ListResourcesEnabledTrue))]
         public static ResponseResourceContent[] GetResourceEnabledTrue(string id)
             => new[] { ResponseResourceContent.CreateText($"test://resource-enabled-true/{id}", "enabled") };
 
         public static ResponseListResource[] ListResourcesEnabledTrue()
             => new[] { new ResponseListResource("test://resource-enabled-true/1", "resource-enabled-true") };
 
-        [McpPluginResource(Route = "test://resource-enabled-false/{id}", Name = "resource-enabled-false", Enabled = false, ListResources = nameof(ListResourcesEnabledFalse))]
+        [UcoResource(Route = "test://resource-enabled-false/{id}", Name = "resource-enabled-false", Enabled = false, ListResources = nameof(ListResourcesEnabledFalse))]
         public static ResponseResourceContent[] GetResourceEnabledFalse(string id)
             => new[] { ResponseResourceContent.CreateText($"test://resource-enabled-false/{id}", "disabled") };
 

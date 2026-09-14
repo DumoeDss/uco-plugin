@@ -11,7 +11,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
 using UnityEditor;
@@ -21,17 +21,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsFindToolId = "assets-find";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsFindToolId,
             Title = "Assets / Find",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Search the Unity asset database using a search filter string. " +
+        [UcoSkillDescription("Search the Unity asset database using a search filter string. " +
             "The filter accepts names, labels (`l:`), types (`t:`), AssetBundles (`b:`), areas (`a:`), and globs (`glob:`). " +
             "See the body for the full filter syntax.")]
-        [McpPluginSkillBody("Search the asset database using the search filter string. " +
+        [UcoSkillBody("Search the asset database using the search filter string. " +
             "Allows you to search for Assets. The string argument can provide names, labels or types (classnames).\n\n" +
             "## Filter syntax\n\n" +
             "- **Name** — filter assets by their filename (without extension). Words separated by whitespace are " +

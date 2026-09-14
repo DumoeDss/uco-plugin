@@ -15,8 +15,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.AtelierAI.Unity.Copilot.Editor.API;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 using NUnit.Framework;
@@ -46,7 +46,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             var toolName = typeof(Tool_GameObject)
                 .GetMethod(nameof(Tool_GameObject.Find))
-                .GetCustomAttribute<McpPluginToolAttribute>()
+                .GetCustomAttribute<UcoToolAttribute>()
                 .Name;
 
             var task = UnityCopilotPluginEditor.Instance.Tools!.RunCallTool(new RequestCallTool(toolName, parameters!));

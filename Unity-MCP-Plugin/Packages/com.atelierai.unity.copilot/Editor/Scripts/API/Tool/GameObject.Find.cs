@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using AIGD;
@@ -25,17 +25,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_GameObject
     {
         public const string GameObjectFindToolId = "gameobject-find";
-        [McpPluginTool
+        [UcoTool
         (
             GameObjectFindToolId,
             Title = "GameObject / Find",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Find a specific GameObject in the opened Prefab (preferred when present) or the " +
+        [UcoSkillDescription("Find a specific GameObject in the opened Prefab (preferred when present) or the " +
             "active Scene. Optionally include editable data, components preview, bounds, and limited hierarchy. " +
             "Supports token-saving path-scoped reads via `paths` or `viewQuery`.")]
-        [McpPluginSkillBody("Finds specific GameObject by provided information in opened Prefab or in a Scene. " +
+        [UcoSkillBody("Finds specific GameObject by provided information in opened Prefab or in a Scene. " +
             "First it looks for the opened Prefab, if any Prefab is opened it looks only there ignoring a scene. " +
             "If no opened Prefab it looks into current active scene. " +
             "Returns GameObject information and its children. " +

@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UProfiler = UnityEngine.Profiling.Profiler;
 using ProfilerArea = UnityEngine.Profiling.ProfilerArea;
@@ -32,17 +32,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         private static readonly string[] s_ProfilerAreaNames = Enum.GetNames(typeof(ProfilerArea));
 
         public const string ProfilerStartToolId = "profiler-start";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerStartToolId,
             Title = "Profiler / Start",
             DestructiveHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Enable the Unity Profiler. Optionally record to a binary `.raw` log file and " +
+        [UcoSkillDescription("Enable the Unity Profiler. Optionally record to a binary `.raw` log file and " +
             "enable allocation callstacks. Pair with '" + ProfilerStopToolId + "' to end the session and '" +
             ProfilerStatusToolId + "' to inspect state.")]
-        [McpPluginSkillBody("Enable the Unity Profiler. " +
+        [UcoSkillBody("Enable the Unity Profiler. " +
             "Optionally record the session to a binary `.raw` log file via `Profiler.logFile` and enable " +
             "allocation callstacks for managed allocations.\n\n" +
             "## Inputs\n\n" +
@@ -82,7 +82,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerStopToolId = "profiler-stop";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerStopToolId,
             Title = "Profiler / Stop",
@@ -90,9 +90,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Disable the Unity Profiler and stop any active `.raw` recording started by '" +
+        [UcoSkillDescription("Disable the Unity Profiler and stop any active `.raw` recording started by '" +
             ProfilerStartToolId + "'.")]
-        [McpPluginSkillBody("Disable the Unity Profiler. " +
+        [UcoSkillBody("Disable the Unity Profiler. " +
             "Stops any active `.raw` recording, resets `Profiler.enableBinaryLog = false`, clears " +
             "`Profiler.logFile`, and disables allocation callstacks. Idempotent — safe to call when already stopped.")]
         [Description("Disable the Unity Profiler and stop recording.")]
@@ -114,7 +114,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerStatusToolId = "profiler-status";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerStatusToolId,
             Title = "Profiler / Status",
@@ -122,9 +122,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Return the current state of the Unity Profiler — enabled flag, binary log " +
+        [UcoSkillDescription("Return the current state of the Unity Profiler — enabled flag, binary log " +
             "recording info, allocation callstacks flag, and per-`ProfilerArea` enable map.")]
-        [McpPluginSkillBody("Return a snapshot of the Unity Profiler state: " +
+        [UcoSkillBody("Return a snapshot of the Unity Profiler state: " +
             "`Profiler.enabled`, `Profiler.enableBinaryLog`, `Profiler.logFile`, " +
             "`Profiler.enableAllocationCallstacks`, and every `ProfilerArea`'s enabled flag.\n\n" +
             "Read-only and idempotent — safe to poll.")]
@@ -135,7 +135,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         }
 
         public const string ProfilerSetAreasToolId = "profiler-set-areas";
-        [McpPluginTool
+        [UcoTool
         (
             ProfilerSetAreasToolId,
             Title = "Profiler / Set Areas",
@@ -143,9 +143,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             IdempotentHint = true,
             Enabled = false
         )]
-        [McpPluginSkillDescription("Enable or disable specific Unity `ProfilerArea` values in batch. " +
+        [UcoSkillDescription("Enable or disable specific Unity `ProfilerArea` values in batch. " +
             "Use '" + ProfilerStatusToolId + "' to see the current per-area map.")]
-        [McpPluginSkillBody("Toggle one or more `ProfilerArea` values via `Profiler.SetAreaEnabled`. " +
+        [UcoSkillBody("Toggle one or more `ProfilerArea` values via `Profiler.SetAreaEnabled`. " +
             "Unknown area names throw with the full list of valid names.\n\n" +
             "## Inputs\n\n" +
             "- `areas` — dictionary of `ProfilerArea` name → enabled flag (case-insensitive match).\n\n" +

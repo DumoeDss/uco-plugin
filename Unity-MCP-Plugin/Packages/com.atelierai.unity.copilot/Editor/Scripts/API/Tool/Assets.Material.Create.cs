@@ -12,7 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using AIGD;
@@ -23,15 +23,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     public partial class Tool_Assets
     {
         public const string AssetsMaterialCreateToolId = "assets-material-create";
-        [McpPluginTool
+        [UcoTool
         (
             AssetsMaterialCreateToolId,
             Title = "Assets / Create Material"
         )]
-        [McpPluginSkillDescription("Create a new Material asset with default parameters at a given 'Assets/'-rooted " +
+        [UcoSkillDescription("Create a new Material asset with default parameters at a given 'Assets/'-rooted " +
             "path ending in '.mat'. Creates intermediate folders if missing. Use '" +
             Tool_Assets_Shader.AssetsShaderListAllToolId + "' to find a valid `shaderName`.")]
-        [McpPluginSkillBody("Create new material asset with default parameters. " +
+        [UcoSkillBody("Create new material asset with default parameters. " +
             "Creates folders recursively if they do not exist. " +
             "Provide proper 'shaderName' - use '" + Tool_Assets_Shader.AssetsShaderListAllToolId + "' tool to find available shaders.\n\n" +
             "## Inputs\n\n" +

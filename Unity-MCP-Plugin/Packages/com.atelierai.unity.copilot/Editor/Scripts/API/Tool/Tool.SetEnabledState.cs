@@ -13,7 +13,7 @@ using AIGD;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
@@ -24,16 +24,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string ToolSetEnabledStateId = "tool-set-enabled-state";
 
-        [McpPluginTool
+        [UcoTool
         (
             ToolSetEnabledStateId,
             Title = "Tool / Set Enabled State",
             Enabled = false
         )]
-        [McpPluginSkillDescription("Enable or disable MCP tools by name in batch. " +
+        [UcoSkillDescription("Enable or disable uco tools by name in batch. " +
             "Persists the change via `UnityCopilotPluginEditor.Instance.Save()` only when at least one tool actually flipped. " +
             "Returns per-input success flags plus optional operation logs.")]
-        [McpPluginSkillBody("Enable or disable MCP tools by name. " +
+        [UcoSkillBody("Enable or disable uco tools by name. " +
             "Allows controlling which tools are available for the AI agent.\n\n" +
             "## Inputs\n\n" +
             "- `tools` — array of `ToolToggleInput { Name, Enabled }`. Non-empty.\n" +
@@ -42,7 +42,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "Each entry is resolved against the tool manager's exact-name and case-insensitive lookups. " +
             "Already-correct state short-circuits as success without writing. The plugin's config is saved once at the " +
             "end iff at least one tool actually changed state.")]
-        [Description("Enable or disable MCP tools by name. " +
+        [Description("Enable or disable uco tools by name. " +
             "Allows controlling which tools are available for the AI agent.")]
         public ToolToggleResult SetEnabledState
         (

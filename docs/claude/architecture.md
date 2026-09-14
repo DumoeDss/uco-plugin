@@ -5,7 +5,7 @@ MCP Client (Claude/Cursor/etc.)
       ↕ streamableHttp (REST + WebSocket)
 Unity-MCP-Server  (Node.js — npm package `cocli`, entry `bin/server.mjs`)
       ↕ WebSocket hub
-Unity-MCP-Plugin  (Unity Editor/Runtime)
+uco-unity-project  (Unity Editor/Runtime)
       ↕ Unity API (main thread)
 Unity Engine
 ```

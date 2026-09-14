@@ -13,7 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -25,7 +25,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
     /// <summary>
     /// Filter type for MCP list windows (Tools, Prompts, Resources).
     /// </summary>
-    public enum McpFilterType
+    public enum CopilotFilterType
     {
         All,
         Enabled,
@@ -85,7 +85,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             _disposables.Clear();
         }
 
-        protected virtual Observable<Unit>? GetOnUpdatedObservable(IMcpPlugin plugin) => null;
+        protected virtual Observable<Unit>? GetOnUpdatedObservable(IUcoPlugin plugin) => null;
 
         private void SubscribeToUpdates()
         {
@@ -124,8 +124,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             typeDropdown = root.Q<DropdownField>("type-dropdown");
             if (typeDropdown != null)
             {
-                typeDropdown.choices = Enum.GetNames(typeof(McpFilterType)).ToList();
-                typeDropdown.index = (int)McpFilterType.All;
+                typeDropdown.choices = Enum.GetNames(typeof(CopilotFilterType)).ToList();
+                typeDropdown.index = (int)CopilotFilterType.All;
                 typeDropdown.RegisterValueChangedCallback(evt => PopulateList());
             }
 
@@ -200,7 +200,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
                     OnItemToggleChanged(viewModel, evt.newValue);
 
-                    if (typeDropdown?.index != (int)McpFilterType.All)
+                    if (typeDropdown?.index != (int)CopilotFilterType.All)
                     {
                         EditorApplication.delayCall += PopulateList;
                     }
@@ -244,17 +244,17 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         {
             var filtered = allItems.AsEnumerable();
 
-            var selectedType = McpFilterType.All;
+            var selectedType = CopilotFilterType.All;
             if (typeDropdown != null && typeDropdown.index >= 0 && typeDropdown.index < typeDropdown.choices.Count)
             {
-                if (Enum.TryParse<McpFilterType>(typeDropdown.choices[typeDropdown.index], out var parsedType))
+                if (Enum.TryParse<CopilotFilterType>(typeDropdown.choices[typeDropdown.index], out var parsedType))
                     selectedType = parsedType;
             }
 
             filtered = selectedType switch
             {
-                McpFilterType.Enabled => filtered.Where(t => t.IsEnabled),
-                McpFilterType.Disabled => filtered.Where(t => !t.IsEnabled),
+                CopilotFilterType.Enabled => filtered.Where(t => t.IsEnabled),
+                CopilotFilterType.Disabled => filtered.Where(t => !t.IsEnabled),
                 _ => filtered
             };
 

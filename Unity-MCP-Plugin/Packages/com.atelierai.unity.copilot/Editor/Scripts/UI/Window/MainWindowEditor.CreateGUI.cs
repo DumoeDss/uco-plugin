@@ -13,14 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Unity.Copilot.Editor.Services;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using Microsoft.Extensions.Logging;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.IvanMurzak.McpPlugin.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
 using LogLevel = com.AtelierAI.Unity.Copilot.Runtime.Utils.LogLevel;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
@@ -52,7 +52,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         private const string ServerButtonText_Stop = "Stop";
 
         private const string URL_GitHub = "https://github.com/IvanMurzak/Unity-MCP";
-        private const string URL_GitHubIssues = "https://github.com/IvanMurzak/Unity-MCP/issues";
+        private const string URL_GitHubIssues = "https://github.com/IvanMurzak/uco-plugin/issues";
         private const string URL_Discord = "https://discord.gg/cfbdMZX99G";
 
         // ── Shared tooltip building blocks ──────────────────────────────────────────
@@ -280,7 +280,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 UnityCopilotPluginEditor.LogLevel = Enum.TryParse<LogLevel>(evt.newValue, out var parsed)
                     ? parsed
                     : LogLevel.Warning;
-                SaveChanges($"[AI Game Developer] LogLevel Changed: {evt.newValue}");
+                SaveChanges($"[Unity Co-Pilot] LogLevel Changed: {evt.newValue}");
             });
 
             var inputTimeoutMs = root.Q<IntegerField>("inputTimeoutMs");
@@ -297,7 +297,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
                 UnityCopilotPluginEditor.TimeoutMs = newValue;
 
-                SaveChanges($"[AI Game Developer] Timeout Changed: {newValue} ms");
+                SaveChanges($"[Unity Co-Pilot] Timeout Changed: {newValue} ms");
                 UnityBuildAndConnect();
             });
 

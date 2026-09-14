@@ -10,7 +10,7 @@
 using System.Threading;
 using R3;
 
-namespace com.IvanMurzak.McpPlugin.Common
+namespace com.AtelierAI.Uco.Framework.Common
 {
     public static class ExtensionsCompositeDisposable
     {

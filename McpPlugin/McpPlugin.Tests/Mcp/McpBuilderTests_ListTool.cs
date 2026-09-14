@@ -12,19 +12,19 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
-using com.IvanMurzak.McpPlugin.Common.Tests.Utils;
-using com.IvanMurzak.McpPlugin.Common.Utils;
-using com.IvanMurzak.McpPlugin.Tests.Data.Other;
-using com.IvanMurzak.McpPlugin.Tests.Infrastructure;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Tests.Utils;
+using com.AtelierAI.Uco.Framework.Common.Utils;
+using com.AtelierAI.Uco.Framework.Tests.Data.Other;
+using com.AtelierAI.Uco.Framework.Tests.Infrastructure;
 using com.IvanMurzak.ReflectorNet;
 using com.IvanMurzak.ReflectorNet.Utils;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests_ListTool
@@ -169,13 +169,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             _output.WriteLine("==================================");
         }
 
-        IMcpPlugin? BuildMcpPluginWithTool(string toolName, string toolTitle)
+        IUcoPlugin? BuildMcpPluginWithTool(string toolName, string toolTitle)
         {
             // Arrange
             var classType = typeof(Method_NoArgs_Void);
             var method = typeof(Method_NoArgs_Void).GetMethod(nameof(Method_NoArgs_Void.Do))!;
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
             // Act
@@ -194,7 +194,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var toolTitle = $"Title of {toolName}";
 
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(version, _loggerProvider)
+            var mcpPluginBuilder = new UcoBuilder(version, _loggerProvider)
                 .AddLogging(b => b.AddXunitTestOutput(_output));
 
             // Act
@@ -207,7 +207,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var mcpPlugin = mcpPluginBuilder.Build(reflector);
 
             var request = new RequestListTool();
-            var listToolTask = mcpPlugin.McpManager.ToolManager!.RunListTool(request);
+            var listToolTask = mcpPlugin.UcoManager.ToolManager!.RunListTool(request);
 
             // Assert
             await ValidateListToolResponse(request, listToolTask, toolName, toolTitle);

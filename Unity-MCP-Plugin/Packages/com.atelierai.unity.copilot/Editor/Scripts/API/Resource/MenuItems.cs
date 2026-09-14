@@ -16,9 +16,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
-using com.IvanMurzak.McpPlugin;
-using com.IvanMurzak.McpPlugin.Common;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework;
+using com.AtelierAI.Uco.Framework.Common;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
@@ -47,14 +47,14 @@ namespace AIGD
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
     using AIGD;
-    using Consts = com.IvanMurzak.McpPlugin.Common.Consts;
+    using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
 
-    [McpPluginResourceType]
+    [UcoResourceType]
     public partial class Resource_MenuItems
     {
         public const string MenuItemsResourceUri = "editor://menu-items";
 
-        [McpPluginResource
+        [UcoResource
         (
             Name = "Menu Items",
             Route = MenuItemsResourceUri,

@@ -10,13 +10,13 @@
 
 using System;
 
-namespace com.IvanMurzak.McpPlugin
+namespace com.AtelierAI.Uco.Framework
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class McpPluginPromptTypeAttribute : Attribute
+    public sealed class UcoPromptTypeAttribute : Attribute
     {
         public string? Path { get; set; }
 
-        public McpPluginPromptTypeAttribute() { }
+        public UcoPromptTypeAttribute() { }
     }
 }

@@ -9,7 +9,7 @@
 */
 
 
-namespace com.IvanMurzak.McpPlugin.Common.Model
+namespace com.AtelierAI.Uco.Framework.Common.Model
 {
     public class ResponsePromptArgument
     {

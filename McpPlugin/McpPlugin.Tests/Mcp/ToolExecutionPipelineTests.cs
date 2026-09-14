@@ -7,13 +7,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     public class ToolExecutionPipelineTests
     {
@@ -295,13 +295,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
                 .Add(new Dictionary<string, IRunTool> { [regularRunner.Name] = regularRunner });
             var systemTools = new SystemToolRunnerCollection(reflector, null)
                 .Add(new Dictionary<string, IRunTool> { [systemRunner.Name] = systemRunner });
-            var toolManager = new McpToolManager(
-                NullLogger<McpToolManager>.Instance,
+            var toolManager = new UcoToolManager(
+                NullLogger<UcoToolManager>.Instance,
                 reflector,
                 regularTools,
                 pipeline);
-            var systemManager = new McpSystemToolManager(
-                NullLogger<McpSystemToolManager>.Instance,
+            var systemManager = new UcoSystemToolManager(
+                NullLogger<UcoSystemToolManager>.Instance,
                 systemTools,
                 pipeline);
 
@@ -344,8 +344,8 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var reflector = new Reflector();
             var tools = new ToolRunnerCollection(reflector, null)
                 .Add(new Dictionary<string, IRunTool> { [runner.Name] = runner });
-            var manager = new McpToolManager(
-                NullLogger<McpToolManager>.Instance,
+            var manager = new UcoToolManager(
+                NullLogger<UcoToolManager>.Instance,
                 reflector,
                 tools,
                 new ToolExecutionPipeline());
@@ -475,7 +475,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             public string? SkillBody => null;
             public JsonNode? InputSchema => new JsonObject();
             public JsonNode? OutputSchema => null;
-            public McpToolType ToolType => McpToolType.Standard;
+            public UcoToolType ToolType => UcoToolType.Standard;
             public bool? ReadOnlyHint => true;
             public bool? DestructiveHint => null;
             public bool? IdempotentHint => null;

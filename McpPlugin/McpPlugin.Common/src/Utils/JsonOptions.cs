@@ -10,7 +10,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.McpPlugin.Common.Utils
+namespace com.AtelierAI.Uco.Framework.Common.Utils
 {
     public static class JsonOptions
     {

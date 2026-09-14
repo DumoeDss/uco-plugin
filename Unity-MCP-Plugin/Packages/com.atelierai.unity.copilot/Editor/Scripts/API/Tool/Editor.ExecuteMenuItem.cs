@@ -16,7 +16,7 @@
 using System;
 using System.ComponentModel;
 using System.Text.Json;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using UnityEditor;
@@ -45,7 +45,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string EditorExecuteMenuItemToolId = "editor-execute-menu-item";
 
-        [McpPluginTool
+        [UcoTool
         (
             EditorExecuteMenuItemToolId,
             Title = "Editor / Execute Menu Item",
@@ -53,10 +53,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             Enabled = false,
             DurableOperationStart = true
         )]
-        [McpPluginSkillDescription("Invoke a Unity Editor menu item by its full menu path (e.g. " +
+        [UcoSkillDescription("Invoke a Unity Editor menu item by its full menu path (e.g. " +
             "'GameObject/Create Empty', 'Assets/Refresh'). Use the 'editor://menu-items' resource to " +
             "discover the canonical list of available menu paths first.")]
-        [McpPluginSkillBody("Executes an Editor menu item via `UnityEditor.EditorApplication.ExecuteMenuItem`.\n\n" +
+        [UcoSkillBody("Executes an Editor menu item via `UnityEditor.EditorApplication.ExecuteMenuItem`.\n\n" +
             "## Inputs\n\n" +
             "- `menuPath` — Full menu path string, e.g. `'GameObject/Create Empty'`, `'Assets/Refresh'`. " +
             "Throws `ArgumentException` when null or empty.\n\n" +

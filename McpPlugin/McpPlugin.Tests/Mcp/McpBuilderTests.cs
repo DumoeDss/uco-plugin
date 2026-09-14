@@ -14,15 +14,15 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.McpPlugin.Common.Model;
+using com.AtelierAI.Uco.Framework.Common.Model;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class McpBuilderTests
@@ -34,7 +34,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             // Act
             var plugin = mcpPluginBuilder.Build(reflector);
@@ -48,7 +48,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             mcpPluginBuilder.Build(reflector);
 
@@ -65,7 +65,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             mcpPluginBuilder.Build(reflector);
 
@@ -82,7 +82,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             mcpPluginBuilder.Build(reflector);
 
@@ -98,7 +98,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void WithTool_EmptyName_ShouldThrowArgumentException()
         {
             // Arrange
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestTool).GetMethod(nameof(TestTool.Method));
 
             // Act
@@ -117,7 +117,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         public void AddTool_DuplicateName_ShouldThrowArgumentException()
         {
             // Arrange
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var runner = new MockRunTool();
 
             mcpPluginBuilder.AddTool("tool1", runner);
@@ -138,7 +138,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             var logs = new List<string>();
             var loggerProvider = new MockLoggerProvider(logs);
 
-            var mcpPluginBuilder = new McpPluginBuilder(_version)
+            var mcpPluginBuilder = new UcoBuilder(_version)
                 .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Trace));
 
             // Act
@@ -214,7 +214,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             // Act
             var plugin = mcpPluginBuilder.Build(reflector);
@@ -230,7 +230,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             // Act
             var plugin = mcpPluginBuilder.Build(reflector);
@@ -244,13 +244,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             // Act
             var plugin = mcpPluginBuilder.Build(reflector);
 
             // Assert
-            plugin.McpManagerHub.ShouldNotBeNull();
+            plugin.UcoManagerHub.ShouldNotBeNull();
         }
 
         [Fact]
@@ -258,12 +258,12 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var plugin = mcpPluginBuilder.Build(reflector);
 
             // Act & Assert
-            plugin.McpManagerHub.ShouldNotBeNull();
-            plugin.McpManagerHub.VersionHandshakeStatus.ShouldBeNull();
+            plugin.UcoManagerHub.ShouldNotBeNull();
+            plugin.UcoManagerHub.VersionHandshakeStatus.ShouldBeNull();
         }
 
         [Fact]
@@ -271,7 +271,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
 
             // Act
             var plugin = mcpPluginBuilder.Build(reflector);
@@ -285,12 +285,12 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var plugin = mcpPluginBuilder.Build(reflector);
 
             // Act & Assert
-            plugin.McpManager.ToolManager.ShouldNotBeNull();
-            plugin.McpManager.ToolManager.ToolCallsCount.ShouldBe(0UL);
+            plugin.UcoManager.ToolManager.ShouldNotBeNull();
+            plugin.UcoManager.ToolManager.ToolCallsCount.ShouldBe(0UL);
         }
     }
 }

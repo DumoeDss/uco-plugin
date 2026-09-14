@@ -10,7 +10,7 @@
 // Async method returning Task
 using System.Threading.Tasks;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Data.Other
+namespace com.AtelierAI.Uco.Framework.Tests.Data.Other
 {
     public class Method_Async_Task
     {

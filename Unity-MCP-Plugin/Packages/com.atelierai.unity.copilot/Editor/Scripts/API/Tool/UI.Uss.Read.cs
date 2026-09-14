@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.API
 {
@@ -25,16 +25,16 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string UssReadToolId = "ui-uss-read";
 
-        [McpPluginTool
+        [UcoTool
         (
             UssReadToolId,
             Title = "UI / USS / Read",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read a USS file under 'Assets/' and return its raw text content. " +
+        [UcoSkillDescription("Read a USS file under 'Assets/' and return its raw text content. " +
             "Pair with '" + UssModifyToolId + "' for incremental edits or '" + UssCreateToolId + "' to write a new file.")]
-        [McpPluginSkillBody("Read a USS asset's full text content as a string.\n\n" +
+        [UcoSkillBody("Read a USS asset's full text content as a string.\n\n" +
             "## Inputs\n\n" +
             "- `path` — required asset path under 'Assets/' ending in '.uss'.\n\n" +
             "## Behavior\n\n" +

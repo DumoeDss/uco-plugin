@@ -14,7 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
 using AIGD;
@@ -25,18 +25,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string CameraGetDataToolId = "camera-get-data";
 
-        [McpPluginTool
+        [UcoTool
         (
             CameraGetDataToolId,
             Title = "Camera / Get Data",
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("Read the current configuration of a `UnityEngine.Camera` " +
+        [UcoSkillDescription("Read the current configuration of a `UnityEngine.Camera` " +
             "(FOV, clear flags, culling mask, clip planes, ortho mode, depth) plus a Cinemachine " +
             "virtual-camera priority when one is present on the same GameObject. " +
             "Pair with '" + CameraConfigureToolId + "' to write back.")]
-        [McpPluginSkillBody("Returns a `CameraConfigureResult` whose `Snapshot` describes the camera " +
+        [UcoSkillBody("Returns a `CameraConfigureResult` whose `Snapshot` describes the camera " +
             "and (when Cinemachine is installed) the priority + component type of any virtual-camera on " +
             "the same GameObject.\n\n" +
             "## Inputs\n\n" +

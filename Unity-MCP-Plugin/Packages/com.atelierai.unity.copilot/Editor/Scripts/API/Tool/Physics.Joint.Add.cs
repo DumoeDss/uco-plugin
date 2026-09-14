@@ -15,7 +15,7 @@
 #nullable enable
 using System;
 using System.ComponentModel;
-using com.IvanMurzak.McpPlugin;
+using com.AtelierAI.Uco.Framework;
 using com.IvanMurzak.ReflectorNet.Utils;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Extensions;
@@ -30,18 +30,18 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     {
         public const string PhysicsJointAddToolId = "physics-joint-add";
 
-        [McpPluginTool
+        [UcoTool
         (
             PhysicsJointAddToolId,
             Title = "Physics / Joint / Add",
             DestructiveHint = true
         )]
-        [McpPluginSkillDescription("Attach a 3D or 2D Joint component to a GameObject. " +
+        [UcoSkillDescription("Attach a 3D or 2D Joint component to a GameObject. " +
             "3D joints: fixed | hinge | spring | character | configurable. " +
             "2D joints: distance | fixed | friction | hinge | relative | slider | spring | target | wheel. " +
             "Auto-adds the required Rigidbody / Rigidbody2D if missing. " +
             "Use '" + PhysicsJointConfigureToolId + "' to set motors, limits, springs, and motion locks afterwards.")]
-        [McpPluginSkillBody("Add a Joint component to a GameObject in the opened Prefab or active Scene.\n\n" +
+        [UcoSkillBody("Add a Joint component to a GameObject in the opened Prefab or active Scene.\n\n" +
             "## Inputs\n\n" +
             "- `target` — host GameObject. Required.\n" +
             "- `jointType` — joint kind. Case-insensitive. See description for the valid set per dimension.\n" +

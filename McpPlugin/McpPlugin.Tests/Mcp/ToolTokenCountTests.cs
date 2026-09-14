@@ -14,9 +14,9 @@ using System.Linq;
 using com.IvanMurzak.ReflectorNet;
 using Shouldly;
 using Xunit;
-using Version = com.IvanMurzak.McpPlugin.Common.Version;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
 
-namespace com.IvanMurzak.McpPlugin.Tests.Mcp
+namespace com.AtelierAI.Uco.Framework.Tests.Mcp
 {
     [Collection("McpPlugin")]
     public class ToolTokenCountTests
@@ -28,13 +28,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
 
             mcpPluginBuilder.WithTool("simpleTool", "Simple Tool", typeof(TestToolClass), method!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools();
 
             // Act
@@ -50,7 +50,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var simpleMethod = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
             var complexMethod = typeof(TestToolClass).GetMethod(nameof(TestToolClass.ComplexMethod));
 
@@ -58,7 +58,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("complexTool", "Complex Tool", typeof(TestToolClass), complexMethod!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools();
 
             // Act
@@ -81,13 +81,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
 
             mcpPluginBuilder.WithTool("testTool", "Test Tool", typeof(TestToolClass), method!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools();
 
             var tool = tools.Where(t => t.Name == "testTool").FirstOrDefault();
@@ -109,7 +109,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method1 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
             var method2 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.ComplexMethod));
             var method3 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.AnotherMethod));
@@ -119,7 +119,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("tool3", "Tool 3", typeof(TestToolClass), method3!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act
             var totalTokens = toolManager.EnabledToolsTokenCount;
@@ -139,7 +139,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method1 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
             var method2 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.ComplexMethod));
 
@@ -147,7 +147,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("disabledTool", "Disabled Tool", typeof(TestToolClass), method2!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Disable one tool
             toolManager.SetToolEnabled("disabledTool", false);
@@ -171,13 +171,13 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
 
             mcpPluginBuilder.WithTool("testTool", "Test Tool", typeof(TestToolClass), method!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Disable all tools
             toolManager.SetToolEnabled("testTool", false);
@@ -194,7 +194,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var method1 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
             var method2 = typeof(TestToolClass).GetMethod(nameof(TestToolClass.ComplexMethod));
 
@@ -202,7 +202,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("tool2", "Tool 2", typeof(TestToolClass), method2!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
 
             // Act - Get initial count
             var initialCount = toolManager.EnabledToolsTokenCount;
@@ -225,7 +225,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
         {
             // Arrange
             var reflector = new Reflector();
-            var mcpPluginBuilder = new McpPluginBuilder(_version);
+            var mcpPluginBuilder = new UcoBuilder(_version);
             var methodWithDescription = typeof(TestToolClass).GetMethod(nameof(TestToolClass.MethodWithDescription));
             var methodWithoutDescription = typeof(TestToolClass).GetMethod(nameof(TestToolClass.SimpleMethod));
 
@@ -233,7 +233,7 @@ namespace com.IvanMurzak.McpPlugin.Tests.Mcp
             mcpPluginBuilder.WithTool("withoutDescription", "Without Description", typeof(TestToolClass), methodWithoutDescription!);
 
             var plugin = mcpPluginBuilder.Build(reflector);
-            var toolManager = plugin.McpManager.ToolManager!;
+            var toolManager = plugin.UcoManager.ToolManager!;
             var tools = toolManager.GetAllTools();
 
             // Act
