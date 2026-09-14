@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 #
-# Build the three internal framework projects (ReflectorNet, McpPlugin.Common,
-# McpPlugin) from source and deploy the netstandard2.1 DLLs as static plugin
+# Build the three internal framework projects (ReflectorNet, Uco.Framework.Common,
+# Uco.Framework) from source and deploy the netstandard2.1 DLLs as static plugin
 # assets.
 #
 # The Unity plugin consumes three internal framework DLLs at compile time via
-# asmdef precompiledReferences: ReflectorNet.dll, McpPlugin.Common.dll,
-# McpPlugin.dll. These are now built from the local source repos and committed
+# asmdef precompiledReferences: ReflectorNet.dll, Uco.Framework.Common.dll,
+# Uco.Framework.dll. These are now built from the local source repos and committed
 # as static assets rather than fetched from NuGet at runtime by the
 # DependencyResolver.
 #
 # This script:
 #   1. Builds ReflectorNet.csproj            -> ReflectorNet.dll
-#   2. Builds McpPlugin.Common.csproj        -> McpPlugin.Common.dll
-#   3. Builds McpPlugin.csproj               -> McpPlugin.dll
+#   2. Builds Uco.Framework.Common.csproj    -> Uco.Framework.Common.dll
+#   3. Builds Uco.Framework.csproj           -> Uco.Framework.dll
 #      (all for netstandard2.1 / Release)
 #   4. Copies the three DLLs to
-#      Unity-MCP-Plugin/Assets/Plugins/NuGet/
+#      uco-unity-project/Assets/Plugins/NuGet/
 #      preserving existing .meta files (Unity GUIDs / import settings).
 #   5. Reports the deployed file size of each DLL.
 #
@@ -55,42 +55,43 @@ FRAMEWORK="netstandard2.1"
 
 # --- Path resolution ---------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UNITY_MCP_DIR="$(dirname "$SCRIPT_DIR")"          # .../Unity-MCP
-WORKSPACE="$(dirname "$UNITY_MCP_DIR")"            # .../unity-copilot
+UCO_PLUGIN_DIR="$(dirname "$SCRIPT_DIR")"          # .../uco-plugin
+WORKSPACE="$(dirname "$UCO_PLUGIN_DIR")"            # .../unity-copilot
 
-REFLECTOR_NET_DIR="$UNITY_MCP_DIR/ReflectorNet"
-MCP_PLUGIN_DIR="$UNITY_MCP_DIR/McpPlugin"
+REFLECTOR_NET_DIR="$UCO_PLUGIN_DIR/ReflectorNet"
+UCO_FRAMEWORK_DIR="$UCO_PLUGIN_DIR/uco-framework"
 
-DST_DIR="$UNITY_MCP_DIR/Unity-MCP-Plugin/Assets/Plugins/NuGet"
+DST_DIR="$UCO_PLUGIN_DIR/uco-unity-project/Assets/Plugins/NuGet"
 
-# Source project files (build order matters: ReflectorNet -> Common -> McpPlugin)
+# Source project files (build order matters: ReflectorNet -> Common -> Uco.Framework;
+# inner project directories keep their McpPlugin* names)
 declare -a BUILD_ORDER=(
     "ReflectorNet|$REFLECTOR_NET_DIR/ReflectorNet/ReflectorNet.csproj"
-    "McpPlugin.Common|$MCP_PLUGIN_DIR/McpPlugin.Common/McpPlugin.Common.csproj"
-    "McpPlugin|$MCP_PLUGIN_DIR/McpPlugin/McpPlugin.csproj"
+    "UcoFrameworkCommon|$UCO_FRAMEWORK_DIR/McpPlugin.Common/Uco.Framework.Common.csproj"
+    "UcoFramework|$UCO_FRAMEWORK_DIR/McpPlugin/Uco.Framework.csproj"
 )
 
 # Build output -> deployed DLL name mapping
 declare -A SRC_DLL=(
     ["ReflectorNet.dll"]="$REFLECTOR_NET_DIR/ReflectorNet/bin/$CONFIGURATION/$FRAMEWORK/ReflectorNet.dll"
-    ["McpPlugin.Common.dll"]="$MCP_PLUGIN_DIR/McpPlugin.Common/bin/$CONFIGURATION/$FRAMEWORK/McpPlugin.Common.dll"
-    ["McpPlugin.dll"]="$MCP_PLUGIN_DIR/McpPlugin/bin/$CONFIGURATION/$FRAMEWORK/McpPlugin.dll"
+    ["Uco.Framework.Common.dll"]="$UCO_FRAMEWORK_DIR/McpPlugin.Common/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.Common.dll"
+    ["Uco.Framework.dll"]="$UCO_FRAMEWORK_DIR/McpPlugin/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.dll"
 )
 
 # --- Validate source paths ---------------------------------------------------
 if [[ ! -d "$REFLECTOR_NET_DIR" ]]; then
     echo "ERROR: ReflectorNet source not found at: $REFLECTOR_NET_DIR" >&2
-    echo "       Expected as a subdirectory of Unity-MCP." >&2
+    echo "       Expected as a subdirectory of uco-plugin." >&2
     exit 1
 fi
-if [[ ! -d "$MCP_PLUGIN_DIR" ]]; then
-    echo "ERROR: McpPlugin source not found at: $MCP_PLUGIN_DIR" >&2
-    echo "       Expected as a subdirectory of Unity-MCP." >&2
+if [[ ! -d "$UCO_FRAMEWORK_DIR" ]]; then
+    echo "ERROR: uco-framework source not found at: $UCO_FRAMEWORK_DIR" >&2
+    echo "       Expected as a subdirectory of uco-plugin." >&2
     exit 1
 fi
 if [[ ! -d "$DST_DIR" ]]; then
     echo "ERROR: Destination not found: $DST_DIR" >&2
-    echo "       Is Unity-MCP-Plugin checked out?" >&2
+    echo "       Is uco-unity-project checked out?" >&2
     exit 1
 fi
 

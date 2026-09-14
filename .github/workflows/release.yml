@@ -34,7 +34,7 @@ jobs:
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
         with:
-          path: Unity-MCP-Plugin/Packages/com.ivanmurzak.unity.mcp
+          path: uco-unity-project/Packages/com.atelierai.unity.copilot
 
       - name: Find previous version tag
         id: prev_tag

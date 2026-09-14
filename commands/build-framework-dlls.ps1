@@ -51,17 +51,17 @@ $ErrorActionPreference = 'Stop'
 
 # --- Path resolution ---------------------------------------------------------
 $scriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ucoPluginDir = Split-Path -Parent $scriptDir                              # ...\Unity-MCP
+$ucoPluginDir = Split-Path -Parent $scriptDir                              # ...\uco-plugin
 $workspace   = Split-Path -Parent $ucoPluginDir                            # ...\unity-copilot
 
 $reflectorNetDir     = Join-Path $ucoPluginDir 'ReflectorNet'
-$mcpPluginDir        = Join-Path $ucoPluginDir 'McpPlugin'
+$ucoFrameworkDir     = Join-Path $ucoPluginDir 'uco-framework'
 
-# Source project files
+# Source project files (inner project directories keep their McpPlugin* names)
 $srcProj = [ordered]@{
     ReflectorNet      = Join-Path $reflectorNetDir 'ReflectorNet\ReflectorNet.csproj'
-    UcoFrameworkCommon   = Join-Path $mcpPluginDir    'McpPlugin.Common\Uco.Framework.Common.csproj'
-    McpPlugin         = Join-Path $mcpPluginDir    'McpPlugin\Uco.Framework.csproj'
+    UcoFrameworkCommon   = Join-Path $ucoFrameworkDir   'McpPlugin.Common\Uco.Framework.Common.csproj'
+    UcoFramework         = Join-Path $ucoFrameworkDir   'McpPlugin\Uco.Framework.csproj'
 }
 
 $framework = 'netstandard2.1'
@@ -69,8 +69,8 @@ $framework = 'netstandard2.1'
 # Build output -> deployed DLL name mapping
 $srcDll = [ordered]@{
     'ReflectorNet.dll'        = Join-Path $reflectorNetDir    "ReflectorNet\bin\$Configuration\$framework\ReflectorNet.dll"
-    'Uco.Framework.Common.dll' = Join-Path $mcpPluginDir       "McpPlugin.Common\bin\$Configuration\$framework\Uco.Framework.Common.dll"
-    'Uco.Framework.dll'        = Join-Path $mcpPluginDir       "McpPlugin\bin\$Configuration\$framework\Uco.Framework.dll"
+    'Uco.Framework.Common.dll' = Join-Path $ucoFrameworkDir    "McpPlugin.Common\bin\$Configuration\$framework\Uco.Framework.Common.dll"
+    'Uco.Framework.dll'        = Join-Path $ucoFrameworkDir    "McpPlugin\bin\$Configuration\$framework\Uco.Framework.dll"
 }
 
 $dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Assets\Plugins\NuGet'
@@ -79,8 +79,8 @@ $dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Assets\Plugins\NuGet'
 if (-not (Test-Path $reflectorNetDir)) {
     throw "ReflectorNet source not found at: $reflectorNetDir`nExpected as a subdirectory of uco-plugin."
 }
-if (-not (Test-Path $mcpPluginDir)) {
-    throw "McpPlugin source not found at: $mcpPluginDir`nExpected as a subdirectory of uco-plugin."
+if (-not (Test-Path $ucoFrameworkDir)) {
+    throw "uco-framework source not found at: $ucoFrameworkDir`nExpected as a subdirectory of uco-plugin."
 }
 if (-not (Test-Path $dstDir)) {
     throw "Destination not found: $dstDir`nIs uco-unity-project checked out?"
@@ -109,10 +109,10 @@ if (-not $SkipBuild) {
     Write-Host "Configuration: $Configuration / $framework" -ForegroundColor DarkGray
     Write-Host ""
 
-    # Build in dependency order: ReflectorNet -> McpPlugin.Common -> McpPlugin.
-    # McpPlugin has a ProjectReference to McpPlugin.Common, so building McpPlugin
+    # Build in dependency order: ReflectorNet -> Uco.Framework.Common -> Uco.Framework.
+    # Uco.Framework has a ProjectReference to Uco.Framework.Common, so building it
     # will also rebuild Common; building Common first ensures the output exists
-    # even if McpPlugin build is skipped partway.
+    # even if the Uco.Framework build is skipped partway.
     foreach ($pair in $srcProj.GetEnumerator()) {
         $label = $pair.Key
         $proj  = $pair.Value
