@@ -5,7 +5,10 @@
 uco-plugin — the Unity Co-Pilot bridge: a Node REST/WebSocket server plus the
 Unity Editor/Runtime plugin. Sub-projects: `uco-unity-project/` (the Unity
 project hosting the plugin package), `uco-framework/` (framework source:
-`Uco.Framework*` projects), `cli/`, `Installer/`, `Unity-Tests/`.
+`Uco.Framework*` projects), `ReflectorNet/`. The upstream-vendored `cli/`,
+`Installer/`, `Unity-Tests/`, `docs/`, and `.github/` were excised for the
+public release carve (2026-09-14) — they remain in git history and in the
+pre-carve archive.
 
 ## Build / Run
 
@@ -14,9 +17,8 @@ project hosting the plugin package), `uco-framework/` (framework source:
 - Framework DLLs: `commands/build-framework-dlls.ps1` (netstandard2.1, deploys
   into `uco-unity-project/Assets/Plugins/NuGet`).
 - Version bump: `.\commands\bump-version.ps1 <version>` — stamps the plugin
-  package, runtime constant, installer, and vendored cli (kept in lockstep;
-  the fork package lives at
-  `uco-unity-project/Packages/com.atelierai.unity.copilot/package.json`).
+  package and its runtime constant (kept in lockstep; the fork package lives
+  at `uco-unity-project/Packages/com.atelierai.unity.copilot/package.json`).
 
 ## Known workflow traps
 
@@ -30,5 +32,3 @@ project hosting the plugin package), `uco-framework/` (framework source:
 ## Find Detail In
 
 - `uco-unity-project/CLAUDE.md` — sub-project specifics
-- `docs/claude/` — architecture, style, release notes (upstream-era docs;
-  names may lag the Phase E rename)

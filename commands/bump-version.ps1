@@ -36,15 +36,9 @@ Push-Location $repoRoot
 $ErrorActionPreference = "Stop"
 
 # Version file locations (relative to script root). The .NET server
-# (Unity-MCP-Server/) was removed in the Node-server migration; the plugin
-# package lives at uco-unity-project/Packages/com.atelierai.unity.copilot/.
+# (Unity-MCP-Server/) was removed in the Node-server migration; the upstream
+# vendored cli/ and Installer/ were excised with the release carve.
 $VersionFiles = @(
-    @{
-        Path        = "Installer/Assets/com.IvanMurzak/AI Game Dev Installer/Installer.cs"
-        Pattern     = 'public const string Version = "[\d\.]+";'
-        Replace     = 'public const string Version = "{VERSION}";'
-        Description = "Installer C# version constant"
-    },
     @{
         Path        = "uco-unity-project/Packages/com.atelierai.unity.copilot/package.json"
         Pattern     = '"version":\s*"[\d\.]+"'
@@ -56,12 +50,6 @@ $VersionFiles = @(
         Pattern     = 'public const string Version = "[\d\.]+";'
         Replace     = 'public const string Version = "{VERSION}";'
         Description = "Plugin C# version constant"
-    },
-    @{
-        Path        = "cli/package.json"
-        Pattern     = '"version":\s*"[\d\.]+(-[a-zA-Z0-9\-\.]+)?(\+[a-zA-Z0-9\-\.]+)?"'
-        Replace     = '"version": "{VERSION}"'
-        Description = "Vendored CLI npm package version"
     }
 )
 
@@ -204,22 +192,6 @@ try {
     }
 
     if ($changes -and $changes.Count -gt 0) {
-        # Update CLI package-lock.json — only the two root-level version fields
-        # that follow "name": "unity-mcp-cli". Dependency versions are not touched.
-        $lockFilePath = "cli/package-lock.json"
-        if (Test-Path $lockFilePath) {
-            Write-ColorText "`nUpdating CLI package-lock.json..." "Cyan"
-            $lockContent = Get-Content $lockFilePath -Raw
-            $pattern = '("name":\s*"unity-mcp-cli",\s+"version":\s*")[\d\.]+(-[a-zA-Z0-9\-\.]+)?(\+[a-zA-Z0-9\-\.]+)?'
-            $replacement = "`${1}$NewVersion"
-            $newLockContent = [regex]::Replace($lockContent, $pattern, $replacement)
-            if ($newLockContent -ne $lockContent) {
-                $matches = [regex]::Matches($lockContent, $pattern)
-                Set-Content -Path $lockFilePath -Value $newLockContent -NoNewline
-                Write-ColorText "   CLI package-lock.json updated ($($matches.Count) occurrences)" "Green"
-            }
-        }
-
         Write-ColorText "`n🎉 Version bump completed successfully!" "Green"
         Write-ColorText "   Updated $($changes.Count) files" "White"
         Write-ColorText "   Total replacements: $((($changes.Matches) | Measure-Object -Sum).Sum)" "White"
