@@ -63,19 +63,18 @@ UCO_FRAMEWORK_DIR="$UCO_PLUGIN_DIR/uco-framework"
 
 DST_DIR="$UCO_PLUGIN_DIR/uco-unity-project/Assets/Plugins/NuGet"
 
-# Source project files (build order matters: ReflectorNet -> Common -> Uco.Framework;
-# inner project directories keep their McpPlugin* names)
+# Source project files (build order matters: ReflectorNet -> Common -> Uco.Framework)
 declare -a BUILD_ORDER=(
     "ReflectorNet|$REFLECTOR_NET_DIR/ReflectorNet/ReflectorNet.csproj"
-    "UcoFrameworkCommon|$UCO_FRAMEWORK_DIR/McpPlugin.Common/Uco.Framework.Common.csproj"
-    "UcoFramework|$UCO_FRAMEWORK_DIR/McpPlugin/Uco.Framework.csproj"
+    "UcoFrameworkCommon|$UCO_FRAMEWORK_DIR/Uco.Framework.Common/Uco.Framework.Common.csproj"
+    "UcoFramework|$UCO_FRAMEWORK_DIR/Uco.Framework/Uco.Framework.csproj"
 )
 
 # Build output -> deployed DLL name mapping
 declare -A SRC_DLL=(
     ["ReflectorNet.dll"]="$REFLECTOR_NET_DIR/ReflectorNet/bin/$CONFIGURATION/$FRAMEWORK/ReflectorNet.dll"
-    ["Uco.Framework.Common.dll"]="$UCO_FRAMEWORK_DIR/McpPlugin.Common/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.Common.dll"
-    ["Uco.Framework.dll"]="$UCO_FRAMEWORK_DIR/McpPlugin/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.dll"
+    ["Uco.Framework.Common.dll"]="$UCO_FRAMEWORK_DIR/Uco.Framework.Common/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.Common.dll"
+    ["Uco.Framework.dll"]="$UCO_FRAMEWORK_DIR/Uco.Framework/bin/$CONFIGURATION/$FRAMEWORK/Uco.Framework.dll"
 )
 
 # --- Validate source paths ---------------------------------------------------

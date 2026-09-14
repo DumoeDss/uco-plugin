@@ -4,8 +4,8 @@
 
 uco-plugin — the Unity Co-Pilot bridge: a Node REST/WebSocket server plus the
 Unity Editor/Runtime plugin. Sub-projects: `uco-unity-project/` (the Unity
-project hosting the plugin package), `McpPlugin/` (framework source, renamed
-to `uco-framework/` in Phase E4), `cli/`, `Installer/`, `Unity-Tests/`.
+project hosting the plugin package), `uco-framework/` (framework source:
+`Uco.Framework*` projects), `cli/`, `Installer/`, `Unity-Tests/`.
 
 ## Build / Run
 

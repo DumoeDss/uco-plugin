@@ -57,11 +57,11 @@ $workspace   = Split-Path -Parent $ucoPluginDir                            # ...
 $reflectorNetDir     = Join-Path $ucoPluginDir 'ReflectorNet'
 $ucoFrameworkDir     = Join-Path $ucoPluginDir 'uco-framework'
 
-# Source project files (inner project directories keep their McpPlugin* names)
+# Source project files
 $srcProj = [ordered]@{
     ReflectorNet      = Join-Path $reflectorNetDir 'ReflectorNet\ReflectorNet.csproj'
-    UcoFrameworkCommon   = Join-Path $ucoFrameworkDir   'McpPlugin.Common\Uco.Framework.Common.csproj'
-    UcoFramework         = Join-Path $ucoFrameworkDir   'McpPlugin\Uco.Framework.csproj'
+    UcoFrameworkCommon   = Join-Path $ucoFrameworkDir   'Uco.Framework.Common\Uco.Framework.Common.csproj'
+    UcoFramework         = Join-Path $ucoFrameworkDir   'Uco.Framework\Uco.Framework.csproj'
 }
 
 $framework = 'netstandard2.1'
@@ -69,8 +69,8 @@ $framework = 'netstandard2.1'
 # Build output -> deployed DLL name mapping
 $srcDll = [ordered]@{
     'ReflectorNet.dll'        = Join-Path $reflectorNetDir    "ReflectorNet\bin\$Configuration\$framework\ReflectorNet.dll"
-    'Uco.Framework.Common.dll' = Join-Path $ucoFrameworkDir    "McpPlugin.Common\bin\$Configuration\$framework\Uco.Framework.Common.dll"
-    'Uco.Framework.dll'        = Join-Path $ucoFrameworkDir    "McpPlugin\bin\$Configuration\$framework\Uco.Framework.dll"
+    'Uco.Framework.Common.dll' = Join-Path $ucoFrameworkDir    "Uco.Framework.Common\bin\$Configuration\$framework\Uco.Framework.Common.dll"
+    'Uco.Framework.dll'        = Join-Path $ucoFrameworkDir    "Uco.Framework\bin\$Configuration\$framework\Uco.Framework.dll"
 }
 
 $dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Assets\Plugins\NuGet'

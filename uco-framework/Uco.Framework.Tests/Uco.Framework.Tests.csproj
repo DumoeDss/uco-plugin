@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../McpPlugin/Uco.Framework.csproj" />
+    <ProjectReference Include="../Uco.Framework/Uco.Framework.csproj" />
   </ItemGroup>
 
 </Project>
