@@ -13,7 +13,8 @@ project hosting the plugin package), `uco-framework/` (framework source:
   `-runTests`) on **both** Unity 2022.3 and 6000.5.
 - Framework DLLs: `commands/build-framework-dlls.ps1` (netstandard2.1, deploys
   into `uco-unity-project/Assets/Plugins/NuGet`).
-- Version bump: `.\commands\bump-version.ps1 <version>` (verify its file list —
+- Version bump: `.\commands\bump-version.ps1 <version>` — stamps the plugin
+  package, runtime constant, installer, and vendored cli (kept in lockstep;
   the fork package lives at
   `uco-unity-project/Packages/com.atelierai.unity.copilot/package.json`).
 

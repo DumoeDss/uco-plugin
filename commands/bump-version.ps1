@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Automated version bumping script for Unity-MCP project
+    Automated version bumping script for the uco-plugin repository
 
 .DESCRIPTION
     Updates version numbers across all project files automatically to prevent human errors.
@@ -35,20 +35,10 @@ Push-Location $repoRoot
 # Script configuration
 $ErrorActionPreference = "Stop"
 
-# Version file locations (relative to script root)
+# Version file locations (relative to script root). The .NET server
+# (Unity-MCP-Server/) was removed in the Node-server migration; the plugin
+# package lives at uco-unity-project/Packages/com.atelierai.unity.copilot/.
 $VersionFiles = @(
-    @{
-        Path        = "Unity-MCP-Server/server.json"
-        Pattern     = '"version":\s*"[\d\.]+"'
-        Replace     = '"version": "{VERSION}"'
-        Description = "Server JSON version (2 occurrences)"
-    },
-    @{
-        Path        = "Unity-MCP-Server/com.IvanMurzak.Unity.MCP.Server.csproj"
-        Pattern     = '<Version>[\d\.]+</Version>'
-        Replace     = '<Version>{VERSION}</Version>'
-        Description = "Server csproj XML version"
-    },
     @{
         Path        = "Installer/Assets/com.IvanMurzak/AI Game Dev Installer/Installer.cs"
         Pattern     = 'public const string Version = "[\d\.]+";'
@@ -56,13 +46,13 @@ $VersionFiles = @(
         Description = "Installer C# version constant"
     },
     @{
-        Path        = "uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json"
+        Path        = "uco-unity-project/Packages/com.atelierai.unity.copilot/package.json"
         Pattern     = '"version":\s*"[\d\.]+"'
         Replace     = '"version": "{VERSION}"'
         Description = "Unity package version"
     },
     @{
-        Path        = "uco-unity-project/Packages/com.ivanmurzak.unity.mcp/Runtime/UnityMcpPlugin.cs"
+        Path        = "uco-unity-project/Packages/com.atelierai.unity.copilot/Runtime/UnityCopilotPlugin.cs"
         Pattern     = 'public const string Version = "[\d\.]+";'
         Replace     = 'public const string Version = "{VERSION}";'
         Description = "Plugin C# version constant"
@@ -71,7 +61,7 @@ $VersionFiles = @(
         Path        = "cli/package.json"
         Pattern     = '"version":\s*"[\d\.]+(-[a-zA-Z0-9\-\.]+)?(\+[a-zA-Z0-9\-\.]+)?"'
         Replace     = '"version": "{VERSION}"'
-        Description = "CLI npm package version"
+        Description = "Vendored CLI npm package version"
     }
 )
 
@@ -94,7 +84,7 @@ function Test-SemanticVersion {
 
 function Get-CurrentVersion {
     # Extract current version from package.json
-    $packageJsonPath = "uco-unity-project/Packages/com.ivanmurzak.unity.mcp/package.json"
+    $packageJsonPath = "uco-unity-project/Packages/com.atelierai.unity.copilot/package.json"
     if (-not (Test-Path $packageJsonPath)) {
         throw "Could not find package.json at: $packageJsonPath"
     }
@@ -165,7 +155,7 @@ function Update-VersionFiles {
     if ($PreviewOnly) {
         Write-ColorText "`n📋 Preview Summary:" "Cyan"
         Write-ColorText "Files to be modified: $($changes.Count)" "White"
-        Write-ColorText "Total replacements: $(($changes | Measure-Object -Property Matches -Sum).Sum)" "White"
+        Write-ColorText "Total replacements: $((($changes.Matches) | Measure-Object -Sum).Sum)" "White"
         return $null
     }
 
@@ -180,7 +170,7 @@ function Update-VersionFiles {
 
 # Main execution
 try {
-    Write-ColorText "🚀 Unity-MCP Version Bump Script" "Cyan"
+    Write-ColorText "🚀 uco-plugin Version Bump Script" "Cyan"
     Write-ColorText "=================================" "Cyan"
 
     # Validate semantic version format
@@ -232,7 +222,7 @@ try {
 
         Write-ColorText "`n🎉 Version bump completed successfully!" "Green"
         Write-ColorText "   Updated $($changes.Count) files" "White"
-        Write-ColorText "   Total replacements: $(($changes | Measure-Object -Property Matches -Sum).Sum)" "White"
+        Write-ColorText "   Total replacements: $((($changes.Matches) | Measure-Object -Sum).Sum)" "White"
         Write-ColorText "   Version: $currentVersion → $NewVersion" "White"
         Write-ColorText "`n💡 Remember to commit these changes to git" "Cyan"
     }
