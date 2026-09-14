@@ -38,7 +38,7 @@ terminal.
 ### Via the uco CLI (recommended)
 
 ```bash
-npm install -g uco
+npm install -g @atelierai/uco
 uco install <path-to-your-unity-project>
 ```
 

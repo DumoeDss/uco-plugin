@@ -6,7 +6,7 @@ on the wire), plus the framework sources it is built from.
 
 **Public package:** `com.atelierai.unity.copilot` — install via the
 [uco CLI](https://www.npmjs.com/package/uco)
-(`npm i -g uco && uco install <path-to-project>`) or via OpenUPM. Package
+(`npm i -g @atelierai/uco && uco install <path-to-project>`) or via OpenUPM. Package
 docs live [in the package](uco-unity-project/Packages/com.atelierai.unity.copilot/README.md).
 
 ## Repository layout
