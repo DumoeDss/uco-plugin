@@ -61,6 +61,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         [Description("Stable identifier: {ProjectName}@{first 8 chars of project path SHA256}.")]
         public string InstanceId { get; set; } = string.Empty;
+
+        [Description("Diagnostic: Editor was launched with -batchmode. Null unless the caller " +
+            "passed includeEnvironment=true to 'instance-get-current'.")]
+        public bool? IsBatchMode { get; set; }
+
+        [Description("Diagnostic: CI environment detected (CI/GITHUB_ACTIONS/TF_BUILD). Null unless the " +
+            "caller passed includeEnvironment=true to 'instance-get-current'.")]
+        public bool? IsCi { get; set; }
     }
 
     /// <summary>

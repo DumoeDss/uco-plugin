@@ -111,13 +111,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 "    public int X = 1;\n" +
                 "}\n");
             var before = Tool_Script.GetSha(path).Sha;
-            // Replace "1" with "42" on line index 2 (0-based), at column 16..17.
-            // "    public int X = 1;" — column 16 is the '1' char.
+            // Replace "1" with "42" on line index 2 (0-based), at column 19..20.
+            // "    public int X = 1;" — columns: 0..3 spaces, 4..9 "public", 10 space,
+            // 11..13 "int", 14 space, 15 'X', 16 space, 17 '=', 18 space, 19 '1', 20 ';'.
             var edits = new[]
             {
                 new Tool_Script.TextEdit
                 {
-                    Range = new Tool_Script.Range { StartLine = 2, StartColumn = 16, EndLine = 2, EndColumn = 17 },
+                    Range = new Tool_Script.Range { StartLine = 2, StartColumn = 19, EndLine = 2, EndColumn = 20 },
                     NewText = "42",
                 },
             };
@@ -150,28 +151,32 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         [Test]
         public void ApplyEdits_MultipleEdits_AppliedAtomically_NoOffsetShift()
         {
+            // The post-edit text must stay valid C# — ApplyEdits runs a Roslyn syntax
+            // check before writing, so bare identifiers (the old "AAA"→"ZZ" fixture)
+            // are correctly rejected with SYNTAX_ERROR.
             var path = WriteFile("Multi.cs",
-                "AAA\n" +
-                "BBB\n" +
-                "CCC\n");
+                "int AAA = 1;\n" +
+                "int BBB = 2;\n" +
+                "int CCC = 3;\n");
             // Two non-overlapping replacements; provided in *forward* order to prove the
-            // tool re-orders them for us.
+            // tool re-orders them for us. First is shorter, second is longer than the
+            // replaced span — later offsets must not shift.
             var edits = new[]
             {
                 new Tool_Script.TextEdit
                 {
-                    Range = new Tool_Script.Range { StartLine = 0, StartColumn = 0, EndLine = 0, EndColumn = 3 },
-                    NewText = "ZZ",   // shorter
+                    Range = new Tool_Script.Range { StartLine = 0, StartColumn = 4, EndLine = 0, EndColumn = 7 },
+                    NewText = "Z",       // shorter
                 },
                 new Tool_Script.TextEdit
                 {
-                    Range = new Tool_Script.Range { StartLine = 2, StartColumn = 0, EndLine = 2, EndColumn = 3 },
+                    Range = new Tool_Script.Range { StartLine = 2, StartColumn = 4, EndLine = 2, EndColumn = 7 },
                     NewText = "WWWWWW", // longer
                 },
             };
             var result = Tool_Script.ApplyEdits(path, edits);
             Assert.IsTrue(result.Ok, result.Error + ": " + result.ErrorDetail);
-            Assert.AreEqual("ZZ\nBBB\nWWWWWW\n", File.ReadAllText(path));
+            Assert.AreEqual("int Z = 1;\nint BBB = 2;\nint WWWWWW = 3;\n", File.ReadAllText(path));
         }
 
         [Test]

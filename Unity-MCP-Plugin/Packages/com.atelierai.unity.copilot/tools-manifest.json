@@ -2730,10 +2730,15 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Build / List Scenes",
-    "description": "List scenes registered in EditorBuildSettings, preserving build order.",
+    "description": "List scenes registered in EditorBuildSettings, preserving build order. Set includeDisabled=false to omit scenes disabled in the build settings.",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "includeDisabled": {
+          "type": "boolean",
+          "description": "Include scenes disabled in EditorBuildSettings (default true). Set false to list only scenes that will be packed into the player."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -8243,7 +8248,12 @@
     "description": "Cancel the in-progress lightmap bake (Lightmapping.Cancel).",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "failIfNotRunning": {
+          "type": "boolean",
+          "description": "Fail with an error instead of returning a \u0027no-op\u0027 when no bake is running (default false). Useful for automation that must assert a bake was actually cancelled."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -8292,7 +8302,12 @@
     "description": "Clear baked lightmaps for the open scenes (Lightmapping.Clear).",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "cancelRunningBake": {
+          "type": "boolean",
+          "description": "Cancel a running bake before clearing instead of refusing (default false)."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -8399,7 +8414,12 @@
     "description": "Get current lightmap bake status and generated lightmap stats.",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "includeDiskSize": {
+          "type": "boolean",
+          "description": "Sum the on-disk sizes of the lightmap textures into TotalSizeBytes (default true). Set false for a cheap IsBaking/Progress/LightmapCount probe without touching the disk."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -8453,7 +8473,12 @@
     "description": "Sample UnityEditor.UnityStats for the most-recent frame\u0027s renderer counters.",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "includeMemoryStats": {
+          "type": "boolean",
+          "description": "Populate TotalMemoryMB/TextureCount from the texture-memory stats (default true). Set false for a compact draw-call/batch/triangle snapshot."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -9657,10 +9682,15 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Instance / Get Current",
-    "description": "Return identity metadata of the calling Unity Editor: port, project path, project name, Unity version, process id, and stable instance id.",
+    "description": "Return identity metadata of the calling Unity Editor: port, project path, project name, Unity version, process id, and stable instance id. Pass includeEnvironment=true to also report the batchmode/CI launch flags.",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "includeEnvironment": {
+          "type": "boolean",
+          "description": "Also populate the IsBatchMode/IsCi diagnostic fields (default false). Useful when diagnosing why the bridge is not connecting (batchmode/CI launches skip it)."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
@@ -9709,6 +9739,14 @@
             "InstanceId": {
               "type": "string",
               "description": "Stable identifier: {ProjectName}@{first 8 chars of project path SHA256}."
+            },
+            "IsBatchMode": {
+              "type": "boolean",
+              "description": "Diagnostic: Editor was launched with -batchmode. Null unless the caller passed includeEnvironment=true to \u0027instance-get-current\u0027."
+            },
+            "IsCi": {
+              "type": "boolean",
+              "description": "Diagnostic: CI environment detected (CI/GITHUB_ACTIONS/TF_BUILD). Null unless the caller passed includeEnvironment=true to \u0027instance-get-current\u0027."
             }
           },
           "required": [
@@ -9798,6 +9836,14 @@
             "InstanceId": {
               "type": "string",
               "description": "Stable identifier: {ProjectName}@{first 8 chars of project path SHA256}."
+            },
+            "IsBatchMode": {
+              "type": "boolean",
+              "description": "Diagnostic: Editor was launched with -batchmode. Null unless the caller passed includeEnvironment=true to \u0027instance-get-current\u0027."
+            },
+            "IsCi": {
+              "type": "boolean",
+              "description": "Diagnostic: CI environment detected (CI/GITHUB_ACTIONS/TF_BUILD). Null unless the caller passed includeEnvironment=true to \u0027instance-get-current\u0027."
             }
           },
           "required": [
@@ -18053,10 +18099,15 @@
     "executionAffinity": "main-thread",
     "threadSafeRead": false,
     "title": "Tools / List Groups",
-    "description": "List all MCP tool groups with current enabled state and tool membership.",
+    "description": "List all MCP tool groups with current enabled state and tool membership. Pass includeTools=false to omit the per-group tool name arrays (ToolCount is still reported).",
     "inputSchema": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "includeTools": {
+          "type": "boolean",
+          "description": "Populate each group\u0027s Tools array with its member tool names (default true). Set false for a compact overview \u2014 ToolCount still reports the membership size."
+        }
+      }
     },
     "outputSchema": {
       "type": "object",

@@ -13,6 +13,7 @@
 */
 
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AIGD;
@@ -48,8 +49,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "`Enabled = false` is a *soft hint* in the current implementation. Tool calls are not blocked at " +
             "the upstream `IRunTool.RunCallTool` boundary — see the `Note` field on `tools-set-group-enabled` " +
             "for the rationale.")]
-        [Description("List all MCP tool groups with current enabled state and tool membership.")]
-        public ToolGroupSnapshot[] ListGroups()
+        [Description("List all MCP tool groups with current enabled state and tool membership. " +
+            "Pass includeTools=false to omit the per-group tool name arrays (ToolCount is still reported).")]
+        public ToolGroupSnapshot[] ListGroups(
+            [Description("Populate each group's Tools array with its member tool names (default true). " +
+                "Set false for a compact overview — ToolCount still reports the membership size.")]
+            bool includeTools = true)
         {
             return MainThread.Instance.Run(() =>
             {
@@ -77,7 +82,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         Aliases = aliasesArray,
                         DefaultEnabled = ToolGroupRegistry.GetDefaultEnabled(name),
                         Description = ToolGroupRegistry.GetDescription(name),
-                        Tools = toolsArray,
+                        Tools = includeTools ? toolsArray : Array.Empty<string>(),
                         ToolCount = toolsArray.Length
                     });
                 }

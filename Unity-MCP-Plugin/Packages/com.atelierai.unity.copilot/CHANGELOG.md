@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.75.1] - 2026-09-14
+
+Sibling-cleanup release: clears the five pre-existing EditMode failures
+inherited with the accumulated in-tree work, and fixes a project-manifest
+regression shipped in 0.75.0.
+
+### Fixed
+
+- **Zero-parameter tools (ToolParameterTests)**: the seven MCP tools that
+  exposed no input parameters — `build-scene-list`, `instance-get-current`,
+  `tools-list-groups`, `graphics-lightbake-cancel`, `graphics-lightbake-clear`,
+  `graphics-lightbake-status`, `graphics-rendering-stats` — each gained a
+  meaningful optional parameter (defaults preserve the previous behavior, so
+  existing zero-arg calls are unaffected): `includeDisabled`,
+  `includeEnvironment` (populates new `IsBatchMode`/`IsCi` diagnostic fields on
+  `UnityInstanceEntry`), `includeTools`, `failIfNotRunning`,
+  `cancelRunningBake`, `includeDiskSize`, `includeMemoryStats`. Some MCP
+  clients (e.g. GitHub Copilot) break on zero-parameter tools.
+- **Tokenizer test indexes (CSharpTokenizerTests)**: the two failing tests
+  targeted the first `'a'` in the source (inside the `char`/`var` keyword)
+  instead of the literal body; the tokenizer itself was correct.
+- **ApplyEdits test fixtures (ScriptApplyEditsTests)**: the simple-replacement
+  test miscounted the column of the `'1'` (16 instead of 19); the
+  multi-edit fixture replaced identifiers with bare tokens (`AAA` to `ZZ`)
+  that the tool's Roslyn syntax validation correctly rejected. Both fixtures
+  now encode their intended scenarios in valid C#.
+- **Project manifest regression from 0.75.0**: the 0.75.0 snapshot
+  accidentally shipped a Unity 6000.5-template `Packages/manifest.json` whose
+  builtin-module dependencies (`com.unity.modules.accessibility`,
+  `adaptiveperformance`, `physicscore2d`, `vectorgraphics`,
+  `com.unity.multiplayer.center`, `test-framework 1.7.0`) do not exist in
+  Unity 2022.3, breaking 2022.3 resolution once the package cache was
+  rebuilt. Restored the dual-version-compatible manifest
+  (`test-framework 1.1.33`), matching the pre-snapshot state.
+
 ## [0.75.0] - 2026-09-14
 
 Feedback-response release for the DSAnimStudioUnity production usage round

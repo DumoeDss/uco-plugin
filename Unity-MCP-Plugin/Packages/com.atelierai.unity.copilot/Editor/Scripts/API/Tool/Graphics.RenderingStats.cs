@@ -73,15 +73,19 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         [McpPluginSkillBody("Wraps the editor-only `UnityEditor.UnityStats` static class.\n\n" +
             "## Caveats\n\n" +
             "- Values reflect the last rendered frame. Open and focus the Game or Scene view to refresh them.\n" +
-            "- All getters are read via reflection so missing fields in a given Unity version do not break the call.")]
+            "- All getters are read via reflection so missing fields in a given Unity version do not break the call.\n" +
+            "- Pass includeMemoryStats=false for a pure draw-call/batch snapshot without the texture-memory fields.")]
         [Description("Sample UnityEditor.UnityStats for the most-recent frame's renderer counters.")]
-        public RenderingStatsResult GetRenderingStats()
+        public RenderingStatsResult GetRenderingStats(
+            [Description("Populate TotalMemoryMB/TextureCount from the texture-memory stats (default true). " +
+                "Set false for a compact draw-call/batch/triangle snapshot.")]
+            bool includeMemoryStats = true)
         {
             return MainThread.Instance.Run(() =>
             {
                 try
                 {
-                    long usedTextureMemoryBytes = ReadStatLong("usedTextureMemorySize");
+                    long usedTextureMemoryBytes = includeMemoryStats ? ReadStatLong("usedTextureMemorySize") : 0L;
 
                     return new RenderingStatsResult
                     {
@@ -94,7 +98,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         TotalMemoryMB   = usedTextureMemoryBytes > 0
                             ? usedTextureMemoryBytes / (1024L * 1024L)
                             : 0L,
-                        TextureCount    = ReadStatInt("usedTextureCount"),
+                        TextureCount    = includeMemoryStats ? ReadStatInt("usedTextureCount") : 0,
                     };
                 }
                 catch (Exception ex)

@@ -14,6 +14,7 @@
 
 #nullable enable
 using System.ComponentModel;
+using System.Linq;
 using com.IvanMurzak.McpPlugin;
 using com.IvanMurzak.ReflectorNet.Utils;
 
@@ -30,16 +31,25 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [McpPluginSkillDescription("List every scene currently registered in `EditorBuildSettings.scenes`, " +
+        [McpPluginSkillDescription("List scenes currently registered in `EditorBuildSettings.scenes`, " +
             "preserving build-order. Each entry reports path, enabled flag, and asset GUID.")]
         [McpPluginSkillBody("Return the current `EditorBuildSettings.scenes` array as a list of " +
             "`BuildSceneEntry` records. The order matches Unity's build settings list (scene 0 is the " +
             "first scene loaded by a built player). Empty `Guid` indicates the asset could not be resolved " +
-            "(e.g. the scene file was deleted but the entry was not removed).")]
-        [Description("List scenes registered in EditorBuildSettings, preserving build order.")]
-        public BuildSceneEntry[] ListScenes()
+            "(e.g. the scene file was deleted but the entry was not removed). " +
+            "Set `includeDisabled=false` to list only scenes that participate in the build.")]
+        [Description("List scenes registered in EditorBuildSettings, preserving build order. " +
+            "Set includeDisabled=false to omit scenes disabled in the build settings.")]
+        public BuildSceneEntry[] ListScenes(
+            [Description("Include scenes disabled in EditorBuildSettings (default true). " +
+                "Set false to list only scenes that will be packed into the player.")]
+            bool includeDisabled = true)
         {
-            return MainThread.Instance.Run(() => SnapshotScenes().ToArray());
+            return MainThread.Instance.Run(() =>
+            {
+                var scenes = SnapshotScenes();
+                return includeDisabled ? scenes.ToArray() : scenes.Where(scene => scene.Enabled).ToArray();
+            });
         }
     }
 }

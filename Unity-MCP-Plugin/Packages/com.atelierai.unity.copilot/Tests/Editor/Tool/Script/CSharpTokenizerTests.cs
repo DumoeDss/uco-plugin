@@ -67,7 +67,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void CharLiteral_BodyIsNonCode()
         {
             var text = "char c = 'a';";
-            int aIdx = text.IndexOf('a');
+            // IndexOf('a') would hit the keyword 'char' — target the literal's body.
+            int aIdx = text.IndexOf("'a'") + 1;
             Assert.IsTrue(InString(text, aIdx), "'a' inside char literal");
             Assert.IsFalse(InString(text, text.IndexOf(';')), "';' after char literal");
         }
@@ -151,7 +152,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             // """abc"""
             // Note: Roslyn requires the body to not include 3 consecutive quotes; "abc" is fine.
             var text = "var s = \"\"\"abc\"\"\";";
-            int aIdx = text.IndexOf('a');
+            // IndexOf('a') would hit the keyword 'var' — target the raw-string body.
+            int aIdx = text.IndexOf("abc");
             Assert.IsTrue(InString(text, aIdx), "'a' inside raw string is non-code");
         }
 

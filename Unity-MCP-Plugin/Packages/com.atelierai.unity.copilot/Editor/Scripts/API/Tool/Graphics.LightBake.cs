@@ -174,16 +174,24 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         )]
         [McpPluginSkillDescription("Cancel the in-progress lightmap bake via `Lightmapping.Cancel()`. " +
             "Idempotent — returns Ok=true with Status='no-op' when no bake is running.")]
-        [McpPluginSkillBody("Cancels the active bake. Safe to call when no bake is in progress.")]
+        [McpPluginSkillBody("Cancels the active bake. Safe to call when no bake is in progress. " +
+            "Pass failIfNotRunning=true in unattended flows to distinguish 'cancelled something' from 'nothing happened'.")]
         [Description("Cancel the in-progress lightmap bake (Lightmapping.Cancel).")]
-        public LightBakeResult CancelBake()
+        public LightBakeResult CancelBake(
+            [Description("Fail with an error instead of returning a 'no-op' when no bake is running (default false). " +
+                "Useful for automation that must assert a bake was actually cancelled.")]
+            bool failIfNotRunning = false)
         {
             return MainThread.Instance.Run(() =>
             {
                 try
                 {
                     if (!Lightmapping.isRunning)
-                        return new LightBakeResult { Ok = true, Status = "no-op" };
+                    {
+                        return failIfNotRunning
+                            ? new LightBakeResult { Ok = false, Status = "no-op", Error = "No bake is in progress." }
+                            : new LightBakeResult { Ok = true, Status = "no-op" };
+                    }
 
                     Lightmapping.Cancel();
                     return new LightBakeResult { Ok = true, Status = "cancelled" };
@@ -208,23 +216,32 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             DestructiveHint = true
         )]
         [McpPluginSkillDescription("Clear baked lightmaps for the open scenes via `Lightmapping.Clear()`. " +
-            "Refuses to run while a bake is in progress.")]
+            "Refuses to run while a bake is in progress unless cancelRunningBake=true.")]
         [McpPluginSkillBody("Wipes lightmap data from the open scenes. Throws no exception when no data " +
-            "exists — Unity simply does nothing.")]
+            "exists — Unity simply does nothing. By default a running bake blocks the clear; pass " +
+            "cancelRunningBake=true to cancel it first and then clear.")]
         [Description("Clear baked lightmaps for the open scenes (Lightmapping.Clear).")]
-        public LightBakeResult ClearLightmaps()
+        public LightBakeResult ClearLightmaps(
+            [Description("Cancel a running bake before clearing instead of refusing (default false).")]
+            bool cancelRunningBake = false)
         {
             return MainThread.Instance.Run(() =>
             {
                 try
                 {
                     if (Lightmapping.isRunning)
-                        return new LightBakeResult
-                        {
-                            Ok = false,
-                            Status = "no-op",
-                            Error = "Cannot clear lightmaps while a bake is running. Cancel it first."
-                        };
+                    {
+                        if (!cancelRunningBake)
+                            return new LightBakeResult
+                            {
+                                Ok = false,
+                                Status = "no-op",
+                                Error = "Cannot clear lightmaps while a bake is running. Cancel it first or pass cancelRunningBake=true."
+                            };
+
+                        Lightmapping.Cancel();
+                        return new LightBakeResult { Ok = true, Status = "cancelled-then-cleared" };
+                    }
 
                     Lightmapping.Clear();
                     return new LightBakeResult { Ok = true, Status = "cleared" };
@@ -252,9 +269,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "`Lightmapping.buildProgress`) plus the count and approximate disk size of generated lightmap textures.")]
         [McpPluginSkillBody("Returns a `LightBakeStatus` describing the live bake pipeline. " +
             "`LightmapCount` comes from `LightmapSettings.lightmaps`. `TotalSizeBytes` is computed by " +
-            "summing the file sizes of the lightmap texture assets on disk; failures collapse to null.")]
+            "summing the file sizes of the lightmap texture assets on disk; failures collapse to null. " +
+            "Pass includeDiskSize=false for a cheap is-baking/progress probe that skips the disk walk.")]
         [Description("Get current lightmap bake status and generated lightmap stats.")]
-        public LightBakeStatus GetBakeStatus()
+        public LightBakeStatus GetBakeStatus(
+            [Description("Sum the on-disk sizes of the lightmap textures into TotalSizeBytes (default true). " +
+                "Set false for a cheap IsBaking/Progress/LightmapCount probe without touching the disk.")]
+            bool includeDiskSize = true)
         {
             return MainThread.Instance.Run(() =>
             {
@@ -263,6 +284,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                     IsBaking = Lightmapping.isRunning,
                     Progress = Lightmapping.buildProgress
                 };
+
+                if (!includeDiskSize)
+                    return status;
 
                 try
                 {
