@@ -60,6 +60,7 @@ sysinfo.txt
 UserSettings/Layouts/*
 UserSettings/mcp.json
 UserSettings/AI-Game-Developer-Config.json
+UserSettings/uco-config.json
 
 # Unity Render cache
 kernelsCache/*
