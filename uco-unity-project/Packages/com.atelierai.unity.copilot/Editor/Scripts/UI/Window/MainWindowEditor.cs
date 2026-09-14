@@ -29,13 +29,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         AlertPanel? _connectionAuthAlert;
         AlertPanel? _connectionConnectAlert;
 
-        protected override string WindowTitle => "Unity Co-Pilot";
+        protected override string WindowTitle => "Unity Copilot";
         protected override string[] WindowUxmlPaths => _windowUxmlPaths;
         protected override string[] WindowUssPaths => _windowUssPaths;
 
         public static MainWindowEditor ShowWindow()
         {
-            var window = GetWindow<MainWindowEditor>("Unity Co-Pilot");
+            var window = GetWindow<MainWindowEditor>("Unity Copilot");
             window.SetupWindowWithIcon();
             window.Focus();
 

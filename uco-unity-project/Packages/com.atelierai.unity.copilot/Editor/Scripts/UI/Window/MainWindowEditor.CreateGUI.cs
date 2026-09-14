@@ -280,7 +280,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 UnityCopilotPluginEditor.LogLevel = Enum.TryParse<LogLevel>(evt.newValue, out var parsed)
                     ? parsed
                     : LogLevel.Warning;
-                SaveChanges($"[Unity Co-Pilot] LogLevel Changed: {evt.newValue}");
+                SaveChanges($"[Unity Copilot] LogLevel Changed: {evt.newValue}");
             });
 
             var inputTimeoutMs = root.Q<IntegerField>("inputTimeoutMs");
@@ -297,7 +297,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
                 UnityCopilotPluginEditor.TimeoutMs = newValue;
 
-                SaveChanges($"[Unity Co-Pilot] Timeout Changed: {newValue} ms");
+                SaveChanges($"[Unity Copilot] Timeout Changed: {newValue} ms");
                 UnityBuildAndConnect();
             });
 

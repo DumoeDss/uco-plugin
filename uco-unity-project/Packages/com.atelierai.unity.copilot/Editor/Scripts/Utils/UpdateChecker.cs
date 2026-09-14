@@ -33,7 +33,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     ///
     /// Two opt-out layers gate the popup, in this order:
     ///   1. <see cref="IsDisabledForProject"/> — team-shared, stored in
-    ///      <c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c> via
+    ///      <c>ProjectSettings/Copilot-UpdateSettings.asset</c> via
     ///      <see cref="UnityCopilotUpdateProjectSettings"/>. Set this once and commit it to
     ///      disable the popup for every team member who clones the project. See
     ///      https://github.com/IvanMurzak/uco-plugin/issues/768.
@@ -112,7 +112,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// <summary>
         /// Gets whether the team-wide kill-switch is enabled for this project. When <c>true</c>,
         /// the popup is suppressed for every team member who has the
-        /// <c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c> file in their checkout,
+        /// <c>ProjectSettings/Copilot-UpdateSettings.asset</c> file in their checkout,
         /// regardless of their per-user <see cref="IsDoNotShowAgain"/> state.
         /// </summary>
         /// <remarks>
@@ -223,7 +223,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// team-shared via <c>ProjectSettings/</c>, and clearing it from a debug menu would
         /// produce a spurious diff in a committed asset (potentially surprising other team
         /// members). The team flag is reset only through the Project Settings UI or
-        /// <c>Tools ▸ AI Game Developer ▸ Updates ▸ Disable Update Notifications (Team)</c>.
+        /// <c>Tools ▸ Unity Copilot ▸ Updates ▸ Disable Update Notifications (Team)</c>.
         /// </remarks>
         public static void ClearPreferences()
         {

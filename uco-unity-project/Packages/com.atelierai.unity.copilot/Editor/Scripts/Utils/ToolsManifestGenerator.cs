@@ -40,7 +40,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// so the shipped manifest is deterministic across projects.
     /// </para>
     /// <para>
-    /// Menu: <b>Tools / AI Game Developer / Generate Tools Manifest</b>.
+    /// Menu: <b>Tools / Unity Copilot / Generate Tools Manifest</b>.
     /// Requires an embedded or local-copy package installation (writes into
     /// <c>Packages/com.atelierai.unity.copilot/</c>).
     /// </para>

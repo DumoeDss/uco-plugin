@@ -381,7 +381,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                         // The server runs as a "node" process, and PIDs get reused, so also
                         // verify the process still owns this project's port before
                         // re-attaching — otherwise we might adopt an unrelated node process
-                        // (MCP Inspector, dev server, ...) that recycled our PID.
+                        // (dev server, ...) that recycled our PID.
                         if (processName.Contains(NodeProcessName) &&
                             GetPidListeningOnPort(UnityCopilotPluginEditor.Port) == savedPid)
                         {

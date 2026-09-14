@@ -89,7 +89,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             if (UnityCopilotPluginEditor.ConnectionMode != ConnectionMode.Cloud)
                 return;
 
-            Debug.LogWarning("[Unity Co-Pilot] The server rejected the authorization token. " +
+            Debug.LogWarning("[Unity Copilot] The server rejected the authorization token. " +
                 "The token has been cleared. Please click 'Authorize' to obtain a new token.");
 
             UnityCopilotPluginEditor.CloudToken = null;

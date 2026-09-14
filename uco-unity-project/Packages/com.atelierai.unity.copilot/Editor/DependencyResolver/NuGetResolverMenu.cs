@@ -25,7 +25,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
     static class NuGetResolverMenu
     {
         const string Tag = NuGetConfig.LogTag;
-        const string MenuPath = "Tools/AI Game Developer/Dependencies/Force Resolve NuGet DLLs";
+        // Literal, not ProductInfo: the resolver is the bootstrap assembly and must
+        // not reference the main Editor assembly (circular dependency).
+        const string MenuPath = "Tools/Unity Copilot/Dependencies/Force Resolve NuGet DLLs";
 
         [MenuItem(MenuPath, priority = 1050)]
         public static void ForceResolve()

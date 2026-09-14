@@ -23,7 +23,7 @@ using UnityEngine.UIElements;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// A popup window that notifies the user when a new version of Unity Co-Pilot is available.
+    /// A popup window that notifies the user when a new version of Unity Copilot is available.
     /// </summary>
     public class UpdatePopupWindow : NotificationPopupWindow
     {
@@ -197,7 +197,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 UnityCopilotPluginEditor.Instance.LogInfo("Package updated to version {version}", typeof(UpdatePopupWindow), latestVersion);
                 EditorUtility.DisplayDialog(
                     "Update Complete",
-                    $"Unity Co-Pilot has been updated to version {latestVersion}.\n\nUnity will recompile scripts automatically.",
+                    $"Unity Copilot has been updated to version {latestVersion}.\n\nUnity will recompile scripts automatically.",
                     "OK");
             }
             else if (addRequest.Status >= StatusCode.Failure)

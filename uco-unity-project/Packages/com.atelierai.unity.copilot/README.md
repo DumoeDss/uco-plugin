@@ -1,10 +1,10 @@
 <div align="center">
-  <h1>Unity Co-Pilot</h1>
+  <h1>Unity Copilot</h1>
   <p>Drive the Unity Editor from any AI agent over plain REST + WebSocket — no MCP protocol on the wire.</p>
   <p><code>com.atelierai.unity.copilot</code></p>
 </div>
 
-Unity Co-Pilot is a Unity Editor/Runtime plugin that exposes the Editor as an
+Unity Copilot is a Unity Editor/Runtime plugin that exposes the Editor as an
 HTTP service: 160+ tools covering scenes, GameObjects, components, assets,
 prefabs, scripts, packages, screenshots, console, tests, and builds — plus
 prompts and resources. A self-hosted Node bridge connects the Editor to the

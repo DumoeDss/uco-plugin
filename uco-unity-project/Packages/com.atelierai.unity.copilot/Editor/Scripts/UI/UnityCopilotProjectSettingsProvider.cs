@@ -18,21 +18,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
     /// Exposes Unity-MCP's team-shared update settings under
-    /// <c>Edit ▸ Project Settings ▸ Unity Co-Pilot</c>.
+    /// <c>Edit ▸ Project Settings ▸ Unity Copilot</c>.
     /// </summary>
     /// <remarks>
     /// Mutations write through to <see cref="UnityCopilotUpdateProjectSettings"/>, whose backing
-    /// asset (<c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c>) is intended to be
+    /// asset (<c>ProjectSettings/Copilot-UpdateSettings.asset</c>) is intended to be
     /// committed to VCS. See https://github.com/IvanMurzak/uco-plugin/issues/768.
     /// </remarks>
     internal static class UnityCopilotProjectSettingsProvider
     {
-        private const string SettingsPath = "Project/Unity Co-Pilot";
+        private const string SettingsPath = "Project/Unity Copilot";
 
         [SettingsProvider]
         public static SettingsProvider Create() => new SettingsProvider(SettingsPath, SettingsScope.Project)
         {
-            label = "Unity Co-Pilot",
+            label = "Unity Copilot",
             guiHandler = _ =>
             {
                 EditorGUILayout.LabelField("Update Notifications", EditorStyles.boldLabel);
@@ -50,7 +50,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
                 EditorGUILayout.Space();
                 EditorGUILayout.HelpBox(
-                    "This setting is stored in ProjectSettings/AI-Game-Developer-UpdateSettings.asset " +
+                    "This setting is stored in ProjectSettings/Copilot-UpdateSettings.asset " +
                     "and is shared with everyone who clones this project. The per-user 'Do not show again' " +
                     "button on the update popup is unaffected by this setting.",
                     MessageType.Info);

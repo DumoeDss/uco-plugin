@@ -21,8 +21,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
     public static class ProductInfo
     {
         public const string ProductName  = "Unity Copilot";
-        public const string ParentBrand  = "AI Game Developer";
-        public const string ProductLong  = ParentBrand + " — " + ProductName;
+        public const string ProductLong  = ProductName;
 
         // Stable package id used for EditorPrefs key namespacing. Decoupled from the UPM
         // package name on disk so a UPM rename doesn't silently wipe per-user state — the
@@ -32,7 +31,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
 
         // Menu item paths (passed to Unity's [MenuItem] attribute).
         public const string MainWindowMenu = "Window/" + ProductLong + " %&a";
-        public const string ToolsMenuRoot  = "Tools/" + ParentBrand;
+        public const string ToolsMenuRoot  = "Tools/" + ProductName;
         public const string ServerMenuRoot = ToolsMenuRoot + "/Server";
 
         // EditorWindow titleContent / GetWindow titles.
@@ -52,8 +51,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
         // status directly in the Editor console.)
 
         // Project Settings provider — path users see under Edit > Project Settings.
-        public const string SettingsPath     = "Project/" + ParentBrand;
-        public const string SettingsKeywords = "AI Copilot Unity " + ParentBrand;
+        public const string SettingsPath     = "Project/" + ProductName;
+        public const string SettingsKeywords = "Copilot Unity uco";
 
         // SessionState / EditorPrefs key prefixes for transient + persistent state.
         // The hash suffix is appended by callers using Application.dataPath FNV-1a.

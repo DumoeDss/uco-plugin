@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.2] - 2026-09-15 — one menu tree, one name: Unity Copilot
+
+- The product is named **Unity Copilot** (no hyphen). All menus, window
+  titles, the Project Settings page, the scene-view overlay button, and
+  generated skill docs now read from the single `ProductInfo` source.
+- The leftover "AI Game Developer" menu tree (NuGet resolver items) is
+  merged into **Tools ▸ Unity Copilot**; the stray root-level
+  "Generate Tools Manifest" item moves under it too.
+- Removed the dead **Launch MCP Inspector** item and the legacy
+  `Commands/` folder (`start_mcp_inspector.bat`, `copy_readme.bat`) — the
+  bridge speaks plain REST, there is no MCP endpoint to inspect.
+- Team update kill-switch asset renamed to
+  `ProjectSettings/Copilot-UpdateSettings.asset` (the old
+  AI-Game-Developer-named file is no longer read; the toggle resets to
+  enabled once).
+
 ## [1.0.1] - 2026-09-15 — self-contained package (framework DLLs move inside)
 
 The three locally-built framework DLLs (ReflectorNet.dll, Uco.Framework.dll,

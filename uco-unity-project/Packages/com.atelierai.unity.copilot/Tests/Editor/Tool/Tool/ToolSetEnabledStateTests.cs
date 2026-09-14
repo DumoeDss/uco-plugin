@@ -318,7 +318,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             try
             {
-                // Disable ALL tools (simulates "disable all" in AI Game Developer window)
+                // Disable ALL tools (simulates "disable all" in the Copilot window)
                 foreach (var tool in allTools)
                     toolManager.SetToolEnabled(tool.Name, false);
                 UnityCopilotPluginEditor.Instance.Save();

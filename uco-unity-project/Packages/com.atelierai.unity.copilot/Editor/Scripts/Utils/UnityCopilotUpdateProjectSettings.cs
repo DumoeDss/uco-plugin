@@ -16,7 +16,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 {
     /// <summary>
     /// Team-shared settings for the Unity-MCP update checker, persisted under
-    /// <c>ProjectSettings/AI-Game-Developer-UpdateSettings.asset</c>.
+    /// <c>ProjectSettings/Copilot-UpdateSettings.asset</c>.
     /// </summary>
     /// <remarks>
     /// Uses Unity's <see cref="ScriptableSingleton{T}"/> + <see cref="FilePathAttribute"/> pattern
@@ -38,7 +38,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// <c>ProjectSettings/</c>) — NOT against <c>Assets/</c>. That places the asset alongside
     /// other team-shared editor settings such as <c>ProjectSettings/EditorSettings.asset</c>.
     /// </remarks>
-    [FilePath("ProjectSettings/AI-Game-Developer-UpdateSettings.asset", FilePathAttribute.Location.ProjectFolder)]
+    [FilePath("ProjectSettings/Copilot-UpdateSettings.asset", FilePathAttribute.Location.ProjectFolder)]
     internal sealed class UnityCopilotUpdateProjectSettings : ScriptableSingleton<UnityCopilotUpdateProjectSettings>
     {
         [SerializeField] private bool disableUpdateNotificationsForTeam;

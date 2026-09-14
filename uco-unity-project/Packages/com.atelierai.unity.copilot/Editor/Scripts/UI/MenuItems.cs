@@ -22,14 +22,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         [MenuItem(ProductInfo.MainWindowMenu, priority = 1006)]
         public static void ShowWindow() => MainWindowEditor.ShowWindow();
 
-        [MenuItem("Tools/Unity Co-Pilot/Updates/Check for Updates", priority = 999)]
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Updates/Check for Updates", priority = 999)]
         public static void CheckForUpdates() => _ = UpdateChecker.CheckForUpdatesAsync(forceCheck: true);
 
         // Team-shared kill-switch for the update popup. Toggling this writes through to
-        // ProjectSettings/AI-Game-Developer-UpdateSettings.asset (intended to be committed
+        // ProjectSettings/Copilot-UpdateSettings.asset (intended to be committed
         // to VCS). The validate method renders the menu's check-mark to match current state.
         // See https://github.com/IvanMurzak/uco-plugin/issues/768.
-        private const string DisableUpdatesMenu = "Tools/Unity Co-Pilot/Updates/Disable Update Notifications (Team)";
+        private const string DisableUpdatesMenu = ProductInfo.ToolsMenuRoot + "/Updates/Disable Update Notifications (Team)";
 
         [MenuItem(DisableUpdatesMenu, priority = 1000)]
         public static void ToggleDisableUpdatesForTeam()
@@ -48,79 +48,20 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         // (cocli) launched directly by CopilotServerManager; its stdout/stderr is
         // surfaced in the Editor console.
 
-        [MenuItem("Tools/Unity Co-Pilot/Server/Launch MCP Inspector", priority = 1004)]
-        public static void LaunchMcpInspector()
-        {
-            // Run command in a terminal window: npx @modelcontextprotocol/inspector http://localhost:8080 --transport http
-            var npxArgs = $"-y @modelcontextprotocol/inspector {UnityCopilotPluginEditor.Host} --transport http";
-            Debug.Log($"Launching MCP Inspector with command: npx {npxArgs}");
-
-            var processInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "npx",
-                Arguments = npxArgs,
-                UseShellExecute = true,
-                CreateNoWindow = false,
-            };
-
-            try
-            {
-                System.Diagnostics.Process.Start(processInfo);
-            }
-            catch (System.ComponentModel.Win32Exception ex)
-            {
-                var command = $"{processInfo.FileName} {processInfo.Arguments}";
-                NotificationPopupWindow.Show(
-                    windowTitle: "Launch Failed",
-                    title: "Unable to start MCP Inspector",
-                    message:
-                        "The MCP Inspector could not be started from Unity.\n\n" +
-                        "This usually means that Node.js (and npx) is not installed, or 'npx' is not available on your PATH.\n\n" +
-                        "Prerequisites:\n" +
-                        " - Install Node.js (which includes npx)\n" +
-                        " - Ensure 'npx' is available from your terminal/command prompt\n\n" +
-                        "You can try running the following command manually in a terminal:\n" +
-                        command + "\n\n" +
-                        "System error:\n" +
-                        ex.Message,
-                    width: 450,
-                    minWidth: 450,
-                    height: 460,
-                    minHeight: 460);
-            }
-            catch (System.Exception ex)
-            {
-                var command = $"{processInfo.FileName} {processInfo.Arguments}";
-                NotificationPopupWindow.Show(
-                    windowTitle: "Launch Failed",
-                    title: "Unexpected error starting MCP Inspector",
-                    message:
-                        "An unexpected error occurred while trying to start the MCP Inspector.\n\n" +
-                        "You can try running the following command manually in a terminal:\n" +
-                        command + "\n\n" +
-                        "Error details:\n" +
-                        ex.Message,
-                    width: 450,
-                    minWidth: 450,
-                    height: 460,
-                    minHeight: 460);
-            }
-        }
-
-        [MenuItem("Tools/Unity Co-Pilot/Debug/Show Update Popup", priority = 2000)]
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Debug/Show Update Popup", priority = 2000)]
         public static void ShowUpdatePopup() => UpdatePopupWindow.ShowWindow(UnityCopilotPlugin.Version, "99.99.99");
 
-        [MenuItem("Tools/Unity Co-Pilot/Debug/Reset Update Preferences", priority = 2001)]
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Debug/Reset Update Preferences", priority = 2001)]
         public static void ResetUpdatePreferences()
         {
             UpdateChecker.ClearPreferences();
             Debug.Log("Update preferences have been reset.");
         }
 
-        [MenuItem("Tools/Unity Co-Pilot/Debug/Serialization Check", priority = 2002)]
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Debug/Serialization Check", priority = 2002)]
         public static void ShowSerializationCheck() => SerializationCheckWindow.ShowWindow();
 
-        [MenuItem("Tools/Unity Co-Pilot/Reset Config", priority = 2020)]
+        [MenuItem(ProductInfo.ToolsMenuRoot + "/Reset Config", priority = 2020)]
         public static void ResetConfig()
         {
             UnityCopilotPluginEditor.ResetConfig();

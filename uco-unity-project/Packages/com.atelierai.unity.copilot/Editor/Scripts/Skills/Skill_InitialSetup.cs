@@ -31,7 +31,7 @@ and basic configurations.")]
                 var globalInstallNote = GetGlobalInstallNote();
 
                 return $@"
-# AI Game Developer — Initial Setup
+# Unity Copilot — Initial Setup
 
 This guide walks through installing the `unity-mcp-cli` command-line tool and using it to set
 up a Unity project with AI Skills and MCP integration.
