@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0] - 2026-09-14 — first public release
+
+Inaugural version under the `com.atelierai.unity.copilot` identity. The
+0.7x line was the private fork era; the version counter restarts here with
+the public repository.
+
+### Fixed
+
+- Node server auto-discovery now probes the `uco` npm package first (the
+  package was renamed cocli -> uco in 0.76.0, but discovery still looked
+  only for `node_modules/cocli`, which on machines with a pre-rename global
+  install resolved to stale 0.2.x server code — or to nothing at all on
+  clean machines). The deprecated `cocli` package name remains a
+  last-resort fallback; an explicit `nodeServerPath` in the plugin config
+  still wins over both.
+
 ## [0.76.0] - 2026-09-14 — Phase E rename (uco)
 
 Ships together with the renamed CLI package **uco 0.3.0** (formerly cocli).

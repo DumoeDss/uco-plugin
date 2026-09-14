@@ -216,7 +216,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             yield return null;
 
             var json = RunTool(Tool_Tool.ToolListId, @"{
-                ""regexSearch"": ""Enable or disable MCP tools""
+                ""regexSearch"": ""Enable or disable uco tools""
             }").Value!.GetMessage()!;
 
             using var doc = JsonDocument.Parse(json);
@@ -228,7 +228,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 .Select(i => arr[i].GetProperty("name").GetString())
                 .ToList();
             Assert.Contains("tool-set-enabled-state", names,
-                "tool-set-enabled-state description contains 'Enable or disable MCP tools'");
+                "tool-set-enabled-state description contains 'Enable or disable uco tools'");
         }
 
         [UnityTest]

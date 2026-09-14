@@ -85,22 +85,26 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         #region Node Server Discovery
 
         /// <summary>
-        /// Name of the npm package that ships the Node.js MCP server.
+        /// Names of the npm packages that ship the Node.js server, newest first.
+        /// The package was renamed cocli -&gt; uco; both names are probed so
+        /// installs from either era resolve, with the deprecated cocli name as
+        /// a last-resort only.
         /// </summary>
-        public const string NodeServerPackageName = "cocli";
+        public static readonly string[] NodeServerPackageNames = { "uco", "cocli" };
 
         /// <summary>
-        /// Path of the server entry script inside the <see cref="NodeServerPackageName"/> package.
+        /// Path of the server entry script inside a <see cref="NodeServerPackageNames"/> package.
         /// </summary>
         public const string NodeServerEntryRelativePath = "bin/server.mjs";
 
         /// <summary>
-        /// Resolves the Node.js MCP server entry script (cocli's bin/server.mjs) to launch.
+        /// Resolves the Node.js server entry script (bin/server.mjs of the uco npm
+        /// package, or the deprecated cocli one) to launch.
         /// Lookup order:
         ///  1. Explicit <c>nodeServerPath</c> from the plugin config (absolute, or relative
         ///     to the Unity project root) — when set, it must exist or launching is refused.
-        ///  2. cocli installed in the Unity project's node_modules.
-        ///  3. cocli installed globally via npm.
+        ///  2. uco (then legacy cocli) installed in the Unity project's node_modules.
+        ///  3. uco (then legacy cocli) installed globally via npm.
         /// Returns null when nothing is found — the caller must not launch in that case,
         /// but the plugin can still connect to an already-running server.
         /// </summary>
@@ -124,27 +128,33 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                 return null;
             }
 
-            // 2) cocli installed in the Unity project
-            var projectLocal = Path.GetFullPath(Path.Combine(
-                UnityCopilotPluginEditor.ProjectRootPath,
-                "node_modules",
-                NodeServerPackageName,
-                NodeServerEntryRelativePath));
-            if (File.Exists(projectLocal))
-                return projectLocal;
+            // 2) Installed in the Unity project (uco first, legacy cocli as fallback)
+            foreach (var packageName in NodeServerPackageNames)
+            {
+                var projectLocal = Path.GetFullPath(Path.Combine(
+                    UnityCopilotPluginEditor.ProjectRootPath,
+                    "node_modules",
+                    packageName,
+                    NodeServerEntryRelativePath));
+                if (File.Exists(projectLocal))
+                    return projectLocal;
+            }
 
-            // 3) cocli installed globally via npm
+            // 3) Installed globally via npm (uco first, legacy cocli as fallback)
             foreach (var globalRoot in GetNpmGlobalRoots())
             {
-                try
+                foreach (var packageName in NodeServerPackageNames)
                 {
-                    var globalPath = Path.Combine(globalRoot, NodeServerPackageName, NodeServerEntryRelativePath);
-                    if (File.Exists(globalPath))
-                        return Path.GetFullPath(globalPath);
-                }
-                catch
-                {
-                    // Inaccessible candidate — skip it.
+                    try
+                    {
+                        var globalPath = Path.Combine(globalRoot, packageName, NodeServerEntryRelativePath);
+                        if (File.Exists(globalPath))
+                            return Path.GetFullPath(globalPath);
+                    }
+                    catch
+                    {
+                        // Inaccessible candidate — skip it.
+                    }
                 }
             }
 
@@ -248,7 +258,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             // documented project-local install location so the generated config is
             // still a valid, copy-pasteable starting point.
             var serverEntry = ResolveNodeServerEntry()
-                ?? Path.Combine("node_modules", NodeServerPackageName, NodeServerEntryRelativePath);
+                ?? Path.Combine("node_modules", NodeServerPackageNames[0], NodeServerEntryRelativePath);
 
             serverConfig["command"] = ResolveNodeExecutable().Replace('\\', '/');
 

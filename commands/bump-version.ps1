@@ -77,7 +77,7 @@ function Get-CurrentVersion {
         throw "Could not find package.json at: $packageJsonPath"
     }
 
-    $content = Get-Content $packageJsonPath -Raw
+    $content = [System.IO.File]::ReadAllText($packageJsonPath)
     if ($content -match '"version":\s*"([\d\.]+)"') {
         return $Matches[1]
     }
@@ -98,7 +98,10 @@ function Update-VersionFiles {
             continue
         }
 
-        $content = Get-Content $fullPath -Raw
+        # UTF-8 without BOM, LF/CRLF preserved — Get-Content/Set-Content in
+        # Windows PowerShell 5.1 default to ANSI and corrupt multi-byte runs
+        # (box-drawing headers, em-dashes), so go through .NET directly.
+        $content = [System.IO.File]::ReadAllText($fullPath)
         $originalContent = $content
 
         # Create the replacement string
@@ -148,9 +151,9 @@ function Update-VersionFiles {
     }
 
     # Apply changes
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     foreach ($change in $changes) {
-        $fullPath = $change.Path
-        Set-Content -Path $fullPath -Value $change.Content -NoNewline
+        [System.IO.File]::WriteAllText($change.Path, $change.Content, $utf8NoBom)
     }
 
     return $changes
