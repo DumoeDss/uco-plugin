@@ -61,7 +61,9 @@ WORKSPACE="$(dirname "$UCO_PLUGIN_DIR")"            # .../unity-copilot
 REFLECTOR_NET_DIR="$UCO_PLUGIN_DIR/ReflectorNet"
 UCO_FRAMEWORK_DIR="$UCO_PLUGIN_DIR/uco-framework"
 
-DST_DIR="$UCO_PLUGIN_DIR/uco-unity-project/Assets/Plugins/NuGet"
+# The three locally-built framework DLLs ship INSIDE the plugin package
+# (self-contained); external NuGet DLLs stay in the host project Assets.
+DST_DIR="$UCO_PLUGIN_DIR/uco-unity-project/Packages/com.atelierai.unity.copilot/Plugins"
 
 # Source project files (build order matters: ReflectorNet -> Common -> Uco.Framework)
 declare -a BUILD_ORDER=(

@@ -73,7 +73,9 @@ $srcDll = [ordered]@{
     'Uco.Framework.dll'        = Join-Path $ucoFrameworkDir    "Uco.Framework\bin\$Configuration\$framework\Uco.Framework.dll"
 }
 
-$dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Assets\Plugins\NuGet'
+# The three locally-built framework DLLs ship INSIDE the plugin package
+# (self-contained); external NuGet DLLs stay in the host project's Assets.
+$dstDir = Join-Path $ucoPluginDir 'uco-unity-project\Packages\com.atelierai.unity.copilot\Plugins'
 
 # --- Validate source paths ---------------------------------------------------
 if (-not (Test-Path $reflectorNetDir)) {

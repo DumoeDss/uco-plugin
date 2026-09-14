@@ -15,7 +15,7 @@
     "Unity Skills",
     "uco"
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2022.3",
   "description": "uco — Unity Co-Pilot: AI Skills, Tools, and CLI for the Unity Engine, driven over plain REST + WebSocket. Any C# method may be turned into a tool by a single line. Derived from IvanMurzak/Unity-MCP (Apache-2.0).",
   "documentationUrl": "https://github.com/DumoeDss/uco-plugin/tree/main/uco-unity-project/Packages/com.atelierai.unity.copilot#readme",
