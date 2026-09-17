@@ -11,6 +11,7 @@
 #nullable enable
 
 using System;
+using System.IO;
 using com.AtelierAI.Unity.Copilot.Editor.DependencyResolver;
 using com.AtelierAI.Unity.Copilot.Editor.Utils;
 using R3;
@@ -170,6 +171,20 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             if (installButton != null)
                 installButton.text = "Installing...";
 
+            // Embedded packages (installed by `uco install` as a physical copy into
+            // Packages/) cannot be updated through the registry — Unity refuses
+            // Client.Add on an embedded id. Detect this and direct the user to
+            // the CLI instead of failing with an opaque UPM error.
+            if (IsEmbeddedInstall())
+            {
+                if (installButton != null)
+                    installButton.text = "Use: uco install";
+                Debug.Log("[Unity Copilot] This project uses an embedded install (uco install). " +
+                    "Run `uco install <project-path>` from a terminal to upgrade — the in-editor " +
+                    "updater cannot replace embedded packages.");
+                return;
+            }
+
             // Force a clean post-install recompile so an unrelated user-asmdef
             // error can't leave the OLD plugin AppDomain loaded with the new
             // package files on disk.
@@ -178,6 +193,21 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             addRequest = Client.Add($"{PackageId}@{latestVersion}");
             EditorApplication.update += OnPackageInstallProgress;
         }
+
+        /// <summary>
+        /// True when this package is physically embedded in the project's
+        /// Packages folder (installed via `uco install`), as opposed to
+        /// resolved from a registry or git URL. Embedded packages cannot be
+        /// updated through Unity's package manager.
+        /// </summary>
+        private static bool IsEmbeddedInstall()
+        {
+            return Directory.Exists(
+                Path.Combine(ProjectRootPath, "Packages", "com.atelierai.unity.copilot"));
+        }
+
+        private static string ProjectRootPath =>
+            Path.GetDirectoryName(Application.dataPath);
 
         private void OnPackageInstallProgress()
         {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4] - 2026-09-17 — embedded-install update fix
+
+The in-editor updater no longer attempts (and fails with an opaque UPM
+error) to update embedded packages installed by uco install. It now
+detects the embedded layout and directs the user to run
+`uco install <project>` instead.
+
 ## [1.0.3] - 2026-09-17 — Cloud mode removed; bridge finds the published npm package
 
 - **Cloud connection mode deleted.** The upstream remnant connected to a dead
