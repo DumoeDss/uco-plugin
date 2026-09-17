@@ -138,7 +138,12 @@ namespace com.AtelierAI.Unity.Copilot
                 {
                     config = string.IsNullOrWhiteSpace(json)
                         ? null
-                        : JsonSerializer.Deserialize<UnityConnectionConfig>(json!, new JsonSerializerOptions
+                        : JsonSerializer.Deserialize<UnityConnectionConfig>(
+                            // Legacy 1.0.2-and-earlier configs may carry the removed Cloud
+                            // connection mode; JsonStringEnumConverter would throw on it.
+                            json!.Replace("\"connectionMode\": \"Cloud\"", "\"connectionMode\": \"Custom\"")
+                                  .Replace("\"ConnectionMode\": \"Cloud\"", "\"ConnectionMode\": \"Custom\""),
+                            new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true,
                             Converters = { new JsonStringEnumConverter() }

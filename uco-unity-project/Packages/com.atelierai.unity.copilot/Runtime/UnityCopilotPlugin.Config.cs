@@ -35,87 +35,36 @@ namespace com.AtelierAI.Unity.Copilot
             public static List<CopilotFeature> DefaultResources => new();
 
             /// <summary>
-            /// Backing field for the local server URL. Serialized as "host" in JSON.
-            /// Use <see cref="Host"/> for the active connection URL (routes through Cloud mode).
+            /// The local server URL. Serialized as "host" in JSON.
             /// </summary>
             [JsonPropertyName("host")]
             public string LocalHost { get; set; } = DefaultHost;
 
             /// <summary>
-            /// Backing field for the local auth token. Serialized as "token" in JSON.
-            /// Use <see cref="Token"/> for the active token (routes through Cloud mode).
+            /// The local auth token. Serialized as "token" in JSON.
             /// </summary>
             [JsonPropertyName("token")]
             public string? LocalToken { get; set; }
 
-            public const string DefaultCloudServerBaseUrl = "https://ai-game.dev";
-
-            public static string CloudServerBaseUrl
-            {
-                get
-                {
-                    var args = ArgsUtils.ParseCommandLineArguments();
-                    var envValue = args.GetValueOrDefault(EnvironmentUtils.EnvCloudUrl)
-                        ?? Environment.GetEnvironmentVariable(EnvironmentUtils.EnvCloudUrl);
-
-                    if (string.IsNullOrWhiteSpace(envValue))
-                        return DefaultCloudServerBaseUrl;
-
-                    var normalized = envValue.Trim().Trim('"').TrimEnd('/');
-
-                    if (!Uri.TryCreate(normalized, UriKind.Absolute, out var uri) ||
-                        (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-                    {
-                        return DefaultCloudServerBaseUrl;
-                    }
-
-                    // Strip trailing "/mcp" so CloudServerUrl doesn't produce "/mcp/mcp"
-                    if (normalized.EndsWith("/mcp", StringComparison.OrdinalIgnoreCase))
-                        normalized = normalized[..^4];
-
-                    return normalized;
-                }
-            }
-
-            public static string CloudServerUrl => CloudServerBaseUrl + "/mcp";
-
-            /// <summary>
-            /// Returns the active connection host based on <see cref="ConnectionMode"/>.
-            /// In Cloud mode, returns <see cref="CloudServerUrl"/>.
-            /// In Local mode, returns <see cref="LocalHost"/>.
-            /// </summary>
             [JsonIgnore]
             public override string Host
             {
-                get => ConnectionMode == ConnectionMode.Cloud ? CloudServerUrl : LocalHost;
+                get => LocalHost;
                 set => LocalHost = value;
             }
 
-            /// <summary>
-            /// Gets/sets the active auth token based on <see cref="ConnectionMode"/>.
-            /// In Cloud mode, routes to <see cref="CloudToken"/>.
-            /// In Local mode, routes to <see cref="LocalToken"/>.
-            /// Setter mirrors the getter so env-var / CLI overrides (which write via
-            /// the generic Token property) land on the right field regardless of mode.
-            /// </summary>
             [JsonIgnore]
             public override string? Token
             {
-                get => ConnectionMode == ConnectionMode.Cloud ? CloudToken : LocalToken;
-                set
-                {
-                    if (ConnectionMode == ConnectionMode.Cloud)
-                        CloudToken = value;
-                    else
-                        LocalToken = value;
-                }
+                get => LocalToken;
+                set => LocalToken = value;
             }
 
             public LogLevel LogLevel { get; set; } = LogLevel.Warning;
             public bool KeepServerRunning { get; set; } = false;
             public TransportMethod TransportMethod { get; set; } = TransportMethod.streamableHttp;
             public AuthOption AuthOption { get; set; } = AuthOption.none;
-            public ConnectionMode ConnectionMode { get; set; } = ConnectionMode.Cloud;
+            public ConnectionMode ConnectionMode { get; set; } = ConnectionMode.Custom;
 
             /// <summary>
             /// Optional path to the Node.js MCP server entry script (cocli's bin/server.mjs).
@@ -165,7 +114,6 @@ namespace com.AtelierAI.Unity.Copilot
             /// <c>auth=none</c> (not recommended).
             /// </summary>
             public bool ForceTokenWhenLanBind { get; set; } = true;
-            public string? CloudToken { get; set; }
             public List<CopilotFeature> Tools { get; set; } = new();
             public List<CopilotFeature> Prompts { get; set; } = new();
             public List<CopilotFeature> Resources { get; set; } = new();
@@ -191,9 +139,8 @@ namespace com.AtelierAI.Unity.Copilot
                 KeepServerRunning = !isCi;
                 TransportMethod = TransportMethod.streamableHttp;
                 AuthOption = AuthOption.none;
-                ConnectionMode = ConnectionMode.Cloud;
+                ConnectionMode = ConnectionMode.Custom;
                 NodeServerPath = null;
-                CloudToken = null;
                 LogLevel = LogLevel.Warning;
                 TimeoutMs = Consts.Hub.DefaultTimeoutMs;
                 Tools = DefaultTools;
@@ -218,9 +165,11 @@ namespace com.AtelierAI.Unity.Copilot
         }
     }
 
+    /// <summary>Local/custom server connection. The legacy Cloud mode (remote
+    /// ai-game.dev endpoint) was removed in 1.0.3; configs that still carry
+    /// "Cloud" are mapped to Custom on load.</summary>
     public enum ConnectionMode
     {
-        Custom,
-        Cloud
+        Custom
     }
 }

@@ -23,23 +23,23 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
     /// Covers the layered config-loader contract:
     ///   flags > env vars > on-disk config > defaults
     /// implemented by <see cref="EnvironmentUtils.ApplyEnvironmentOverrides"/>.
+    /// Since 1.0.3 removed the Cloud connection mode, every config is local
+    /// (ConnectionMode.Custom) and token overrides always route to LocalToken.
     /// </summary>
     public class EnvironmentUtilsTests
     {
         const string DiskHost = "http://localhost:24029";
         const string DiskLocalToken = "DISK_LOCAL_TOKEN";
-        const string DiskCloudToken = "DISK_CLOUD_TOKEN";
 
-        static UnityCopilotPlugin.UnityConnectionConfig BuildDiskConfig(ConnectionMode mode = ConnectionMode.Cloud)
+        static UnityCopilotPlugin.UnityConnectionConfig BuildDiskConfig()
         {
-            // Simulates a config that came back from disk: explicit values for both
-            // local and cloud tokens, default mode = Cloud (matching the plugin's default).
+            // Simulates a config that came back from disk: explicit values,
+            // default mode Custom (matching the plugin's default).
             return new UnityCopilotPlugin.UnityConnectionConfig
             {
                 LocalHost = DiskHost,
                 LocalToken = DiskLocalToken,
-                CloudToken = DiskCloudToken,
-                ConnectionMode = mode,
+                ConnectionMode = ConnectionMode.Custom,
                 AuthOption = AuthOption.required,
                 KeepConnected = true,
                 KeepServerRunning = false,
@@ -74,40 +74,25 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             Assert.IsFalse(record.HasAny, "Expected no overrides when env and args are empty.");
             Assert.AreEqual(DiskHost, config.LocalHost);
-            Assert.AreEqual(DiskCloudToken, config.CloudToken);
             Assert.AreEqual(DiskLocalToken, config.LocalToken);
-            Assert.AreEqual(ConnectionMode.Cloud, config.ConnectionMode);
+            Assert.AreEqual(ConnectionMode.Custom, config.ConnectionMode);
             Assert.AreEqual(AuthOption.required, config.AuthOption);
         }
 
         // --- Env var override ---
 
         [Test]
-        public void Override_EnvToken_WritesToCloudTokenWhenModeIsCloud()
+        public void Override_EnvToken_WritesToLocalToken()
         {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
+            var config = BuildDiskConfig();
             var env = Env((EnvironmentUtils.EnvToken, "ENV_TOKEN"));
 
             var record = EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
 
             Assert.IsTrue(record.HasAny);
-            Assert.IsTrue(record.Contains(EnvironmentUtils.FieldCloudToken),
-                "Expected the CloudToken backing field to be tracked when mode is Cloud.");
-            Assert.AreEqual("ENV_TOKEN", config.CloudToken);
-            Assert.AreEqual(DiskLocalToken, config.LocalToken,
-                "LocalToken must remain at the disk baseline when mode is Cloud.");
-        }
-
-        [Test]
-        public void Override_EnvToken_WritesToLocalTokenWhenModeIsCustom()
-        {
-            var config = BuildDiskConfig(mode: ConnectionMode.Custom);
-            var env = Env((EnvironmentUtils.EnvToken, "ENV_TOKEN"));
-
-            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
-
+            Assert.IsTrue(record.Contains(EnvironmentUtils.FieldLocalToken),
+                "Expected the LocalToken backing field to be tracked.");
             Assert.AreEqual("ENV_TOKEN", config.LocalToken);
-            Assert.AreEqual(DiskCloudToken, config.CloudToken);
         }
 
         // --- Flag override (highest priority, beats env) ---
@@ -115,13 +100,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         [Test]
         public void Override_FlagToken_BeatsEnvToken()
         {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
+            var config = BuildDiskConfig();
             var args = Args((EnvironmentUtils.FlagToken, "FLAG_TOKEN"));
             var env = Env((EnvironmentUtils.EnvToken, "ENV_TOKEN"));
 
             EnvironmentUtils.ApplyEnvironmentOverrides(config, args, env);
 
-            Assert.AreEqual("FLAG_TOKEN", config.CloudToken,
+            Assert.AreEqual("FLAG_TOKEN", config.LocalToken,
                 "When both --token and UNITY_MCP_TOKEN are set, the flag must win.");
         }
 
@@ -130,13 +115,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             // CLI translates --token foo into UNITY_MCP_TOKEN env, but the plugin still
             // accepts --UNITY_MCP_TOKEN=foo style flags directly. They must beat env vars.
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
+            var config = BuildDiskConfig();
             var args = Args((EnvironmentUtils.EnvToken, "FLAG_VIA_FULL_NAME"));
             var env = Env((EnvironmentUtils.EnvToken, "ENV_TOKEN"));
 
             EnvironmentUtils.ApplyEnvironmentOverrides(config, args, env);
 
-            Assert.AreEqual("FLAG_VIA_FULL_NAME", config.CloudToken);
+            Assert.AreEqual("FLAG_VIA_FULL_NAME", config.LocalToken);
         }
 
         // --- Per-field layering ---
@@ -151,7 +136,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             Assert.AreEqual(DiskHost, config.LocalHost,
                 "Host must remain at the disk baseline when only the token was overridden.");
-            Assert.AreEqual("ENV_TOKEN", config.CloudToken);
+            Assert.AreEqual("ENV_TOKEN", config.LocalToken);
         }
 
         // --- Trailing-slash robustness ---
@@ -160,7 +145,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void Override_TrailingSlashOnHostUrl_IsStripped()
         {
             var config = BuildDiskConfig();
-            var env = Env((EnvironmentUtils.EnvCloudUrl, "http://localhost:5220/"));
+            var env = Env((EnvironmentUtils.EnvHost, "http://localhost:5220/"));
 
             EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
 
@@ -171,7 +156,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         [TestCase("http://localhost:5220/", true)]
         [TestCase("http://127.0.0.1:5220", true)]
         [TestCase("http://[::1]:5220/", true)]
-        [TestCase("https://ai-game.dev", false)]
+        [TestCase("https://example.com", false)]
         [TestCase("not-a-url", false)]
         [TestCase("", false)]
         public void IsLoopbackUrl_RecognisesLoopbackHosts(string url, bool expected)
@@ -181,55 +166,38 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
-        public void Override_LoopbackHostUrl_InfersCustomMode()
+        public void Override_RemoteHostUrl_NeverFlipsMode()
         {
-            // Worktree scenario: disk says Cloud, env supplies a localhost URL.
-            // Expected: ConnectionMode is inferred to Custom so the worktree's local
-            // dev token routes to LocalToken (not CloudToken) and the SignalR client
-            // talks to <host>/hub/mcp-server (not <host>/mcp/hub/mcp-server).
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
-            var env = Env(
-                (EnvironmentUtils.EnvCloudUrl, "http://localhost:5220/"),
-                (EnvironmentUtils.EnvToken, "WORKTREE_TOKEN"));
+            var config = BuildDiskConfig();
+            var env = Env((EnvironmentUtils.EnvHost, "https://example.com"));
 
-            var record = EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
+            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
+
+            Assert.AreEqual(ConnectionMode.Custom, config.ConnectionMode);
+            Assert.AreEqual("https://example.com", config.LocalHost);
+        }
+
+        [Test]
+        public void Override_InvalidEnumValue_IsIgnored()
+        {
+            var config = BuildDiskConfig();
+            var env = Env((EnvironmentUtils.EnvConnectionMode, "Bogus"));
+
+            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
 
             Assert.AreEqual(ConnectionMode.Custom, config.ConnectionMode,
-                "Loopback host URL should infer Custom mode.");
-            Assert.AreEqual("http://localhost:5220", config.LocalHost);
-            Assert.AreEqual("WORKTREE_TOKEN", config.LocalToken,
-                "Token override must route to LocalToken once mode is inferred Custom.");
-            Assert.AreEqual(DiskCloudToken, config.CloudToken,
-                "CloudToken on disk must NOT be clobbered by the env override.");
-            Assert.IsTrue(record.Contains(EnvironmentUtils.FieldConnectionMode));
-            Assert.IsTrue(record.Contains(EnvironmentUtils.FieldHost));
-            Assert.IsTrue(record.Contains(EnvironmentUtils.FieldLocalToken));
+                "Unparseable enum values must be silently ignored (legacy Cloud included).");
         }
 
         [Test]
-        public void Override_RemoteHostUrl_DoesNotInferCustomMode()
+        public void Override_QuotedValue_IsTrimmed()
         {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
-            var env = Env((EnvironmentUtils.EnvCloudUrl, "https://ai-game.dev"));
+            var config = BuildDiskConfig();
+            var env = Env((EnvironmentUtils.EnvToken, "\"QUOTED_TOKEN\""));
 
             EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
 
-            Assert.AreEqual(ConnectionMode.Cloud, config.ConnectionMode,
-                "Non-loopback URL must NOT auto-flip the mode.");
-        }
-
-        [Test]
-        public void Override_ExplicitConnectionMode_BeatsLoopbackInference()
-        {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
-            var env = Env(
-                (EnvironmentUtils.EnvCloudUrl, "http://localhost:5220"),
-                (EnvironmentUtils.EnvConnectionMode, "Cloud"));
-
-            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
-
-            Assert.AreEqual(ConnectionMode.Cloud, config.ConnectionMode,
-                "Explicit UNITY_MCP_CONNECTION_MODE must beat loopback inference.");
+            Assert.AreEqual("QUOTED_TOKEN", config.LocalToken);
         }
 
         // --- Persistence: overrides MUST NOT be written to disk ---
@@ -237,14 +205,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         [Test]
         public void Persistence_BaselineRoundTripsToDiskWithoutOverrides()
         {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
+            var config = BuildDiskConfig();
             var env = Env(
-                (EnvironmentUtils.EnvCloudUrl, "http://localhost:5220"),
+                (EnvironmentUtils.EnvHost, "http://localhost:5220"),
                 (EnvironmentUtils.EnvToken, "ENV_TOKEN"));
 
             var record = EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
             // sanity
-            Assert.AreEqual(ConnectionMode.Custom, config.ConnectionMode);
             Assert.AreEqual("http://localhost:5220", config.LocalHost);
             Assert.AreEqual("ENV_TOKEN", config.LocalToken);
 
@@ -253,7 +220,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             Assert.AreEqual(DiskHost, config.LocalHost, "Baseline restore failed for LocalHost.");
             Assert.AreEqual(DiskLocalToken, config.LocalToken, "Baseline restore failed for LocalToken.");
-            Assert.AreEqual(ConnectionMode.Cloud, config.ConnectionMode, "Baseline restore failed for ConnectionMode.");
 
             var json = SerializeForDisk(config);
             // The serialized JSON must NOT contain the runtime override values.
@@ -264,7 +230,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 
             // After serialization, re-apply overrides.
             EnvironmentUtils.ApplyOverrides(config, record);
-            Assert.AreEqual(ConnectionMode.Custom, config.ConnectionMode);
             Assert.AreEqual("http://localhost:5220", config.LocalHost);
             Assert.AreEqual("ENV_TOKEN", config.LocalToken);
         }
@@ -278,31 +243,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             EnvironmentUtils.ApplyOverrides(config, record);
             // No exceptions, values unchanged.
             Assert.AreEqual(DiskHost, config.LocalHost);
-        }
-
-        // --- Validation: bad inputs are tolerated ---
-
-        [Test]
-        public void Override_InvalidEnumValue_IsIgnored()
-        {
-            var config = BuildDiskConfig(mode: ConnectionMode.Cloud);
-            var env = Env((EnvironmentUtils.EnvConnectionMode, "Bogus"));
-
-            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
-
-            Assert.AreEqual(ConnectionMode.Cloud, config.ConnectionMode,
-                "Unparseable enum values must be silently ignored.");
-        }
-
-        [Test]
-        public void Override_QuotedValue_IsTrimmed()
-        {
-            var config = BuildDiskConfig();
-            var env = Env((EnvironmentUtils.EnvToken, "\"QUOTED_TOKEN\""));
-
-            EnvironmentUtils.ApplyEnvironmentOverrides(config, NoArgs(), env);
-
-            Assert.AreEqual("QUOTED_TOKEN", config.CloudToken);
         }
 
         // --- Helpers ---

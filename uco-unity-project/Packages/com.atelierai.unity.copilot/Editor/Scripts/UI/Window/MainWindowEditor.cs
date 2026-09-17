@@ -23,11 +23,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         readonly CompositeDisposable _disposables = new();
 
         Button? _btnConnect;
-        Button? _btnAuthorize;
-        Action? _startAuthorizeAction;
         VisualElement? _timelinePointUnity;
-        AlertPanel? _connectionAuthAlert;
-        AlertPanel? _connectionConnectAlert;
 
         protected override string WindowTitle => "Unity Copilot";
         protected override string[] WindowUxmlPaths => _windowUxmlPaths;
@@ -73,76 +69,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             _authRejectedSubscription.Dispose();
         }
 
-        internal static (bool needsAuth, bool hasToken, bool isCloud) ComputeCloudAuthState(ConnectionMode mode, string? token)
-        {
-            var isCloud = mode == ConnectionMode.Cloud;
-            var hasToken = !string.IsNullOrEmpty(token);
-            var needsAuth = isCloud && !hasToken;
-            return (needsAuth, hasToken, isCloud);
-        }
-
-        private void UpdateCloudAuthState()
-        {
-            var (needsAuth, hasToken, isCloud) = ComputeCloudAuthState(UnityCopilotPluginEditor.ConnectionMode, UnityCopilotPluginEditor.CloudToken);
-
-            if (_timelinePointUnity != null)
-            {
-                _timelinePointUnity.SetEnabled(!needsAuth);
-                _timelinePointUnity.tooltip = needsAuth
-                    ? "Cloud token is required. Press the Authorize button to authenticate."
-                    : "";
-            }
-            if (_btnConnect != null)
-            {
-                if (needsAuth)
-                {
-                    _btnConnect.text = ServerButtonText_Connect;
-                    _btnConnect.EnableInClassList("btn-primary", false);
-                    _btnConnect.EnableInClassList("btn-secondary", true);
-                }
-                else if (isCloud && hasToken
-                    && _btnConnect.text == ServerButtonText_Connect)
-                {
-                    _btnConnect.EnableInClassList("btn-primary", true);
-                    _btnConnect.EnableInClassList("btn-secondary", false);
-                }
-            }
-            if (_btnAuthorize != null)
-            {
-                _btnAuthorize.EnableInClassList("btn-primary", !hasToken);
-            }
-            _connectionAuthAlert?.SetVisible(needsAuth);
-
-            // Show connect alert when authorized in Cloud mode but not connected and not trying
-            if (_connectionConnectAlert != null)
-            {
-                var connectionState = UnityCopilotPluginEditor.ConnectionState.CurrentValue;
-                var keepConnected = UnityCopilotPluginEditor.KeepConnected;
-                var isDisconnected = connectionState == ConnectionState.Disconnected;
-                var needsConnect = isCloud && hasToken && isDisconnected && !keepConnected;
-                _connectionConnectAlert.SetVisible(needsConnect);
-            }
-        }
-
         private static void UnityBuildAndConnect()
         {
             UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
             UnityCopilotPluginEditor.ConnectIfNeeded();
-        }
-
-        /// <summary>
-        /// Disconnects, disposes the current MCP plugin, rebuilds it (picking up the new Host/Token
-        /// from the changed ConnectionMode), and reconnects if KeepConnected is enabled.
-        /// Called when switching between Local and Cloud modes.
-        /// </summary>
-        private static void ReconnectAfterModeSwitch()
-        {
-            if (UnityCopilotPluginEditor.Instance.HasMcpPluginInstance)
-            {
-                UnityCopilotPluginEditor.Instance.DisposeMcpPluginInstance();
-            }
-            UnityBuildAndConnect();
         }
     }
 }

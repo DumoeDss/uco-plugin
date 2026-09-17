@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Unity Co-Pilot plugin — the Unity Editor/Runtime side of the uco bridge
+Unity Copilot plugin — the Unity Editor/Runtime side of the uco bridge
 (plain REST + WebSocket; no MCP protocol on the wire). Attribute-based
 framework that registers and executes tools, prompts, and resources, with a
 self-hosted Node bridge manager and auto-configuration for AI clients.

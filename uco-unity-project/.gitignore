@@ -77,3 +77,4 @@ opencode.json
 .gemini
 .mcp.json
 UserSettings/EditorUserSettings.asset
+.claude/skills/

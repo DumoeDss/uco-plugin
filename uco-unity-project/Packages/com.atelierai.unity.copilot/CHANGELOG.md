@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.3] - 2026-09-17 — Cloud mode removed; bridge finds the published npm package
+
+- **Cloud connection mode deleted.** The upstream remnant connected to a dead
+  third-party endpoint (ai-game.dev), silently prevented the local bridge from
+  auto-starting (its gate only allowed Custom), and confused every session that
+  hit a config without an explicit mode. ConnectionMode now has a single value
+  (Custom), the default is Custom, the device-code auth flow and its UI are
+  gone, and old configs carrying "Cloud" are mapped to Custom on load.
+- **Node bridge discovery follows the published package.** npm rejected the
+  bare name "uco" (typosquatting policy), so the package publishes as
+  @atelierai/uco — but discovery still looked for node_modules/uco, which
+  stopped existing the moment the pre-scope global install was removed.
+  Discovery now probes @atelierai/uco, then the legacy uco and cocli layouts,
+  project-local and npm-global.
+- Token env overrides route straight to the local token (no mode routing);
+  UNITY_MCP_CLOUD_URL is gone, --url/UNITY_MCP_HOST keep working.
+
 ## [1.0.2] - 2026-09-15 — one menu tree, one name: Unity Copilot
 
 - The product is named **Unity Copilot** (no hyphen). All menus, window

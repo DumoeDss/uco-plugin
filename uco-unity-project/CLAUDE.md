@@ -2,7 +2,7 @@
 
 ## What this is
 
-uco-unity-project — the Unity host project for the Unity Co-Pilot plugin
+uco-unity-project — the Unity host project for the Unity Copilot plugin
 package (`Packages/com.atelierai.unity.copilot`). It is the dev harness and
 gate host: EditMode/PlayMode tests run here, framework DLLs deploy into
 `Assets/Plugins/NuGet`, and tools-manifest generation runs against it.

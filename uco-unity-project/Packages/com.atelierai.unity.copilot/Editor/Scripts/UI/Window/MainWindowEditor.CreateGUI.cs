@@ -142,9 +142,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             "The AI agent connection indicator shows whether an external AI client (Claude, Cursor, " +
             "Copilot, etc.) is currently connected to the server.\n\n" +
             "It is completely normal for the AI agent to appear disconnected:\n" +
-            "  • With 'Cloud' connection mode the AI agent connects on-demand and may disconnect " +
-            "between interactions.\n" +
-            "  • With a local server the AI agent connects only when it needs to invoke a tool " +
+            "  • The AI agent connects only when it needs to invoke a tool " +
             "or read a resource, then may drop the session.\n\n" +
             "The AI agent will always reconnect automatically whenever it needs to perform an " +
             "action in Unity — no manual intervention is required.\n\n" +
@@ -170,8 +168,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         private VisualElement? _aiAgentLabelsContainer;
         private VisualElement? _aiAgentStatusCircle;
 
-        private DeviceAuthFlow? _deviceAuthFlow;
-
         private long _mcpServerDataVersion;
         private long _aiAgentDataVersion;
 
@@ -181,9 +177,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
             SetupSettingsSection(root);
             SetupConnectionSection(root);
-            SetupConnectionModeToggle(root);
-            SetupCloudAuthSection(root);
-            SetupConnectionAlerts(root);
             SetupMcpServerSection(root);
             SetupAiAgentSection(root);
             SetupDebugButtons(root);

@@ -85,12 +85,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         #region Node Server Discovery
 
         /// <summary>
-        /// Name of the npm package that ships the Node.js server.
+        /// npm package directories that ship the Node.js server, newest first: the
+        /// published scoped package (@atelierai/uco — the registry rejected the bare
+        /// short name), the pre-scope local layout, and the deprecated cocli install
+        /// from the private era.
         /// </summary>
-        public const string NodeServerPackageName = "uco";
+        public static readonly string[] NodeServerPackageNames = { "@atelierai/uco", "uco", "cocli" };
 
         /// <summary>
-        /// Path of the server entry script inside the <see cref="NodeServerPackageName"/> package.
+        /// Path of the server entry script inside a <see cref="NodeServerPackageNames"/> package.
         /// </summary>
         public const string NodeServerEntryRelativePath = "bin/server.mjs";
 
@@ -124,28 +127,33 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                 return null;
             }
 
-            // 2) Installed in the Unity project (uco first, legacy cocli as fallback)
-            // 2) uco installed in the Unity project
-            var projectLocal = Path.GetFullPath(Path.Combine(
-                UnityCopilotPluginEditor.ProjectRootPath,
-                "node_modules",
-                NodeServerPackageName,
-                NodeServerEntryRelativePath));
-            if (File.Exists(projectLocal))
-                return projectLocal;
+            // 2) Installed in the Unity project (@atelierai/uco first, legacy names after)
+            foreach (var packageName in NodeServerPackageNames)
+            {
+                var projectLocal = Path.GetFullPath(Path.Combine(
+                    UnityCopilotPluginEditor.ProjectRootPath,
+                    "node_modules",
+                    packageName,
+                    NodeServerEntryRelativePath));
+                if (File.Exists(projectLocal))
+                    return projectLocal;
+            }
 
-            // 3) uco installed globally via npm
+            // 3) Installed globally via npm (@atelierai/uco first, legacy names after)
             foreach (var globalRoot in GetNpmGlobalRoots())
             {
-                try
+                foreach (var packageName in NodeServerPackageNames)
                 {
-                    var globalPath = Path.Combine(globalRoot, NodeServerPackageName, NodeServerEntryRelativePath);
-                    if (File.Exists(globalPath))
-                        return Path.GetFullPath(globalPath);
-                }
-                catch
-                {
-                    // Inaccessible candidate — skip it.
+                    try
+                    {
+                        var globalPath = Path.Combine(globalRoot, packageName, NodeServerEntryRelativePath);
+                        if (File.Exists(globalPath))
+                            return Path.GetFullPath(globalPath);
+                    }
+                    catch
+                    {
+                        // Inaccessible candidate — skip it.
+                    }
                 }
             }
 
@@ -249,7 +257,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             // documented project-local install location so the generated config is
             // still a valid, copy-pasteable starting point.
             var serverEntry = ResolveNodeServerEntry()
-                ?? Path.Combine("node_modules", NodeServerPackageName, NodeServerEntryRelativePath);
+                ?? Path.Combine("node_modules", NodeServerPackageNames[0], NodeServerEntryRelativePath);
 
             serverConfig["command"] = ResolveNodeExecutable().Replace('\\', '/');
 
@@ -952,17 +960,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Returns true when the local server may be auto-started for the given connection mode.
-        /// Only Custom mode targets the local server, so auto-start is allowed there (subject to
-        /// other gates such as <see cref="UnityCopilotPluginEditor.KeepServerRunning"/>). Every other
-        /// mode (Cloud today, plus any future addition) connects to a remote endpoint and must
-        /// never auto-start the local server on Editor launch or after a binary update.
-        /// Pure (no Unity API access) so it can be unit-tested in EditMode.
-        /// </summary>
-        public static bool IsAutoStartAllowedForMode(ConnectionMode mode)
-            => mode == ConnectionMode.Custom;
-
-        /// <summary>
         /// Starts the server if KeepServerRunning is enabled and no external server is detected.
         /// This method is called during Unity Editor startup to auto-start the server based on user preference.
         /// The external server check is performed asynchronously to avoid blocking the main thread.
@@ -970,13 +967,6 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         public static void StartServerIfNeeded()
         {
             EditorApplication.update -= StartServerIfNeeded;
-
-            // Skip local server auto-start in Cloud mode — Unity connects to the cloud server instead
-            if (!IsAutoStartAllowedForMode(UnityCopilotPluginEditor.ConnectionMode))
-            {
-                _logger.LogDebug("StartServerIfNeeded: Cloud mode active, skipping local server auto-start");
-                return;
-            }
 
             // Check if user wants the server to keep running
             if (!UnityCopilotPluginEditor.KeepServerRunning)

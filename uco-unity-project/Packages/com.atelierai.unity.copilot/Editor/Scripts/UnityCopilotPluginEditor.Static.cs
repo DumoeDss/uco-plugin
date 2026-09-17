@@ -101,6 +101,15 @@ namespace com.AtelierAI.Unity.Copilot
                 NotifyChanged(Instance.unityConnectionConfig);
             }
         }
+        public static string? LocalToken
+        {
+            get => Instance.unityConnectionConfig.LocalToken;
+            set
+            {
+                Instance.unityConnectionConfig.LocalToken = value;
+                NotifyChanged(Instance.unityConnectionConfig);
+            }
+        }
         public static string LocalHost
         {
             get => Instance.unityConnectionConfig.LocalHost;
@@ -229,18 +238,6 @@ namespace com.AtelierAI.Unity.Copilot
                 NotifyChanged(Instance.unityConnectionConfig);
             }
         }
-        public static string CloudServerUrl => UnityCopilotPlugin.UnityConnectionConfig.CloudServerUrl;
-        public static string? CloudToken
-        {
-            get => Instance.unityConnectionConfig.CloudToken;
-            set
-            {
-                Instance.unityConnectionConfig.CloudToken = value;
-                NotifyChanged(Instance.unityConnectionConfig);
-            }
-        }
-
-
 
         // 'new' is intentional: static dispatch on the subtype, instance logic lives in the base.
         public static new ReadOnlyReactiveProperty<WsState> ConnectionState

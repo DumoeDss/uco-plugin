@@ -11,7 +11,6 @@
 #nullable enable
 using System;
 using com.IvanMurzak.ReflectorNet.Utils;
-using com.AtelierAI.Unity.Copilot.Editor.Services;
 using com.AtelierAI.Unity.Copilot.Editor.UI.Controls;
 using com.AtelierAI.Uco.Framework;
 using R3;
@@ -86,16 +85,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         private void OnAuthorizationRejected()
         {
-            if (UnityCopilotPluginEditor.ConnectionMode != ConnectionMode.Cloud)
-                return;
-
             Debug.LogWarning("[Unity Copilot] The server rejected the authorization token. " +
-                "The token has been cleared. Please click 'Authorize' to obtain a new token.");
+                "The token has been cleared. Update the token (or regenerate it) and reconnect.");
 
-            UnityCopilotPluginEditor.CloudToken = null;
+            UnityCopilotPluginEditor.LocalToken = null;
             UnityCopilotPluginEditor.Instance.Save();
-
-            UpdateCloudAuthState();
             RefreshConnectionUI();
         }
 
@@ -115,13 +109,11 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
             if (!(state == ConnectionState.Connected && keepConnected))
                 SetAiAgentStatus(false);
-
-            UpdateCloudAuthState();
         }
 
         /// <summary>
         /// Reads the current connection state and refreshes the Unity connection row UI.
-        /// Call this whenever the UI might be stale (e.g. after mode switch).
+        /// Call this whenever the UI might be stale.
         /// </summary>
         private void RefreshConnectionUI()
         {
@@ -132,7 +124,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         /// <summary>
         /// Schedules a delayed <see cref="RefreshConnectionUI"/> to catch state changes
-        /// that arrive after a mode switch or reconnect (e.g. async SignalR handshake).
+        /// that arrive after a reconnect (e.g. async handshake).
         /// </summary>
         private void ScheduleConnectionUIRefresh()
         {
@@ -173,237 +165,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         }
 
         /// <summary>
-        /// Initiates connection to the server. Called by both the Connect button and the
-        /// connection alert panel's Connect button.
+        /// Initiates connection to the server. Called by the Connect button.
         /// </summary>
         private static void ConnectToServer()
         {
             UnityCopilotPluginEditor.KeepConnected = true;
             UnityCopilotPluginEditor.Instance.Save();
             UnityBuildAndConnect();
-        }
-
-        private void SetupConnectionModeToggle(VisualElement root)
-        {
-            var container = root.Q<VisualElement>("segmentConnectionMode");
-            if (container == null) return;
-
-            var control = new SegmentedControl("Custom", "Cloud");
-            control.SetTooltips(
-                "Connect to your own server. The plugin starts a local server automatically and manages its lifecycle. Use this when you want full control over the server configuration, port, and authorization settings.",
-                "Connect to a remote server hosted in the cloud (e.g. ai-game.dev). No local server is started — the plugin connects directly to a built-in cloud endpoint (Cloud URL is predefined and not configurable). Requires authorization via device code flow.");
-            container.Add(control);
-
-            var inputServerUrl = root.Q<TextField>("InputServerURL");
-            var mcpServerPoint = root.Q<VisualElement>("TimelinePointMcpServer");
-            var cloudAuthSection = root.Q<VisualElement>("cloudAuthSection");
-
-            void UpdateModeVisibility(ConnectionMode mode)
-            {
-                var isCustom = mode == ConnectionMode.Custom;
-                if (inputServerUrl != null) inputServerUrl.style.display = isCustom ? DisplayStyle.Flex : DisplayStyle.None;
-                if (mcpServerPoint != null) mcpServerPoint.style.display = isCustom ? DisplayStyle.Flex : DisplayStyle.None;
-                if (cloudAuthSection != null) cloudAuthSection.style.display = isCustom ? DisplayStyle.None : DisplayStyle.Flex;
-            }
-
-            var currentMode = UnityCopilotPluginEditor.ConnectionMode;
-            control.SetValueWithoutNotify(currentMode == ConnectionMode.Custom ? 0 : 1);
-            UpdateModeVisibility(currentMode);
-
-            control.RegisterCallback<ChangeEvent<int>>(evt =>
-            {
-                if (evt.newValue == 0)
-                {
-                    UnityCopilotPluginEditor.ConnectionMode = ConnectionMode.Custom;
-                    UnityCopilotPluginEditor.Instance.Save();
-                    UpdateModeVisibility(ConnectionMode.Custom);
-                    UpdateCloudAuthState();
-
-                    // Start local server if configured and reconnect to it
-                    CopilotServerManager.StartServerIfNeeded();
-                    ReconnectAfterModeSwitch();
-                    ScheduleConnectionUIRefresh();
-                }
-                else
-                {
-                    UnityCopilotPluginEditor.ConnectionMode = ConnectionMode.Cloud;
-
-                    // Cloud requires authorization
-                    UnityCopilotPluginEditor.AuthOption = AuthOption.required;
-
-                    UnityCopilotPluginEditor.Instance.Save();
-                    UpdateModeVisibility(ConnectionMode.Cloud);
-                    UpdateCloudAuthState();
-
-                    // Stop local server — not needed in Cloud mode
-                    if (CopilotServerManager.IsRunning || CopilotServerManager.IsStarting)
-                        CopilotServerManager.StopServer();
-
-                    // Reconnect to cloud server (only if authorized)
-                    if (!string.IsNullOrEmpty(UnityCopilotPluginEditor.CloudToken))
-                        ReconnectAfterModeSwitch();
-                    ScheduleConnectionUIRefresh();
-                }
-            });
-        }
-
-        internal static bool IsAuthFlowRunning(DeviceAuthFlowState state) =>
-            state == DeviceAuthFlowState.Initiating
-            || state == DeviceAuthFlowState.WaitingForUser
-            || state == DeviceAuthFlowState.Polling;
-
-        internal static string GetAuthFlowStatusMessage(DeviceAuthFlowState state, string? userCode, string? errorMessage) => state switch
-        {
-            DeviceAuthFlowState.Initiating => "Initiating...",
-            DeviceAuthFlowState.WaitingForUser => $"Code: {userCode} — Authorize in browser",
-            DeviceAuthFlowState.Polling => $"Code: {userCode} — Waiting for authorization...",
-            DeviceAuthFlowState.Authorized => "Authorized!",
-            DeviceAuthFlowState.Failed => $"Failed: {errorMessage}",
-            DeviceAuthFlowState.Expired => "Expired — try again",
-            DeviceAuthFlowState.Cancelled => "Cancelled",
-            _ => ""
-        };
-
-        private void SetupCloudAuthSection(VisualElement root)
-        {
-            var inputCloudToken = root.Q<TextField>("inputCloudToken");
-            var btnRevoke = root.Q<Button>("btnCloudRevoke");
-            var btnAuthorize = root.Q<Button>("btnCloudAuthorize");
-            var statusLabel = root.Q<Label>("labelCloudAuthStatus");
-            if (inputCloudToken == null || btnAuthorize == null) return;
-
-            _btnAuthorize = btnAuthorize;
-
-            inputCloudToken.isPasswordField = true;
-            inputCloudToken.RegisterCallback<KeyDownEvent>(evt =>
-            {
-                if (evt.keyCode == KeyCode.C && (evt.ctrlKey || evt.commandKey))
-                {
-                    GUIUtility.systemCopyBuffer = inputCloudToken.value;
-                    evt.StopPropagation();
-                }
-            });
-
-            const string tokenPlaceholder = "Token — press Authorize";
-            void SetTokenValue(string? token)
-            {
-                var isEmpty = string.IsNullOrEmpty(token);
-                inputCloudToken.value = isEmpty ? tokenPlaceholder : token!;
-                inputCloudToken.EnableInClassList("token-placeholder", isEmpty);
-            }
-
-            SetTokenValue(UnityCopilotPluginEditor.CloudToken);
-            UpdateCloudAuthState();
-
-            void UpdateRevokeButtonVisibility()
-            {
-                if (btnRevoke != null)
-                    btnRevoke.style.display = string.IsNullOrEmpty(UnityCopilotPluginEditor.CloudToken)
-                        ? DisplayStyle.None
-                        : DisplayStyle.Flex;
-            }
-            UpdateRevokeButtonVisibility();
-
-            btnRevoke?.RegisterCallback<ClickEvent>(evt =>
-            {
-                UnityCopilotPluginEditor.CloudToken = null;
-                UnityCopilotPluginEditor.Instance.Save();
-                SetTokenValue(null);
-                UpdateRevokeButtonVisibility();
-
-                if (statusLabel != null)
-                {
-                    statusLabel.text = "Token revoked.";
-                    statusLabel.style.display = DisplayStyle.Flex;
-                }
-
-                UpdateCloudAuthState();
-
-                // Disconnect if currently in Cloud mode
-                if (UnityCopilotPluginEditor.ConnectionMode == ConnectionMode.Cloud
-                    && UnityCopilotPluginEditor.Instance.HasMcpPluginInstance)
-                    _ = UnityCopilotPluginEditor.Instance.Disconnect();
-            });
-
-            _startAuthorizeAction = async () =>
-            {
-                // If currently running, cancel
-                if (_deviceAuthFlow != null && IsAuthFlowRunning(_deviceAuthFlow.State))
-                {
-                    _deviceAuthFlow.Cancel();
-                    return;
-                }
-
-                _deviceAuthFlow?.Cancel();
-                _deviceAuthFlow = new DeviceAuthFlow();
-                var capturedFlow = _deviceAuthFlow; // Capture to avoid stale field reference in async callbacks
-
-                capturedFlow.OnStateChanged += state =>
-                {
-                    // Use RunAsync (EditorApplication.update-based) instead of delayCall so that
-                    // the UI updates even when the Unity Editor window is not focused — delayCall
-                    // is throttled/paused when Unity loses application focus.
-                    MainThread.Instance.RunAsync(() =>
-                    {
-                        // Ignore stale events from a previous auth flow
-                        if (_deviceAuthFlow != capturedFlow) return;
-
-                        if (statusLabel != null)
-                        {
-                            statusLabel.text = GetAuthFlowStatusMessage(state, capturedFlow.UserCode, capturedFlow.ErrorMessage);
-                            statusLabel.style.display = string.IsNullOrEmpty(statusLabel.text)
-                                ? DisplayStyle.None
-                                : DisplayStyle.Flex;
-                        }
-                        if (state == DeviceAuthFlowState.Authorized && inputCloudToken != null)
-                        {
-                            SetTokenValue(UnityCopilotPluginEditor.CloudToken);
-                            UpdateRevokeButtonVisibility();
-                            UpdateCloudAuthState();
-                        }
-                        if (state == DeviceAuthFlowState.Authorized)
-                        {
-                            // Reconnect to cloud server with the new token (only if still in Cloud mode)
-                            if (UnityCopilotPluginEditor.ConnectionMode == ConnectionMode.Cloud)
-                                ReconnectAfterModeSwitch();
-                        }
-                        if (btnAuthorize != null)
-                        {
-                            btnAuthorize.text = IsAuthFlowRunning(state) ? "Cancel" : "Authorize";
-                        }
-                        Repaint();
-                    });
-                };
-
-                await capturedFlow.StartAsync(UnityCopilotPlugin.UnityConnectionConfig.CloudServerBaseUrl, "Unity Editor");
-            };
-
-            btnAuthorize.RegisterCallback<ClickEvent>(_ => _startAuthorizeAction?.Invoke());
-        }
-
-        private void SetupConnectionAlerts(VisualElement root)
-        {
-            var container = root.Q<VisualElement>("connectionAlertContainer");
-            if (container == null) return;
-
-            // Auth alert — shown when Cloud mode is active but no token
-            _connectionAuthAlert = new AlertPanel(
-                "Authorization Required",
-                "Cloud mode requires authentication to connect. Press the button below to authorize your device."
-            );
-            _connectionAuthAlert.SetButton("Authorize", () => _startAuthorizeAction?.Invoke());
-            container.Add(_connectionAuthAlert.Root);
-
-            // Connect alert — shown when authorized but Unity is not connected
-            _connectionConnectAlert = new AlertPanel(
-                "Connection Required",
-                "Cloud authorization is complete but Unity is not connected to the server."
-            );
-            _connectionConnectAlert.SetButton("Connect", ConnectToServer);
-            container.Add(_connectionConnectAlert.Root);
-
-            // Initial visibility
-            UpdateCloudAuthState();
         }
     }
 }

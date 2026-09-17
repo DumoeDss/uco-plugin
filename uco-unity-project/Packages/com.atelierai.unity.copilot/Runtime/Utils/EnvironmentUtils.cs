@@ -47,7 +47,6 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         public const string EnvTools = "UNITY_MCP_TOOLS";
         public const string EnvStartServer = "UNITY_MCP_START_SERVER";
         public const string EnvTransport = "UNITY_MCP_TRANSPORT";
-        public const string EnvCloudUrl = "UNITY_MCP_CLOUD_URL";
         public const string EnvConnectionMode = "UNITY_MCP_CONNECTION_MODE";
 
         // Short flag aliases recognised by the in-plugin command-line parser.
@@ -64,7 +63,6 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         public const string FieldKeepConnected = nameof(UnityCopilotPlugin.UnityConnectionConfig.KeepConnected);
         public const string FieldAuthOption = nameof(UnityCopilotPlugin.UnityConnectionConfig.AuthOption);
         public const string FieldLocalToken = nameof(UnityCopilotPlugin.UnityConnectionConfig.LocalToken);
-        public const string FieldCloudToken = nameof(UnityCopilotPlugin.UnityConnectionConfig.CloudToken);
         public const string FieldTools = nameof(UnityCopilotPlugin.UnityConnectionConfig.EnabledToolsOverride);
         public const string FieldStartServer = nameof(UnityCopilotPlugin.UnityConnectionConfig.KeepServerRunning);
         public const string FieldTransport = nameof(UnityCopilotPlugin.UnityConnectionConfig.TransportMethod);
@@ -176,9 +174,9 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
 
             string Sanitize(string raw) => raw.Trim().Trim('"');
 
-            // UNITY_MCP_HOST is the legacy alias for UNITY_MCP_CLOUD_URL.
+            // UNITY_MCP_HOST / --url override the local server host.
             string? sanitizedHost = null;
-            var rawHost = Resolve(EnvCloudUrl, FlagUrl) ?? Resolve(EnvHost, flagAlias: null);
+            var rawHost = Resolve(EnvHost, FlagUrl);
             if (rawHost != null)
             {
                 var host = Sanitize(rawHost).TrimEnd('/');
@@ -231,8 +229,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
                 _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvAuthOption, ao);
             }
 
-            // Resolved AFTER ConnectionMode so we route to the correct underlying field
-            // (LocalToken in Custom mode, CloudToken in Cloud mode). We track the specific
+            // We track the specific
             // backing field rather than the abstract Token property because only the backing
             // fields are serialised — restoring the baseline must target the same field that
             // was clobbered.
@@ -240,23 +237,11 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             if (rawToken != null)
             {
                 var token = Sanitize(rawToken);
-                if (config.ConnectionMode == ConnectionMode.Cloud)
+                if (!string.Equals(token, config.LocalToken, StringComparison.Ordinal))
                 {
-                    if (!string.Equals(token, config.CloudToken, StringComparison.Ordinal))
-                    {
-                        record.Track(FieldCloudToken, config.CloudToken, token);
-                        config.CloudToken = token;
-                        _logger.LogInformation("[MCP] Override: {Key}=*** (CloudToken)", EnvToken);
-                    }
-                }
-                else
-                {
-                    if (!string.Equals(token, config.LocalToken, StringComparison.Ordinal))
-                    {
-                        record.Track(FieldLocalToken, config.LocalToken, token);
-                        config.LocalToken = token;
-                        _logger.LogInformation("[MCP] Override: {Key}=*** (LocalToken)", EnvToken);
-                    }
+                    record.Track(FieldLocalToken, config.LocalToken, token);
+                    config.LocalToken = token;
+                    _logger.LogInformation("[MCP] Override: {Key}=*** (LocalToken)", EnvToken);
                 }
             }
 
@@ -340,9 +325,6 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
                         break;
                     case FieldLocalToken:
                         config.LocalToken = (string?)kvp.Value;
-                        break;
-                    case FieldCloudToken:
-                        config.CloudToken = (string?)kvp.Value;
                         break;
                     case FieldTools:
                         config.EnabledToolsOverride = (List<string>?)kvp.Value;

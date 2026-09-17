@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot
 
     public partial class UnityCopilotPlugin : IDisposable
     {
-        public const string Version = "1.0.2";
+        public const string Version = "1.0.3";
 
         private static int _singletonCount = 0;
         public static bool HasAnyInstance => _singletonCount > 0;
