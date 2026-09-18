@@ -107,14 +107,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             EnvironmentUtils.ApplyEnvironmentOverrides(config, args, env);
 
             Assert.AreEqual("FLAG_TOKEN", config.LocalToken,
-                "When both --token and UNITY_MCP_TOKEN are set, the flag must win.");
+                "When both --token and UNITY_COPILOT_TOKEN are set, the flag must win.");
         }
 
         [Test]
         public void Override_UnityMcpStyleFlag_BeatsEnvVar()
         {
-            // CLI translates --token foo into UNITY_MCP_TOKEN env, but the plugin still
-            // accepts --UNITY_MCP_TOKEN=foo style flags directly. They must beat env vars.
+            // CLI translates --token foo into UNITY_COPILOT_TOKEN env, but the plugin still
+            // accepts --UNITY_COPILOT_TOKEN=foo style flags directly. They must beat env vars.
             var config = BuildDiskConfig();
             var args = Args((EnvironmentUtils.EnvToken, "FLAG_VIA_FULL_NAME"));
             var env = Env((EnvironmentUtils.EnvToken, "ENV_TOKEN"));

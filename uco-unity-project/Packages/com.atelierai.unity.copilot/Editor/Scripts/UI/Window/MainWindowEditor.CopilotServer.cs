@@ -335,10 +335,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 return;
             }
 
-            var task = mcpManagerHub.GetMcpServerData();
+            var task = mcpManagerHub.GetServerData();
             if (task == null)
             {
-                Logger.LogDebug("Cannot fetch server data: GetMcpServerData returned null");
+                Logger.LogDebug("Cannot fetch server data: GetServerData returned null");
                 return;
             }
 

@@ -146,7 +146,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network
             var request = new WsRequest
             {
                 Id = "p-4",
-                Method = "GetMcpServerData",
+                Method = "GetServerData",
                 Params = null
             };
 
@@ -156,7 +156,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network
             success.ShouldBeTrue();
             parsed!.Type.ShouldBe(WsMessageType.Request);
             parsed.Id.ShouldBe("p-4");
-            parsed.Method.ShouldBe("GetMcpServerData");
+            parsed.Method.ShouldBe("GetServerData");
         }
 
         // ── Task 12.2: WsRpcDispatcher handler-dict ──────────────────────

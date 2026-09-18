@@ -20,8 +20,8 @@ namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
         IClientResourceHub? ResourceHub { get; }
         IClientSystemToolHub? SystemToolHub { get; }
 
-        Task OnMcpClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients);
-        Task OnMcpClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients);
+        Task OnPluginClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients);
+        Task OnPluginClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients);
 
         /// <summary>
         /// Called once on initial connection to populate ActiveClients with the server's current

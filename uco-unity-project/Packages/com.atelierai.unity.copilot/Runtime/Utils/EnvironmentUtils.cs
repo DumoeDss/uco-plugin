@@ -24,8 +24,8 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
     ///
     /// Priority (highest wins):
     ///   1. Process command-line flags (e.g. <c>--url</c>, <c>--token</c>, <c>--auth</c>,
-    ///      or any <c>--UNITY_MCP_*</c> variant)
-    ///   2. Process environment variables (<c>UNITY_MCP_*</c>)
+    ///      or any <c>--UNITY_COPILOT_*</c> variant)
+    ///   2. Process environment variables (<c>UNITY_COPILOT_*</c>)
     ///   3. On-disk config (<c>UserSettings/AI-Game-Developer-Config.json</c>)
     ///   4. Built-in defaults
     ///
@@ -40,14 +40,14 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
         static readonly ILogger _logger = UnityLoggerFactory.LoggerFactory.CreateLogger(nameof(EnvironmentUtils));
 
         // Environment variable names for MCP connection overrides.
-        public const string EnvHost = "UNITY_MCP_HOST";
-        public const string EnvKeepConnected = "UNITY_MCP_KEEP_CONNECTED";
-        public const string EnvAuthOption = "UNITY_MCP_AUTH_OPTION";
-        public const string EnvToken = "UNITY_MCP_TOKEN";
-        public const string EnvTools = "UNITY_MCP_TOOLS";
-        public const string EnvStartServer = "UNITY_MCP_START_SERVER";
-        public const string EnvTransport = "UNITY_MCP_TRANSPORT";
-        public const string EnvConnectionMode = "UNITY_MCP_CONNECTION_MODE";
+        public const string EnvHost = "UNITY_COPILOT_HOST";
+        public const string EnvKeepConnected = "UNITY_COPILOT_KEEP_CONNECTED";
+        public const string EnvAuthOption = "UNITY_COPILOT_AUTH_OPTION";
+        public const string EnvToken = "UNITY_COPILOT_TOKEN";
+        public const string EnvTools = "UNITY_COPILOT_TOOLS";
+        public const string EnvStartServer = "UNITY_COPILOT_START_SERVER";
+        public const string EnvTransport = "UNITY_COPILOT_TRANSPORT";
+        public const string EnvConnectionMode = "UNITY_COPILOT_CONNECTION_MODE";
 
         // Short flag aliases recognised by the in-plugin command-line parser.
         // The CLI tool already translates these to the equivalent env vars before
@@ -151,7 +151,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
 
             var record = new OverrideRecord();
 
-            // Resolve a value with priority: short-flag-alias (highest) > UNITY_MCP_* env-style flag > env var.
+            // Resolve a value with priority: short-flag-alias (highest) > UNITY_COPILOT_* env-style flag > env var.
             // Returns null if no source provided a non-empty value.
             string? Resolve(string envKey, string? flagAlias)
             {
@@ -174,7 +174,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
 
             string Sanitize(string raw) => raw.Trim().Trim('"');
 
-            // UNITY_MCP_HOST / --url override the local server host.
+            // UNITY_COPILOT_HOST / --url override the local server host.
             string? sanitizedHost = null;
             var rawHost = Resolve(EnvHost, FlagUrl);
             if (rawHost != null)

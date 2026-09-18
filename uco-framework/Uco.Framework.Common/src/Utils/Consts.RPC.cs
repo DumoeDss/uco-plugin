@@ -16,7 +16,7 @@ namespace com.AtelierAI.Uco.Framework.Common
             public const int DefaultPort = 8080;
             public const int MaxPort = 65535;
             public const string DefaultHost = "http://localhost:8080";
-            public const string RemoteApp = "/hub/mcp-server";
+            public const string RemoteApp = "/hub/plugin";
             public const int DefaultTimeoutMs = 10000;
         }
     }

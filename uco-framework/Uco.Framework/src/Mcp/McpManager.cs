@@ -73,7 +73,7 @@ namespace com.AtelierAI.Uco.Framework
             _systemTools = systemTools;
         }
 
-        public Task OnMcpClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients)
+        public Task OnPluginClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients)
         {
             _activeClients = allActiveClients;
             _onClientConnected.OnNext(connectedClient);
@@ -81,7 +81,7 @@ namespace com.AtelierAI.Uco.Framework
             return Task.CompletedTask;
         }
 
-        public Task OnMcpClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients)
+        public Task OnPluginClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients)
         {
             _activeClients = remainingClients;
             _onClientDisconnected.OnNext(disconnectedClient);

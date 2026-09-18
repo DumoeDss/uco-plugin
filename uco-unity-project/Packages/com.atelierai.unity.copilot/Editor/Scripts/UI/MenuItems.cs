@@ -44,7 +44,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         // NOTE: The old .NET server binary flow (Download Binaries / Delete Binaries /
         // Open Logs / Open Log Errors) was removed together with the staged
-        // Library/mcp-server binary. The local server is now the Node.js MCP server
+        // Library/server binary (legacy .NET era). The local server is the Node.js bridge
         // (cocli) launched directly by CopilotServerManager; its stdout/stderr is
         // surfaced in the Editor console.
 

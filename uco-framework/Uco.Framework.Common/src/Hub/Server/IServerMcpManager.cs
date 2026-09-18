@@ -17,6 +17,6 @@ namespace com.AtelierAI.Uco.Framework.Common.Hub.Server
     {
         Task<VersionHandshakeResponse> PerformVersionHandshake(RequestVersionHandshake request);
         Task<UcoClientData[]> GetMcpClientData();
-        Task<UcoServerData> GetMcpServerData();
+        Task<UcoServerData> GetServerData();
     }
 }

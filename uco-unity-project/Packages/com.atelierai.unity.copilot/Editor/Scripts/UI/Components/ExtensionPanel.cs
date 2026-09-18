@@ -356,7 +356,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         }
 
         /// <summary>
-        /// Data describing an extension: display info, package ID, and the MCP tools it provides.
+        /// Data describing an extension: display info, package ID, and the tools it provides.
         /// </summary>
         public readonly struct ExtensionData
         {

@@ -32,18 +32,18 @@ namespace com.AtelierAI.Uco.Framework.Common
 
                 public static partial class Args
                 {
-                    public const string UcoServerEndpoint = "mcp-server-endpoint";
-                    public const string UcoServerTimeout = "mcp-server-timeout";
-                    public const string UcoPluginToken = "mcp-plugin-token";
-                    public const string UcoSkillsFolder = "mcp-skills-folder";
+                    public const string UcoServerEndpoint = "uco-server-endpoint";
+                    public const string UcoServerTimeout = "uco-server-timeout";
+                    public const string UcoPluginToken = "uco-plugin-token";
+                    public const string UcoSkillsFolder = "uco-skills-folder";
                 }
 
                 public static class Env
                 {
-                    public const string UcoServerEndpoint = "MCP_SERVER_ENDPOINT";
-                    public const string UcoServerTimeout = "MCP_SERVER_TIMEOUT";
-                    public const string UcoPluginToken = "MCP_PLUGIN_TOKEN";
-                    public const string UcoSkillsFolder = "MCP_SKILLS_FOLDER";
+                    public const string UcoServerEndpoint = "UCO_SERVER_ENDPOINT";
+                    public const string UcoServerTimeout = "UCO_SERVER_TIMEOUT";
+                    public const string UcoPluginToken = "UCO_PLUGIN_TOKEN";
+                    public const string UcoSkillsFolder = "UCO_SKILLS_FOLDER";
                 }
             }
             public static partial class Server
@@ -60,12 +60,12 @@ namespace com.AtelierAI.Uco.Framework.Common
 
                 public static partial class Env
                 {
-                    public const string Port = "MCP_PLUGIN_PORT";
-                    public const string PluginTimeout = "MCP_PLUGIN_CLIENT_TIMEOUT";
-                    public const string ClientTransportMethod = "MCP_PLUGIN_CLIENT_TRANSPORT";
-                    public const string Token = "MCP_PLUGIN_TOKEN";
-                    public const string Authorization = "MCP_AUTHORIZATION";
-                    public const string IdleTimeoutSeconds = "MCP_PLUGIN_IDLE_TIMEOUT_SECONDS";
+                    public const string Port = "UCO_PLUGIN_PORT";
+                    public const string PluginTimeout = "UCO_PLUGIN_CLIENT_TIMEOUT";
+                    public const string ClientTransportMethod = "UCO_PLUGIN_CLIENT_TRANSPORT";
+                    public const string Token = "UCO_PLUGIN_TOKEN";
+                    public const string Authorization = "UCO_AUTHORIZATION";
+                    public const string IdleTimeoutSeconds = "UCO_PLUGIN_IDLE_TIMEOUT_SECONDS";
                 }
 
                 /// <summary>
@@ -194,7 +194,7 @@ namespace com.AtelierAI.Uco.Framework.Common
                     /// registry. Optional — plugins that do not set it remain
                     /// reachable via the legacy token-based routing.
                     /// </summary>
-                    public const string UcoInstanceId = "X-Mcp-Instance-Id";
+                    public const string UcoInstanceId = "X-Plugin-Instance-Id";
                 }
             }
         }

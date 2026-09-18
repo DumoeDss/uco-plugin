@@ -28,12 +28,12 @@ namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
         /// Fired when an MCP client connects. Carries the newly connected client's data and
         /// the complete list of all currently active clients (including the new one).
         /// </summary>
-        Task OnMcpClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients);
+        Task OnPluginClientConnected(UcoClientData connectedClient, UcoClientData[] allActiveClients);
 
         /// <summary>
         /// Fired when an MCP client disconnects. Carries the disconnected client's data and
         /// the complete list of clients still active after the disconnection.
         /// </summary>
-        Task OnMcpClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients);
+        Task OnPluginClientDisconnected(UcoClientData disconnectedClient, UcoClientData[] remainingClients);
     }
 }

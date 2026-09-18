@@ -27,7 +27,7 @@ namespace com.AtelierAI.Uco.Framework
 
         /// <summary>
         /// Token for authorization when connecting to the MCP server via WebSocket.
-        /// Set via command line arg 'mcp-plugin-token' or environment variable 'MCP_PLUGIN_TOKEN'.
+        /// Set via command line arg 'uco-plugin-token' or environment variable 'UCO_PLUGIN_TOKEN'.
         /// </summary>
         public virtual string? Token { get; set; }
 
@@ -36,7 +36,7 @@ namespace com.AtelierAI.Uco.Framework
         /// When set, the server registers this connection in its
         /// <c>IInstanceConnectionRegistry</c> so MCP clients can route per-session tool
         /// calls to a specific Unity Editor / host process. Sent both as a URL query
-        /// parameter (<c>?instanceId=...</c>) and as the <c>X-Mcp-Instance-Id</c> header
+        /// parameter (<c>?instanceId=...</c>) and as the <c>X-Plugin-Instance-Id</c> header
         /// (the header survives negotiate; the query survives the WebSocket upgrade).
         /// Null/empty means "do not advertise an instance id" — server keeps the old
         /// token-based routing behaviour for this connection.
@@ -57,7 +57,7 @@ namespace com.AtelierAI.Uco.Framework
         /// <see cref="IUcoPlugin.DeleteSkillFiles(string?)"/>; otherwise <see cref="ProjectRootPath"/>;
         /// otherwise the resolver throws. There is no silent fallback to the host process's
         /// current working directory — see GitHub issue #107.
-        /// Default is 'SKILLS'. Set via command line arg 'mcp-skills-folder' or environment variable 'MCP_SKILLS_FOLDER'.
+        /// Default is 'SKILLS'. Set via command line arg 'uco-skills-folder' or environment variable 'UCO_SKILLS_FOLDER'.
         /// </summary>
         public virtual string SkillsPath { get; set; } = "SKILLS";
 

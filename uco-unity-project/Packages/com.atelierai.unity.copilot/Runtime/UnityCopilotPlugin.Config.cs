@@ -120,7 +120,7 @@ namespace com.AtelierAI.Unity.Copilot
 
             /// <summary>
             /// When non-null, only the tools whose names appear in this list are enabled;
-            /// all others are disabled. Set by the <c>UNITY_MCP_TOOLS</c> environment variable
+            /// all others are disabled. Set by the <c>UNITY_COPILOT_TOOLS</c> environment variable
             /// (comma-separated tool IDs). Not persisted to disk.
             /// </summary>
             [JsonIgnore]

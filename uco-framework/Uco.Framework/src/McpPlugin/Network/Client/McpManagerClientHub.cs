@@ -32,13 +32,13 @@ namespace com.AtelierAI.Uco.Framework
         public UcoClientData[] Clients { get; set; } = Array.Empty<UcoClientData>();
     }
 
-    public class OnMcpClientConnectedParams
+    public class OnPluginClientConnectedParams
     {
         public UcoClientData Connected { get; set; } = null!;
         public UcoClientData[] All { get; set; } = Array.Empty<UcoClientData>();
     }
 
-    public class OnMcpClientDisconnectedParams
+    public class OnPluginClientDisconnectedParams
     {
         public UcoClientData Disconnected { get; set; } = null!;
         public UcoClientData[] Remaining { get; set; } = Array.Empty<UcoClientData>();
@@ -107,25 +107,25 @@ namespace com.AtelierAI.Uco.Framework
                 })
                 .AddTo(disposables);
 
-            connectionManager.RegisterNotification<OnMcpClientConnectedParams>(
-                nameof(IClientMcpRpc.OnMcpClientConnected),
+            connectionManager.RegisterNotification<OnPluginClientConnectedParams>(
+                nameof(IClientMcpRpc.OnPluginClientConnected),
                 async param =>
                 {
-                    _logger.LogDebug("{class}.{method}", nameof(IClientMcpRpc), nameof(IClientMcpRpc.OnMcpClientConnected));
+                    _logger.LogDebug("{class}.{method}", nameof(IClientMcpRpc), nameof(IClientMcpRpc.OnPluginClientConnected));
                     Interlocked.Increment(ref _liveNotificationEpoch);
                     if (param != null)
-                        await _mcpManager.OnMcpClientConnected(param.Connected, param.All);
+                        await _mcpManager.OnPluginClientConnected(param.Connected, param.All);
                 })
                 .AddTo(disposables);
 
-            connectionManager.RegisterNotification<OnMcpClientDisconnectedParams>(
-                nameof(IClientMcpRpc.OnMcpClientDisconnected),
+            connectionManager.RegisterNotification<OnPluginClientDisconnectedParams>(
+                nameof(IClientMcpRpc.OnPluginClientDisconnected),
                 async param =>
                 {
-                    _logger.LogDebug("{class}.{method}", nameof(IClientMcpRpc), nameof(IClientMcpRpc.OnMcpClientDisconnected));
+                    _logger.LogDebug("{class}.{method}", nameof(IClientMcpRpc), nameof(IClientMcpRpc.OnPluginClientDisconnected));
                     Interlocked.Increment(ref _liveNotificationEpoch);
                     if (param != null)
-                        await _mcpManager.OnMcpClientDisconnected(param.Disconnected, param.Remaining);
+                        await _mcpManager.OnPluginClientDisconnected(param.Disconnected, param.Remaining);
                 })
                 .AddTo(disposables);
 
@@ -318,10 +318,10 @@ namespace com.AtelierAI.Uco.Framework
             return _connectionManager.InvokeAsync<UcoClientData[]>(nameof(IServerMcpManager.GetMcpClientData), _cancellationTokenSource.Token);
         }
 
-        public Task<UcoServerData> GetMcpServerData()
+        public Task<UcoServerData> GetServerData()
         {
-            _logger.LogTrace("{class}.{method}", nameof(IServerMcpManager), nameof(IServerMcpManager.GetMcpServerData));
-            return _connectionManager.InvokeAsync<UcoServerData>(nameof(IServerMcpManager.GetMcpServerData), _cancellationTokenSource.Token);
+            _logger.LogTrace("{class}.{method}", nameof(IServerMcpManager), nameof(IServerMcpManager.GetServerData));
+            return _connectionManager.InvokeAsync<UcoServerData>(nameof(IServerMcpManager.GetServerData), _cancellationTokenSource.Token);
         }
 
         protected override Task OnConnectedAsync(CancellationToken cancellationToken)

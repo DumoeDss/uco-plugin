@@ -17,7 +17,7 @@ using UnityEngine;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// Exposes Unity-MCP's team-shared update settings under
+    /// Exposes the team-shared update settings under
     /// <c>Edit ▸ Project Settings ▸ Unity Copilot</c>.
     /// </summary>
     /// <remarks>
