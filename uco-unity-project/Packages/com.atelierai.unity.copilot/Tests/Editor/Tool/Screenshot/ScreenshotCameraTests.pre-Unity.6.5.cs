@@ -123,7 +123,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var go = new GameObject("RunToolCamera");
             go.AddComponent<Camera>();
 
-            // Act — exercises the full MCP framework path
+            // Act — exercises the full Uco framework path
             RunTool("screenshot-camera", $@"{{
                 ""cameraRef"": {{
                     ""instanceID"": {go.GetInstanceID()}

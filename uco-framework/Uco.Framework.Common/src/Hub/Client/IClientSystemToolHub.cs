@@ -17,7 +17,7 @@ namespace com.AtelierAI.Uco.Framework.Common.Hub.Client
 {
     /// <summary>
     /// Hub interface for system tools — internal tools available via HTTP API
-    /// but NOT exposed to MCP clients or AI agents.
+    /// but NOT exposed to Uco clients or AI agents.
     /// </summary>
     public interface IClientSystemToolHub
     {

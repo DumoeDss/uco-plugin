@@ -26,7 +26,7 @@ using UnityEditor;
 
 namespace com.AtelierAI.Unity.Copilot.Editor
 {
-    using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+    using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
     using Consts = com.AtelierAI.Uco.Framework.Common.Consts;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -40,7 +40,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
     }
 
     /// <summary>
-    /// Manages the Node.js MCP server (cocli) process lifecycle independently from UI.
+    /// Manages the Node.js Uco server (cocli) process lifecycle independently from UI.
     /// The server entry script is discovered from the plugin config (nodeServerPath),
     /// the Unity project's node_modules, or the npm global installation — the plugin no
     /// longer stages or downloads a server binary into Library/.
@@ -51,7 +51,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
     {
         const string ProcessIdKey = "CopilotServerManager_ProcessId";
 
-        // The Node.js MCP server runs as a "node" process.
+        // The Node.js Uco server runs as a "node" process.
         const string NodeProcessName = "node";
 
         static readonly ILogger _logger = UnityLoggerFactory.LoggerFactory.CreateLogger(typeof(CopilotServerManager));
@@ -252,7 +252,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             if (type != null)
                 serverConfig["type"] = type;
 
-            // The AI agent launches the Node.js MCP server via the node runtime.
+            // The AI agent launches the Node.js Uco server via the node runtime.
             // When the entry script cannot be resolved right now, fall back to the
             // documented project-local install location so the generated config is
             // still a valid, copy-pasteable starting point.
@@ -477,7 +477,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                 if (serverEntry == null)
                 {
                     _logger.LogError(
-                        "Node.js MCP server entry not found. Install cocli (npm i -g cocli), or install it into the " +
+                        "Node.js Uco server entry not found. Install cocli (npm i -g cocli), or install it into the " +
                         "Unity project (npm i cocli), or set 'nodeServerPath' in '{config}' to the absolute path of " +
                         "cocli's bin/server.mjs. The plugin will still connect to an already-running server.",
                         UnityCopilotPluginEditor.AssetsFilePath);
@@ -783,7 +783,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Builds the argument list for the Node.js MCP server as a structured collection
+        /// Builds the argument list for the Node.js Uco server as a structured collection
         /// so each entry can be passed to <see cref="ProcessStartInfo.ArgumentList"/>
         /// verbatim. The runtime escapes each entry individually — safe for values that
         /// contain spaces, quotes, or other characters the shell would otherwise interpret.

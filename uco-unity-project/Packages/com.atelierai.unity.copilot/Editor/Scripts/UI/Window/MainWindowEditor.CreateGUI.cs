@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
 using LogLevel = com.AtelierAI.Unity.Copilot.Runtime.Utils.LogLevel;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
@@ -129,7 +129,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             "fail and the AI agent will have no way to interact with your project.\n\n" +
             "Use the Connect / Disconnect button to control the connection manually.";
 
-        private const string Tooltip_McpServerTimelineLabel =
+        private const string Tooltip_ServerTimelineLabel =
             "The server is the gateway between AI and Unity. Every AI operation that interacts " +
             "with Unity — tools, prompts, resources, and skills — goes through this server.\n\n" +
             "It translates AI requests into Unity API calls, enabling the AI agent to create " +
@@ -168,7 +168,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         private VisualElement? _aiAgentLabelsContainer;
         private VisualElement? _aiAgentStatusCircle;
 
-        private long _mcpServerDataVersion;
+        private long _serverDataVersion;
         private long _aiAgentDataVersion;
 
         protected override void OnGUICreated(VisualElement root)
@@ -177,7 +177,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
             SetupSettingsSection(root);
             SetupConnectionSection(root);
-            SetupMcpServerSection(root);
+            SetupServerSection(root);
             SetupAiAgentSection(root);
             SetupDebugButtons(root);
             EnableSmoothFoldoutTransitions(root);

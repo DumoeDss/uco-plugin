@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// </summary>
         public static int InvalidateConfirmationPlans()
         {
-            if (!UnityCopilotPluginEditor.HasInstance || !UnityCopilotPluginEditor.Instance.HasMcpPluginInstance)
+            if (!UnityCopilotPluginEditor.HasInstance || !UnityCopilotPluginEditor.Instance.HasUcoPluginInstance)
                 return 0;
 
             var invalidated = 0;

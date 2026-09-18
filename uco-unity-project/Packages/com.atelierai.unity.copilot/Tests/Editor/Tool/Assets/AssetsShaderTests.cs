@@ -105,7 +105,7 @@ Shader ""Test/BrokenShader""
             var shaderEx = new CreateShaderExecutor(
                 shaderFileName: "TestValidShader__.shader",
                 shaderSource: ValidShaderSource,
-                "Assets", "Unity-MCP-Test", "Shaders"
+                "Assets", "Unity-Uco-Test", "Shaders"
             );
 
             shaderEx
@@ -148,7 +148,7 @@ Shader ""Test/BrokenShader""
             var shaderEx = new CreateShaderExecutor(
                 shaderFileName: "TestBrokenShader__.shader",
                 shaderSource: BrokenShaderSource,
-                "Assets", "Unity-MCP-Test", "Shaders"
+                "Assets", "Unity-Uco-Test", "Shaders"
             );
 
             // Expect the shader compilation error log that Unity emits during import

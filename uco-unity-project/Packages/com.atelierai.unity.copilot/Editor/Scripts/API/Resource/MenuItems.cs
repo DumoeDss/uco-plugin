@@ -95,7 +95,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             // TypeCache.GetMethodsWithAttribute is available in Unity 2019.2+ and indexes every loaded
             // assembly's methods bearing a [MenuItem]. Domain reload keeps the cache fresh, so calls
-            // from MCP requests will always see the current project's menu items.
+            // from Uco requests will always see the current project's menu items.
             var methods = TypeCache.GetMethodsWithAttribute<UnityEditor.MenuItem>();
             var result = new List<MenuItemEntry>(methods.Count);
 

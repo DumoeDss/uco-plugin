@@ -74,7 +74,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
             // (e.g. 8.0.2) produces an infinite restore loop on every domain reload:
             // higher-version-wins extracts 8.0.3 to disk while AllPackagesInstalled()
             // keeps checking for the pinned dir, never finds it, and triggers Restore()
-            // again on the next reload. See Unity-MCP#677.
+            // again on the next reload. See Unity-Uco#677.
             new NuGetPackage("Microsoft.Extensions.Logging.Abstractions",             "8.0.3",  includeInBuild: true),
             new NuGetPackage("Microsoft.Extensions.DependencyInjection",              "8.0.1",  includeInBuild: true),
             new NuGetPackage("Microsoft.Extensions.DependencyInjection.Abstractions", "8.0.2",  includeInBuild: true),

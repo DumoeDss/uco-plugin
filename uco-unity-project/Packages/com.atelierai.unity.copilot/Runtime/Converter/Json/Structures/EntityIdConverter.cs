@@ -17,7 +17,7 @@
 //   Inbound:  accepts both a JSON string (preferred) and a JSON number
 //             (back-compat — legacy clients pre-#759 wrote a number).
 //
-// Rationale: Unity 6.5's EntityId is a 64-bit ulong. JS-based MCP clients
+// Rationale: Unity 6.5's EntityId is a 64-bit ulong. JS-based Uco clients
 // (Claude Agent SDK, etc.) parse JSON numbers as IEEE-754 doubles, so any
 // value past 2^53 - 1 rounds. Serializing as a string makes the value
 // opaque to every JSON parser, preserving full precision through any

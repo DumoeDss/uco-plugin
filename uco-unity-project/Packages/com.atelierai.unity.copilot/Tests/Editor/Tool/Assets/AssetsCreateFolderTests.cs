@@ -20,7 +20,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     public class AssetsCreateFolderTests : BaseTest
     {
-        const string TestFolderName = "Unity-MCP-Test-CreateFolder";
+        const string TestFolderName = "Unity-Uco-Test-CreateFolder";
 
         [UnityTest]
         public IEnumerator CreateFolder_ValidParentFolder_Succeeds()

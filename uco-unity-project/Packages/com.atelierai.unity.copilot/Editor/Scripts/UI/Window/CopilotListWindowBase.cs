@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -23,7 +23,7 @@ using UnityEngine.UIElements;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// Filter type for MCP list windows (Tools, Prompts, Resources).
+    /// Filter type for Uco list windows (Tools, Prompts, Resources).
     /// </summary>
     public enum CopilotFilterType
     {
@@ -33,7 +33,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
     }
 
     /// <summary>
-    /// Base class for MCP list windows providing common ListView functionality.
+    /// Base class for Uco list windows providing common ListView functionality.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type for list items.</typeparam>
     public abstract class CopilotListWindowBase<TViewModel> : CopilotWindowBase
@@ -111,7 +111,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         protected void InitializePlugin()
         {
             UnityCopilotPluginEditor.InitSingletonIfNeeded();
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
         }
 
@@ -130,7 +130,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             }
 
             filterStatsLabel = root.Q<Label>("filter-stats-label");
-            listView = root.Q<ListView>("mcp-list-view");
+            listView = root.Q<ListView>("plugin-list-view");
             emptyListLabel = root.Q<Label>("empty-list-label");
         }
 
@@ -366,7 +366,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
     }
 
     /// <summary>
-    /// Interface for MCP item view models.
+    /// Interface for Uco item view models.
     /// </summary>
     public interface ICopilotItemViewModel
     {

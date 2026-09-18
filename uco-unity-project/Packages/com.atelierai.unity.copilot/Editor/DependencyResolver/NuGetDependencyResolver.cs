@@ -34,7 +34,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
     ///   the new resolver's static constructor never runs. The previous AppDomain is still alive
     ///   though — and so are its event subscriptions. registeredPackages fires from the still-alive
     ///   AppDomain after UPM writes new package files but before the failed recompile, giving us a
-    ///   chance to clean up stale DLLs and unblock the next compile attempt. See Unity-MCP#707.
+    ///   chance to clean up stale DLLs and unblock the next compile attempt. See Unity-Uco#707.
     ///
     /// Flow on domain reload:
     ///   1. [InitializeOnLoad] fires
@@ -54,7 +54,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
     [InitializeOnLoad]
     static class NuGetDependencyResolver
     {
-        const string Tag = "[Unity-MCP DependencyResolver]";
+        const string Tag = "[Unity-Uco DependencyResolver]";
 
         static NuGetDependencyResolver()
         {

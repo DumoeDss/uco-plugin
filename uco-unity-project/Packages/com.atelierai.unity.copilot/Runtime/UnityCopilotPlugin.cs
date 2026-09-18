@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot
 
     public partial class UnityCopilotPlugin : IDisposable
     {
-        public const string Version = "1.0.5";
+        public const string Version = "1.0.6";
 
         private static int _singletonCount = 0;
         public static bool HasAnyInstance => _singletonCount > 0;
@@ -42,11 +42,11 @@ namespace com.AtelierAI.Unity.Copilot
         protected readonly CopilotPluginSlot _plugin = new();
 
         // Tracks only the latest plugin's ConnectionState subscription.
-        // Replaced (old one disposed) each time BuildMcpPlugin creates a new IUcoPlugin instance.
+        // Replaced (old one disposed) each time BuildUcoPlugin creates a new IUcoPlugin instance.
         private IDisposable? _pluginConnectionSubscription;
 
         public IUcoPlugin? UcoPluginInstance => _plugin.Instance;
-        public bool HasMcpPluginInstance => _plugin.HasInstance;
+        public bool HasUcoPluginInstance => _plugin.HasInstance;
 
         public ILogger Logger => UcoPluginInstance?.Logger ?? _logger;
         public Reflector? Reflector => UcoPluginInstance?.UcoManager.Reflector;
@@ -136,23 +136,23 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(Connect));
             try
             {
-                var mcpPlugin = UcoPluginInstance;
-                if (mcpPlugin == null)
+                var ucoPlugin = UcoPluginInstance;
+                if (ucoPlugin == null)
                 {
                     _logger.LogError("{method}: uco plugin instance is null.", nameof(Connect));
                     return false;
                 }
 
                 if (restartPendingAttempt
-                    && mcpPlugin.ConnectionState.CurrentValue != WsState.Connected)
+                    && ucoPlugin.ConnectionState.CurrentValue != WsState.Connected)
                 {
                     // ConnectionManager cancellation happens before its bounded synchronous
                     // cleanup, so the old attempt releases its gate while the new call waits
                     // with the caller-provided cancellation token.
-                    mcpPlugin.DisconnectImmediate();
+                    ucoPlugin.DisconnectImmediate();
                 }
 
-                return await mcpPlugin.Connect(cancellationToken);
+                return await ucoPlugin.Connect(cancellationToken);
             }
             finally
             {
@@ -165,8 +165,8 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(Disconnect));
             try
             {
-                var mcpPlugin = UcoPluginInstance;
-                if (mcpPlugin == null)
+                var ucoPlugin = UcoPluginInstance;
+                if (ucoPlugin == null)
                 {
                     _logger.LogWarning("{method}: uco plugin instance is null, nothing to disconnect, ignoring.",
                         nameof(Disconnect));
@@ -175,7 +175,7 @@ namespace com.AtelierAI.Unity.Copilot
                 try
                 {
                     _logger.LogDebug("{method}: Disconnecting uco plugin instance.", nameof(Disconnect));
-                    await mcpPlugin.Disconnect();
+                    await ucoPlugin.Disconnect();
                 }
                 catch (Exception e)
                 {
@@ -194,8 +194,8 @@ namespace com.AtelierAI.Unity.Copilot
             _logger.LogTrace("{method} called.", nameof(DisconnectImmediate));
             try
             {
-                var mcpPlugin = UcoPluginInstance;
-                if (mcpPlugin == null)
+                var ucoPlugin = UcoPluginInstance;
+                if (ucoPlugin == null)
                 {
                     _logger.LogWarning("{method}: uco plugin instance is null, nothing to disconnect, ignoring.",
                         nameof(DisconnectImmediate));
@@ -204,7 +204,7 @@ namespace com.AtelierAI.Unity.Copilot
                 try
                 {
                     _logger.LogDebug("{method}: Disconnecting uco plugin instance.", nameof(DisconnectImmediate));
-                    mcpPlugin.DisconnectImmediate();
+                    ucoPlugin.DisconnectImmediate();
                 }
                 catch (Exception e)
                 {
@@ -220,10 +220,10 @@ namespace com.AtelierAI.Unity.Copilot
 
         public async Task NotifyToolRequestCompleted(RequestToolCompletedData request, CancellationToken cancellationToken = default)
         {
-            var mcpPlugin = UcoPluginInstance
+            var ucoPlugin = UcoPluginInstance
                 ?? throw new InvalidOperationException($"{nameof(UcoPluginInstance)} is null");
 
-            while (mcpPlugin.ConnectionState.CurrentValue != WsState.Connected)
+            while (ucoPlugin.ConnectionState.CurrentValue != WsState.Connected)
             {
                 await Task.Delay(100, cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
@@ -234,21 +234,21 @@ namespace com.AtelierAI.Unity.Copilot
                 }
             }
 
-            if (mcpPlugin.UcoManager == null)
+            if (ucoPlugin.UcoManager == null)
             {
                 _logger.LogCritical("{method}: {instance} is null",
-                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.UcoManager));
+                    nameof(NotifyToolRequestCompleted), nameof(ucoPlugin.UcoManager));
                 return;
             }
 
-            if (mcpPlugin.UcoManagerHub == null)
+            if (ucoPlugin.UcoManagerHub == null)
             {
                 _logger.LogCritical("{method}: {instance} is null",
-                    nameof(NotifyToolRequestCompleted), nameof(mcpPlugin.UcoManagerHub));
+                    nameof(NotifyToolRequestCompleted), nameof(ucoPlugin.UcoManagerHub));
                 return;
             }
 
-            await mcpPlugin.UcoManagerHub.NotifyToolRequestCompleted(request);
+            await ucoPlugin.UcoManagerHub.NotifyToolRequestCompleted(request);
         }
 
         // --- Token / Port utilities ---

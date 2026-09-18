@@ -14,7 +14,7 @@ using com.AtelierAI.Unity.Copilot.Runtime.Utils;
 namespace com.AtelierAI.Unity.Copilot
 {
     /// <summary>
-    /// Editor-only singleton that owns the persistent MCP connection used
+    /// Editor-only singleton that owns the persistent Uco connection used
     /// by Unity Editor tooling (Copilot window, configurators, etc.).
     /// Lives in the Editor assembly — not accessible from Runtime code.
     /// </summary>
@@ -63,7 +63,7 @@ namespace com.AtelierAI.Unity.Copilot
         {
             DecrementSingletonCount();
             base.Dispose();
-            DisposeMcpPluginInstance();
+            DisposeUcoPluginInstance();
         }
     }
 }

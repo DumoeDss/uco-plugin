@@ -21,11 +21,11 @@ using UnityEngine.TestTools;
 namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     /// <summary>
-    /// Thread-safety coverage for MCP tools — regression for
+    /// Thread-safety coverage for Uco tools — regression for
     /// <see href="https://github.com/IvanMurzak/uco-plugin/issues/633">#633</see>.
     ///
     /// For each tool we want to guarantee the tool's body handles invocation from any
-    /// thread (the MCP server dispatches tool calls from a SignalR background thread,
+    /// thread (the Uco server dispatches tool calls from a SignalR background thread,
     /// so tools that touch Unity APIs must marshal back to the main thread via
     /// <c>MainThread.Instance.Run</c>). Forgetting to do so caused the regression in
     /// <see href="https://github.com/IvanMurzak/uco-plugin/issues/632">#632</see> /

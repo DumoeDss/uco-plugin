@@ -29,7 +29,7 @@ namespace AIGD
         public bool activeInHierarchy;
         public List<GameObjectMetadata> children = new();
 
-        public string Print(int limit = global::com.AtelierAI.Uco.Framework.Common.Consts.MCP.Plugin.LinesLimit)
+        public string Print(int limit = global::com.AtelierAI.Uco.Framework.Common.Consts.Uco.Plugin.LinesLimit)
         {
             var sb = new StringBuilder();
 

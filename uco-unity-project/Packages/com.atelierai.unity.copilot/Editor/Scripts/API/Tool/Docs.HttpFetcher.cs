@@ -36,7 +36,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         {
             // Single shared HttpClient — recommended pattern. .NET pools sockets internally.
             private static readonly HttpClient s_client = CreateClient();
-            private const string UserAgent = "Unity-MCP-Docs/1.0";
+            private const string UserAgent = "Unity-Uco-Docs/1.0";
             private static readonly TimeSpan s_timeout = TimeSpan.FromSeconds(10);
             private static readonly TimeSpan s_cacheTtl = TimeSpan.FromSeconds(30);
 

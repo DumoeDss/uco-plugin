@@ -792,7 +792,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Skills
             content.ShouldContain("### Custom CLI");
             content.ShouldContain("Execute via custom CLI:");
             content.ShouldNotContain("### HTTP API (Direct Tool Execution)");
-            content.ShouldNotContain("Execute this tool directly via the MCP Plugin HTTP API:");
+            content.ShouldNotContain("Execute this tool directly via the Uco Plugin HTTP API:");
         }
 
         [Fact]
@@ -899,7 +899,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Skills
             var content = File.ReadAllText(Path.Combine(_tempDir, "with-summary", "SKILL.md"));
             ExtractYamlDescription(content).ShouldBe(concise);
 
-            // Full Description still drives the body paragraph (so MCP tools/list view is unchanged in spirit).
+            // Full Description still drives the body paragraph (so Uco tools/list view is unchanged in spirit).
             content.ShouldContain(longDesc);
         }
 

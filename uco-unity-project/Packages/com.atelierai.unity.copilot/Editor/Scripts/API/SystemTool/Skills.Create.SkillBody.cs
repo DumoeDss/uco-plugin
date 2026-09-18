@@ -106,7 +106,7 @@ _ = UnityCopilotPluginEditor.NotifyToolRequestCompleted(new RequestToolCompleted
 If the operation may survive a domain reload (e.g. a .cs file was saved and Unity will recompile), use `ScriptUtils.SchedulePostCompilationNotification(requestId, filePath, operationType)` instead of calling `NotifyToolRequestCompleted` directly — it persists the pending notification to `SessionState` and sends it automatically after the domain reload completes. For package install/removal or other non-compilation domain reloads use `PackageUtils.SchedulePostDomainReloadNotification(requestId, label, action, expectedResult)` the same way.
 
 ### Return structured data with a typed response
-Prefer returning a structured data model over a plain string so the AI can parse individual fields. Data models for MCP tools MUST be declared as TOP-LEVEL types in the `AIGD` namespace - never nested inside the tool class. Place each data model in its own `.cs` file (one type per file) and use `ResponseCallValueTool<T>` as the return type. The flat `AIGD` namespace keeps the auto-generated JSON Schema `$defs` keys short and intuitive for AI agents.
+Prefer returning a structured data model over a plain string so the AI can parse individual fields. Data models for Uco tools MUST be declared as TOP-LEVEL types in the `AIGD` namespace - never nested inside the tool class. Place each data model in its own `.cs` file (one type per file) and use `ResponseCallValueTool<T>` as the return type. The flat `AIGD` namespace keeps the auto-generated JSON Schema `$defs` keys short and intuitive for AI agents.
 ```csharp
 // Tool file (Tool/MyTool.cs) - references the data model from AIGD:
 using AIGD;
@@ -140,7 +140,7 @@ namespace AIGD
     }
 }
 ```
-For simpler cases that do not need async/processing, you may return the model directly (without `ResponseCallValueTool<T>`) and Unity-MCP will wrap it automatically. The data model itself MUST still live as a top-level type in the `AIGD` namespace.
+For simpler cases that do not need async/processing, you may return the model directly (without `ResponseCallValueTool<T>`) and Unity-Uco will wrap it automatically. The data model itself MUST still live as a top-level type in the `AIGD` namespace.
 
 ### Validate inputs early and throw clearly
 Always validate required parameters at the top of the method before any Unity API calls. Throw `ArgumentException` or `InvalidOperationException` with descriptive messages so the AI knows exactly what went wrong and can self-correct:

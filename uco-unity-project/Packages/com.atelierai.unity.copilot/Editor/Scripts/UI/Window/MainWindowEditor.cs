@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -71,7 +71,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
         private static void UnityBuildAndConnect()
         {
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
             UnityCopilotPluginEditor.ConnectIfNeeded();
         }

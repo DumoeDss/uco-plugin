@@ -76,7 +76,7 @@ namespace com.AtelierAI.Uco.Framework.Utils
             // JsonElement schema node is already attached elsewhere.  Keep
             // the definition and its $ref stable, but expose the intended
             // open object shape instead of leaking an implementation error
-            // into the public MCP catalog.
+            // into the public Uco catalog.
             foreach (var definition in definitions.ToList())
             {
                 if (definition.Value is JsonObject definitionObject &&

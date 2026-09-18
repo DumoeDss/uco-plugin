@@ -36,7 +36,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "calling Editor. Each entry carries port, project path, Unity version, PID, instance id and a liveness " +
             "flag (verified by checking that the PID is still running).")]
         [UcoSkillBody("Soft discovery of every Unity Editor that has registered itself with this machine's " +
-            "MCP plugin. Each entry includes port, project path, Unity version, PID, stable instance id and an " +
+            "Uco plugin. Each entry includes port, project path, Unity version, PID, stable instance id and an " +
             "`IsAlive` flag.\n\n" +
             "## Inputs\n\n" +
             "- `includeStale` (default `false`) — include rows whose registry file has not been refreshed in over " +

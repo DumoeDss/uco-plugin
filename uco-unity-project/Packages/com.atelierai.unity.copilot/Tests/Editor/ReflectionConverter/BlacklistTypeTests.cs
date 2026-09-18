@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -255,7 +255,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             reflector.Converters.BlacklistType(typeof(Color));
 
             // Create a Material instance using executor (handles cleanup automatically)
-            var materialEx = new CreateMaterialExecutor("TestMaterial_BlacklistColor.mat", "Standard", "Assets", "Unity-MCP-Test", "BlacklistTypeTests");
+            var materialEx = new CreateMaterialExecutor("TestMaterial_BlacklistColor.mat", "Standard", "Assets", "Unity-Uco-Test", "BlacklistTypeTests");
 
             // Validation executor
             var validateEx = new LazyNodeExecutor();

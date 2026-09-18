@@ -93,9 +93,9 @@ namespace com.AtelierAI.Unity.Copilot
         /// <example>
         /// <code>
         /// [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        /// static void SetupMcp()
+        /// static void SetupPlugin()
         /// {
-        ///     var mcpPlugin = UnityCopilotPluginRuntime.Initialize(builder =>
+        ///     var ucoPlugin = UnityCopilotPluginRuntime.Initialize(builder =>
         ///         {
         ///             builder.WithConfig(c =>
         ///             {
@@ -104,22 +104,22 @@ namespace com.AtelierAI.Unity.Copilot
         ///             });
         ///         })
         ///         .Build();
-        ///     mcpPlugin.Connect();
+        ///     ucoPlugin.Connect();
         /// }
         /// </code>
         /// </example>
         /// </summary>
-        public static UnityCopilotPluginBuilder Initialize(Action<IMcpPluginBuilder>? configure = null)
+        public static UnityCopilotPluginBuilder Initialize(Action<IUcoPluginBuilder>? configure = null)
         {
             InitSingletonIfNeeded();
             var runtimeInstance = Instance;
             var version = runtimeInstance.BuildVersion();
             var loggerProvider = runtimeInstance.BuildLoggerProvider();
 
-            var mcpBuilder = new UcoBuilder(version, loggerProvider);
-            configure?.Invoke(mcpBuilder);
+            var ucoBuilder = new UcoBuilder(version, loggerProvider);
+            configure?.Invoke(ucoBuilder);
 
-            return new UnityCopilotPluginBuilder(mcpBuilder, runtimeInstance, loggerProvider);
+            return new UnityCopilotPluginBuilder(ucoBuilder, runtimeInstance, loggerProvider);
         }
 
         public static IDisposable SubscribeOnChanged(Action<UnityConnectionConfig> action, bool invokeImmediately = true)

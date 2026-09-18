@@ -25,7 +25,7 @@ namespace com.AtelierAI.Uco.Framework
         // {
         //     data.Arguments ??= value == null
         //         ? new Dictionary<string, JsonElement>()
-        //         : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(McpPlugin.Instance?.UcoRunner.Reflector) };
+        //         : new Dictionary<string, JsonElement>() { [name] = value.ToJsonElement(UcoPlugin.Instance?.UcoRunner.Reflector) };
         //     return data;
         // }
     }

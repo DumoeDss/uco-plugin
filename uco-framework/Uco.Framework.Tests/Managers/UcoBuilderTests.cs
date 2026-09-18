@@ -1,0 +1,296 @@
+/*
+┌────────────────────────────────────────────────────────────────────────┐
+│  Author: Ivan Murzak (https://github.com/IvanMurzak)                   │
+│  Repository: GitHub (https://github.com/IvanMurzak/MCP-Plugin-dotnet)  │
+│  Copyright (c) 2025 Ivan Murzak                                        │
+│  Licensed under the Apache License, Version 2.0.                       │
+│  See the LICENSE file in the project root for more information.        │
+└────────────────────────────────────────────────────────────────────────┘
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
+using com.AtelierAI.Uco.Framework.Common.Model;
+using com.IvanMurzak.ReflectorNet;
+using Shouldly;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using Version = com.AtelierAI.Uco.Framework.Common.Version;
+
+namespace com.AtelierAI.Uco.Framework.Tests.Managers
+{
+    [Collection("UcoPlugin")]
+    public class UcoBuilderTests
+    {
+        private readonly Version _version = new Version();
+
+        [Fact]
+        public void Build_WithoutLogging_ShouldSucceed()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            plugin.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void Build_CalledTwice_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            ucoPluginBuilder.Build(reflector);
+
+            // Act
+            Action act = () => ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            Should.Throw<InvalidOperationException>(act)
+                .Message.ShouldBe("The builder has already been built.");
+        }
+
+        [Fact]
+        public void WithTool_AfterBuild_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            ucoPluginBuilder.Build(reflector);
+
+            // Act
+            Action act = () => ucoPluginBuilder.WithTool(typeof(UcoBuilderTests), typeof(UcoBuilderTests).GetMethods()[0]);
+
+            // Assert
+            Should.Throw<InvalidOperationException>(act)
+                .Message.ShouldBe("The builder has already been built.");
+        }
+
+        [Fact]
+        public void WithConfig_AfterBuild_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            ucoPluginBuilder.Build(reflector);
+
+            // Act
+            Action act = () => ucoPluginBuilder.WithConfig(c => { });
+
+            // Assert
+            Should.Throw<InvalidOperationException>(act)
+                .Message.ShouldBe("The builder has already been built.");
+        }
+
+        [Fact]
+        public void WithTool_EmptyName_ShouldThrowArgumentException()
+        {
+            // Arrange
+            var ucoPluginBuilder = new UcoBuilder(_version);
+            var method = typeof(TestTool).GetMethod(nameof(TestTool.Method));
+
+            // Act
+            Action act = () => ucoPluginBuilder.WithTool(
+                name: "",
+                title: "title",
+                classType: typeof(TestTool),
+                methodInfo: method!);
+
+            // Assert
+            Should.Throw<ArgumentException>(act)
+                .Message.ShouldContain($"Tool name cannot be null or empty. Type: {typeof(TestTool).Name}, Method: {method!.Name}");
+        }
+
+        [Fact]
+        public void AddTool_DuplicateName_ShouldThrowArgumentException()
+        {
+            // Arrange
+            var ucoPluginBuilder = new UcoBuilder(_version);
+            var runner = new MockRunTool();
+
+            ucoPluginBuilder.AddTool("tool1", runner);
+
+            // Act
+            Action act = () => ucoPluginBuilder.AddTool("tool1", runner);
+
+            // Assert
+            Should.Throw<ArgumentException>(act)
+                .Message.ShouldContain("Tool with name 'tool1' already exists.");
+        }
+
+        [Fact]
+        public void Build_WithLogging_ShouldLogMessage()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var logs = new List<string>();
+            var loggerProvider = new MockLoggerProvider(logs);
+
+            var ucoPluginBuilder = new UcoBuilder(_version)
+                .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Trace));
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            logs.ShouldContain("UcoPlugin Ctor.");
+        }
+
+        private class TestTool
+        {
+            public void Method() { }
+        }
+
+        private class MockRunTool : IRunTool
+        {
+            public string Name => "MockTool";
+            public System.Reflection.MethodInfo? Method => null; // IRunTool.Method (mock)
+            public string Title => "Mock Tool Title";
+            public string Description => "Mock Tool";
+            public string? SkillDescription => null;
+            public string? SkillBody => null;
+            public JsonNode InputSchema => JsonNode.Parse("{}")!;
+            public JsonNode OutputSchema => JsonNode.Parse("{}")!;
+            public bool Enabled { get; set; } = true;
+            public bool? ReadOnlyHint => null;
+            public bool? DestructiveHint => null;
+            public bool? IdempotentHint => null;
+            public bool? OpenWorldHint => null;
+            public int TokenCount => 100; // Mock token count
+            public Task<ResponseCallTool> Run(RequestCallTool request) => throw new NotImplementedException();
+            public Task<ResponseCallTool> Run(string name, IReadOnlyDictionary<string, JsonElement>? arguments, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        }
+
+        private class MockLoggerProvider : ILoggerProvider
+        {
+            private readonly List<string> _logs;
+
+            public MockLoggerProvider(List<string> logs)
+            {
+                _logs = logs;
+            }
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return new MockLogger(_logs);
+            }
+
+            public void Dispose() { }
+        }
+
+        private class MockLogger : ILogger
+        {
+            private readonly List<string> _logs;
+
+            public MockLogger(List<string> logs)
+            {
+                _logs = logs;
+            }
+
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+            public bool IsEnabled(LogLevel logLevel) => true;
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+            {
+                _logs.Add(formatter(state, exception));
+            }
+        }
+
+        [Fact]
+        public void Build_ShouldHaveVersionProperty()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            plugin.Version.ShouldNotBeNull();
+            plugin.Version.ShouldBe(_version);
+        }
+
+
+        [Fact]
+        public void Build_WhenNotConnected_ShouldHaveNullVersionHandshakeStatus()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            plugin.VersionHandshakeStatus.ShouldBeNull();
+        }
+
+        [Fact]
+        public void Build_PluginManagerHub_ShouldNotBeNull()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            plugin.UcoManagerHub.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void PluginManagerHub_ShouldHaveVersionHandshakeStatusProperty()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Act & Assert
+            plugin.UcoManagerHub.ShouldNotBeNull();
+            plugin.UcoManagerHub.VersionHandshakeStatus.ShouldBeNull();
+        }
+
+        [Fact]
+        public void Build_ShouldHaveToolCallCountProperty()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+
+            // Act
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Assert
+            plugin.ToolCallsCount.ShouldBe(0UL);
+        }
+
+        [Fact]
+        public void ToolManager_ShouldHaveToolCallCountProperty()
+        {
+            // Arrange
+            var reflector = new Reflector();
+            var ucoPluginBuilder = new UcoBuilder(_version);
+            var plugin = ucoPluginBuilder.Build(reflector);
+
+            // Act & Assert
+            plugin.UcoManager.ToolManager.ShouldNotBeNull();
+            plugin.UcoManager.ToolManager.ToolCallsCount.ShouldBe(0UL);
+        }
+    }
+}

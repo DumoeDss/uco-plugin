@@ -16,7 +16,7 @@ using com.AtelierAI.Uco.Framework;
 using com.AtelierAI.Uco.Framework.Common;
 using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.AtelierAI.Unity.Copilot.Runtime.Utils;
-using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
 
 namespace com.AtelierAI.Unity.Copilot
 {
@@ -67,7 +67,7 @@ namespace com.AtelierAI.Unity.Copilot
             public ConnectionMode ConnectionMode { get; set; } = ConnectionMode.Custom;
 
             /// <summary>
-            /// Optional path to the Node.js MCP server entry script (cocli's bin/server.mjs).
+            /// Optional path to the Node.js Uco server entry script (cocli's bin/server.mjs).
             /// Absolute path, or relative to the Unity project root. When null/empty the
             /// plugin auto-discovers the server (the Unity project's node_modules, then the
             /// npm global installation). When set, the path must exist or the plugin refuses
@@ -94,7 +94,7 @@ namespace com.AtelierAI.Unity.Copilot
 
             /// <summary>
             /// When false (the safe default for new configs), the plugin refuses to start the
-            /// local MCP server if <see cref="LocalHost"/> resolves to a non-loopback address
+            /// local Uco server if <see cref="LocalHost"/> resolves to a non-loopback address
             /// (e.g. <c>0.0.0.0</c>, <c>::</c>, or a LAN IP). Set to true to opt in to binding
             /// the server on every interface so other machines on the LAN can connect.
             /// </summary>

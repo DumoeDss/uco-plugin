@@ -15,7 +15,7 @@ using UnityEngine;
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 {
     /// <summary>
-    /// Team-shared settings for the Unity-MCP update checker, persisted under
+    /// Team-shared settings for the Unity-Uco update checker, persisted under
     /// <c>ProjectSettings/Copilot-UpdateSettings.asset</c>.
     /// </summary>
     /// <remarks>

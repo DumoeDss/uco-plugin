@@ -110,7 +110,7 @@ namespace com.AtelierAI.Unity.Copilot
             Instance.unityConnectionConfig.SetDefault();
             var plugin = CurrentPlugin;
             if (plugin != null)
-                Instance.ApplyConfigToMcpPlugin(plugin);
+                Instance.ApplyConfigToUcoPlugin(plugin);
             Instance.Save(captureCurrentToolStates: false);
         }
 

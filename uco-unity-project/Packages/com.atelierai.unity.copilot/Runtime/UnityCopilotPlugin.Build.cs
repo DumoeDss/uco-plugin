@@ -106,16 +106,16 @@ namespace com.AtelierAI.Unity.Copilot
             return new UnityLoggerProvider();
         }
 
-        protected virtual IUcoPlugin BuildMcpPlugin(
+        protected virtual IUcoPlugin BuildUcoPlugin(
             com.AtelierAI.Uco.Framework.Common.Version version,
             Reflector reflector,
             ILoggerProvider? loggerProvider = null,
-            Action<IMcpPluginBuilder>? configure = null)
+            Action<IUcoPluginBuilder>? configure = null)
         {
-            _logger.LogTrace("{method} called.", nameof(BuildMcpPlugin));
+            _logger.LogTrace("{method} called.", nameof(BuildUcoPlugin));
 
             var assemblies = AssemblyUtils.AllAssemblies;
-            var mcpPluginBuilder = new UcoBuilder(version, loggerProvider)
+            var ucoPluginBuilder = new UcoBuilder(version, loggerProvider)
                 .WithProjectPathPolicy(new ProjectPathPolicy(
                     System.IO.Directory.GetParent(Application.dataPath)?.FullName
                     ?? Application.dataPath))
@@ -149,25 +149,25 @@ namespace com.AtelierAI.Unity.Copilot
                 .WithResourcesFromAssembly(assemblies)
                 .WithSkillsFromAssembly(assemblies);
 
-            configure?.Invoke(mcpPluginBuilder);
+            configure?.Invoke(ucoPluginBuilder);
 
-            var mcpPlugin = mcpPluginBuilder.Build(reflector);
+            var ucoPlugin = ucoPluginBuilder.Build(reflector);
 
             _pluginConnectionSubscription?.Dispose();
-            _pluginConnectionSubscription = mcpPlugin.ConnectionState
+            _pluginConnectionSubscription = ucoPlugin.ConnectionState
                 .Subscribe(state => _connectionState.Value = state);
 
-            _logger.LogTrace("{method} completed.", nameof(BuildMcpPlugin));
+            _logger.LogTrace("{method} completed.", nameof(BuildUcoPlugin));
 
-            return mcpPlugin;
+            return ucoPlugin;
         }
 
-        protected virtual void ApplyConfigToMcpPlugin(IUcoPlugin mcpPlugin)
+        protected virtual void ApplyConfigToUcoPlugin(IUcoPlugin ucoPlugin)
         {
-            _logger.LogTrace("{method} called.", nameof(ApplyConfigToMcpPlugin));
+            _logger.LogTrace("{method} called.", nameof(ApplyConfigToUcoPlugin));
 
             // Enable/Disable tools based on config
-            var toolManager = mcpPlugin.UcoManager.ToolManager;
+            var toolManager = ucoPlugin.UcoManager.ToolManager;
             if (toolManager != null)
             {
                 var enabledToolsOverride = unityConnectionConfig.EnabledToolsOverride;
@@ -183,7 +183,7 @@ namespace com.AtelierAI.Unity.Copilot
                     foreach (var requestedId in enabledToolsOverride)
                     {
                         if (!allToolNames.Contains(requestedId))
-                            _logger.LogError("[MCP] {Key}: tool '{ToolId}' not found. Check the tool ID.",
+                            _logger.LogError("[Uco] {Key}: tool '{ToolId}' not found. Check the tool ID.",
                                 EnvironmentUtils.EnvTools, requestedId);
                     }
 
@@ -193,7 +193,7 @@ namespace com.AtelierAI.Unity.Copilot
                         var isEnabled = enabledSet.Contains(tool.Name!);
                         toolManager.SetToolEnabled(tool.Name!, isEnabled);
                         _logger.LogDebug("{method}: Tool '{tool}' enabled: {isEnabled} (env override)",
-                            nameof(ApplyConfigToMcpPlugin), tool.Name, isEnabled);
+                            nameof(ApplyConfigToUcoPlugin), tool.Name, isEnabled);
                     }
                 }
                 else
@@ -204,13 +204,13 @@ namespace com.AtelierAI.Unity.Copilot
                         var isEnabled = toolFeature?.Enabled ?? tool.Enabled;
                         toolManager.SetToolEnabled(tool.Name!, isEnabled);
                         _logger.LogDebug("{method}: Tool '{tool}' enabled: {isEnabled}",
-                            nameof(ApplyConfigToMcpPlugin), tool.Name, isEnabled);
+                            nameof(ApplyConfigToUcoPlugin), tool.Name, isEnabled);
                     }
                 }
             }
 
             // Enable/Disable prompts based on config
-            var promptManager = mcpPlugin.UcoManager.PromptManager;
+            var promptManager = ucoPlugin.UcoManager.PromptManager;
             if (promptManager != null)
             {
                 foreach (var prompt in promptManager.GetAllPrompts())
@@ -219,12 +219,12 @@ namespace com.AtelierAI.Unity.Copilot
                     var isEnabled = promptFeature?.Enabled ?? prompt.Enabled;
                     promptManager.SetPromptEnabled(prompt.Name, isEnabled);
                     _logger.LogDebug("{method}: Prompt '{prompt}' enabled: {isEnabled}",
-                        nameof(ApplyConfigToMcpPlugin), prompt.Name, isEnabled);
+                        nameof(ApplyConfigToUcoPlugin), prompt.Name, isEnabled);
                 }
             }
 
             // Enable/Disable resources based on config
-            var resourceManager = mcpPlugin.UcoManager.ResourceManager;
+            var resourceManager = ucoPlugin.UcoManager.ResourceManager;
             if (resourceManager != null)
             {
                 foreach (var resource in resourceManager.GetAllResources())
@@ -233,11 +233,11 @@ namespace com.AtelierAI.Unity.Copilot
                     var isEnabled = resourceFeature?.Enabled ?? resource.Enabled;
                     resourceManager.SetResourceEnabled(resource.Name, isEnabled);
                     _logger.LogDebug("{method}: Resource '{resource}' enabled: {isEnabled}",
-                        nameof(ApplyConfigToMcpPlugin), resource.Name, isEnabled);
+                        nameof(ApplyConfigToUcoPlugin), resource.Name, isEnabled);
                 }
             }
 
-            _logger.LogTrace("{method} completed.", nameof(ApplyConfigToMcpPlugin));
+            _logger.LogTrace("{method} completed.", nameof(ApplyConfigToUcoPlugin));
         }
     }
 }

@@ -65,8 +65,8 @@ namespace com.AtelierAI.Unity.Copilot
             _logger = logger ?? UnityLoggerFactory.LoggerFactory.CreateLogger(GetType().GetTypeShortName());
 
             _directoryPath = Path.GetFullPath(directoryPath ?? (Application.isEditor
-                ? $"{Path.GetDirectoryName(Application.dataPath)}/Temp/mcp-server"
-                : $"{Application.persistentDataPath}/Temp/mcp-server"));
+                ? $"{Path.GetDirectoryName(Application.dataPath)}/Temp/plugin-server"
+                : $"{Application.persistentDataPath}/Temp/plugin-server"));
 
             _requestedFileName = requestedFileName ?? (Application.isEditor
                 ? "ai-editor-logs.txt"

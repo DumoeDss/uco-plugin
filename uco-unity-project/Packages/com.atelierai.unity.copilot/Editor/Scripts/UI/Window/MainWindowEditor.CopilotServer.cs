@@ -19,23 +19,23 @@ using Microsoft.Extensions.Logging;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     public partial class MainWindowEditor
     {
-        private void SetupMcpServerSection(VisualElement root)
+        private void SetupServerSection(VisualElement root)
         {
             var btnStartStop = root.Q<Button>("btnStartStopServer") ?? throw new InvalidOperationException("Server start/stop button not found.");
             var statusCircle = root.Q<VisualElement>("mcpServerStatusCircle") ?? throw new InvalidOperationException("Server status circle not found.");
             var statusLabel = root.Q<Label>("mcpServerLabel") ?? throw new InvalidOperationException("Server status label not found.");
 
-            var timelinePointMcpServer = root.Q<VisualElement>("TimelinePointMcpServer");
-            if (timelinePointMcpServer != null)
-                timelinePointMcpServer.tooltip = Tooltip_McpServerTimelineLabel;
-            statusCircle.tooltip = Tooltip_McpServerTimelineLabel;
-            statusLabel.tooltip = Tooltip_McpServerTimelineLabel;
+            var timelinePointServer = root.Q<VisualElement>("TimelinePointMcpServer");
+            if (timelinePointServer != null)
+                timelinePointServer.tooltip = Tooltip_ServerTimelineLabel;
+            statusCircle.tooltip = Tooltip_ServerTimelineLabel;
+            statusLabel.tooltip = Tooltip_ServerTimelineLabel;
 
             Observable.CombineLatest(
                     source1: CopilotServerManager.ServerStatus,
@@ -43,7 +43,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                     resultSelector: CombineCopilotServerStatus)
                 .ThrottleLast(TimeSpan.FromMilliseconds(50))
                 .ObserveOnCurrentSynchronizationContext()
-                .Subscribe(status => FetchMcpServerData(status, btnStartStop, statusCircle, statusLabel))
+                .Subscribe(status => FetchServerData(status, btnStartStop, statusCircle, statusLabel))
                 .AddTo(_disposables);
 
             btnStartStop.RegisterCallback<ClickEvent>(evt => HandleServerButton(btnStartStop, statusLabel));
@@ -298,9 +298,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             }
         }
 
-        private long SetMcpServerData(UcoServerData? data, CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
+        private long SetServerData(UcoServerData? data, CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
         {
-            var version = Interlocked.Increment(ref _mcpServerDataVersion);
+            var version = Interlocked.Increment(ref _serverDataVersion);
             if (Logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Trace))
                 Logger.LogTrace("Setting server data: {status}, Data: {data}", status, data?.ToPrettyJson() ?? "null");
 
@@ -314,28 +314,28 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             return version;
         }
 
-        private void FetchMcpServerData(CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
+        private void FetchServerData(CopilotServerStatus status, Button btnStartStop, VisualElement statusCircle, Label statusLabel)
         {
             // Update UI immediately with current status; capture the version atomically so that
             // the async result can detect if a newer update has superseded it.
-            var fetchVersion = SetMcpServerData(null, status, btnStartStop, statusCircle, statusLabel);
+            var fetchVersion = SetServerData(null, status, btnStartStop, statusCircle, statusLabel);
 
             // Then try to fetch additional data asynchronously
-            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
-            if (mcpPluginInstance == null)
+            var ucoPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
+            if (ucoPluginInstance == null)
             {
                 Logger.LogDebug("Cannot fetch server data: UcoPluginInstance is null");
                 return;
             }
 
-            var mcpManagerHub = mcpPluginInstance.UcoManagerHub;
-            if (mcpManagerHub == null)
+            var pluginManagerHub = ucoPluginInstance.UcoManagerHub;
+            if (pluginManagerHub == null)
             {
                 Logger.LogDebug("Cannot fetch server data: UcoManagerHub is null");
                 return;
             }
 
-            var task = mcpManagerHub.GetServerData();
+            var task = pluginManagerHub.GetServerData();
             if (task == null)
             {
                 Logger.LogDebug("Cannot fetch server data: GetServerData returned null");
@@ -344,7 +344,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
 
             task.ContinueWith(t =>
             {
-                if (Interlocked.Read(ref _mcpServerDataVersion) != fetchVersion)
+                if (Interlocked.Read(ref _serverDataVersion) != fetchVersion)
                 {
                     Logger.LogTrace("Skipping server data update because a newer update was applied at {time}",
                         DateTime.UtcNow);
@@ -354,12 +354,12 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 {
                     // Second check: close the TOCTOU window between the thread-pool check above
                     // and the main-thread callback execution.
-                    if (Interlocked.Read(ref _mcpServerDataVersion) != fetchVersion)
+                    if (Interlocked.Read(ref _serverDataVersion) != fetchVersion)
                         return;
                     if (t.IsCompletedSuccessfully)
                     {
                         var data = t.Result;
-                        SetMcpServerData(data, status, btnStartStop, statusCircle, statusLabel);
+                        SetServerData(data, status, btnStartStop, statusCircle, statusLabel);
                     }
                     else if (t.IsFaulted)
                     {

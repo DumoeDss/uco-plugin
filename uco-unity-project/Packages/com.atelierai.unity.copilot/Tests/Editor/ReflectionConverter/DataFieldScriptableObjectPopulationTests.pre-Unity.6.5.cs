@@ -26,15 +26,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             Debug.Log("[DataFieldScriptableObjectPopulationTests] Running field population test for SO.");
             // Executors for creating assets
-            var materialEx = new CreateMaterialExecutor("TestMaterialSO.mat", "Standard", "Assets", "Unity-MCP-Test", "DataFieldSOPopulation");
-            var textureEx = new CreateTextureExecutor("TestTextureSO.png", Color.magenta, 64, 64, "Assets", "Unity-MCP-Test", "DataFieldSOPopulation");
-            var spriteEx = new CreateSpriteExecutor("TestSpriteSO.png", Color.green, 64, 64, "Assets", "Unity-MCP-Test", "DataFieldSOPopulation");
+            var materialEx = new CreateMaterialExecutor("TestMaterialSO.mat", "Standard", "Assets", "Unity-Uco-Test", "DataFieldSOPopulation");
+            var textureEx = new CreateTextureExecutor("TestTextureSO.png", Color.magenta, 64, 64, "Assets", "Unity-Uco-Test", "DataFieldSOPopulation");
+            var spriteEx = new CreateSpriteExecutor("TestSpriteSO.png", Color.green, 64, 64, "Assets", "Unity-Uco-Test", "DataFieldSOPopulation");
 
             // The SO we are testing
-            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSOField.asset", "Assets", "Unity-MCP-Test", "DataFieldSOPopulation");
+            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSOField.asset", "Assets", "Unity-Uco-Test", "DataFieldSOPopulation");
 
             var prefabSourceGoEx = new CreateGameObjectExecutor("PrefabSourceSO");
-            var prefabEx = new CreatePrefabExecutor("TestPrefabSO.prefab", null, "Assets", "Unity-MCP-Test", "DataFieldSOPopulation");
+            var prefabEx = new CreatePrefabExecutor("TestPrefabSO.prefab", null, "Assets", "Unity-Uco-Test", "DataFieldSOPopulation");
 
             // Target GameObject for reference
             var targetGoName = "TargetGOSO";
@@ -89,8 +89,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 () =>
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
-                    var mcpInstance = plugin?.UcoPluginInstance;
-                    var manager = mcpInstance?.UcoManager;
+                    var pluginInstance = plugin?.UcoPluginInstance;
+                    var manager = pluginInstance?.UcoManager;
                     var reflector = manager?.Reflector;
 
                     if (reflector == null)

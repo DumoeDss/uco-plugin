@@ -234,7 +234,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
         }
 
         [Fact]
-        public async Task McpPlugin_RegistersPromptsAndResourcesBeforeToolsEligibilitySignal()
+        public async Task UcoPlugin_RegistersPromptsAndResourcesBeforeToolsEligibilitySignal()
         {
             Func<CancellationToken, Task>? registration = null;
             var order = new List<string>();
@@ -260,7 +260,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
         }
 
         [Fact]
-        public async Task McpPlugin_CapabilityFailureStopsBeforeToolsEligibilitySignal()
+        public async Task UcoPlugin_CapabilityFailureStopsBeforeToolsEligibilitySignal()
         {
             Func<CancellationToken, Task>? registration = null;
             var hub = Hub(registrationHandler => registration = registrationHandler);
@@ -302,11 +302,11 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
                 initializationTimeout ?? TimeSpan.FromMilliseconds(100));
         }
 
-        static Mock<IMcpManagerHub> Hub(Action<Func<CancellationToken, Task>> capture)
+        static Mock<IPluginManagerHub> Hub(Action<Func<CancellationToken, Task>> capture)
         {
             var state = new ReactiveProperty<ConnectionState>(ConnectionState.Disconnected);
             var keepConnected = new ReactiveProperty<bool>(true);
-            var hub = new Mock<IMcpManagerHub>();
+            var hub = new Mock<IPluginManagerHub>();
             hub.SetupGet(x => x.ConnectionState).Returns(state);
             hub.SetupGet(x => x.KeepConnected).Returns(keepConnected);
             hub.SetupGet(x => x.OnAuthorizationRejected).Returns(Observable.Empty<Unit>());
@@ -316,10 +316,10 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
             return hub;
         }
 
-        static McpPlugin Plugin(IMcpManagerHub hub)
-            => Plugin(hub, toolsUpdated: null, logger: NullLogger<McpPlugin>.Instance);
+        static UcoPlugin Plugin(IPluginManagerHub hub)
+            => Plugin(hub, toolsUpdated: null, logger: NullLogger<UcoPlugin>.Instance);
 
-        static McpPlugin Plugin(IMcpManagerHub hub, Subject<Unit>? toolsUpdated, ILogger<McpPlugin> logger)
+        static UcoPlugin Plugin(IPluginManagerHub hub, Subject<Unit>? toolsUpdated, ILogger<UcoPlugin> logger)
         {
             var tools = new Mock<IToolManager>();
             tools.SetupGet(x => x.OnToolsUpdated).Returns(toolsUpdated ?? new Subject<Unit>());
@@ -328,13 +328,13 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
             var resources = new Mock<IResourceManager>();
             resources.SetupGet(x => x.OnResourcesUpdated).Returns(Observable.Empty<Unit>());
 
-            var manager = new Mock<IMcpManager>();
+            var manager = new Mock<IPluginManager>();
             manager.SetupGet(x => x.OnForceDisconnect).Returns(Observable.Empty<Unit>());
             manager.SetupGet(x => x.ToolManager).Returns(tools.Object);
             manager.SetupGet(x => x.PromptManager).Returns(prompts.Object);
             manager.SetupGet(x => x.ResourceManager).Returns(resources.Object);
 
-            return new McpPlugin(
+            return new UcoPlugin(
                 logger,
                 manager.Object,
                 hub,
@@ -346,7 +346,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
         // ── Phase-C defect: ctor OnToolsUpdated → NotifyAboutUpdatedTools fail-open ──
 
         [Fact]
-        public async Task McpPlugin_ToolsUpdatedNotify_FailsClosedUntilConnectionEstablished()
+        public async Task UcoPlugin_ToolsUpdatedNotify_FailsClosedUntilConnectionEstablished()
         {
             // ConnectionState reaches Connected only after transport + version handshake +
             // capability registration complete. A notify dispatched below that (e.g. a
@@ -360,7 +360,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
             hub.Setup(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()))
                 .ReturnsAsync(Success());
 
-            using var plugin = Plugin(hub.Object, updated, NullLogger<McpPlugin>.Instance);
+            using var plugin = Plugin(hub.Object, updated, NullLogger<UcoPlugin>.Instance);
             updated.OnNext(Unit.Default);
             await Task.Delay(300);
 
@@ -368,7 +368,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
         }
 
         [Fact]
-        public async Task McpPlugin_ToolsUpdatedNotify_DispatchesWhenConnected()
+        public async Task UcoPlugin_ToolsUpdatedNotify_DispatchesWhenConnected()
         {
             var updated = new Subject<Unit>();
             var state = new ReactiveProperty<ConnectionState>(ConnectionState.Connected);
@@ -377,7 +377,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
             hub.Setup(x => x.NotifyAboutUpdatedTools(It.IsAny<RequestToolsUpdated>()))
                 .ReturnsAsync(Success());
 
-            using var plugin = Plugin(hub.Object, updated, NullLogger<McpPlugin>.Instance);
+            using var plugin = Plugin(hub.Object, updated, NullLogger<UcoPlugin>.Instance);
             updated.OnNext(Unit.Default);
             await Task.Delay(300);
 
@@ -385,7 +385,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
         }
 
         [Fact]
-        public async Task McpPlugin_ToolsUpdatedNotify_ContainedExceptionInsteadOfAsyncVoidRethrow()
+        public async Task UcoPlugin_ToolsUpdatedNotify_ContainedExceptionInsteadOfAsyncVoidRethrow()
         {
             // Even when the dispatch DOES go out and fails (here: a fault that lands
             // AFTER OnNext returned — the async-void hazard window), the exception
@@ -417,7 +417,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Network.Connection
                 "containment contract itself");
         }
 
-        sealed class RecordingLogger : ILogger<McpPlugin>
+        sealed class RecordingLogger : ILogger<UcoPlugin>
         {
             public ConcurrentQueue<(LogLevel Level, string Message)> Entries { get; } = new();
 

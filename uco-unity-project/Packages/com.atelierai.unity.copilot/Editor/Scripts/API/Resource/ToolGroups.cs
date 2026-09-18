@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// <summary>
     /// Read-only resource that exposes the current tool-group registry
     /// snapshot at <c>editor://tool-groups</c>. The payload is identical in
-    /// shape to <c>tools-list-groups</c> but delivered through the MCP
+    /// shape to <c>tools-list-groups</c> but delivered through the Uco
     /// resource channel, which lets clients subscribe / cache it cheaply
     /// without paying for a tool invocation.
     /// </summary>

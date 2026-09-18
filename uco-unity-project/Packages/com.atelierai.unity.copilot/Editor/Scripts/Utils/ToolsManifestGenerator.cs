@@ -29,7 +29,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// tool catalog in the SAME shape as the server's <c>GET /api/tools</c>
     /// response. The manifest ships inside the package so that <c>cocli init</c>
     /// can generate eager skill reference docs offline (no running Unity Editor
-    /// or MCP server required).
+    /// or Uco server required).
     /// <para>
     /// Each entry contains <c>name</c>, <c>enabled</c>, <c>title</c>,
     /// <c>description</c>, <c>inputSchema</c>, optionally <c>outputSchema</c>,
@@ -61,13 +61,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             var plugin = UnityCopilotPluginEditor.CurrentPlugin;
             if (plugin == null)
             {
-                UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+                UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
                 plugin = UnityCopilotPluginEditor.CurrentPlugin;
             }
             if (plugin == null)
             {
                 Debug.LogError(
-                    $"{ProductInfo.LogPrefix} Failed to build MCP plugin; cannot generate tools manifest.");
+                    $"{ProductInfo.LogPrefix} Failed to build Uco plugin; cannot generate tools manifest.");
                 return;
             }
 
@@ -154,7 +154,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// Resolves the DEFAULT enabled state from the <c>[UcoTool]</c>
         /// attribute — NOT the runtime-overridden state. This ensures the
         /// shipped manifest reflects plugin defaults rather than per-project
-        /// config overrides applied by <c>ApplyConfigToMcpPlugin</c>.
+        /// config overrides applied by <c>ApplyConfigToUcoPlugin</c>.
         /// </summary>
         static bool ResolveDefaultEnabled(IRunTool tool)
         {

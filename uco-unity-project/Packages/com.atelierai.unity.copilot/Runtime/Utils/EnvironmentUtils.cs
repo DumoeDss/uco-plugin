@@ -14,12 +14,12 @@ using System.Collections.Generic;
 using com.AtelierAI.Uco.Framework.Common.Utils;
 using com.AtelierAI.Unity.Copilot.Utils;
 using Microsoft.Extensions.Logging;
-using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
 {
     /// <summary>
-    /// Loads MCP plugin configuration from layered sources and (optionally) applies
+    /// Loads Uco plugin configuration from layered sources and (optionally) applies
     /// runtime overrides from environment variables and process command-line arguments.
     ///
     /// Priority (highest wins):
@@ -39,7 +39,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
     {
         static readonly ILogger _logger = UnityLoggerFactory.LoggerFactory.CreateLogger(nameof(EnvironmentUtils));
 
-        // Environment variable names for MCP connection overrides.
+        // Environment variable names for Uco connection overrides.
         public const string EnvHost = "UNITY_COPILOT_HOST";
         public const string EnvKeepConnected = "UNITY_COPILOT_KEEP_CONNECTED";
         public const string EnvAuthOption = "UNITY_COPILOT_AUTH_OPTION";
@@ -187,7 +187,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
                     {
                         record.Track(FieldHost, config.LocalHost, host);
                         config.LocalHost = host;
-                        _logger.LogInformation("[MCP] Override: {Key}={Value}", FieldHost, host);
+                        _logger.LogInformation("[Uco] Override: {Key}={Value}", FieldHost, host);
                     }
                 }
             }
@@ -208,7 +208,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             {
                 record.Track(FieldConnectionMode, config.ConnectionMode, targetMode.Value);
                 config.ConnectionMode = targetMode.Value;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", FieldConnectionMode, targetMode.Value);
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", FieldConnectionMode, targetMode.Value);
             }
 
             var rawKeep = Resolve(EnvKeepConnected, flagAlias: null);
@@ -216,7 +216,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             {
                 record.Track(FieldKeepConnected, config.KeepConnected, keep);
                 config.KeepConnected = keep;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvKeepConnected, keep);
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", EnvKeepConnected, keep);
             }
 
             var rawAuth = Resolve(EnvAuthOption, FlagAuth);
@@ -226,7 +226,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             {
                 record.Track(FieldAuthOption, config.AuthOption, ao);
                 config.AuthOption = ao;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvAuthOption, ao);
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", EnvAuthOption, ao);
             }
 
             // We track the specific
@@ -241,7 +241,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
                 {
                     record.Track(FieldLocalToken, config.LocalToken, token);
                     config.LocalToken = token;
-                    _logger.LogInformation("[MCP] Override: {Key}=*** (LocalToken)", EnvToken);
+                    _logger.LogInformation("[Uco] Override: {Key}=*** (LocalToken)", EnvToken);
                 }
             }
 
@@ -252,7 +252,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             {
                 record.Track(FieldTransport, config.TransportMethod, tm);
                 config.TransportMethod = tm;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvTransport, tm);
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", EnvTransport, tm);
             }
 
             var rawStart = Resolve(EnvStartServer, flagAlias: null);
@@ -260,7 +260,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
             {
                 record.Track(FieldStartServer, config.KeepServerRunning, ss);
                 config.KeepServerRunning = ss;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvStartServer, ss);
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", EnvStartServer, ss);
             }
 
             // EnabledToolsOverride is [JsonIgnore] so it is never persisted regardless of the
@@ -279,7 +279,7 @@ namespace com.AtelierAI.Unity.Copilot.Runtime.Utils
                 }
                 record.Track(FieldTools, config.EnabledToolsOverride, trimmed);
                 config.EnabledToolsOverride = trimmed;
-                _logger.LogInformation("[MCP] Override: {Key}={Value}", EnvTools, rawTools.Trim());
+                _logger.LogInformation("[Uco] Override: {Key}={Value}", EnvTools, rawTools.Trim());
             }
 
             return record;

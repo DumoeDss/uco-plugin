@@ -1211,7 +1211,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                 throw new ArgumentNullException(nameof(invocation));
 
             return BeginStandalone(
-                "MCP: " + invocation.Name,
+                "Uco: " + invocation.Name,
                 invocation.EffectiveUndoLevel
                     ?? invocation.Descriptor?.UndoLevel
                     ?? AuthoringUndoLevel.Partial);
@@ -1422,7 +1422,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
             transaction.RecordHostRegistered(target);
-            Undo.SetTransformParent(target, parent, worldPositionStays, "MCP: set parent");
+            Undo.SetTransformParent(target, parent, worldPositionStays, "Uco: set parent");
             transaction.MarkMutated();
         }
 

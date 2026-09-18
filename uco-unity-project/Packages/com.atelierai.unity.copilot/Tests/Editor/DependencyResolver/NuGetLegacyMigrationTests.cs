@@ -140,8 +140,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.DependencyResolverTests
             // definition stale once the canonical filename is just {stem}.dll.
             // The migration sweeps them in the same pass that removes
             // legacy {Id}.{Version}/ directories.
-            File.WriteAllText(Path.Combine(_installPath, "McpPlugin.6.2.1.dll"), "stale");
-            File.WriteAllText(Path.Combine(_installPath, "McpPlugin.6.2.1.dll.meta"), "meta");
+            File.WriteAllText(Path.Combine(_installPath, "UcoPlugin.6.2.1.dll"), "stale");
+            File.WriteAllText(Path.Combine(_installPath, "UcoPlugin.6.2.1.dll.meta"), "meta");
             File.WriteAllText(Path.Combine(_installPath, "System.Text.Json.8.0.5.dll"), "stale");
             File.WriteAllText(Path.Combine(_installPath, "System.Text.Json.8.0.5.dll.meta"), "meta");
             // Unversioned canonicals must NOT be touched.
@@ -151,8 +151,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.DependencyResolverTests
             var result = NuGetLegacyMigration.Run(_installPath);
 
             Assert.AreEqual(NuGetLegacyMigration.Outcome.Migrated, result.Outcome);
-            Assert.IsFalse(File.Exists(Path.Combine(_installPath, "McpPlugin.6.2.1.dll")));
-            Assert.IsFalse(File.Exists(Path.Combine(_installPath, "McpPlugin.6.2.1.dll.meta")),
+            Assert.IsFalse(File.Exists(Path.Combine(_installPath, "UcoPlugin.6.2.1.dll")));
+            Assert.IsFalse(File.Exists(Path.Combine(_installPath, "UcoPlugin.6.2.1.dll.meta")),
                 ".meta sidecar must be deleted alongside the DLL.");
             Assert.IsFalse(File.Exists(Path.Combine(_installPath, "System.Text.Json.8.0.5.dll")));
             Assert.IsTrue(File.Exists(Path.Combine(_installPath, "ReadMe.dll")),

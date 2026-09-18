@@ -16,7 +16,7 @@ using UnityEngine;
 namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 {
     // Phase C rebrand carries forward existing user state across the
-    // "com.ivanmurzak.unity.mcp" → "com.atelierai.unity.copilot" key namespace shift.
+    // "com.ivanmurzak.unity.plugin" → "com.atelierai.unity.copilot" key namespace shift.
     // Runs once per project (guarded by MigrationDoneKey) on domain reload and copies
     // old EditorPrefs keys into the new namespace. Old keys are left in place — they're
     // harmless and lets users downgrade if the rebrand is reverted. A future major

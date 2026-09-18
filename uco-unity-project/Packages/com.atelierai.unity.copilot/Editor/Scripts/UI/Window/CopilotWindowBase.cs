@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// Base class for MCP Editor windows providing common UXML/USS loading functionality.
+    /// Base class for Uco Editor windows providing common UXML/USS loading functionality.
     /// </summary>
     public abstract class CopilotWindowBase : EditorWindow
     {

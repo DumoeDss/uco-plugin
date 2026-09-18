@@ -16,7 +16,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
     // constants instead of inlining literals — so when the product name changes again,
     // only this file needs editing.
     //
-    // Phase C rename baseline: "MCP" → "Unity Copilot". The name "Unity Copilot" itself
+    // Phase C rename baseline: "Uco" → "Unity Copilot". The name "Unity Copilot" itself
     // is provisional; expect another pass.
     public static class ProductInfo
     {
@@ -27,7 +27,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Branding
         // package name on disk so a UPM rename doesn't silently wipe per-user state — the
         // PrefsKeyMigration helper does that migration explicitly.
         public const string PackageId    = "com.atelierai.unity.copilot";
-        public const string LegacyPackageId = "com.ivanmurzak.unity.mcp";
+        public const string LegacyPackageId = "com.ivanmurzak.unity.plugin";
 
         // Menu item paths (passed to Unity's [MenuItem] attribute).
         public const string MainWindowMenu = "Window/" + ProductLong + " %&a";

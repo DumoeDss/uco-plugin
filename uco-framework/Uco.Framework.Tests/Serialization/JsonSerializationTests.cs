@@ -23,7 +23,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Serialization
         }
 
         [Fact]
-        public void McpPluginBuilder_ShouldConfigureReflector_ToUsePascalCaseAndCaseInsensitive()
+        public void UcoPluginBuilder_ShouldConfigureReflector_ToUsePascalCaseAndCaseInsensitive()
         {
             // Arrange
             var reflector = new Reflector();
@@ -42,7 +42,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Serialization
         }
 
         [Fact]
-        public void Serialize_ShouldPreservePascalCase_AfterMcpPluginBuild()
+        public void Serialize_ShouldPreservePascalCase_AfterUcoPluginBuild()
         {
             // Arrange
             var reflector = new Reflector();
@@ -73,7 +73,7 @@ namespace com.AtelierAI.Uco.Framework.Tests.Serialization
         [InlineData("PASCALCASEPROPERTY")]
         [InlineData("PascalcaseProperty")]
         [InlineData("pascalCaseproperty")]
-        public void Deserialize_ShouldHandleVariousCasing_AfterMcpPluginBuild(string jsonPropertyName)
+        public void Deserialize_ShouldHandleVariousCasing_AfterUcoPluginBuild(string jsonPropertyName)
         {
             // Arrange
             var reflector = new Reflector();

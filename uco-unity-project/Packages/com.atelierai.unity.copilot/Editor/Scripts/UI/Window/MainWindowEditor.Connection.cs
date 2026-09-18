@@ -16,7 +16,7 @@ using com.AtelierAI.Uco.Framework;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
 
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
@@ -61,7 +61,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 SaveChanges($"[{nameof(MainWindowEditor)}] Host Changed: {newValue}");
                 Invalidate();
 
-                UnityCopilotPluginEditor.Instance.DisposeMcpPluginInstance();
+                UnityCopilotPluginEditor.Instance.DisposeUcoPluginInstance();
                 UnityBuildAndConnect();
             });
 
@@ -158,7 +158,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
             {
                 UnityCopilotPluginEditor.KeepConnected = false;
                 UnityCopilotPluginEditor.Instance.Save();
-                if (UnityCopilotPluginEditor.Instance.HasMcpPluginInstance)
+                if (UnityCopilotPluginEditor.Instance.HasUcoPluginInstance)
                     _ = UnityCopilotPluginEditor.Instance.Disconnect();
             }
             ScheduleConnectionUIRefresh();

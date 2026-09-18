@@ -42,7 +42,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
         }
 
         /// <summary>
-        /// Safely disconnects and cleans up the MCP plugin instance.
+        /// Safely disconnects and cleans up the Uco plugin instance.
         /// Catches exceptions to prevent blocking Unity's shutdown/reload process.
         /// </summary>
         /// <param name="callerName">Name of the calling method for logging.</param>
@@ -61,7 +61,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             _logger.LogInformation("{method} triggered", callerName);
 
             var plugin = UnityCopilotPluginEditor.Instance;
-            if (plugin.HasMcpPluginInstance)
+            if (plugin.HasUcoPluginInstance)
             {
                 var connectionState = UnityCopilotPluginEditor.ConnectionState.CurrentValue;
 
@@ -123,7 +123,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             _logger.LogInformation("{method} triggered - BuildAndStart with connectionAllowed: {connectionAllowed} (isCi: {isCi}, isBatchMode: {isBatchMode}, keepConnected: {keepConnected})",
                 nameof(OnAfterAssemblyReload), connectionAllowed, isCi, isBatchMode, keepConnected);
 
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
 
             if (connectionAllowed)
@@ -174,7 +174,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     {
                         _logger.LogTrace("Initiating delayed reconnection after Play mode exit");
 
-                        UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+                        UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
                         UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
                         UnityCopilotPluginEditor.ConnectIfNeeded();
                     };
@@ -183,7 +183,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                     // (has no focus)
                     _logger.LogTrace("Initiating reconnection after Play mode exit");
 
-                    UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+                    UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
                     UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
                     UnityCopilotPluginEditor.ConnectIfNeeded();
                     break;

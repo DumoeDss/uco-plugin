@@ -40,7 +40,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.AtomicApi
 
     /// <summary>
     /// A small POCO graph that mirrors the Unity-side shape of a celestial-body
-    /// container used in real Unity-MCP tools (root field + array + dictionary).
+    /// container used in real Unity-Uco tools (root field + array + dictionary).
     /// </summary>
     public class StarSystemPoco
     {

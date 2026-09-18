@@ -30,7 +30,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     /// <summary>
     /// EditMode coverage for the ReflectorNet 5.1.0 path-based read/modify API
-    /// adoption across the MCP tools — see issue #691 / PR adopting <c>TryReadAt</c>,
+    /// adoption across the Uco tools — see issue #691 / PR adopting <c>TryReadAt</c>,
     /// <c>TryModifyAt</c>, <c>TryPatch</c>, and <c>View</c>.
     ///
     /// Each test exercises one scenario from the acceptance criteria:

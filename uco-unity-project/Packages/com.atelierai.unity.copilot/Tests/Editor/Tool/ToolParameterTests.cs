@@ -22,7 +22,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
     public class ToolParameterTests
     {
         [Test]
-        public void AllMcpTools_ShouldHaveAtLeastOneParameter()
+        public void AllTools_ShouldHaveAtLeastOneParameter()
         {
             var toolMethods = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly =>
@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 .Where(method => method.GetCustomAttribute<UcoToolAttribute>() != null)
                 .ToList();
 
-            Assert.IsTrue(toolMethods.Count > 0, "Should find at least one MCP tool method");
+            Assert.IsTrue(toolMethods.Count > 0, "Should find at least one Uco tool method");
 
             var zeroParamTools = new List<string>();
             foreach (var method in toolMethods)
@@ -49,7 +49,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             }
 
             Assert.IsEmpty(zeroParamTools,
-                $"The following MCP tools have no input parameters, which breaks some MCP clients (e.g. GitHub Copilot):\n"
+                $"The following Uco tools have no input parameters, which breaks some Uco clients (e.g. GitHub Copilot):\n"
                 + string.Join("\n", zeroParamTools));
         }
     }

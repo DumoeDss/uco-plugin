@@ -18,7 +18,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// <summary>
     /// Centralised "is the current configuration safe to start?" policy. Implements the
     /// fail-closed posture described on <see cref="UnityCopilotPlugin.UnityConnectionConfig.AllowLanBind"/>:
-    /// the local MCP server only auto-starts on a non-loopback bind / over insecure remote HTTP
+    /// the local Uco server only auto-starts on a non-loopback bind / over insecure remote HTTP
     /// when the user has explicitly opted in via the corresponding flag, AND any LAN bind
     /// additionally requires a token when <c>ForceTokenWhenLanBind</c> is true.
     ///
@@ -104,7 +104,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
 
         /// <summary>
         /// Pure (no Unity API) evaluation of the fail-closed policy. Returns true when a
-        /// caller should refuse to start the local MCP server with the supplied configuration.
+        /// caller should refuse to start the local Uco server with the supplied configuration.
         /// <paramref name="reason"/> contains a human-readable explanation when the result
         /// is <c>true</c>; otherwise it is the empty string.
         ///
@@ -123,7 +123,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
             string? localHost,
             bool allowLanBind,
             bool forceTokenWhenLanBind,
-            global::com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server.AuthOption authOption,
+            global::com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server.AuthOption authOption,
             string? token,
             out string reason)
         {
@@ -139,13 +139,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
                     $"LocalHost '{localHost}' binds to a non-loopback interface but " +
                     "'Allow LAN Bind' is disabled. Open the Game Developer window → " +
                     "'Network Safety' section and enable 'Allow LAN Bind' to expose the " +
-                    "MCP server to the network. The safe default is loopback only.";
+                    "Uco server to the network. The safe default is loopback only.";
                 return true;
             }
 
             if (forceTokenWhenLanBind)
             {
-                var tokenRequired = authOption == global::com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server.AuthOption.required;
+                var tokenRequired = authOption == global::com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server.AuthOption.required;
                 if (!tokenRequired || string.IsNullOrEmpty(token))
                 {
                     reason =

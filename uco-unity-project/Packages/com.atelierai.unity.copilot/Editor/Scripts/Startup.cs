@@ -32,7 +32,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
             }
 
             EditorOperationOwners.RegisterAndReconcile();
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
             UnityCopilotPluginEditor.Instance.AddUnityLogCollectorIfNeeded(() => new BufferedFileLogStorage());
 
             // Informational notice — historically the plugin treated a space in the project
@@ -55,7 +55,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor
 
     /// <summary>
     /// Asset Import Workers inherit the main Editor's environment variables but
-    /// must never create their own MCP plugin/server lifecycle. A worker bridge
+    /// must never create their own Uco plugin/server lifecycle. A worker bridge
     /// advertises the same project instance ID, cannot complete normal Editor
     /// registration, and can otherwise displace the main Editor connection.
     /// </summary>

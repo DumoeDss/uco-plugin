@@ -26,15 +26,15 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             Debug.Log("[DataPropertyScriptableObjectPopulationTests] Running property population test for SO.");
             // Executors for creating assets
-            var materialEx = new CreateMaterialExecutor("TestMaterialSOProp.mat", "Standard", "Assets", "Unity-MCP-Test", "DataPropertySOPopulation");
-            var textureEx = new CreateTextureExecutor("TestTextureSOProp.png", Color.magenta, 64, 64, "Assets", "Unity-MCP-Test", "DataPropertySOPopulation");
-            var spriteEx = new CreateSpriteExecutor("TestSpriteSOProp.png", Color.green, 64, 64, "Assets", "Unity-MCP-Test", "DataPropertySOPopulation");
+            var materialEx = new CreateMaterialExecutor("TestMaterialSOProp.mat", "Standard", "Assets", "Unity-Uco-Test", "DataPropertySOPopulation");
+            var textureEx = new CreateTextureExecutor("TestTextureSOProp.png", Color.magenta, 64, 64, "Assets", "Unity-Uco-Test", "DataPropertySOPopulation");
+            var spriteEx = new CreateSpriteExecutor("TestSpriteSOProp.png", Color.green, 64, 64, "Assets", "Unity-Uco-Test", "DataPropertySOPopulation");
 
             // The SO we are testing
-            var soEx = new CreateScriptableObjectExecutor<DataPropertyPopulationTestScriptableObject>("TestSOProp.asset", "Assets", "Unity-MCP-Test", "DataPropertySOPopulation");
+            var soEx = new CreateScriptableObjectExecutor<DataPropertyPopulationTestScriptableObject>("TestSOProp.asset", "Assets", "Unity-Uco-Test", "DataPropertySOPopulation");
 
             var prefabSourceGoEx = new CreateGameObjectExecutor("PrefabSourceSOProp");
-            var prefabEx = new CreatePrefabExecutor("TestPrefabSOProp.prefab", null, "Assets", "Unity-MCP-Test", "DataPropertySOPopulation");
+            var prefabEx = new CreatePrefabExecutor("TestPrefabSOProp.prefab", null, "Assets", "Unity-Uco-Test", "DataPropertySOPopulation");
 
             // Target GameObject for reference
             var targetGoName = "TargetGOSOProp";
@@ -89,8 +89,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 () =>
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
-                    var mcpInstance = plugin?.UcoPluginInstance;
-                    var manager = mcpInstance?.UcoManager;
+                    var pluginInstance = plugin?.UcoPluginInstance;
+                    var manager = pluginInstance?.UcoManager;
                     var reflector = manager?.Reflector;
 
                     if (reflector == null)

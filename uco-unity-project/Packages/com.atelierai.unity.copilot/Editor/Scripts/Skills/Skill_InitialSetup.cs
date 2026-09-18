@@ -34,7 +34,7 @@ and basic configurations.")]
 # Unity Copilot — Initial Setup
 
 This guide walks through installing the `unity-mcp-cli` command-line tool and using it to set
-up a Unity project with AI Skills and MCP integration.
+up a Unity project with AI Skills and Uco integration.
 
 ---
 
@@ -77,14 +77,14 @@ unity-mcp-cli --version
 
 ## Quick Start — Full Project Setup
 
-### 1. Install the Unity-MCP Plugin
+### 1. Install the Unity-Uco Plugin
 
 Add the plugin to an existing Unity project:
 ```bash
 unity-mcp-cli install-plugin /path/to/unity/project
 ```
 
-### 2. Configure MCP Tools
+### 2. Configure Uco Tools
 
 Enable all tools, prompts, and resources:
 ```bash
@@ -94,9 +94,9 @@ unity-mcp-cli configure /path/to/unity/project \
   --enable-all-resources
 ```
 
-### 3. Set Up MCP for Your AI Agent
+### 3. Set Up Uco for Your AI Agent
 
-Configure MCP integration for your AI agent (e.g., Claude Code, Cursor, Copilot):
+Configure Uco integration for your AI agent (e.g., Claude Code, Cursor, Copilot):
 ```bash
 unity-mcp-cli setup-mcp claude-code /path/to/unity/project
 ```
@@ -113,7 +113,7 @@ Generate skill files for your AI agent (requires Unity Editor to be running with
 unity-mcp-cli setup-skills claude-code /path/to/unity/project
 ```
 
-### 5. Open Unity with MCP Connection
+### 5. Open Unity with Uco Connection
 
 ```bash
 unity-mcp-cli open /path/to/unity/project
@@ -143,7 +143,7 @@ Add `--verbose` to any command for detailed diagnostic output.
 
 - **`npm` not found**: Node.js is not installed or not in your PATH. Reinstall Node.js and restart your terminal.
 - **Plugin not appearing in Unity**: After `install-plugin`, open the project in Unity Editor. The package manager resolves dependencies on project open.
-- **Skills generation fails**: Ensure Unity Editor is running with the MCP plugin installed and connected before running `setup-skills`.
+- **Skills generation fails**: Ensure Unity Editor is running with the Uco plugin installed and connected before running `setup-skills`.
 ";
             }
         }

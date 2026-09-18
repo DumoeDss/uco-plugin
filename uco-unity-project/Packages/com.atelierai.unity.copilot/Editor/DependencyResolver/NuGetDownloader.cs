@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.DependencyResolver
                                        | System.Net.DecompressionMethods.Deflate
             };
             var client = new HttpClient(handler);
-            client.DefaultRequestHeaders.Add("User-Agent", "Unity-MCP-NuGetResolver");
+            client.DefaultRequestHeaders.Add("User-Agent", "Unity-Uco-NuGetResolver");
             client.Timeout = TimeSpan.FromMinutes(5);
             return client;
         }

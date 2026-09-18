@@ -188,10 +188,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             _ => "Unknown"
         };
 
-        public static PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_MCP_TestRunner_TestCallRequestID");
-        public static PlayerPrefsString TestOperationId = new PlayerPrefsString("Unity_MCP_TestRunner_TestOperationId");
-        public static PlayerPrefsInt ExpectedDiscoveredTests = new PlayerPrefsInt("Unity_MCP_TestRunner_DiscoveredTests");
-        public static PlayerPrefsInt ExpectedMatchedTests = new PlayerPrefsInt("Unity_MCP_TestRunner_MatchedTests");
+        public static PlayerPrefsString TestCallRequestID = new PlayerPrefsString("Unity_COPILOT_TestRunner_TestCallRequestID");
+        public static PlayerPrefsString TestOperationId = new PlayerPrefsString("Unity_COPILOT_TestRunner_TestOperationId");
+        public static PlayerPrefsInt ExpectedDiscoveredTests = new PlayerPrefsInt("Unity_COPILOT_TestRunner_DiscoveredTests");
+        public static PlayerPrefsInt ExpectedMatchedTests = new PlayerPrefsInt("Unity_COPILOT_TestRunner_MatchedTests");
 
         internal static int ExpectedDiscoveredTestCount
         {
@@ -205,13 +205,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             set => ExpectedMatchedTests.Value = value;
         }
 
-        public static PlayerPrefsBool IncludePassingTests = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludePassingTests");
-        public static PlayerPrefsBool IncludeMessage = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeMessage", true);
-        public static PlayerPrefsBool IncludeMessageStacktrace = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeStacktrace");
+        public static PlayerPrefsBool IncludePassingTests = new PlayerPrefsBool("Unity_COPILOT_TestRunner_IncludePassingTests");
+        public static PlayerPrefsBool IncludeMessage = new PlayerPrefsBool("Unity_COPILOT_TestRunner_IncludeMessage", true);
+        public static PlayerPrefsBool IncludeMessageStacktrace = new PlayerPrefsBool("Unity_COPILOT_TestRunner_IncludeStacktrace");
 
-        public static PlayerPrefsBool IncludeLogs = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeLogs");
-        public static PlayerPrefsInt IncludeLogsMinLevel = new PlayerPrefsInt("Unity_MCP_TestRunner_IncludeLogsMinLevel", (int)LogType.Warning);
-        public static PlayerPrefsBool IncludeLogsStacktrace = new PlayerPrefsBool("Unity_MCP_TestRunner_IncludeLogsStacktrace");
+        public static PlayerPrefsBool IncludeLogs = new PlayerPrefsBool("Unity_COPILOT_TestRunner_IncludeLogs");
+        public static PlayerPrefsInt IncludeLogsMinLevel = new PlayerPrefsInt("Unity_COPILOT_TestRunner_IncludeLogsMinLevel", (int)LogType.Warning);
+        public static PlayerPrefsBool IncludeLogsStacktrace = new PlayerPrefsBool("Unity_COPILOT_TestRunner_IncludeLogsStacktrace");
 
         internal static bool HasUnsettledRun => s_callbackOwnership.HasUnsettledRun;
         internal static string ActiveOperationId => s_callbackOwnership.ActiveOperationId;
@@ -317,7 +317,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             UnityCopilotPluginEditor.Instance.LogInfo("Final duration: {duration:mm\\:ss\\.fff}. Completed: {completed}/{total}",
                 typeof(TestResultCollector), duration, _results.Count, _summary.TotalTests);
 
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
 
             if (!EnvironmentUtils.IsCi() && !EnvironmentUtils.IsBatchMode())
                 UnityCopilotPluginEditor.ConnectIfNeeded();
@@ -345,10 +345,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API.TestRunner
             var requestId = ownership?.RequestId ?? string.Empty;
             if (completedOwnedOperation && string.IsNullOrEmpty(requestId) == false)
             {
-                var mcpPlugin = UnityCopilotPluginEditor.Instance.UcoPluginInstance ?? throw new InvalidOperationException("MCP Plugin instance is not available.");
+                var ucoPlugin = UnityCopilotPluginEditor.Instance.UcoPluginInstance ?? throw new InvalidOperationException("Uco Plugin instance is not available.");
 
                 var response = ResponseCallValueTool<TestRunResponse>
-                    .SuccessStructured(mcpPlugin.UcoManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse))
+                    .SuccessStructured(ucoPlugin.UcoManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse))
                     .SetRequestID(requestId);
 
                 _ = UnityCopilotPluginEditor.NotifyToolRequestCompleted(new RequestToolCompletedData

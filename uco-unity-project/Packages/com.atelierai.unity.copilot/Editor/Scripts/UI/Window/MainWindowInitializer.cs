@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -17,7 +17,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
     [InitializeOnLoad]
     static class MainWindowInitializer
     {
-        static PlayerPrefsBool isInitialized = new PlayerPrefsBool("Unity-MCP.MainWindow.Initialized");
+        static PlayerPrefsBool isInitialized = new PlayerPrefsBool("Unity-Uco.MainWindow.Initialized");
 
         static MainWindowInitializer()
         {

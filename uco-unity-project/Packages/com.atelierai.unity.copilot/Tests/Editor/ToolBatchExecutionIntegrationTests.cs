@@ -28,7 +28,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public IEnumerator Execute_UsesProductionDispatchWithChildContextsAndFailFast()
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
-            originalInstance.BuildMcpPluginIfNeeded();
+            originalInstance.BuildUcoPluginIfNeeded();
             var originalPlugin = originalInstance.UcoPluginInstance;
             // Console separation (COCli-07): the replacement singleton has no
             // collector of its own; the still-installed diagnostics channel
@@ -47,7 +47,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             SetEditorSingleton(replacement);
             try
             {
-                replacement.BuildMcpPluginIfNeeded();
+                replacement.BuildUcoPluginIfNeeded();
                 var manager = replacement.Tools;
                 Assert.IsNotNull(manager, "The test plugin should expose a production tool manager.");
 
@@ -142,7 +142,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public IEnumerator Execute_RejectsTamperedApprovedChildBeforeAnyRunner()
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
-            originalInstance.BuildMcpPluginIfNeeded();
+            originalInstance.BuildUcoPluginIfNeeded();
             var originalPlugin = originalInstance.UcoPluginInstance;
             var middleware = new RecordingMiddleware { TamperApprovedChild = true };
             var first = new BatchTestRunner("batch-test-success", shouldFail: false, targetBound: false);
@@ -152,7 +152,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             SetEditorSingleton(replacement);
             try
             {
-                replacement.BuildMcpPluginIfNeeded();
+                replacement.BuildUcoPluginIfNeeded();
                 var manager = replacement.Tools;
                 Assert.IsNotNull(manager);
 
@@ -250,7 +250,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             IUcoPlugin? originalPlugin,
             TestUnityCopilotPluginEditor replacement)
         {
-            replacement.DisposeMcpPluginInstance();
+            replacement.DisposeUcoPluginInstance();
             replacement.Dispose();
 
             var instanceField = typeof(UnityCopilotPluginEditor).GetField("instance", PrivateStatic);
@@ -278,13 +278,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ConnectionConfigForTests.KeepConnected = false;
             }
 
-            protected override IUcoPlugin BuildMcpPlugin(
+            protected override IUcoPlugin BuildUcoPlugin(
                 com.AtelierAI.Uco.Framework.Common.Version version,
                 Reflector reflector,
                 ILoggerProvider? loggerProvider = null,
-                Action<IMcpPluginBuilder>? configure = null)
+                Action<IUcoPluginBuilder>? configure = null)
             {
-                return base.BuildMcpPlugin(
+                return base.BuildUcoPlugin(
                     version,
                     reflector,
                     loggerProvider,

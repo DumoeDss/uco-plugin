@@ -36,13 +36,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
         static volatile bool _callbacksRegistered = false;
 
         // SessionState keys for persisting pending test run across domain reload
-        const string PendingTestRunKey = "MCP_PendingTestRun";
-        const string PendingTestModeKey = "MCP_PendingTestRun_TestMode";
-        const string PendingTestAssemblyKey = "MCP_PendingTestRun_TestAssembly";
-        const string PendingTestNamespaceKey = "MCP_PendingTestRun_TestNamespace";
-        const string PendingTestClassKey = "MCP_PendingTestRun_TestClass";
-        const string PendingTestMethodKey = "MCP_PendingTestRun_TestMethod";
-        const string PendingTestOperationIdKey = "MCP_PendingTestRun_OperationId";
+        const string PendingTestRunKey = "UCO_PendingTestRun";
+        const string PendingTestModeKey = "UCO_PendingTestRun_TestMode";
+        const string PendingTestAssemblyKey = "UCO_PendingTestRun_TestAssembly";
+        const string PendingTestNamespaceKey = "UCO_PendingTestRun_TestNamespace";
+        const string PendingTestClassKey = "UCO_PendingTestRun_TestClass";
+        const string PendingTestMethodKey = "UCO_PendingTestRun_TestMethod";
+        const string PendingTestOperationIdKey = "UCO_PendingTestRun_OperationId";
 
         static Tool_Tests()
         {

@@ -1,4 +1,4 @@
-﻿/*
+/*
 ┌──────────────────────────────────────────────────────────────────┐
 │  Author: Ivan Murzak (https://github.com/IvanMurzak)             │
 │  Repository: GitHub (https://github.com/IvanMurzak/Unity-MCP)    │
@@ -26,7 +26,7 @@ using UnityEngine.UIElements;
 namespace com.AtelierAI.Unity.Copilot.Editor.UI
 {
     /// <summary>
-    /// An editor window for testing object serialization using the MCP reflector.
+    /// An editor window for testing object serialization using the Uco reflector.
     /// </summary>
     public class SerializationCheckWindow : CopilotWindowBase
     {

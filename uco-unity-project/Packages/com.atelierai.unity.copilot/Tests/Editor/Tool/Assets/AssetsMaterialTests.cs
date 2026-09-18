@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             var materialEx = new CreateMaterialExecutor(
                 materialName: "TestMaterial__.mat",
                 shaderName: "Standard",
-                "Assets", "Unity-MCP-Test", "Materials"
+                "Assets", "Unity-Uco-Test", "Materials"
             );
 
             materialEx
@@ -62,7 +62,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         //     var materialEx = new CreateMaterialExecutor(
         //         materialName: "TestMaterial.mat",
         //         shaderName: "Standard",
-        //         "Assets", "Unity-MCP-Test", "Materials"
+        //         "Assets", "Unity-Uco-Test", "Materials"
         //     );
 
         //     materialEx

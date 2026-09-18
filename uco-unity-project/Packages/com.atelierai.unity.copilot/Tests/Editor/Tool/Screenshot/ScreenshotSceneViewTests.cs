@@ -110,7 +110,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         // -----------------------------------------------------------------------
-        // Full MCP framework path
+        // Full Uco framework path
         // -----------------------------------------------------------------------
 
         [Test]

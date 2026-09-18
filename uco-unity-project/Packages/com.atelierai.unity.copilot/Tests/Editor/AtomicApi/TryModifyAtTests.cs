@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.AtomicApi
     /// path-based field/array-element/dictionary-entry modification API.
     /// The tests run in a real Unity Editor process (managed assembly load
     /// context) to validate that the API behaves correctly when consumed by
-    /// the Unity-MCP plugin.
+    /// the Unity-Uco plugin.
     /// </summary>
     public class TryModifyAtTests : BaseTest
     {

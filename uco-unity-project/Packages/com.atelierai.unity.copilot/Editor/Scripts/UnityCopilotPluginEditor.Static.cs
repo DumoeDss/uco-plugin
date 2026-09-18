@@ -25,7 +25,7 @@ using R3;
 
 namespace com.AtelierAI.Unity.Copilot
 {
-    using static com.AtelierAI.Uco.Framework.Common.Consts.MCP.Server;
+    using static com.AtelierAI.Uco.Framework.Common.Consts.Uco.Server;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
     using LogLevel = com.AtelierAI.Unity.Copilot.Runtime.Utils.LogLevel;
 

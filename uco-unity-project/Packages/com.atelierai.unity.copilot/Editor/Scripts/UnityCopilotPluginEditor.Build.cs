@@ -24,7 +24,7 @@ namespace com.AtelierAI.Unity.Copilot
         /// </summary>
         internal UnityConnectionConfig ConnectionConfigForTests => unityConnectionConfig;
 
-        public UnityCopilotPluginEditor BuildMcpPluginIfNeeded()
+        public UnityCopilotPluginEditor BuildUcoPluginIfNeeded()
         {
             EditorOperationOwners.RegisterAndReconcile();
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -34,7 +34,7 @@ namespace com.AtelierAI.Unity.Copilot
             unityConnectionConfig.ProjectRootPath = ProjectRootPath;
             _logger.LogTrace("Seeded ConnectionConfig.ProjectRootPath={path}", ProjectRootPath);
 
-            // Phase B: advertise this Unity Editor's instance id so the MCP server can register
+            // Phase B: advertise this Unity Editor's instance id so the Uco server can register
             // the connection in its instance registry and route per-session tool calls here.
             // The id is computed by UnityInstanceRegistry; safe to call here because
             // [InitializeOnLoad] already ran (UnityInstanceRegistry's static ctor writes
@@ -50,7 +50,7 @@ namespace com.AtelierAI.Unity.Copilot
                 _logger.LogWarning("Failed to seed ConnectionConfig.InstanceId: {message}", ex.Message);
             }
 
-            var built = _plugin.BuildOnce(() => BuildMcpPlugin(
+            var built = _plugin.BuildOnce(() => BuildUcoPlugin(
                 version: BuildVersion(),
                 reflector: CreateDefaultReflector(),
                 loggerProvider: loggerProvider,
@@ -67,12 +67,12 @@ namespace com.AtelierAI.Unity.Copilot
                 stopwatch.ElapsedMilliseconds);
 
             SetCurrentPlugin(built);
-            ApplyConfigToMcpPlugin(built);
+            ApplyConfigToUcoPlugin(built);
 
             return this;
         }
 
-        public void DisposeMcpPluginInstance()
+        public void DisposeUcoPluginInstance()
         {
             var oldInstance = _plugin.TakeInstance();
             if (oldInstance == null)

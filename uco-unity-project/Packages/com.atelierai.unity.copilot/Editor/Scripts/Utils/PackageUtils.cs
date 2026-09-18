@@ -22,8 +22,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     /// </summary>
     public static class PackageUtils
     {
-        private const string PendingNotificationKeysKey = "MCP_PendingPackageNotificationKeys";
-        private const string NotificationDataSeparator = "<MCP_PKG_SEP>";
+        private const string PendingNotificationKeysKey = "UCO_PendingPackageNotificationKeys";
+        private const string NotificationDataSeparator = "<UCO_PKG_SEP>";
 
         private static bool _processPendingScheduled = false;
 
@@ -63,7 +63,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// <param name="expectedResult">Whether the operation was expected to succeed before domain reload</param>
         public static void SchedulePostDomainReloadNotification(string requestId, string packageIdentifier, string operationType, bool expectedResult)
         {
-            var notificationKey = $"MCP_PendingPackageNotification_{requestId}";
+            var notificationKey = $"UCO_PendingPackageNotification_{requestId}";
             var notificationData = $"{requestId}{NotificationDataSeparator}{packageIdentifier}{NotificationDataSeparator}{operationType}{NotificationDataSeparator}{expectedResult}";
 
             // Store the notification data

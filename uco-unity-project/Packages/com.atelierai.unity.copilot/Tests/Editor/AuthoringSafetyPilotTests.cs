@@ -50,7 +50,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public void CaptureSessionSingleton()
         {
             _sessionOriginalEditor = UnityCopilotPluginEditor.Instance;
-            _sessionOriginalEditor.BuildMcpPluginIfNeeded();
+            _sessionOriginalEditor.BuildUcoPluginIfNeeded();
         }
 
         [OneTimeTearDown]
@@ -73,7 +73,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            UnityCopilotPluginEditor.Instance.BuildMcpPluginIfNeeded();
+            UnityCopilotPluginEditor.Instance.BuildUcoPluginIfNeeded();
             // Rejections are logged as errors by the manager ("Error Response
             // to AI"); the assertions here are on responses and Editor state.
             _ignoreFailingMessages = LogAssert.ignoreFailingMessages;
@@ -207,7 +207,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             Assert.AreEqual("full", transaction["undo"]!.GetValue<string>());
             Assert.IsTrue(transaction["mutated"]!.GetValue<bool>());
             Assert.IsTrue(transaction["completed"]!.GetValue<bool>());
-            Assert.AreEqual("MCP: " + Tool_GameObject.GameObjectDestroyToolId, transaction["groupLabel"]!.GetValue<string>());
+            Assert.AreEqual("Uco: " + Tool_GameObject.GameObjectDestroyToolId, transaction["groupLabel"]!.GetValue<string>());
 
             // A replayed token is not a standing capability.
             var again = new GameObject("victim-again");
@@ -257,7 +257,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 "an executing create marks the active scene dirty");
             var transaction = response.Value!.Transaction!;
             Assert.AreEqual("full", transaction["undo"]!.GetValue<string>());
-            Assert.AreEqual("MCP: " + Tool_GameObject.GameObjectCreateToolId, transaction["groupLabel"]!.GetValue<string>());
+            Assert.AreEqual("Uco: " + Tool_GameObject.GameObjectCreateToolId, transaction["groupLabel"]!.GetValue<string>());
             Assert.IsTrue(transaction["mutated"]!.GetValue<bool>());
             Assert.AreEqual("none", transaction["rollback"]!.GetValue<string>());
             Assert.Greater(transaction["affectedObjects"]!.AsArray().Count, 0);
@@ -365,14 +365,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public IEnumerator RunnerFailureAfterMutation_RevertsOnlyItsGroup()
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
-            originalInstance.BuildMcpPluginIfNeeded();
+            originalInstance.BuildUcoPluginIfNeeded();
             var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
             try
             {
-                replacement.BuildMcpPluginIfNeeded();
+                replacement.BuildUcoPluginIfNeeded();
                 var manager = replacement.Tools!;
 
                 // Unrelated earlier history that must survive the abort.
@@ -469,14 +469,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public IEnumerator Batch_SharedChildFailure_RevertsPriorChildAndFinalizesTruthfulResults()
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
-            originalInstance.BuildMcpPluginIfNeeded();
+            originalInstance.BuildUcoPluginIfNeeded();
             var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
             try
             {
-                replacement.BuildMcpPluginIfNeeded();
+                replacement.BuildUcoPluginIfNeeded();
                 var unrelated = new GameObject("batch-unrelated-history");
                 Undo.RegisterCreatedObjectUndo(unrelated, "batch unrelated");
                 Undo.IncrementCurrentGroup();
@@ -568,14 +568,14 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         public IEnumerator Batch_PartialSharedChildFailure_ReportsUncertainFinalStateAndRetainsContext()
         {
             var originalInstance = UnityCopilotPluginEditor.Instance;
-            originalInstance.BuildMcpPluginIfNeeded();
+            originalInstance.BuildUcoPluginIfNeeded();
             var originalPlugin = originalInstance.UcoPluginInstance;
             var failing = new FailingCreateRunner();
             var replacement = new TestUnityCopilotPluginEditor(failing);
             SetEditorSingleton(replacement);
             try
             {
-                replacement.BuildMcpPluginIfNeeded();
+                replacement.BuildUcoPluginIfNeeded();
                 var target = new GameObject("batch-shared-partial");
                 var unrelated = new GameObject("batch-partial-unrelated-history");
                 Undo.RegisterCreatedObjectUndo(unrelated, "batch partial unrelated");
@@ -896,7 +896,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
             IUcoPlugin? originalPlugin,
             TestUnityCopilotPluginEditor replacement)
         {
-            replacement.DisposeMcpPluginInstance();
+            replacement.DisposeUcoPluginInstance();
             replacement.Dispose();
             var instanceField = typeof(UnityCopilotPluginEditor).GetField("instance", PrivateStatic);
             instanceField!.SetValue(null, original);
@@ -972,13 +972,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 ConnectionConfigForTests.KeepConnected = false;
             }
 
-            protected override IUcoPlugin BuildMcpPlugin(
+            protected override IUcoPlugin BuildUcoPlugin(
                 com.AtelierAI.Uco.Framework.Common.Version version,
                 Reflector reflector,
                 ILoggerProvider? loggerProvider = null,
-                Action<IMcpPluginBuilder>? configure = null)
+                Action<IUcoPluginBuilder>? configure = null)
             {
-                return base.BuildMcpPlugin(
+                return base.BuildUcoPlugin(
                     version,
                     reflector,
                     loggerProvider,

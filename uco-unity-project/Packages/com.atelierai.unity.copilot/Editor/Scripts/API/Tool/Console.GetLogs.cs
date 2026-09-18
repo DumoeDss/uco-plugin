@@ -26,7 +26,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             ReadOnlyHint = true,
             IdempotentHint = true
         )]
-        [UcoSkillDescription("Retrieve Unity Editor logs from the MCP plugin's `LogCollector`, " +
+        [UcoSkillDescription("Retrieve Unity Editor logs from the Uco plugin's `LogCollector`, " +
             "optionally filtered by log type, time window, operation/correlation identity, or source " +
             "(product / bridge / tool / unity). Useful for debugging and monitoring Editor activity.")]
         [UcoSkillBody("Retrieves Unity Editor logs with attribution and loss accounting.\n\n" +

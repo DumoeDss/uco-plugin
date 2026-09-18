@@ -21,7 +21,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
 {
     public class AssetsPrefabCreateTests : BaseTest
     {
-        const string TestFolderName = "Unity-MCP-Test-PrefabCreate";
+        const string TestFolderName = "Unity-Uco-Test-PrefabCreate";
         const string TestFolder = "Assets/" + TestFolderName;
 
         [TearDown]

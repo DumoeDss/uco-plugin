@@ -25,7 +25,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
     /// </summary>
     internal static class PathReadHelper
     {
-        public const string PathReadAggregateTypeName = "Unity-MCP.PathReadAggregate";
+        public const string PathReadAggregateTypeName = "Unity-Uco.PathReadAggregate";
         public const string EmptyPathTypeName = "<empty-path>";
         public const string UnresolvedTypeName = "<unresolved>";
 

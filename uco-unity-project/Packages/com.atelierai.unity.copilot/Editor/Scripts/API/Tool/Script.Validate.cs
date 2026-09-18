@@ -201,7 +201,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
                         new ValidationDiagnostic
                         {
                             Severity = "Error",
-                            Code = "MCP_VALIDATE_INTERNAL",
+                            Code = "UCO_VALIDATE_INTERNAL",
                             Message = $"Validation failed internally: {ex.GetType().Name}: {ex.Message}",
                             Line = 1, Column = 1, EndLine = 1, EndColumn = 1,
                         }

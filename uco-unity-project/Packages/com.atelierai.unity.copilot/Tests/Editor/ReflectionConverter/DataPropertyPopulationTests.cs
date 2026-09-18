@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 #if UNITY_6000_5_OR_NEWER
 using System.Collections;
 using System.Collections.Generic;
@@ -26,13 +26,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             Debug.Log("[DataPropertyPopulationTests] Running property population test.");
             // Executors for creating assets
-            var materialEx = new CreateMaterialExecutor("TestMaterialProp.mat", "Standard", "Assets", "Unity-MCP-Test", "DataPropertyPopulation");
-            var textureEx = new CreateTextureExecutor("TestTextureProp.png", Color.magenta, 64, 64, "Assets", "Unity-MCP-Test", "DataPropertyPopulation");
-            var spriteEx = new CreateSpriteExecutor("TestSpriteProp.png", Color.green, 64, 64, "Assets", "Unity-MCP-Test", "DataPropertyPopulation");
-            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSOProp.asset", "Assets", "Unity-MCP-Test", "DataPropertyPopulation");
+            var materialEx = new CreateMaterialExecutor("TestMaterialProp.mat", "Standard", "Assets", "Unity-Uco-Test", "DataPropertyPopulation");
+            var textureEx = new CreateTextureExecutor("TestTextureProp.png", Color.magenta, 64, 64, "Assets", "Unity-Uco-Test", "DataPropertyPopulation");
+            var spriteEx = new CreateSpriteExecutor("TestSpriteProp.png", Color.green, 64, 64, "Assets", "Unity-Uco-Test", "DataPropertyPopulation");
+            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSOProp.asset", "Assets", "Unity-Uco-Test", "DataPropertyPopulation");
 
             var prefabSourceGoEx = new CreateGameObjectExecutor("PrefabSourceProp");
-            var prefabEx = new CreatePrefabExecutor("TestPrefabProp.prefab", null, "Assets", "Unity-MCP-Test", "DataPropertyPopulation");
+            var prefabEx = new CreatePrefabExecutor("TestPrefabProp.prefab", null, "Assets", "Unity-Uco-Test", "DataPropertyPopulation");
 
             // Target GameObject
             var targetGoName = "TargetGOProp";
@@ -89,8 +89,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 () =>
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
-                    var mcpInstance = plugin?.UcoPluginInstance;
-                    var manager = mcpInstance?.UcoManager;
+                    var pluginInstance = plugin?.UcoPluginInstance;
+                    var manager = pluginInstance?.UcoManager;
                     var reflector = manager?.Reflector;
 
                     if (reflector == null)

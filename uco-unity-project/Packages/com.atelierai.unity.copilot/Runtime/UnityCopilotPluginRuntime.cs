@@ -18,7 +18,7 @@ namespace com.AtelierAI.Unity.Copilot
 {
     /// <summary>
     /// Runtime singleton for game builds. Provides the developer-facing
-    /// <see cref="Initialize"/> API and maintains a separate MCP connection
+    /// <see cref="Initialize"/> API and maintains a separate Uco connection
     /// alongside the Editor's connection.
     /// </summary>
     public partial class UnityCopilotPluginRuntime : UnityCopilotPlugin
@@ -29,17 +29,17 @@ namespace com.AtelierAI.Unity.Copilot
             IncrementSingletonCount();
         }
 
-        internal IUcoPlugin BuildFromBuilder(IMcpPluginBuilder builder)
+        internal IUcoPlugin BuildFromBuilder(IUcoPluginBuilder builder)
         {
             _logger.LogTrace("{method} called.", nameof(BuildFromBuilder));
 
             var stopwatch = Stopwatch.StartNew();
             var built = _plugin.Set(builder.Build(CreateDefaultReflector()));
             stopwatch.Stop();
-            _logger.LogDebug("Runtime MCP Plugin built in {elapsedMilliseconds} ms.",
+            _logger.LogDebug("Runtime Uco Plugin built in {elapsedMilliseconds} ms.",
                 stopwatch.ElapsedMilliseconds);
 
-            ApplyConfigToMcpPlugin(built);
+            ApplyConfigToUcoPlugin(built);
 
             built.ConnectionState
                 .Subscribe(state => _connectionState.Value = state)

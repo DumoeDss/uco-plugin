@@ -24,7 +24,7 @@ namespace com.AtelierAI.Unity.Copilot
     /// <example>
     /// <code>
     /// [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    /// static void SetupMcp()
+    /// static void SetupPlugin()
     /// {
     ///     UnityCopilotPluginRuntime.Initialize(builder =>
     ///     {
@@ -45,16 +45,16 @@ namespace com.AtelierAI.Unity.Copilot
         /// The underlying <see cref="UcoBuilder"/> pre-configured with Unity
         /// defaults (logging, standard ignored assemblies, assembly scanning).
         /// Use this to configure host, token, additional ignored assemblies, custom
-        /// tools/prompts/resources, and anything else supported by the MCP plugin.
+        /// tools/prompts/resources, and anything else supported by the Uco plugin.
         /// </summary>
-        public IMcpPluginBuilder Builder { get; }
+        public IUcoPluginBuilder Builder { get; }
 
         private readonly UnityCopilotPluginRuntime _runtimePlugin;
         private readonly ILogger? _logger;
 
-        internal UnityCopilotPluginBuilder(IMcpPluginBuilder mcpBuilder, UnityCopilotPluginRuntime runtimePlugin, ILoggerProvider? loggerProvider = null)
+        internal UnityCopilotPluginBuilder(IUcoPluginBuilder ucoBuilder, UnityCopilotPluginRuntime runtimePlugin, ILoggerProvider? loggerProvider = null)
         {
-            Builder = mcpBuilder;
+            Builder = ucoBuilder;
             _runtimePlugin = runtimePlugin;
             _logger = loggerProvider?.CreateLogger(nameof(UnityCopilotPluginBuilder));
 
@@ -95,7 +95,7 @@ namespace com.AtelierAI.Unity.Copilot
         {
             _logger?.LogTrace("{method} called.", nameof(Build));
 
-            _logger?.LogDebug("{method}: Building runtime MCP Plugin from builder...", nameof(Build));
+            _logger?.LogDebug("{method}: Building runtime Uco Plugin from builder...", nameof(Build));
             var built = _runtimePlugin.BuildFromBuilder(Builder);
 
             _logger?.LogTrace("{method} completed.", nameof(Build));

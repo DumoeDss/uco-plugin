@@ -22,8 +22,8 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
     [InitializeOnLoad]
     public static partial class ScriptUtils
     {
-        private const string PendingNotificationKeysKey = "MCP_PendingNotificationKeys";
-        private const string NotificationDataSeparator = "<MCP_SEP>";
+        private const string PendingNotificationKeysKey = "UCO_PendingNotificationKeys";
+        private const string NotificationDataSeparator = "<UCO_SEP>";
 
         private static bool _processPendingScheduled = false;
 
@@ -95,7 +95,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// <param name="operationType">The type of operation performed</param>
         public static void SchedulePostCompilationNotification(string requestId, string filePath, string operationType)
         {
-            var notificationKey = $"MCP_PendingNotification_{requestId}";
+            var notificationKey = $"UCO_PendingNotification_{requestId}";
             var notificationData = $"{requestId}{NotificationDataSeparator}{filePath}{NotificationDataSeparator}{operationType}";
 
             // Store the notification data

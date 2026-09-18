@@ -42,20 +42,20 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                     .AddTo(_disposables);
 
                 plugin.UcoManager.OnClientDisconnected
-                    .Subscribe(mcpClientData =>
+                    .Subscribe(pluginClientData =>
                     {
                         Logger.LogInformation("On AI agent disconnected: {clientName} ({clientVersion})",
-                            mcpClientData.ClientName, mcpClientData.ClientVersion);
+                            pluginClientData.ClientName, pluginClientData.ClientVersion);
                     })
                     .AddTo(_disposables);
 
                 plugin.UcoManager.OnClientsChanged
                     .ObserveOnCurrentSynchronizationContext()
-                    .Subscribe(mcpClients =>
+                    .Subscribe(pluginClients =>
                     {
-                        Logger.LogDebug("On AI agents changed: {count} clients", mcpClients.Count);
+                        Logger.LogDebug("On AI agents changed: {count} clients", pluginClients.Count);
 
-                        var connectedAgents = mcpClients.Where(c => c.IsConnected).ToList();
+                        var connectedAgents = pluginClients.Where(c => c.IsConnected).ToList();
                         if (connectedAgents.Count == 0)
                         {
                             Logger.LogDebug("No connected AI agents found in clients list.");
@@ -76,30 +76,30 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
                 .Subscribe(_ => FetchAiAgentData())
                 .AddTo(_disposables);
 
-            var btnStartStopMcpServer = root.Q<Button>("btnStartStopServer") ?? throw new InvalidOperationException("MCP Server start/stop button not found.");
-            btnStartStopMcpServer.tooltip = "Start or stop the local MCP server.";
+            var btnStartStopServer = root.Q<Button>("btnStartStopServer") ?? throw new InvalidOperationException("Uco Server start/stop button not found.");
+            btnStartStopServer.tooltip = "Start or stop the local Uco server.";
         }
 
         private void FetchAiAgentData(int retryCount = 3, int retryDelayMs = 3000)
         {
-            var mcpPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
-            if (mcpPluginInstance == null)
+            var ucoPluginInstance = UnityCopilotPluginEditor.Instance.UcoPluginInstance;
+            if (ucoPluginInstance == null)
             {
                 Logger.LogDebug("Cannot fetch AI agent data: UcoPluginInstance is null");
                 return;
             }
 
-            var mcpManagerHub = mcpPluginInstance.UcoManagerHub;
-            if (mcpManagerHub == null)
+            var pluginManagerHub = ucoPluginInstance.UcoManagerHub;
+            if (pluginManagerHub == null)
             {
                 Logger.LogDebug("Cannot fetch AI agent data: UcoManagerHub is null");
                 return;
             }
 
-            var task = mcpManagerHub.GetMcpClientData();
+            var task = pluginManagerHub.GetPluginClientData();
             if (task == null)
             {
-                Logger.LogDebug("Cannot fetch AI agent data: GetMcpClientData returned null");
+                Logger.LogDebug("Cannot fetch AI agent data: GetPluginClientData returned null");
                 return;
             }
 

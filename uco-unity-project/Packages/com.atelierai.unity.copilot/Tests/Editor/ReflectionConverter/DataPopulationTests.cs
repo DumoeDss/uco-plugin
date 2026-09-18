@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 #if UNITY_6000_5_OR_NEWER
 using System.Collections;
 using System.Collections.Generic;
@@ -27,13 +27,13 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         {
             Debug.Log("[DataPopulationTests] Running updated test version.");
             // Executors for creating assets
-            var materialEx = new CreateMaterialExecutor("TestMaterial.mat", "Standard", "Assets", "Unity-MCP-Test", "DataPopulation");
-            var textureEx = new CreateTextureExecutor("TestTexture.png", Color.magenta, 64, 64, "Assets", "Unity-MCP-Test", "DataPopulation");
-            var spriteEx = new CreateSpriteExecutor("TestSprite.png", Color.green, 64, 64, "Assets", "Unity-MCP-Test", "DataPopulation");
-            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSO.asset", "Assets", "Unity-MCP-Test", "DataPopulation");
+            var materialEx = new CreateMaterialExecutor("TestMaterial.mat", "Standard", "Assets", "Unity-Uco-Test", "DataPopulation");
+            var textureEx = new CreateTextureExecutor("TestTexture.png", Color.magenta, 64, 64, "Assets", "Unity-Uco-Test", "DataPopulation");
+            var spriteEx = new CreateSpriteExecutor("TestSprite.png", Color.green, 64, 64, "Assets", "Unity-Uco-Test", "DataPopulation");
+            var soEx = new CreateScriptableObjectExecutor<DataFieldPopulationTestScriptableObject>("TestSO.asset", "Assets", "Unity-Uco-Test", "DataPopulation");
 
             var prefabSourceGoEx = new CreateGameObjectExecutor("PrefabSource");
-            var prefabEx = new CreatePrefabExecutor("TestPrefab.prefab", null, "Assets", "Unity-MCP-Test", "DataPopulation");
+            var prefabEx = new CreatePrefabExecutor("TestPrefab.prefab", null, "Assets", "Unity-Uco-Test", "DataPopulation");
 
             // Target GameObject
             var targetGoName = "TargetGO";
@@ -91,9 +91,9 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
                 {
                     var plugin = UnityCopilotPluginEditor.Instance;
                     Debug.Log($"[DataPopulationTests] Plugin: {plugin?.GetType().GetTypeShortName() ?? "null"}");
-                    var mcpInstance = plugin?.UcoPluginInstance;
-                    Debug.Log($"[DataPopulationTests] UcoInstance: {mcpInstance?.GetType().GetTypeShortName() ?? "null"}");
-                    var manager = mcpInstance?.UcoManager;
+                    var pluginInstance = plugin?.UcoPluginInstance;
+                    Debug.Log($"[DataPopulationTests] UcoInstance: {pluginInstance?.GetType().GetTypeShortName() ?? "null"}");
+                    var manager = pluginInstance?.UcoManager;
                     Debug.Log($"[DataPopulationTests] Manager: {manager?.GetType().GetTypeShortName() ?? "null"}");
                     var reflector = manager?.Reflector;
                     Debug.Log($"[DataPopulationTests] Reflector: {reflector?.GetType().GetTypeShortName() ?? "null"}");
