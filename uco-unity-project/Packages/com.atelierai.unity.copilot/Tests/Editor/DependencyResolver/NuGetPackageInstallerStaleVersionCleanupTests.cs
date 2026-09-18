@@ -35,7 +35,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.DependencyResolverTests
         {
             _installPath = Path.Combine(
                 Path.GetTempPath(),
-                "UnityMcp-NuGetInstaller-" + Path.GetRandomFileName());
+                "Uco-NuGetInstaller-" + Path.GetRandomFileName());
             Directory.CreateDirectory(_installPath);
         }
 

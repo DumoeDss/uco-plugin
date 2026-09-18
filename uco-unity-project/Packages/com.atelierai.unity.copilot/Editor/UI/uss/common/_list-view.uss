@@ -3,7 +3,7 @@
    ========================================================================== */
 
 /* Base List View */
-.mcp-list-view {
+.copilot-list-view {
     flex-grow: 1;
     padding-left: 0;
     padding-right: 0;
@@ -11,11 +11,11 @@
     padding-top: 0;
 }
 
-.mcp-list-view .unity-list-view__item:hover {
+.copilot-list-view .unity-list-view__item:hover {
     background-color: rgba(0, 0, 0, 0);
 }
 
-.mcp-list-view .unity-scroll-view__content-container {
+.copilot-list-view .unity-scroll-view__content-container {
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 20px;

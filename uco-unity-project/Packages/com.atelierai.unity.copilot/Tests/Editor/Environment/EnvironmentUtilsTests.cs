@@ -111,7 +111,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [Test]
-        public void Override_UnityMcpStyleFlag_BeatsEnvVar()
+        public void Override_LegacyFlagStyle_BeatsEnvVar()
         {
             // CLI translates --token foo into UNITY_COPILOT_TOKEN env, but the plugin still
             // accepts --UNITY_COPILOT_TOKEN=foo style flags directly. They must beat env vars.

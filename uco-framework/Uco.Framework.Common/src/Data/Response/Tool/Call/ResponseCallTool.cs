@@ -69,7 +69,8 @@ namespace com.AtelierAI.Uco.Framework.Common.Model
             {
                 [JsonSchema.Result] = structuredContent
             };
-            // MCP backward compatibility: https://modelcontextprotocol.io/specification/2025-06-18/server/tools#structured-content
+            // Wire compatibility: older clients read only the text-serialized copy of
+            // the structured result, so both shapes are always emitted.
             Content = new List<ContentBlock>
             {
                 new ContentBlock()

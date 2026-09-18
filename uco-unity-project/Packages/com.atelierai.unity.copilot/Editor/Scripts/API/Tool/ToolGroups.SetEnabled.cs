@@ -44,7 +44,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.API
             "- `group` — group name (case-sensitive). Use `tools-list-groups` to discover valid names.\n" +
             "- `enabled` — true to enable the group, false to disable.\n\n" +
             "## Persistence\n\n" +
-            "Stored under EditorPrefs key `UnityMcp.ToolGroups.Enabled` as a pipe-separated " +
+            "Stored under the product EditorPrefs key `<prefix>.ToolGroups.Enabled` as a pipe-separated " +
             "`group=0|group=1` string. Stale entries (for groups that no longer exist) are ignored on load.")]
         [Description("Enable or disable an uco tool group at runtime, persisting the choice to EditorPrefs. " +
             "Soft hint only — disabled tools remain callable through the upstream request pipeline.")]

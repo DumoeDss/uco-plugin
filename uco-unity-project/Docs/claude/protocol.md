@@ -1,10 +1,10 @@
-# MCP Protocol Implementation
+# Tool, Prompt, and Resource Registration
 
-Attribute-based registration for three MCP primitives. All use `[System.ComponentModel.Description]` for AI-readable documentation.
+Attribute-based registration for the three primitives the bridge exposes. All use `[System.ComponentModel.Description]` for AI-readable documentation.
 
-- **Tools**: `[McpPluginToolType]` on class, `[McpPluginTool(Name = "category-action")]` on methods
-- **Prompts**: `[McpPluginPromptType]` on class, `[McpPluginPrompt]` on methods
-- **Resources**: `[McpPluginResourceType]` on class, `[McpPluginResource]` on methods (e.g., `gameobject://currentScene/{path}`)
+- **Tools**: `[UcoPluginToolType]` on class, `[UcoPluginTool(Name = "category-action")]` on methods
+- **Prompts**: `[UcoPluginPromptType]` on class, `[UcoPluginPrompt]` on methods
+- **Resources**: `[UcoPluginResourceType]` on class, `[UcoPluginResource]` on methods (e.g., `gameobject://currentScene/{path}`)
 
 ## Testing Patterns
 
@@ -23,5 +23,5 @@ Attribute-based registration for three MCP primitives. All use `[System.Componen
 
 - **No spaces in project path** — validated on startup with user warning
 - **Unity 2022.3+** minimum
-- Main UI: `Window/AI Game Developer`
-- Config file: `Assets/Resources/AI-Game-Developer-Config.json` (auto-created). Editor mode: file path; Play mode: `Resources.Load<TextAsset>()`
+- Main UI: `Tools > Unity Copilot`
+- Config file: `UserSettings/uco-config.json` (auto-created; legacy `AI-Game-Developer-Config.json` is read as a fallback and migrated)

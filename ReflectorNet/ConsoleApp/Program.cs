@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ReflectorNet
  * Author: Ivan Murzak (https://github.com/IvanMurzak)
  * Copyright (c) 2025 Ivan Murzak
@@ -32,7 +32,7 @@ Console.WriteLine(schemaJson.ToJsonString(new System.Text.Json.JsonSerializerOpt
 
 public static class Sample
 {
-    // [McpServerTool]
+    // (tool marker examples removed with the protocol layer)
     public static Result Command(List<Data> dataList, EnumFlag flag, Data? optionalData = null)
     {
         return new Result();

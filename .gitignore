@@ -21,8 +21,7 @@ commands/.env
 .CONVENTIONS.md
 
 # Wiki project
-Unity-MCP.wiki
 
-# .NET build output (in-tree framework source under ReflectorNet/ + McpPlugin/)
+# .NET build output (in-tree framework source under ReflectorNet/ + uco-framework/)
 **/bin/
 **/obj/

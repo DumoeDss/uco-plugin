@@ -144,7 +144,7 @@ function Update-VersionFiles {
 
 # Main execution
 try {
-    Write-ColorText "🚀 McpPlugin Version Bump Script" "Cyan"
+    Write-ColorText "ReflectorNet Version Bump Script" "Cyan"
     Write-ColorText "=================================" "Cyan"
 
     # Validate semantic version format

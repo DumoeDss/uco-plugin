@@ -15,13 +15,13 @@
 
     <!-- NuGet Package Information -->
     <IsPackable>true</IsPackable>
-    <PackageId>com.IvanMurzak.McpPlugin</PackageId>
+    <PackageId>com.AtelierAI.Uco.Framework</PackageId>
     <Version>7.0.0-unity-copilot.1</Version>
     <Authors>Ivan Murzak</Authors>
     <Company>Ivan Murzak</Company>
     <Copyright>Copyright © Ivan Murzak 2025</Copyright>
-    <Description>McpPlugin is a .NET Library project for integration MCP server features into any dotnet application. It connects automatically with MCP server and exposes it's API over TCP connection in runtime. When MCP server interacts with AI. This library maintains a local application.</Description>
-    <PackageTags>AI;MCP;Plugin;Networking</PackageTags>
+    <Description>Uco Framework — the plugin-side library for Unity Copilot: tool/prompt/resource registration, the WebSocket hub client, and the plugin builder.</Description>
+    <PackageTags>AI;Unity;Copilot;Plugin;Networking</PackageTags>
     <RepositoryUrl>https://github.com/IvanMurzak/MCP-Plugin-dotnet</RepositoryUrl>
     <PackageProjectUrl>https://github.com/IvanMurzak/MCP-Plugin-dotnet</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>

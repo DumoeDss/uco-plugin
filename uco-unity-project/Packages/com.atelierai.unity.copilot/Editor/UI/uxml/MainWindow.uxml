@@ -43,16 +43,16 @@
                         <ui:Button name="btnConnectOrDisconnect" text="Connect" class="btn-primary timeline-btn" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <!-- Point 2: MCP Server -->
-                <ui:VisualElement name="TimelinePointMcpServer" class="timeline-point frame-group frame-mcp-server">
+                <!-- Point 2: Server -->
+                <ui:VisualElement name="TimelinePointServer" class="timeline-point frame-group frame-server">
                     <ui:VisualElement class="timeline-indicator" style="justify-content: flex-start;">
-                        <ui:VisualElement name="mcpServerStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" style="margin-top: 13px;" />
+                        <ui:VisualElement name="serverStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" style="margin-top: 13px;" />
                         <ui:VisualElement class="timeline-line" style="top: 29px; margin-top: 0; margin-bottom: -4px;" />
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-direction: column; flex-grow: 1;">
-                        <!-- Row 1: MCP Server label + Start/Stop button (fixed height, aligns with status circle) -->
-                        <ui:VisualElement name="mcpServerStatusControl" class="timeline-content" style="min-height: 40px;">
-                            <ui:Label text="Server" name="mcpServerLabel" class="timeline-label" />
+                        <!-- Row 1: Server label + Start/Stop button (fixed height, aligns with status circle) -->
+                        <ui:VisualElement name="serverStatusControl" class="timeline-content" style="min-height: 40px;">
+                            <ui:Label text="Server" name="serverLabel" class="timeline-label" />
                             <ui:Button name="btnStartStopServer" text="Start" class="btn-secondary timeline-btn" />
                         </ui:VisualElement>
                         <!-- Row 2: Authorization -->
@@ -84,7 +84,7 @@
             <ui:Label text="Extensions" class="header" style="display: none;" />
             <ui:VisualElement name="ExtensionsSection" style="display: none;" />
             <ui:VisualElement class="divider" style="display: none;" />
-            <!-- Support Section ============================== (hidden: no MCP clients to configure; social links retained for reuse) -->
+            <!-- Support Section ============================== (hidden: nothing to configure here; social links retained for reuse) -->
             <ui:VisualElement style="display: none;">
                 <ui:VisualElement>
                     <ui:Label text="Found an issue?" class="section-text" style="flex-grow: 1;" />

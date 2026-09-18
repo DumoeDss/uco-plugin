@@ -169,7 +169,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests
         }
 
         [UnityTest]
-        public IEnumerator MCP_Tools()
+        public IEnumerator All_Tools()
         {
             var task = UnityCopilotPluginEditor.Instance.Tools!.RunListTool(new RequestListTool());
             while (!task.IsCompleted)

@@ -1,9 +1,9 @@
 /* ==========================================================================
-   MCP Resources Window Styles
+   Copilot Resources Window Styles
    Imports common list window styles and adds resource-specific customizations
    ========================================================================== */
 
-@import url("common/_mcp-list-window.uss");
+@import url("common/_copilot-list-window.uss");
 
 /* Resource-specific: URI label color */
 .item-uri {

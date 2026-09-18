@@ -80,49 +80,6 @@ namespace com.AtelierAI.Uco.Framework.Common
                 /// </summary>
                 public const int DefaultIdleTimeoutSeconds = 600;
 
-                public const string DefaultBodyPath = "mcpServers";
-                public const string DefaultServerName = "UcoPlugin";
-                public const string BodyPathDelimiter = "->";
-
-                public static string[] BodyPathSegments(string bodyPath)
-                {
-                    return bodyPath.Split(BodyPathDelimiter);
-                }
-
-                public static JsonNode Config(
-                    string executablePath,
-                    string serverName = DefaultServerName,
-                    string bodyPath = DefaultBodyPath,
-                    int port = Hub.DefaultPort,
-                    int timeoutMs = Hub.DefaultTimeoutMs)
-                {
-                    var pathSegments = BodyPathSegments(bodyPath);
-                    var root = new JsonObject();
-                    var current = root;
-
-                    // Create nested structure following the path segments
-                    foreach (var segment in pathSegments)
-                    {
-                        var child = new JsonObject();
-                        current[segment] = child;
-                        current = child;
-                    }
-
-                    // Place the server configuration at the final location
-                    current[serverName] = new JsonObject
-                    {
-                        ["type"] = "stdio",
-                        ["command"] = executablePath,
-                        ["args"] = new JsonArray
-                        {
-                            $"{Args.Port}={port}",
-                            $"{Args.PluginTimeout}={timeoutMs}",
-                            $"{Args.ClientTransportMethod}={TransportMethod.stdio}"
-                        }
-                    };
-
-                    return root;
-                }
 
                 public enum TransportMethod
                 {

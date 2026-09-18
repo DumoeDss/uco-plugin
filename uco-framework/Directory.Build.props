@@ -1,10 +1,8 @@
 <Project>
 
-  <!-- Intentionally empty. Previously pinned v8 Microsoft.Extensions / System.Text.Json
-       packages to work around a v8/v10 conflict introduced by ModelContextProtocol 1.2.0.
-       The MCP dependency has been removed from McpPlugin and McpPlugin.Common (the
-       compiled DLLs never referenced MCP types), so transitive resolution is now
-       coherent: SignalR.Client 8.0.15 pulls the v8 stack naturally, and
-       McpPlugin.Server keeps its own v10 stack via SignalR.Client 10.0.3. -->
+  <!-- Intentionally empty. Historically pinned v8 Microsoft.Extensions / System.Text.Json
+       packages to work around a version conflict introduced by a since-removed
+       protocol dependency; with that dependency gone, transitive resolution is
+       coherent without pins. -->
 
 </Project>

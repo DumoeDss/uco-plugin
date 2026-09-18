@@ -28,10 +28,10 @@ namespace com.AtelierAI.Unity.Copilot.Editor.UI
         private void SetupServerSection(VisualElement root)
         {
             var btnStartStop = root.Q<Button>("btnStartStopServer") ?? throw new InvalidOperationException("Server start/stop button not found.");
-            var statusCircle = root.Q<VisualElement>("mcpServerStatusCircle") ?? throw new InvalidOperationException("Server status circle not found.");
-            var statusLabel = root.Q<Label>("mcpServerLabel") ?? throw new InvalidOperationException("Server status label not found.");
+            var statusCircle = root.Q<VisualElement>("serverStatusCircle") ?? throw new InvalidOperationException("Server status circle not found.");
+            var statusLabel = root.Q<Label>("serverLabel") ?? throw new InvalidOperationException("Server status label not found.");
 
-            var timelinePointServer = root.Q<VisualElement>("TimelinePointMcpServer");
+            var timelinePointServer = root.Q<VisualElement>("TimelinePointServer");
             if (timelinePointServer != null)
                 timelinePointServer.tooltip = Tooltip_ServerTimelineLabel;
             statusCircle.tooltip = Tooltip_ServerTimelineLabel;

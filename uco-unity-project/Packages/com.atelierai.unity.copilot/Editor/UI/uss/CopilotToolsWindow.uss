@@ -1,8 +1,8 @@
 /* ==========================================================================
-   MCP Tools Window Styles
+   Copilot Tools Window Styles
    ========================================================================== */
 
-@import url("common/_mcp-list-window.uss");
+@import url("common/_copilot-list-window.uss");
 
 /* Tool Item Header - column layout with two rows */
 .tool-item-header {

@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.AtelierAI.Unity.Copilot.Runtime.Attributes;
+using com.AtelierAI.Unity.Copilot.Editor.Branding;
 using com.AtelierAI.Uco.Framework;
 using UnityEditor;
 
@@ -141,7 +142,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Utils
         /// The stored value is a pipe-separated list of <c>group=0|group=1</c>
         /// tokens. Unknown groups in the stored value are ignored on load.
         /// </summary>
-        public const string EditorPrefsKey = "UnityMcp.ToolGroups.Enabled";
+        public const string EditorPrefsKey = ProductInfo.EditorPrefsPrefix + ".ToolGroups.Enabled";
 
         // ---------------------------------------------------------------------
         // Static initialization.

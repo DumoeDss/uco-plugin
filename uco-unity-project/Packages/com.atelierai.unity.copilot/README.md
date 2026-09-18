@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Unity Copilot</h1>
-  <p>Drive the Unity Editor from any AI agent over plain REST + WebSocket — no MCP protocol on the wire.</p>
+  <p>Drive the Unity Editor from any AI agent over plain REST + WebSocket — a single simple wire protocol on the wire.</p>
   <p><code>com.atelierai.unity.copilot</code></p>
 </div>
 
@@ -77,9 +77,9 @@ from the legacy filename by older→newer versions of the plugin).
 
 ## Wire protocol
 
-Plain HTTP + WebSocket with JSON envelopes (`/api/tools/...`). There is no MCP
+Plain HTTP + WebSocket with JSON envelopes (`/api/tools/...`). The wire is plain JSON
 protocol on the wire — the bridge was deliberately stripped down to REST so
-any agent, script, or CI job can use it without an MCP SDK.
+any agent, script, or CI job can drive it with nothing but an HTTP client.
 
 ## Attribution & license
 

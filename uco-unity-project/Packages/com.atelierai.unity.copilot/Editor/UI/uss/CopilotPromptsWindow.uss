@@ -1,9 +1,9 @@
 /* ==========================================================================
-   MCP Prompts Window Styles
+   Copilot Prompts Window Styles
    Imports common list window styles and adds prompt-specific customizations
    ========================================================================== */
 
-@import url("common/_mcp-list-window.uss");
+@import url("common/_copilot-list-window.uss");
 
 /* Prompt-specific: Role label color */
 .item-role {

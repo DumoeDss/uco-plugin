@@ -171,7 +171,7 @@
     -unity-font-style: bold;
 }
 
-.frame-mcp-server {
+.frame-server {
     /* background-color: rgba(20, 40, 69, 0.2); */
     border-radius: 10px;
 

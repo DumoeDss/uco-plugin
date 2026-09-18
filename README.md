@@ -1,7 +1,7 @@
 # uco-plugin
 
 Unity Co-Pilot — the Unity side of the **uco** bridge: a UPM plugin package
-that exposes the Editor as a plain REST + WebSocket service (no MCP protocol
+that exposes the Editor as a plain REST + WebSocket service (a single simple wire protocol
 on the wire), plus the framework sources it is built from.
 
 **Public package:** `com.atelierai.unity.copilot` — install via the

@@ -22,7 +22,7 @@ detects the embedded layout and directs the user to run
   Discovery now probes @atelierai/uco, then the legacy uco and cocli layouts,
   project-local and npm-global.
 - Token env overrides route straight to the local token (no mode routing);
-  UNITY_MCP_CLOUD_URL is gone, --url/UNITY_MCP_HOST keep working.
+  the cloud URL variable is gone; --url and the host variable keep working.
 
 ## [1.0.2] - 2026-09-15 — one menu tree, one name: Unity Copilot
 
@@ -32,9 +32,9 @@ detects the embedded layout and directs the user to run
 - The leftover "AI Game Developer" menu tree (NuGet resolver items) is
   merged into **Tools ▸ Unity Copilot**; the stray root-level
   "Generate Tools Manifest" item moves under it too.
-- Removed the dead **Launch MCP Inspector** item and the legacy
-  `Commands/` folder (`start_mcp_inspector.bat`, `copy_readme.bat`) — the
-  bridge speaks plain REST, there is no MCP endpoint to inspect.
+- Removed the dead **legacy inspector** menu item and the legacy
+  `Commands/` folder (`start_legacy_inspector.bat`, `copy_readme.bat`) — the
+  bridge speaks plain REST, with no endpoint of that kind to inspect.
 - Team update kill-switch asset renamed to
   `ProjectSettings/Copilot-UpdateSettings.asset` (the old
   AI-Game-Developer-named file is no longer read; the toggle resets to

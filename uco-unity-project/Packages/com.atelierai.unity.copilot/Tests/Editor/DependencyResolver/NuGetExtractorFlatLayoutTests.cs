@@ -34,7 +34,7 @@ namespace com.AtelierAI.Unity.Copilot.Editor.Tests.DependencyResolverTests
         [SetUp]
         public void SetUp()
         {
-            _tempDir = Path.Combine(Path.GetTempPath(), "UnityMcp-Extractor-" + Path.GetRandomFileName());
+            _tempDir = Path.Combine(Path.GetTempPath(), "Uco-Extractor-" + Path.GetRandomFileName());
             Directory.CreateDirectory(_tempDir);
             _installDir = Path.Combine(_tempDir, "install");
             Directory.CreateDirectory(_installDir);
