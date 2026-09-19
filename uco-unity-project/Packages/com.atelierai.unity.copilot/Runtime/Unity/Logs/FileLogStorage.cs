@@ -542,6 +542,8 @@ namespace com.AtelierAI.Unity.Copilot
             GC.SuppressFinalize(this);
         }
 
-        ~FileLogStorage() => Dispose();
+// No finalizer: Dispose performs file I/O / Unity static-event unsubscription,
+        // which must never run on the finalizer thread during domain unload
+        // (same crash class as uco-domain-reload-crash-20260919).
     }
 }

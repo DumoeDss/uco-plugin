@@ -33,6 +33,7 @@ namespace com.AtelierAI.Uco.Framework.Common.Model
         {
             // Arguments.Clear();
         }
-        ~RequestGetPrompt() => Dispose();
+// No finalizer: Dispose is plain managed cleanup; running arbitrary code on
+        // the finalizer thread during domain unload is never safe.
     }
 }

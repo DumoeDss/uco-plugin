@@ -84,6 +84,22 @@ namespace com.AtelierAI.Unity.Copilot.Editor
                             nameof(Startup), callerName, e.Message);
                     }
                 }
+
+                // Deterministic teardown on reload/unload/quit: dispose the plugin
+                // instance on a background thread (the safe context for the token
+                // cancellation callbacks — same reasoning as
+                // DisposeUcoPluginInstance). Without this, the instance survived
+                // domain unload undisposed and relied on GC finalization — the
+                // crash path fixed in uco-domain-reload-crash-20260919.
+                try
+                {
+                    plugin.DisposeUcoPluginInstance();
+                }
+                catch (System.Exception e)
+                {
+                    _logger.LogWarning(e, "{class} {method}: Exception during plugin disposal (non-blocking): {message}",
+                        nameof(Startup), callerName, e.Message);
+                }
             }
 
             try

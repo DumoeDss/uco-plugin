@@ -440,6 +440,13 @@ namespace com.AtelierAI.Uco.Framework
             _logger.LogDebug("{method} completed.", nameof(Dispose));
         }
 
-        ~UcoPlugin() => Dispose();
+// NOTE: deliberately NO finalizer. The historical ~UcoPlugin() => Dispose() ran
+        // the full teardown (CancellationTokenSource dispose/cancel with synchronous
+        // Task.Delay continuation callbacks and ExecutionContext restores) on the GC
+        // finalizer thread during domain unload — a native crash on mono
+        // (UmaViewer issue uco-domain-reload-crash-20260919, 2/2 reproducible editor
+        // crashes on script recompile). Managed disposables have their own BCL
+        // finalizers that run safely; explicit teardown happens via Dispose() and
+        // the editor's assembly-reload cleanup path.
     }
 }

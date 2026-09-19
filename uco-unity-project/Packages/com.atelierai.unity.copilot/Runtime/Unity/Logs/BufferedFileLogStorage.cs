@@ -202,6 +202,7 @@ namespace com.AtelierAI.Unity.Copilot
             return result.ToArray();
         }
 
-        ~BufferedFileLogStorage() => Dispose();
+// No finalizer: Dispose is plain managed cleanup; running arbitrary code on
+        // the finalizer thread during domain unload is never safe.
     }
 }
